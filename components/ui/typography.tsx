@@ -15,6 +15,10 @@ const typographyVariants = cva('', {
       h4: 'text-h4 font-semibold tracking-tight leading-h4',
       h5: 'text-h5 font-semibold leading-h5',
       h6: 'text-h6 font-semibold leading-h6',
+      subtitle: 'text-h4 font-semibold leading-h4',
+      body1: 'text-base leading-6',
+      body2: 'text-sm leading-5',
+      caption: 'text-sm text-muted-foreground leading-5',
       p: 'text-base leading-6',
       lead: 'text-lead leading-lead',
       large: 'text-large font-medium leading-large',
@@ -50,6 +54,10 @@ const Typography = React.forwardRef<React.ElementRef<typeof Text>, TypographyPro
       h4: 'Inter_600SemiBold',
       h5: 'Inter_600SemiBold',
       h6: 'Inter_600SemiBold',
+      subtitle: 'Inter_600SemiBold',
+      body1: 'Inter_400Regular',
+      body2: 'Inter_400Regular',
+      caption: 'Inter_400Regular',
       p: 'Inter_400Regular',
       lead: 'Inter_400Regular',
       large: 'Inter_500Medium',
@@ -69,15 +77,13 @@ const Typography = React.forwardRef<React.ElementRef<typeof Text>, TypographyPro
       h4: 20,
       h5: 18,
       h6: 16,
-      p: 16,
+      subtitle: 20,
+      body1: 18,
+      body2: 16,
+      caption: 14,
+      p: 18,
       lead: 20,
       large: 18,
-      small: 14,
-      muted: 14,
-      blockquote: 16,
-      list: 16,
-      code: 14,
-      link: 16,
     };
 
     // Map variants to line heights
@@ -88,6 +94,10 @@ const Typography = React.forwardRef<React.ElementRef<typeof Text>, TypographyPro
       h4: 28,
       h5: 26,
       h6: 24,
+      subtitle: 28,
+      body1: 24,
+      body2: 20,
+      caption: 16,
       p: 24,
       lead: 28,
       large: 26,
@@ -103,13 +113,26 @@ const Typography = React.forwardRef<React.ElementRef<typeof Text>, TypographyPro
     const fontSize = variant ? fontSizeMap[variant] : 16;
     const lineHeight = variant ? lineHeightMap[variant] : 24;
 
+    // Get text color based on variant and theme
+    const getTextColor = () => {
+      switch (variant) {
+        case 'caption':
+        case 'muted':
+          return colors.icon; // Muted color for helper text
+        case 'link':
+          return colors.primary; // Primary green for links
+        default:
+          return colors.text; // Default text color (theme-aware)
+      }
+    };
+
     return (
       <Text
         ref={ref}
         className={cn(typographyVariants({ variant, className }))}
         style={[
           { 
-            color: colors.text, 
+            color: getTextColor(), 
             fontFamily,
             fontSize,
             lineHeight,

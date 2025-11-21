@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -9,10 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-import { cn } from '@/lib/utils';
 
-import ArrowRight from '@/assets/images/arrow-right.svg';
-import ChevronLeft from '@/assets/images/chevron-left.svg';
+import { Icon } from '@/components/ui/icon';
 
 /**
  * Document input screen for onboarding
@@ -73,12 +71,12 @@ const DocumentScreen = () => {
       <ThemedView style={styles.container}>
         <ThemedView style={styles.content}>
           {/* Back Button */}
-          <TouchableOpacity
-            style={[styles.backButton, { backgroundColor: colors.background === '#fff' ? '#f1f9f5' : '#1a2a24' }]}
-            onPress={handleBack}
-            activeOpacity={0.8}>
-            <ChevronLeft width={32} height={32} />
-          </TouchableOpacity>
+          <Button
+            variant="secondary"
+            size="icon"
+            onPress={handleBack}>
+            <Icon name="chevron-back" size={32} color={colors.primary} />
+          </Button>
 
           {/* Title */}
           <ThemedText style={[styles.title, { color: colors.text }]}>
@@ -109,15 +107,11 @@ const DocumentScreen = () => {
         {/* Continue Button */}
         <View style={styles.buttonContainer}>
           <Button
-            variant="default"
+            variant="primary"
             size="icon"
-            className={cn(
-              'h-14 w-14 rounded-full',
-              !isValid && 'bg-[#d0d0d0] opacity-50'
-            )}
             onPress={handleContinue}
             disabled={!isValid}>
-            <ArrowRight width={32} height={32} />
+            <Icon name="arrow-forward" size={32} color={colors.primaryForeground} />
           </Button>
         </View>
       </ThemedView>

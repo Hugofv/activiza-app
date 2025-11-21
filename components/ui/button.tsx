@@ -1,30 +1,34 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { Pressable, Text, type PressableProps, type TextProps } from 'react-native';
+import { Pressable, type PressableProps, type TextProps, type ViewStyle } from 'react-native';
 
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { cn } from '@/lib/utils';
+import { Typography } from './typography';
 
 const buttonVariants = cva(
-  'active:opacity-80 items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
+  'active:opacity-80 flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground',
-        destructive: 'bg-destructive text-destructive-foreground',
+        primary: '', // Will be handled by style prop for theme colors
+        secondary: '', // Will be handled by style prop for theme colors
+        error: '', // Will be handled by style prop for theme colors
         outline: 'border border-input bg-background',
-        secondary: 'bg-secondary text-secondary-foreground',
         ghost: '',
         link: 'text-primary underline-offset-4',
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-9 px-3',
-        lg: 'h-11 px-8',
-        icon: 'h-10 w-10',
+        default: 'h-[56px] px-4 py-[13px]',
+        sm: 'h-9 px-3 py-2',
+        lg: 'h-[56px] px-8 py-[13px]',
+        icon: 'h-[56px] w-[56px]',
+        full: 'h-[56px] w-full px-4 py-[13px]',
       },
     },
     defaultVariants: {
-      variant: 'default',
+      variant: 'primary',
       size: 'default',
     },
   }
@@ -38,16 +42,117 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
-  ({ className, variant, size, children, textProps, ...props }, ref) => {
+  ({ className, variant = 'primary', size, children, textProps, style, disabled, ...props }, ref) => {
+    const colorScheme = useColorScheme();
+    const colors = Colors[colorScheme ?? 'light'];
+
+    // Get variant-specific styles
+    const getVariantStyle = (): ViewStyle => {
+      const baseStyle: ViewStyle = {
+        borderRadius: 99, // rounded-[99px] from Figma
+        minHeight: size === 'sm' ? 36 : 56, // Ensure minimum height
+        alignItems: 'center',
+        justifyContent: 'center',
+      };
+      
+      // Handle width based on size
+      if (size === 'icon') {
+        baseStyle.width = 56;
+        baseStyle.minWidth = 56;
+      } else if (size === 'full') {
+        baseStyle.width = '100%';
+        baseStyle.alignSelf = 'stretch';
+      }
+      // For other sizes, width is flexible (can be set via style prop)
+      
+      switch (variant) {
+        case 'primary':
+          baseStyle.backgroundColor = colors.primary; // Green (#a7e203)
+          if (disabled) {
+            baseStyle.opacity = 0.5;
+          }
+          break;
+        case 'secondary':
+          // Secondary button: light muted background (like back button in Figma)
+          baseStyle.backgroundColor = colorScheme === 'dark' ? '#1a2a24' : '#f1f9f5'; // Light green tint from Figma
+          // No border for secondary - just muted background
+          if (disabled) {
+            baseStyle.opacity = 0.5;
+          }
+          break;
+        case 'error':
+          baseStyle.backgroundColor = '#ef4444';
+          if (disabled) {
+            baseStyle.opacity = 0.5;
+          }
+          break;
+        case 'outline':
+          baseStyle.backgroundColor = 'transparent';
+          baseStyle.borderColor = colors.icon;
+          baseStyle.borderWidth = 1;
+          if (disabled) {
+            baseStyle.opacity = 0.5;
+          }
+          break;
+        case 'ghost':
+          baseStyle.backgroundColor = 'transparent';
+          if (disabled) {
+            baseStyle.opacity = 0.5;
+          }
+          break;
+        case 'link':
+          baseStyle.backgroundColor = 'transparent';
+          if (disabled) {
+            baseStyle.opacity = 0.5;
+          }
+          break;
+        default:
+          baseStyle.backgroundColor = colors.primary;
+          if (disabled) {
+            baseStyle.opacity = 0.5;
+          }
+      }
+      
+      return baseStyle;
+    };
+
+    // Get text color based on variant
+    const getTextColor = () => {
+      switch (variant) {
+        case 'primary':
+          // Use primaryForeground which is theme-aware and provides good contrast
+          // In dark mode: #001a00 (very dark), in light mode: #064e3b (dark green)
+          return colors.primaryForeground;
+        case 'secondary':
+          return colors.primary; // Green text on light background
+        case 'error':
+          return '#ffffff';
+        case 'outline':
+          return colors.text;
+        case 'ghost':
+          return colors.text;
+        case 'link':
+          return colors.primary;
+        default:
+          return colors.primaryForeground;
+      }
+    };
+
+    const variantStyle = getVariantStyle();
+
     return (
       <Pressable
         className={cn(buttonVariants({ variant, size, className }))}
+        style={[variantStyle, style] as any}
         ref={ref}
+        disabled={disabled}
         {...props}>
-        {typeof children === 'string' ? (
-          <Text className={cn('text-sm font-medium', textProps?.className)} {...textProps}>
+          {typeof children === 'string' ? (
+          <Typography 
+            variant="lead"
+            style={{ color: getTextColor() }}>
             {children}
-          </Text>
+          </Typography>
         ) : (
           children
         )}

@@ -1,13 +1,11 @@
 import { router } from 'expo-router';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import Illustration from '@/assets/images/illustration.svg';
 import Logo from '@/assets/images/logo.svg';
+import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
 
 /**
@@ -17,9 +15,6 @@ import { Typography } from '@/components/ui/typography';
  * skip this screen and go directly to login.
  */
 const OnboardingScreen = () => {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
-  
   const handleStart = async () => {
     // Navigate to Document screen (first step of onboarding)
     router.push('/onboarding/document');
@@ -52,14 +47,13 @@ const OnboardingScreen = () => {
         </View>
 
         {/* Start Button */}
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.primary }]}
+        <Button
+          variant="primary"
+          size="full"
           onPress={handleStart}
-          activeOpacity={0.8}>
-          <ThemedText style={[styles.buttonText, { color: colors.primaryForeground }]}>
-            Começar
-          </ThemedText>
-        </TouchableOpacity>
+        >
+          Começar
+        </Button>
       </ThemedView>
     </ThemedView>
   );

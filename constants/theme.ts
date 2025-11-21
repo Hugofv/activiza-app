@@ -24,7 +24,7 @@ export const Colors = {
     background: '#151718',
     tint: tintColorDark,
     primary: '#a7e203',
-    primaryForeground: '#064e3b',
+    primaryForeground: '#001a00', // Very dark green/black for better contrast on bright green
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
