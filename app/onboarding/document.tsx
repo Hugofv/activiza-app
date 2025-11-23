@@ -11,6 +11,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import { Icon } from '@/components/ui/icon';
 import { Typography } from '@/components/ui/typography';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Document input screen for onboarding
@@ -19,6 +20,7 @@ const DocumentScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const [document, setDocument] = useState('');
+  const { t } = useTranslation();
 
   // Format CPF: 000.000.000-00
   const formatCPF = (value: string) => {
@@ -79,11 +81,11 @@ const DocumentScreen = () => {
           </Button>
 
           <Typography variant="h4">
-            Qual seu documento?
+            {t('onboarding.document')}
           </Typography>
 
           <Typography variant="body1">
-            Precisamos dele para fazer seu cadastro ou acessar sua conta
+            {t('onboarding.documentDescription')}
           </Typography>
 
           {/* Input Field */}
@@ -91,7 +93,7 @@ const DocumentScreen = () => {
             <Input
               className="border-0 rounded-none px-0 py-4 font-medium"
               style={[styles.inputBorder, { fontSize: 28 }]}
-              placeholder="000.000.000-00"
+              placeholder={t('common.cpfMask')}
               placeholderTextColor={colors.icon}
               value={document}
               onChangeText={handleCpfChange}

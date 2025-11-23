@@ -7,6 +7,7 @@ import Illustration from '@/assets/images/illustration.svg';
 import Logo from '@/assets/images/logo.svg';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Initial onboarding screen - shown only once when the app is first launched.
@@ -15,6 +16,7 @@ import { Typography } from '@/components/ui/typography';
  * skip this screen and go directly to login.
  */
 const OnboardingScreen = () => {
+  const { t } = useTranslation();
   const handleStart = async () => {
     // Navigate to Document screen (first step of onboarding)
     router.push('/onboarding/document');
@@ -34,7 +36,7 @@ const OnboardingScreen = () => {
 
         {/* Title Text */}
         <Typography variant="h2" style={styles.title}>
-          Tudo para você gerenciar seus empréstimos e aluguéis.
+          {t('onboarding.title')}
         </Typography>
 
         {/* Illustration */}
@@ -52,7 +54,7 @@ const OnboardingScreen = () => {
           size="full"
           onPress={handleStart}
         >
-          Começar
+          {t('onboarding.start')}
         </Button>
       </ThemedView>
     </ThemedView>

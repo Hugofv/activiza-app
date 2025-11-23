@@ -1,0 +1,15 @@
+export default {
+  title: 'Everything you need to manage your loans and rentals.',
+  document: 'What is your document?',
+  documentDescription: 'We need it to register or access your account',
+  name: 'What is your name?',
+  contact: 'What is your phone?',
+  address: 'What is your address?',
+  login: 'Login',
+  register: 'Register',
+  forgotPassword: 'Forgot your password?',
+  createAccount: 'Create account',
+  alreadyHaveAccount: 'Already have an account?',
+  loginWithEmail: 'Login with email',
+  start: 'Start',
+};

@@ -1,0 +1,15 @@
+export default {
+  phone: 'Telefone',
+  document: 'Documento',
+  name: 'Nome',
+  cpfMask: '000.000.000-00',
+  email: 'Email',
+  password: 'Senha',
+  confirmPassword: 'Confirmar Senha',
+  register: 'Registrar',
+  login: 'Login',
+  logout: 'Logout',
+  profile: 'Perfil',
+  settings: 'Configurações',
+  help: 'Ajuda',
+};

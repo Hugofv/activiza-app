@@ -1,0 +1,15 @@
+export default {
+  title: 'Tudo para você gerenciar seus empréstimos e aluguéis.',
+  document: 'Qual seu documento?',
+  documentDescription: 'Precisamos dele para fazer seu cadastro ou acessar sua conta',
+  name: 'Qual seu nome?',
+  contact: 'Qual seu telefone?',
+  address: 'Qual seu endereço?',
+  login: 'Login',
+  register: 'Registrar',
+  forgotPassword: 'Esqueceu sua senha?',
+  createAccount: 'Criar conta',
+  alreadyHaveAccount: 'Já tem uma conta?',
+  loginWithEmail: 'Entrar com email',
+  start: 'Começar',
+};
