@@ -9,7 +9,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Button } from '@/components/ui/button';
 import { CodeInput } from '@/components/ui/code-input';
 import { Colors } from '@/constants/theme';
-import { useOnboardingForm } from '@/contexts/onboarding-form-context';
+import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { codeSchema } from '@/lib/validations/onboarding';
 
@@ -78,7 +78,7 @@ const CodeContactScreen = () => {
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Back Button */}
-            <Button variant='secondary' size='icon' onPress={handleBack}>
+            <Button variant='secondary' size='iconSmall' onPress={handleBack}>
               <Icon name='chevron-back' size={32} color={colors.primary} />
             </Button>
 
@@ -123,7 +123,7 @@ const CodeContactScreen = () => {
           <View style={styles.buttonContainer}>
             <Button
               variant='primary'
-              size='icon'
+              size='iconLarge'
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid}
             >

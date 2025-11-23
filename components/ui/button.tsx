@@ -23,7 +23,9 @@ const buttonVariants = cva(
         default: 'h-[56px] px-4 py-[13px]',
         sm: 'h-9 px-3 py-2',
         lg: 'h-[56px] px-8 py-[13px]',
-        icon: 'h-[56px] w-[56px]',
+        icon: 'h-[56px]', // Width will be set dynamically based on variant/usage
+        iconSmall: 'h-[56px]', // 40px width for back buttons
+        iconLarge: 'h-[56px]', // 80px width for forward buttons
         full: 'h-[56px] w-full px-4 py-[13px]',
       },
     },
@@ -57,8 +59,19 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
       
       // Handle width based on size
       if (size === 'icon') {
+        // Default icon size: 56px (square)
         baseStyle.width = 56;
         baseStyle.minWidth = 56;
+      } else if (size === 'iconSmall') {
+        // Small icon button: 40px width (for back buttons)
+        baseStyle.width = 40;
+        baseStyle.minWidth = 40;
+        baseStyle.paddingHorizontal = 4;
+      } else if (size === 'iconLarge') {
+        // Large icon button: 80px width (for forward/continue buttons)
+        baseStyle.width = 80;
+        baseStyle.minWidth = 80;
+        baseStyle.paddingHorizontal = 24;
       } else if (size === 'full') {
         baseStyle.width = '100%';
         baseStyle.alignSelf = 'stretch';

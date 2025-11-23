@@ -8,7 +8,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Button } from '@/components/ui/button';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { Colors } from '@/constants/theme';
-import { useOnboardingForm } from '@/contexts/onboarding-form-context';
+import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { phoneSchema } from '@/lib/validations/onboarding';
 import type { InferType } from 'yup';
@@ -59,7 +59,7 @@ const ContactScreen = () => {
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Back Button */}
-            <Button variant='secondary' size='icon' onPress={handleBack}>
+            <Button variant='secondary' size='iconSmall' onPress={handleBack}>
               <Icon name='chevron-back' size={32} color={colors.primary} />
             </Button>
 
@@ -78,7 +78,7 @@ const ContactScreen = () => {
           <View style={styles.buttonContainer}>
             <Button
               variant='primary'
-              size='icon'
+              size='iconLarge'
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid}
             >

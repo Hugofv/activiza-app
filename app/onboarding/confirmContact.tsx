@@ -34,7 +34,7 @@ const ConfirmContactScreen = () => {
         <ThemedView style={styles.content}>
         {/* Back Button */}
         <View style={styles.backButtonContainer}>
-          <Button variant='secondary' size='icon' onPress={handleBack}>
+          <Button variant='secondary' size='iconSmall' onPress={handleBack}>
             <Icon name='chevron-back' size={32} color={colors.primary} />
           </Button>
         </View>

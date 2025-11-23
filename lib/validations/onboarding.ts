@@ -69,8 +69,9 @@ const validateCNPJ = (cnpj: string): boolean => {
 };
 
 // Helper function to get translated error message
-const t = (key: string): string => {
-  return i18n.t(`common.validation.${key}`) || key;
+// Returns a function so translation is resolved at validation time, not schema definition time
+const t = (key: string): (() => string) => {
+  return () => i18n.t(`common.validation.${key}`) || key;
 };
 
 // Document (CPF or CNPJ) schema
