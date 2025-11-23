@@ -12,9 +12,9 @@ import { Typography } from '@/components/ui/typography';
 import { useTranslation } from 'react-i18next';
 
 /**
- * WhatsApp verification confirmation screen for onboarding
+ * Email verification confirmation screen for onboarding
  */
-const ConfirmContactScreen = () => {
+const ConfirmEmailScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
@@ -24,8 +24,8 @@ const ConfirmContactScreen = () => {
   };
 
   const handleContinue = () => {
-    // Navigate to next step
-    router.push('/onboarding/email');
+    // Navigate to country selection
+    router.push('/onboarding/country');
   };
 
   return (
@@ -60,7 +60,7 @@ const ConfirmContactScreen = () => {
               variant='large'
               style={[styles.verifiedText, { color: colors.text }]}
             >
-              {t('onboarding.whatsappVerified')}
+              {t('onboarding.emailVerified')}
             </Typography>
           </View>
 
@@ -85,7 +85,7 @@ const ConfirmContactScreen = () => {
   );
 };
 
-export default ConfirmContactScreen;
+export default ConfirmEmailScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -133,3 +133,4 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
 });
+

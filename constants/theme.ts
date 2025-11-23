@@ -16,6 +16,9 @@ export const Colors = {
     primary: '#a7e203', // Primary green
     primaryForeground: '#064e3b', // Primary foreground (text on primary)
     icon: '#687076',
+    placeholder: '#9BAAA2', // Placeholder text color (lighter than icon for better contrast with label)
+    muted: '#f3f7f5', // Muted background for progress bars
+    disabledPlaceholder: 'rgba(104, 112, 118, 0.3)', // Lighter placeholder for disabled inputs (30% opacity of icon)
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
   },
@@ -26,6 +29,9 @@ export const Colors = {
     primary: '#a7e203',
     primaryForeground: '#001a00', // Very dark green/black for better contrast on bright green
     icon: '#9BA1A6',
+    placeholder: '#6B7280', // Placeholder text color (lighter than icon for better contrast with label)
+    muted: '#1a2a24', // Muted background for progress bars (dark mode)
+    disabledPlaceholder: 'rgba(155, 170, 166, 0.3)', // Lighter placeholder for disabled inputs (30% opacity of icon)
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },

@@ -141,6 +141,60 @@ export const codeSchema = yup.object().shape({
     .matches(/^\d+$/, t('codeNumeric')),
 });
 
+// Postal code schema factory - creates validation based on country
+export const createPostalCodeSchema = (countryCode?: string) => {
+  return yup.object().shape({
+    postalCode: yup
+      .string()
+      .required(t('postalCodeRequired'))
+      .test('postal-code-format', t('postalCodeInvalid'), (value) => {
+        if (!value) return false;
+        
+        switch (countryCode) {
+          case 'BR':
+            // Brazil CEP: 8 digits (00000-000)
+            const brNumbers = value.replace(/\D/g, '');
+            return brNumbers.length === 8;
+          
+          case 'US':
+            // USA ZIP: 5 or 9 digits (12345 or 12345-6789)
+            const usNumbers = value.replace(/\D/g, '');
+            return usNumbers.length === 5 || usNumbers.length === 9;
+          
+          case 'UK':
+            // UK postcode: AA9A 9AA format (alphanumeric with space)
+            // Examples: SW1A 1AA, M1 1AA, B33 8TH, SE26 5LN, EC1A 1BB
+            const ukCleaned = value.replace(/\s/g, '').toUpperCase();
+            // UK postcode regex: 
+            // Outward code: 1-2 letters + 1-2 numbers/letters (2-4 chars total)
+            // Inward code: 1 number + 2 letters (3 chars)
+            // Total: 5-7 characters without space
+            const ukPattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\d[A-Z]{2}$/i;
+            return ukCleaned.length >= 5 && ukCleaned.length <= 7 && ukPattern.test(ukCleaned);
+          
+          default:
+            // Default: at least 3 characters
+            return value.length >= 3;
+        }
+      }),
+  });
+};
+
+// Default postal code schema (Brazil format for backward compatibility)
+export const postalCodeSchema = createPostalCodeSchema('BR');
+
+// Address schema
+export const addressSchema = yup.object().shape({
+  postalCode: yup.string().required(t('postalCodeRequired')),
+  street: yup.string().required(t('streetRequired')),
+  neighborhood: yup.string().required(t('neighborhoodRequired')),
+  city: yup.string().required(t('cityRequired')),
+  state: yup.string().required(t('stateRequired')),
+  country: yup.string().required(t('countryRequired')),
+  number: yup.string().required(t('numberRequired')),
+  complement: yup.string().optional(),
+});
+
 // Combined onboarding schema
 export const onboardingSchema = yup.object().shape({
   document: yup

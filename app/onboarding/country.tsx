@@ -1,0 +1,244 @@
+import { router } from 'expo-router';
+import { useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { ThemedView } from '@/components/themed-view';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Colors } from '@/constants/theme';
+import { useOnboardingForm } from '@/contexts/onboardingFormContext';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import type { CountryCode } from '@/lib/services/postalCode';
+
+import { Icon } from '@/components/ui/icon';
+import { Typography } from '@/components/ui/typography';
+import { useTranslation } from 'react-i18next';
+
+const COUNTRIES: {
+  code: CountryCode;
+  name: string;
+  nameEn: string;
+  flag: string;
+}[] = [
+  { code: 'BR', name: 'Brasil', nameEn: 'Brazil', flag: '🇧🇷' },
+  { code: 'UK', name: 'Reino Unido', nameEn: 'United Kingdom', flag: '🇬🇧' },
+  { code: 'US', name: 'Estados Unidos', nameEn: 'United States', flag: '🇺🇸' },
+];
+
+/**
+ * Country selection screen for onboarding
+ */
+const CountryScreen = () => {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  const { t, i18n } = useTranslation();
+  const { formData, updateFormData } = useOnboardingForm();
+  const [selectedCountry, setSelectedCountry] = useState<CountryCode | null>(
+    (formData.address?.country as CountryCode) || null
+  );
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  const handleContinue = () => {
+    if (!selectedCountry) return;
+
+    const country = COUNTRIES.find((c) => c.code === selectedCountry);
+    updateFormData({
+      address: {
+        ...formData.address,
+        postalCode: '',
+        street: '',
+        neighborhood: '',
+        city: '',
+        state: '',
+        number: '',
+        complement: '',
+        country: country?.name || selectedCountry,
+        countryCode: selectedCountry,
+        _apiFilled: {
+          postalCode: false,
+          street: false,
+          neighborhood: false,
+          city: false,
+          state: false,
+          country: false,
+        },
+      } as any,
+    });
+    router.push('/onboarding/postalCode');
+  };
+
+  const getCountryName = (country: (typeof COUNTRIES)[0]) => {
+    return i18n.language.startsWith('pt') ? country.name : country.nameEn;
+  };
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ThemedView style={styles.container}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <ThemedView style={styles.content}>
+              {/* Progress Bar */}
+              <View style={styles.progressContainer}>
+                <Progress value={63} />
+              </View>
+
+              {/* Back Button */}
+              <Button variant='secondary' size='iconSmall' onPress={handleBack}>
+                <Icon name='chevron-back' size={32} color={colors.primary} />
+              </Button>
+
+              {/* Title */}
+              <Typography variant='h4' style={styles.title}>
+                {t('onboarding.selectCountry')}
+              </Typography>
+
+              {/* Country List */}
+              <View style={styles.countryList}>
+                {COUNTRIES.map((country) => {
+                  const isSelected = selectedCountry === country.code;
+                  return (
+                    <TouchableOpacity
+                      key={country.code}
+                      style={[
+                        styles.countryItem,
+                        {
+                          backgroundColor: isSelected
+                            ? colorScheme === 'dark'
+                              ? '#1a2a24'
+                              : '#effad1'
+                            : 'transparent',
+                          borderColor: isSelected
+                            ? colors.primary
+                            : colors.icon,
+                        },
+                      ]}
+                      onPress={() => setSelectedCountry(country.code)}
+                      activeOpacity={0.7}
+                    >
+                      <View style={styles.countryContent}>
+                        <Typography style={styles.flag}>
+                          {country.flag}
+                        </Typography>
+                        <Typography
+                          variant='body1'
+                          style={[
+                            styles.countryName,
+                            {
+                              color: isSelected ? colors.primary : colors.text,
+                              fontWeight: isSelected ? '600' : '400',
+                            },
+                          ]}
+                        >
+                          {getCountryName(country)}
+                        </Typography>
+                      </View>
+                      {isSelected && (
+                        <Icon
+                          name='checkmark'
+                          size={24}
+                          color={colors.primary}
+                        />
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ThemedView>
+          </ScrollView>
+
+          {/* Continue Button */}
+          <View style={styles.buttonContainer}>
+            <Button
+              variant='primary'
+              size='iconLarge'
+              onPress={handleContinue}
+              disabled={!selectedCountry}
+            >
+              <Icon
+                name='arrow-forward'
+                size={32}
+                color={colors.primaryForeground}
+              />
+            </Button>
+          </View>
+        </ThemedView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+export default CountryScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  content: {
+    flex: 1,
+    paddingTop: 18,
+    paddingHorizontal: 24,
+    gap: 20,
+  },
+  progressContainer: {
+    marginBottom: 8,
+  },
+  title: {
+    marginTop: 8,
+  },
+  countryList: {
+    marginTop: 8,
+    gap: 12,
+  },
+  countryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    borderWidth: 1.5,
+  },
+  countryContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    justifyContent: 'center',
+  },
+  flag: {
+    fontSize: 28,
+    lineHeight: 0,
+  },
+  countryName: {
+    fontSize: 18,
+  },
+  buttonContainer: {
+    paddingBottom: 56,
+    paddingHorizontal: 24,
+    alignItems: 'flex-end',
+  },
+});

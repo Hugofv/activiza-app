@@ -31,5 +31,13 @@ export default {
     codeRequired: 'Código é obrigatório',
     codeLength: 'Código deve ter 6 dígitos',
     codeNumeric: 'Código deve conter apenas números',
+    postalCodeRequired: 'CEP é obrigatório',
+    postalCodeInvalid: 'CEP inválido',
+    streetRequired: 'Rua é obrigatória',
+    neighborhoodRequired: 'Bairro é obrigatório',
+    cityRequired: 'Cidade é obrigatória',
+    stateRequired: 'Estado é obrigatório',
+    countryRequired: 'País é obrigatório',
+    numberRequired: 'Número é obrigatório',
   },
 };

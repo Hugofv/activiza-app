@@ -1,52 +1,72 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/themed-view';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { CodeInput } from '@/components/ui/code-input';
 import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { nameSchema } from '@/lib/validations/onboarding';
+import { codeSchema } from '@/lib/validations/onboarding';
 
 import { Icon } from '@/components/ui/icon';
 import { Typography } from '@/components/ui/typography';
+import { useTranslation } from 'react-i18next';
 
-interface NameFormData {
-  name: string;
+interface CodeEmailFormData {
+  code: string;
 }
 
 /**
- * Name input screen for onboarding
+ * Code verification screen for email onboarding
  */
-const NameScreen = () => {
+const CodeEmailScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const { formData, updateFormData } = useOnboardingForm();
+  const { t } = useTranslation();
+  const { updateFormData } = useOnboardingForm();
+  const [resendTimer, setResendTimer] = useState(60);
 
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<NameFormData>({
-    resolver: yupResolver(nameSchema),
+  } = useForm<CodeEmailFormData>({
+    resolver: yupResolver(codeSchema),
     defaultValues: {
-      name: formData.name || '',
+      code: '',
     },
     mode: 'onChange',
   });
+
+  // Resend timer countdown
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => {
+        setResendTimer(resendTimer - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendTimer]);
 
   const handleBack = () => {
     router.back();
   };
 
-  const onSubmit = (data: NameFormData) => {
-    updateFormData({ name: data.name });
-    router.push('/onboarding/contact');
+  const onSubmit = (data: CodeEmailFormData) => {
+    // TODO: Verify code with backend
+    updateFormData({ emailCode: data.code });
+    router.push('/onboarding/confirmEmail');
+  };
+
+  const handleResendCode = () => {
+    // TODO: Resend code via email
+    setResendTimer(60);
   };
 
   return (
@@ -60,7 +80,7 @@ const NameScreen = () => {
           <ThemedView style={styles.content}>
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
-              <Progress value={18} />
+              <Progress value={54} />
             </View>
 
             {/* Back Button */}
@@ -69,26 +89,35 @@ const NameScreen = () => {
             </Button>
 
             {/* Title */}
-            <Typography variant='h4'>Qual seu nome completo?</Typography>
+            <Typography variant='h4' style={styles.title}>
+              {t('onboarding.emailCodeTitle')}
+            </Typography>
 
-            {/* Input Field */}
-            <Input
-              name='name'
-              control={control}
-              error={errors.name?.message}
-              className='border-0 rounded-none px-0 py-4 font-medium'
-              style={[
-                {
-                  fontSize: 24,
-                  borderBottomColor: errors.name ? '#ef4444' : colors.icon,
-                },
-              ]}
-              placeholder='Nome completo'
-              placeholderTextColor={colors.icon}
-              keyboardType='default'
-              maxLength={100}
-              autoFocus
-            />
+            {/* Code Input */}
+            <View style={styles.codeContainer}>
+              <CodeInput
+                name="code"
+                control={control}
+                error={errors.code?.message}
+                length={6}
+                autoFocus
+              />
+            </View>
+
+            {/* Resend Code */}
+            <View style={styles.resendContainer}>
+              {resendTimer > 0 ? (
+                <Typography variant='body2' style={{ color: colors.icon }}>
+                  {t('onboarding.codeResendTimer', { seconds: resendTimer })}
+                </Typography>
+              ) : (
+                <TouchableOpacity onPress={handleResendCode} activeOpacity={0.7}>
+                  <Typography variant='body2' style={{ color: colors.primary }}>
+                    {t('onboarding.codeResend')}
+                  </Typography>
+                </TouchableOpacity>
+              )}
+            </View>
           </ThemedView>
 
           {/* Continue Button */}
@@ -112,7 +141,7 @@ const NameScreen = () => {
   );
 };
 
-export default NameScreen;
+export default CodeEmailScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -127,9 +156,21 @@ const styles = StyleSheet.create({
   progressContainer: {
     marginBottom: 8,
   },
+  title: {
+    marginTop: 8,
+  },
+  codeContainer: {
+    marginTop: 32,
+    marginBottom: 16,
+  },
+  resendContainer: {
+    alignItems: 'center',
+    marginTop: 8,
+  },
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,
     alignItems: 'flex-end',
   },
 });
+

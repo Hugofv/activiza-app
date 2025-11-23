@@ -48,8 +48,13 @@ export default function RootLayout() {
           <Stack.Screen name="onboarding/name" options={{ headerShown: false }} />
           <Stack.Screen name="onboarding/contact" options={{ headerShown: false }} />
           <Stack.Screen name="onboarding/codeContact" options={{ headerShown: false }} />
-          <Stack.Screen name="onboarding/email" options={{ headerShown: false }} />
           <Stack.Screen name="onboarding/confirmContact" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/email" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/codeEmail" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/confirmEmail" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/country" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/postalCode" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/address" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>

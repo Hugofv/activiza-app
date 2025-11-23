@@ -11,6 +11,26 @@ export interface OnboardingFormData {
   } | null;
   email: string;
   code?: string;
+  emailCode?: string;
+  address?: {
+    postalCode: string;
+    street: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    country: string;
+    countryCode?: string;
+    number: string;
+    complement?: string;
+    _apiFilled?: {
+      postalCode?: boolean;
+      street?: boolean;
+      neighborhood?: boolean;
+      city?: boolean;
+      state?: boolean;
+      country?: boolean;
+    };
+  };
 }
 
 interface OnboardingFormContextType {

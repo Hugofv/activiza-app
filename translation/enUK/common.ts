@@ -29,5 +29,13 @@ export default {
     codeRequired: 'Code is required',
     codeLength: 'Code must have 6 digits',
     codeNumeric: 'Code must contain only numbers',
+    postalCodeRequired: 'Postal code is required',
+    postalCodeInvalid: 'Invalid postal code',
+    streetRequired: 'Street is required',
+    neighborhoodRequired: 'Neighborhood is required',
+    cityRequired: 'City is required',
+    stateRequired: 'State is required',
+    countryRequired: 'Country is required',
+    numberRequired: 'Number is required',
   },
 };

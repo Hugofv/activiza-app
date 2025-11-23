@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedView } from '@/components/themed-view';
 import { Button } from '@/components/ui/button';
 import { CodeInput } from '@/components/ui/code-input';
+import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -77,6 +78,11 @@ const CodeContactScreen = () => {
       >
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
+            {/* Progress Bar */}
+            <View style={styles.progressContainer}>
+              <Progress value={36} />
+            </View>
+
             {/* Back Button */}
             <Button variant='secondary' size='iconSmall' onPress={handleBack}>
               <Icon name='chevron-back' size={32} color={colors.primary} />
@@ -151,6 +157,9 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
+  },
+  progressContainer: {
+    marginBottom: 8,
   },
   title: {
     marginTop: 8,
