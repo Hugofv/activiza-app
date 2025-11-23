@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/themed-view';
 
@@ -23,43 +24,37 @@ const OnboardingScreen = () => {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView style={styles.content}>
-        {/* Logo */}
-        <View style={styles.logoContainer}>
-          <Logo 
-            width={197.889} 
-            height={44}
-            style={styles.logo}
-          />
-        </View>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <ThemedView style={styles.container}>
+        <ThemedView style={styles.content}>
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <Logo width={197.889} height={44} style={styles.logo} />
+          </View>
 
-        {/* Title Text */}
-        <Typography variant="h2" style={styles.title}>
-          {t('onboarding.title')}
-        </Typography>
+          {/* Title Text */}
+          <Typography variant='h2' style={styles.title}>
+            {t('onboarding.title')}
+          </Typography>
 
-        {/* Illustration */}
-        <View style={styles.illustrationContainer}>
-          <Illustration 
-            width={300 * 1} 
-            height={316}
-            style={styles.illustration}
-          />
-        </View>
+          {/* Illustration */}
+          <View style={styles.illustrationContainer}>
+            <Illustration
+              width={300 * 1}
+              height={316}
+              style={styles.illustration}
+            />
+          </View>
 
-        {/* Start Button */}
-        <Button
-          variant="primary"
-          size="full"
-          onPress={handleStart}
-        >
-          {t('onboarding.start')}
-        </Button>
+          {/* Start Button */}
+          <Button variant='primary' size='full' onPress={handleStart}>
+            {t('onboarding.start')}
+          </Button>
+        </ThemedView>
       </ThemedView>
-    </ThemedView>
+    </SafeAreaView>
   );
-}
+};
 
 export default OnboardingScreen;
 
@@ -71,8 +66,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 80,
-    paddingBottom: 56,
+    paddingTop: 18,
+    paddingBottom: 0,
     paddingHorizontal: 24,
   },
   logoContainer: {
@@ -116,4 +111,3 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 });
-

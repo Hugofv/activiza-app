@@ -6,23 +6,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/themed-view';
 import { Button } from '@/components/ui/button';
-import { PhoneInput } from '@/components/ui/phone-input';
+import { Input } from '@/components/ui/input';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboarding-form-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { phoneSchema } from '@/lib/validations/onboarding';
-import type { InferType } from 'yup';
+import { emailSchema } from '@/lib/validations/onboarding';
 
 import { Icon } from '@/components/ui/icon';
 import { Typography } from '@/components/ui/typography';
 import { useTranslation } from 'react-i18next';
 
-type ContactFormData = InferType<typeof phoneSchema>;
+interface EmailFormData {
+  email: string;
+}
 
 /**
- * Contact input screen for onboarding
+ * Email input screen for onboarding
  */
-const ContactScreen = () => {
+const EmailScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
@@ -32,10 +33,10 @@ const ContactScreen = () => {
     control,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<ContactFormData>({
-    resolver: yupResolver(phoneSchema) as any,
+  } = useForm<EmailFormData>({
+    resolver: yupResolver(emailSchema),
     defaultValues: {
-      phone: (formData.phone as any) || null,
+      email: formData.email || '',
     },
     mode: 'onChange',
   });
@@ -44,9 +45,10 @@ const ContactScreen = () => {
     router.back();
   };
 
-  const onSubmit = (data: ContactFormData) => {
-    updateFormData({ phone: data.phone as any });
-    router.push('/onboarding/codeContact');
+  const onSubmit = (data: EmailFormData) => {
+    updateFormData({ email: data.email });
+    // Navigate to next step
+    // router.push('/onboarding/confirmContact');
   };
 
   return (
@@ -64,13 +66,28 @@ const ContactScreen = () => {
             </Button>
 
             {/* Title */}
-            <Typography variant='h4'>{t('onboarding.contact')}</Typography>
+            <Typography variant='h4'>{t('onboarding.email')}</Typography>
 
             {/* Input Field */}
-            <PhoneInput
-              name="phone"
+            <Input
+              name="email"
               control={control}
-              error={errors.phone?.message}
+              error={errors.email?.message}
+              className='border-0 rounded-none px-0 py-4 font-medium'
+              style={[
+                { 
+                  fontSize: 24,
+                  borderBottomColor: errors.email ? '#ef4444' : colors.icon,
+                },
+              ]}
+              placeholder={t('common.email')}
+              placeholderTextColor={colors.icon}
+              keyboardType='email-address'
+              autoCapitalize='none'
+              autoComplete='email'
+              autoCorrect={false}
+              maxLength={100}
+              autoFocus
             />
           </ThemedView>
 
@@ -95,7 +112,7 @@ const ContactScreen = () => {
   );
 };
 
-export default ContactScreen;
+export default EmailScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -106,14 +123,6 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
-  },
-  inputContainer: {
-    width: '100%',
-    marginTop: 8,
-    borderBottomWidth: 1.5,
-  },
-  inputBorder: {
-    borderBottomWidth: 0, // Remove any border from Input component
   },
   buttonContainer: {
     paddingBottom: 56,

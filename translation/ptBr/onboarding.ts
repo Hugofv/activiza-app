@@ -1,9 +1,10 @@
 export default {
   title: 'Tudo para você gerenciar seus empréstimos e aluguéis.',
   document: 'Qual seu documento?',
-  documentDescription: 'Precisamos dele para fazer seu cadastro ou acessar sua conta',
+  documentDescription: 'Informe seu CPF ou CNPJ para fazer seu cadastro ou acessar sua conta',
   name: 'Qual seu nome?',
   contact: 'Qual seu telefone?',
+  email: 'Qual seu email?',
   address: 'Qual seu endereço?',
   login: 'Login',
   register: 'Registrar',
@@ -12,4 +13,9 @@ export default {
   alreadyHaveAccount: 'Já tem uma conta?',
   loginWithEmail: 'Entrar com email',
   start: 'Começar',
+  whatsappVerified: 'WhatsApp Verificado',
+  codeTitle: 'Digite o código de verificação',
+  codeDescription: 'Enviamos um código de 6 dígitos para o seu WhatsApp',
+  codeResend: 'Reenviar código',
+  codeResendTimer: 'Reenviar código em {seconds}s',
 };

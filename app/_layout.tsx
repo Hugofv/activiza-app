@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
 
+import { OnboardingFormProvider } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 
@@ -40,15 +41,20 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding/document" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding/name" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding/contact" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-      <StatusBar style="auto" />
+      <OnboardingFormProvider>
+        <Stack>
+          <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/document" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/name" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/contact" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/codeContact" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/email" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/confirmContact" options={{ headerShown: false }} />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+        <StatusBar style="auto" />
+      </OnboardingFormProvider>
     </ThemeProvider>
   );
 }

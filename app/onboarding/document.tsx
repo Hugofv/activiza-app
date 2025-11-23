@@ -1,17 +1,24 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/themed-view';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Colors } from '@/constants/theme';
+import { useOnboardingForm } from '@/contexts/onboarding-form-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-
+import { documentSchema } from '@/lib/validations/onboarding';
 
 import { Icon } from '@/components/ui/icon';
 import { Typography } from '@/components/ui/typography';
 import { useTranslation } from 'react-i18next';
+
+interface DocumentFormData {
+  document: string;
+}
 
 /**
  * Document input screen for onboarding
@@ -19,105 +26,126 @@ import { useTranslation } from 'react-i18next';
 const DocumentScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const [document, setDocument] = useState('');
   const { t } = useTranslation();
+  const { formData, updateFormData } = useOnboardingForm();
 
-  // Format CPF: 000.000.000-00
-  const formatCPF = (value: string) => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<DocumentFormData>({
+    resolver: yupResolver(documentSchema),
+    defaultValues: {
+      document: formData.document || '',
+    },
+    mode: 'onChange',
+  });
+
+  // Format CPF: 000.000.000-00 or CNPJ: 00.000.000/0000-00
+  const formatDocument = (value: string) => {
     // Remove all non-numeric characters
     const numbers = value.replace(/\D/g, '');
-    
-    // Limit to 11 digits
-    const limited = numbers.slice(0, 11);
-    
-    // Apply mask
-    if (limited.length <= 3) {
-      return limited;
-    } else if (limited.length <= 6) {
-      return `${limited.slice(0, 3)}.${limited.slice(3)}`;
-    } else if (limited.length <= 9) {
-      return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6)}`;
-    } else {
-      return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6, 9)}-${limited.slice(9, 11)}`;
-    }
-  };
 
-  const handleCpfChange = (text: string) => {
-    const formatted = formatCPF(text);
-    setDocument(formatted);
+    // If 11 digits or less, format as CPF
+    if (numbers.length <= 11) {
+      const limited = numbers.slice(0, 11);
+      if (limited.length <= 3) {
+        return limited;
+      } else if (limited.length <= 6) {
+        return `${limited.slice(0, 3)}.${limited.slice(3)}`;
+      } else if (limited.length <= 9) {
+        return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6)}`;
+      } else {
+        return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6, 9)}-${limited.slice(9, 11)}`;
+      }
+    }
+    // If 12-14 digits, format as CNPJ
+    else {
+      const limited = numbers.slice(0, 14);
+      if (limited.length <= 2) {
+        return limited;
+      } else if (limited.length <= 5) {
+        return `${limited.slice(0, 2)}.${limited.slice(2)}`;
+      } else if (limited.length <= 8) {
+        return `${limited.slice(0, 2)}.${limited.slice(2, 5)}.${limited.slice(5)}`;
+      } else if (limited.length <= 12) {
+        return `${limited.slice(0, 2)}.${limited.slice(2, 5)}.${limited.slice(5, 8)}/${limited.slice(8)}`;
+      } else {
+        return `${limited.slice(0, 2)}.${limited.slice(2, 5)}.${limited.slice(5, 8)}/${limited.slice(8, 12)}-${limited.slice(12, 14)}`;
+      }
+    }
   };
 
   const handleBack = () => {
     router.back();
   };
 
-  const handleContinue = () => {
-    // Remove formatting to get only numbers
-    const documentNumbers = document.replace(/\D/g, '');
-    
-    // Validate CPF (basic check - 11 digits)
-    if (documentNumbers.length === 11) {
-      // TODO: Add CPF validation logic here
-      // For now, navigate to login screen
-      router.push('/onboarding/name');
-    }
+  const onSubmit = (data: DocumentFormData) => {
+    updateFormData({ document: data.document });
+    router.push('/onboarding/name');
   };
 
-  const isValid = document.replace(/\D/g, '').length === 11;
-
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
-      <ThemedView style={styles.container}>
-        <ThemedView style={styles.content}>
-          {/* Back Button */}
-          <Button
-            variant="secondary"
-            size="icon"
-            onPress={handleBack}>
-            <Icon name="chevron-back" size={32} color={colors.primary} />
-          </Button>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ThemedView style={styles.container}>
+          <ThemedView style={styles.content}>
+            {/* Back Button */}
+            <Button variant='secondary' size='icon' onPress={handleBack}>
+              <Icon name='chevron-back' size={32} color={colors.primary} />
+            </Button>
 
-          <Typography variant="h4">
-            {t('onboarding.document')}
-          </Typography>
+            <Typography variant='h4'>{t('onboarding.document')}</Typography>
 
-          <Typography variant="body1">
-            {t('onboarding.documentDescription')}
-          </Typography>
+            <Typography variant='body1'>
+              {t('onboarding.documentDescription')}
+            </Typography>
 
-          {/* Input Field */}
-          <View style={[styles.inputContainer, { borderBottomColor: colors.icon }]}>
-            <Input
-              className="border-0 rounded-none px-0 py-4 font-medium"
-              style={[styles.inputBorder, { fontSize: 28 }]}
-              placeholder={t('common.cpfMask')}
-              placeholderTextColor={colors.icon}
-              value={document}
-              onChangeText={handleCpfChange}
-              keyboardType="numeric"
-              maxLength={14} // 11 digits + 3 formatting chars
-              autoFocus
-            />
+            {/* Input Field */}
+              <Input
+                name='document'
+                control={control}
+                error={errors.document?.message}
+                onFormat={formatDocument}
+                className='border-0 rounded-none px-0 py-4 font-medium'
+                style={[
+                  {
+                    fontSize: 28,
+                    borderBottomColor: errors.document ? '#ef4444' : colors.icon,
+                  },
+                ]}
+                placeholder={t('common.cpfMask')} // Shows CPF mask, but accepts both
+                placeholderTextColor={colors.icon}
+                keyboardType='numeric'
+                maxLength={18} // 14 digits (CNPJ) + 4 formatting chars
+                autoFocus
+              />
+          </ThemedView>
+
+          {/* Continue Button */}
+          <View style={styles.buttonContainer}>
+            <Button
+              variant='primary'
+              size='icon'
+              onPress={handleSubmit(onSubmit)}
+              disabled={!isValid}
+            >
+              <Icon
+                name='arrow-forward'
+                size={32}
+                color={colors.primaryForeground}
+              />
+            </Button>
           </View>
         </ThemedView>
-
-        {/* Continue Button */}
-        <View style={styles.buttonContainer}>
-          <Button
-            variant="primary"
-            size="icon"
-            onPress={handleContinue}
-            disabled={!isValid}>
-            <Icon name="arrow-forward" size={32} color={colors.primaryForeground} />
-          </Button>
-        </View>
-      </ThemedView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
-}
+};
 
 export default DocumentScreen;
 
@@ -127,7 +155,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: 80,
+    paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
@@ -140,18 +168,9 @@ const styles = StyleSheet.create({
     padding: 4,
     alignSelf: 'flex-start',
   },
-  inputContainer: {
-    width: '100%',
-    marginTop: 8,
-    borderBottomWidth: 1.5,
-  },
-  inputBorder: {
-    borderBottomWidth: 0, // Remove any border from Input component
-  },
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,
     alignItems: 'flex-end',
   },
 });
-

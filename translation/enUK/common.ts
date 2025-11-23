@@ -11,4 +11,23 @@ export default {
   profile: 'Profile',
   settings: 'Settings',
   help: 'Help',
+  // Validation errors
+  validation: {
+    required: 'This field is required',
+    documentRequired: 'Document is required',
+    documentInvalid: 'Invalid CPF or CNPJ',
+    documentFormat: 'Document must have 11 digits (CPF) or 14 digits (CNPJ)',
+    nameRequired: 'Name is required',
+    nameMin: 'Name must have at least 3 characters',
+    nameMax: 'Name must have at most 100 characters',
+    nameLettersOnly: 'Name must contain only letters',
+    phoneRequired: 'Phone is required',
+    phoneInvalid: 'Invalid phone',
+    emailRequired: 'Email is required',
+    emailInvalid: 'Invalid email',
+    emailMax: 'Email must have at most 100 characters',
+    codeRequired: 'Code is required',
+    codeLength: 'Code must have 6 digits',
+    codeNumeric: 'Code must contain only numbers',
+  },
 };

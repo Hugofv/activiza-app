@@ -38,6 +38,17 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "expo-localization",
+        {
+          "fallbackLocale": "pt-BR",
+          "availableLocales": [
+            "pt-BR",
+            "en-UK",
+            "en-BR"
+          ]
+        }
       ]
     ],
     "experiments": {

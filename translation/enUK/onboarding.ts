@@ -1,9 +1,10 @@
 export default {
   title: 'Everything you need to manage your loans and rentals.',
   document: 'What is your document?',
-  documentDescription: 'We need it to register or access your account',
+  documentDescription: 'Enter your CPF or CNPJ to register or access your account',
   name: 'What is your name?',
   contact: 'What is your phone?',
+  email: 'What is your email?',
   address: 'What is your address?',
   login: 'Login',
   register: 'Register',
@@ -12,4 +13,9 @@ export default {
   alreadyHaveAccount: 'Already have an account?',
   loginWithEmail: 'Login with email',
   start: 'Start',
+  whatsappVerified: 'WhatsApp Verified',
+  codeTitle: 'Enter verification code',
+  codeDescription: 'We sent a 6-digit code to your WhatsApp',
+  codeResend: 'Resend code',
+  codeResendTimer: 'Resend code in {seconds}s',
 };

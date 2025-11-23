@@ -8,13 +8,14 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   'pt-BR': { translation: ptBr },
   'en-UK': { translation: enUK },
+  'en-BR': { translation: enUK },
 };
 
 const initI18n = async () => {
   let savedLanguage = await AsyncStorage.getItem('language');
 
   if (!savedLanguage) {
-    savedLanguage = Localization.getLocales()[0].languageCode;
+    savedLanguage = Localization.getLocales()[0].languageTag;
   }
 
   i18n.use(initReactI18next).init({
