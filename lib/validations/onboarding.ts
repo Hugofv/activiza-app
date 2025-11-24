@@ -155,7 +155,10 @@ export const passwordSchema = yup.object().shape({
   confirmPassword: yup
     .string()
     .required(t('confirmPasswordRequired'))
-    .oneOf([yup.ref('password')], t('passwordMismatch')),
+    .oneOf([yup.ref('password')], t('passwordMismatch'))
+    .test('match', t('passwordMismatch'), function(value) {
+      return value === this.parent.password;
+    }),
 });
 
 // Postal code schema factory - creates validation based on country
