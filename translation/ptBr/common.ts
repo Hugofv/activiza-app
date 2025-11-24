@@ -46,6 +46,8 @@ export default {
     passwordLowercase: 'Senha deve conter pelo menos uma letra minúscula',
     passwordNumber: 'Senha deve conter pelo menos um número',
     passwordSpecial: 'Senha deve conter pelo menos um caractere especial',
+    confirmPasswordRequired: 'Confirmação de senha é obrigatória',
+    passwordMismatch: 'As senhas não coincidem',
   },
   close: 'Fechar',
 };

@@ -156,8 +156,8 @@ const PostalCodeScreen = () => {
               ]}
               placeholder={formatConfig.placeholder}
               placeholderTextColor={colors.icon}
-              keyboardType='numeric'
-              autoCapitalize='none'
+              keyboardType={countryCode === 'UK' ? 'default' : 'numeric'}
+              autoCapitalize={countryCode === 'UK' ? 'characters' : 'none'}
               autoCorrect={false}
               maxLength={formatConfig.maxLength}
               autoFocus

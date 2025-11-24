@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 interface PasswordFormData {
   password: string;
+  confirmPassword: string;
 }
 
 /**
@@ -41,11 +42,13 @@ const PasswordScreen = () => {
     resolver: yupResolver(passwordSchema),
     defaultValues: {
       password: '',
+      confirmPassword: '',
     },
     mode: 'onChange',
   });
 
   const password = watch('password') || '';
+  const confirmPassword = watch('confirmPassword') || '';
 
   // Password validation rules
   const passwordRules = [
@@ -73,6 +76,11 @@ const PasswordScreen = () => {
       key: 'special',
       label: t('onboarding.passwordRuleSpecial'),
       isValid: /[^A-Za-z0-9]/.test(password),
+    },
+    {
+      key: 'match',
+      label: t('onboarding.passwordRuleMatch'),
+      isValid: password.length > 0 && confirmPassword.length > 0 && password === confirmPassword,
     },
   ];
 
@@ -130,6 +138,36 @@ const PasswordScreen = () => {
                 className='border-0 rounded-none px-0 py-4 font-medium'
                 style={{ fontSize: 20, paddingRight: 50 }}
                 placeholder={t('onboarding.passwordPlaceholder')}
+                secureTextEntry={!showPassword}
+                autoCapitalize='none'
+                autoComplete='password-new'
+                autoCorrect={false}
+                textContentType='newPassword'
+              />
+
+              {/* Show/Hide Password Button */}
+              <IconButton
+                variant='ghost'
+                size='sm'
+                icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                iconSize={24}
+                iconColor={colors.icon}
+                iconLibrary='ionicons'
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.eyeButton}
+              />
+            </View>
+
+            {/* Confirm Password Input Field */}
+            <View style={styles.inputContainer}>
+              <Input
+                name='confirmPassword'
+                control={control}
+                error={errors.confirmPassword?.message}
+                label={t('common.confirmPassword')}
+                className='border-0 rounded-none px-0 py-4 font-medium'
+                style={{ fontSize: 20, paddingRight: 50 }}
+                placeholder={t('onboarding.confirmPasswordPlaceholder')}
                 secureTextEntry={!showPassword}
                 autoCapitalize='none'
                 autoComplete='password-new'
