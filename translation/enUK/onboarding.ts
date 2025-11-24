@@ -107,4 +107,7 @@ We retain your personal information only for as long as necessary to fulfill the
 
 7. CHANGES TO THIS POLICY
 We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page.`,
+  registerFinished: 'Registration Complete!',
+  registerFinishedDescription: 'Congratulations! Your registration was successful. You can now access your account.',
+  goToLogin: 'Go to Login',
 };

@@ -107,4 +107,7 @@ Mantemos suas informações pessoais apenas pelo tempo necessário para cumprir 
 
 7. ALTERAÇÕES NESTA POLÍTICA
 Podemos atualizar esta política de privacidade periodicamente. Notificaremos você sobre quaisquer alterações publicando a nova política nesta página.`,
+  registerFinished: 'Cadastro Concluído!',
+  registerFinishedDescription: 'Parabéns! Seu cadastro foi realizado com sucesso. Agora você pode acessar sua conta.',
+  goToLogin: 'Ir para Login',
 };

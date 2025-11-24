@@ -47,9 +47,10 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
 
     // Get variant-specific styles
     const getVariantStyle = (): ViewStyle => {
+      const height = size === 'sm' ? 45 : 56;
       const baseStyle: ViewStyle = {
         borderRadius: 99, // rounded-[99px] from Figma
-        minHeight: size === 'sm' ? 36 : 56, // Ensure minimum height
+        minHeight: height, // Ensure minimum height
         alignItems: 'center',
         justifyContent: 'center',
       };
@@ -58,8 +59,11 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
       if (size === 'full') {
         baseStyle.width = '100%';
         baseStyle.alignSelf = 'stretch';
+      } else {
+        // For text buttons, ensure minimum width is greater than height to create pill shape, not circle
+        // This prevents circular buttons when text is short
+        baseStyle.minWidth = height + 32; // Add extra width to ensure pill shape
       }
-      // For other sizes, width is flexible (can be set via style prop)
       
       switch (variant) {
         case 'primary':

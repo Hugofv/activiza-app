@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-   KeyboardAvoidingView,
-   Platform,
-   Pressable,
-   ScrollView,
-   StyleSheet,
-   View,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,14 +14,14 @@ import { ThemedView } from '@/components/themed-view';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-   Dialog,
-   DialogClose,
-   DialogContent,
-   DialogDescription,
-   DialogFooter,
-   DialogHeader,
-   DialogTitle,
-   DialogTrigger,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { IconButton } from '@/components/ui/icon-button';
 import { Progress } from '@/components/ui/progress';
@@ -54,8 +54,8 @@ const TermsScreen = () => {
         termsAccepted: true,
         privacyAccepted: true,
       });
-      // TODO: Navigate to next step or complete onboarding
-      // router.push('/onboarding/next');
+      // Navigate to registration finished screen
+      router.push('/onboarding/registerFinished');
     }
   };
 
@@ -156,9 +156,7 @@ const TermsScreen = () => {
                           </ScrollView>
                           <DialogFooter>
                             <DialogClose asChild>
-                              <Button variant='secondary'>
-                                {t('common.close')}
-                              </Button>
+                              <Button size='sm'>{t('common.close')}</Button>
                             </DialogClose>
                           </DialogFooter>
                         </DialogContent>
@@ -220,9 +218,7 @@ const TermsScreen = () => {
                           </ScrollView>
                           <DialogFooter>
                             <DialogClose asChild>
-                              <Button variant='secondary'>
-                                {t('common.close')}
-                              </Button>
+                              <Button size='sm'>{t('common.close')}</Button>
                             </DialogClose>
                           </DialogFooter>
                         </DialogContent>
