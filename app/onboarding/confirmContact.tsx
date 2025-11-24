@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/themed-view';
-import { Button } from '@/components/ui/button';
+import { IconButton } from '@/components/ui/icon-button';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -34,9 +34,14 @@ const ConfirmContactScreen = () => {
         <ThemedView style={styles.content}>
           {/* Back Button */}
           <View style={styles.backButtonContainer}>
-            <Button variant='secondary' size='iconSmall' onPress={handleBack}>
-              <Icon name='chevron-back' size={32} color={colors.primary} />
-            </Button>
+            <IconButton
+              variant='secondary'
+              size='sm'
+              icon='chevron-back'
+              iconSize={32}
+              iconColor={colors.primary}
+              onPress={handleBack}
+            />
           </View>
 
           {/* Checkmark Icon and Text */}
@@ -66,18 +71,15 @@ const ConfirmContactScreen = () => {
 
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
-            <Button
+            <IconButton
               variant='primary'
               size='default'
+              width='lg'
+              icon='checkmark'
+              iconSize={32}
+              iconColor={colors.primaryForeground}
               onPress={handleContinue}
-              style={styles.confirmButton}
-            >
-              <Icon
-                name='checkmark'
-                size={32}
-                color={colors.primaryForeground}
               />
-            </Button>
           </View>
         </ThemedView>
       </ThemedView>
@@ -127,9 +129,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
-  },
-  confirmButton: {
-    width: 80,
-    minWidth: 80,
   },
 });

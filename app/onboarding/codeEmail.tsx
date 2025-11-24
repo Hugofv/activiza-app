@@ -6,15 +6,14 @@ import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/themed-view';
-import { Button } from '@/components/ui/button';
 import { CodeInput } from '@/components/ui/code-input';
+import { IconButton } from '@/components/ui/icon-button';
 import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { codeSchema } from '@/lib/validations/onboarding';
 
-import { Icon } from '@/components/ui/icon';
 import { Typography } from '@/components/ui/typography';
 import { useTranslation } from 'react-i18next';
 
@@ -84,9 +83,14 @@ const CodeEmailScreen = () => {
             </View>
 
             {/* Back Button */}
-            <Button variant='secondary' size='iconSmall' onPress={handleBack}>
-              <Icon name='chevron-back' size={32} color={colors.primary} />
-            </Button>
+            <IconButton
+              variant='secondary'
+              size='sm'
+              icon='chevron-back'
+              iconSize={32}
+              iconColor={colors.primary}
+              onPress={handleBack}
+            />
 
             {/* Title */}
             <Typography variant='h4' style={styles.title}>
@@ -122,18 +126,15 @@ const CodeEmailScreen = () => {
 
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
-            <Button
+            <IconButton
               variant='primary'
-              size='iconLarge'
+              size='lg'
+              icon='arrow-forward'
+              iconSize={32}
+              iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid}
-            >
-              <Icon
-                name='arrow-forward'
-                size={32}
-                color={colors.primaryForeground}
-              />
-            </Button>
+            />
           </View>
         </ThemedView>
       </KeyboardAvoidingView>

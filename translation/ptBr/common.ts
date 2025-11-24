@@ -39,5 +39,13 @@ export default {
     stateRequired: 'Estado é obrigatório',
     countryRequired: 'País é obrigatório',
     numberRequired: 'Número é obrigatório',
+    passwordRequired: 'Senha é obrigatória',
+    passwordMin: 'Senha deve ter pelo menos 8 caracteres',
+    passwordMax: 'Senha deve ter no máximo 100 caracteres',
+    passwordUppercase: 'Senha deve conter pelo menos uma letra maiúscula',
+    passwordLowercase: 'Senha deve conter pelo menos uma letra minúscula',
+    passwordNumber: 'Senha deve conter pelo menos um número',
+    passwordSpecial: 'Senha deve conter pelo menos um caractere especial',
   },
+  close: 'Fechar',
 };

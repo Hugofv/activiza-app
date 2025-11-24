@@ -99,30 +99,30 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
             {label}
           </Typography>
         )}
-        <TextInput
-          ref={ref}
-          className={cn(
-            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-lg',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-            'disabled:cursor-not-allowed disabled:opacity-50',
-            className
-          )}
-          style={[
-            { 
+      <TextInput
+        ref={ref}
+        className={cn(
+          'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-lg',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          'disabled:cursor-not-allowed disabled:opacity-50',
+          className
+        )}
+        style={[
+          { 
               color: isDisabled ? colors.icon : colors.text,
-              borderWidth: 0,
-              borderBottomWidth: 1.5,
-              borderBottomColor: (style as any)?.borderBottomColor || colors.icon,
+            borderWidth: 0,
+            borderBottomWidth: 1.5,
+            borderBottomColor: (style as any)?.borderBottomColor || colors.icon,
               opacity: isDisabled ? 0.6 : 1,
-            },
-            style,
-          ]}
+          },
+          style,
+        ]}
           placeholderTextColor={finalPlaceholderColor}
-          value={value}
-          onChangeText={onChangeText}
+        value={value}
+        onChangeText={onChangeText}
           editable={!isDisabled}
-          {...props}
-        />
+        {...props}
+      />
       </View>
     );
   }

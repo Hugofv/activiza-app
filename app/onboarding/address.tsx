@@ -1,20 +1,29 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/themed-view';
-import { Button } from '@/components/ui/button';
+import { IconButton } from '@/components/ui/icon-button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { getPostalCodeFormat, type CountryCode } from '@/lib/services/postalCode';
+import {
+  getPostalCodeFormat,
+  type CountryCode,
+} from '@/lib/services/postalCode';
 import { addressSchema } from '@/lib/validations/onboarding';
 
-import { Icon } from '@/components/ui/icon';
 import { useTranslation } from 'react-i18next';
 
 interface AddressFormData {
@@ -36,7 +45,8 @@ const AddressScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
-  const countryCode = (formData.address as any)?.countryCode as CountryCode || 'BR';
+  const countryCode =
+    ((formData.address as any)?.countryCode as CountryCode) || 'BR';
   const postalCodeFormat = getPostalCodeFormat(countryCode);
 
   const defaultValues = {
@@ -48,7 +58,11 @@ const AddressScreen = () => {
     country: formData.address?.country || 'Brasil',
     number: formData.address?.number || '',
     complement: formData.address?.complement || '',
-  }
+  };
+
+  const scrollViewRef = useRef<ScrollView>(null);
+  const fieldPositions = useRef<Record<string, number>>({});
+  const fieldsContainerYOffset = useRef<number>(0);
 
   const {
     control,
@@ -61,9 +75,40 @@ const AddressScreen = () => {
     mode: 'onChange',
   });
 
+  // Scroll to first error field when errors occur
+  useEffect(() => {
+    const errorFields = Object.keys(errors);
+    if (errorFields.length > 0) {
+      // Find the first error field based on form order
+      const fieldOrder: (keyof AddressFormData)[] = [
+        'postalCode',
+        'street',
+        'neighborhood',
+        'city',
+        'state',
+        'country',
+        'number',
+        'complement',
+      ];
+
+      const firstErrorField = fieldOrder.find((field) => errors[field]);
+
+      if (
+        firstErrorField &&
+        fieldPositions.current[firstErrorField] !== undefined
+      ) {
+        // Since ScrollView now wraps only the fields container, we can scroll directly to the field position
+        scrollViewRef.current?.scrollTo({
+          y: Math.max(0, fieldPositions.current[firstErrorField] - 50),
+          animated: true,
+        });
+      }
+    }
+  }, [errors]);
+
   // Get which fields were filled by API
   const apiFilled = formData.address?._apiFilled || {};
-  
+
   // Fields that come from API lookup should be disabled
   // Number and complement should always be editable
   const isFieldDisabled = (fieldName: keyof AddressFormData) => {
@@ -76,13 +121,23 @@ const AddressScreen = () => {
   };
 
   const handleBack = () => {
-    reset(defaultValues)
+    reset({
+      postalCode: '',
+      street: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+      country: '',
+      number: '',
+      complement: '',
+    });
     router.back();
   };
 
   const onSubmit = (data: AddressFormData) => {
     updateFormData({
       address: {
+        ...formData.address, // Preserve existing address data including _apiFilled and countryCode
         postalCode: data.postalCode,
         street: data.street,
         neighborhood: data.neighborhood,
@@ -93,8 +148,7 @@ const AddressScreen = () => {
         complement: data.complement,
       },
     });
-    // TODO: Navigate to next step or complete onboarding
-    // router.push('/onboarding/next');
+    router.push('/onboarding/terms');
   };
 
   return (
@@ -105,144 +159,210 @@ const AddressScreen = () => {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
         <ThemedView style={styles.container}>
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <ThemedView style={styles.content}>
-              {/* Progress Bar */}
-              <View style={styles.progressContainer}>
-                <Progress value={81} />
-              </View>
+          <ThemedView style={styles.content}>
+            {/* Progress Bar */}
+            <View style={styles.progressContainer}>
+              <Progress value={81} />
+            </View>
 
-              {/* Back Button */}
-              <Button variant='secondary' size='iconSmall' onPress={handleBack}>
-                <Icon name='chevron-back' size={32} color={colors.primary} />
-              </Button>
+            {/* Back Button */}
+            <IconButton
+              variant='secondary'
+              size='sm'
+              icon='chevron-back'
+              iconSize={32}
+              iconColor={colors.primary}
+              onPress={handleBack}
+            />
 
-              {/* Address Fields */}
-              <View style={styles.fieldsContainer}>
+            {/* Address Fields - Scrollable */}
+            <ScrollView
+              ref={scrollViewRef}
+              style={styles.scrollView}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+            >
+              <View
+                style={styles.fieldsContainer}
+                onLayout={(event) => {
+                  const { y } = event.nativeEvent.layout;
+                  fieldsContainerYOffset.current = y;
+                }}
+              >
                 {/* CEP */}
-                <Input
-                  name="postalCode"
-                  control={control}
-                  error={errors.postalCode?.message}
-                  label={t('onboarding.postalCode')}
-                  disabled={isFieldDisabled('postalCode')}
-                  onFormat={postalCodeFormat.format}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
-                  style={{ fontSize: 20 }}
-                  placeholder={postalCodeFormat.placeholder}
-                  keyboardType={countryCode === 'UK' ? 'default' : 'numeric'}
-                  maxLength={postalCodeFormat.maxLength}
-                />
+                <View
+                  onLayout={(event) => {
+                    const { y } = event.nativeEvent.layout;
+                    // Accumulate Y positions relative to the fields container
+                    fieldPositions.current['postalCode'] = y;
+                  }}
+                >
+                  <Input
+                    name='postalCode'
+                    control={control}
+                    error={errors.postalCode?.message}
+                    label={t('onboarding.postalCode')}
+                    disabled={isFieldDisabled('postalCode')}
+                    onFormat={postalCodeFormat.format}
+                    className='border-0 rounded-none px-0 py-4 font-medium'
+                    style={{ fontSize: 20 }}
+                    placeholder={postalCodeFormat.placeholder}
+                    keyboardType={countryCode === 'UK' ? 'default' : 'numeric'}
+                    maxLength={postalCodeFormat.maxLength}
+                  />
+                </View>
 
                 {/* Rua */}
-                <Input
-                  name="street"
-                  control={control}
-                  error={errors.street?.message}
-                  label={t('onboarding.street')}
-                  disabled={isFieldDisabled('street')}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
-                  style={{ fontSize: 20 }}
-                  placeholder={t('onboarding.streetPlaceholder')}
-                  autoCapitalize='words'
-                />
+                <View
+                  onLayout={(event) => {
+                    const { y } = event.nativeEvent.layout;
+                    fieldPositions.current['street'] = y;
+                  }}
+                >
+                  <Input
+                    name='street'
+                    control={control}
+                    error={errors.street?.message}
+                    label={t('onboarding.street')}
+                    disabled={isFieldDisabled('street')}
+                    className='border-0 rounded-none px-0 py-4 font-medium'
+                    style={{ fontSize: 20 }}
+                    placeholder={t('onboarding.streetPlaceholder')}
+                    autoCapitalize='words'
+                  />
+                </View>
 
                 {/* Bairro */}
-                <Input
-                  name="neighborhood"
-                  control={control}
-                  error={errors.neighborhood?.message}
-                  label={t('onboarding.neighborhood')}
-                  disabled={isFieldDisabled('neighborhood')}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
-                  style={{ fontSize: 20 }}
-                  placeholder={t('onboarding.neighborhoodPlaceholder')}
-                  autoCapitalize='words'
-                />
+                <View
+                  onLayout={(event) => {
+                    const { y } = event.nativeEvent.layout;
+                    fieldPositions.current['neighborhood'] = y;
+                  }}
+                >
+                  <Input
+                    name='neighborhood'
+                    control={control}
+                    error={errors.neighborhood?.message}
+                    label={t('onboarding.neighborhood')}
+                    disabled={isFieldDisabled('neighborhood')}
+                    className='border-0 rounded-none px-0 py-4 font-medium'
+                    style={{ fontSize: 20 }}
+                    placeholder={t('onboarding.neighborhoodPlaceholder')}
+                    autoCapitalize='words'
+                  />
+                </View>
 
                 {/* Cidade */}
-                <Input
-                  name="city"
-                  control={control}
-                  error={errors.city?.message}
-                  label={t('onboarding.city')}
-                  disabled={isFieldDisabled('city')}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
-                  style={{ fontSize: 20 }}
-                  placeholder={t('onboarding.cityPlaceholder')}
-                  autoCapitalize='words'
-                />
+                <View
+                  onLayout={(event) => {
+                    const { y } = event.nativeEvent.layout;
+                    fieldPositions.current['city'] = y;
+                  }}
+                >
+                  <Input
+                    name='city'
+                    control={control}
+                    error={errors.city?.message}
+                    label={t('onboarding.city')}
+                    disabled={isFieldDisabled('city')}
+                    className='border-0 rounded-none px-0 py-4 font-medium'
+                    style={{ fontSize: 20 }}
+                    placeholder={t('onboarding.cityPlaceholder')}
+                    autoCapitalize='words'
+                  />
+                </View>
 
                 {/* Estado */}
-                <Input
-                  name="state"
-                  control={control}
-                  error={errors.state?.message}
-                  label={t('onboarding.state')}
-                  disabled={isFieldDisabled('state')}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
-                  style={{ fontSize: 20 }}
-                  placeholder={t('onboarding.statePlaceholder')}
-                  autoCapitalize='words'
-                />
+                <View
+                  onLayout={(event) => {
+                    const { y } = event.nativeEvent.layout;
+                    fieldPositions.current['state'] = y;
+                  }}
+                >
+                  <Input
+                    name='state'
+                    control={control}
+                    error={errors.state?.message}
+                    label={t('onboarding.state')}
+                    disabled={isFieldDisabled('state')}
+                    className='border-0 rounded-none px-0 py-4 font-medium'
+                    style={{ fontSize: 20 }}
+                    placeholder={t('onboarding.statePlaceholder')}
+                    autoCapitalize='words'
+                  />
+                </View>
 
                 {/* País */}
-                <Input
-                  name="country"
-                  control={control}
-                  error={errors.country?.message}
-                  label={t('onboarding.country')}
-                  disabled={isFieldDisabled('country')}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
-                  style={{ fontSize: 20 }}
-                  placeholder={t('onboarding.countryPlaceholder')}
-                  autoCapitalize='words'
-                />
+                <View
+                  onLayout={(event) => {
+                    const { y } = event.nativeEvent.layout;
+                    fieldPositions.current['country'] = y;
+                  }}
+                >
+                  <Input
+                    name='country'
+                    control={control}
+                    error={errors.country?.message}
+                    label={t('onboarding.country')}
+                    disabled={isFieldDisabled('country')}
+                    className='border-0 rounded-none px-0 py-4 font-medium'
+                    style={{ fontSize: 20 }}
+                    placeholder={t('onboarding.countryPlaceholder')}
+                    autoCapitalize='words'
+                  />
+                </View>
 
                 {/* Número */}
-                <Input
-                  name="number"
-                  control={control}
-                  error={errors.number?.message}
-                  label={t('onboarding.number')}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
-                  style={{ fontSize: 20 }}
-                  placeholder={t('onboarding.numberPlaceholder')}
-                  keyboardType='numeric'
-                />
+                <View
+                  onLayout={(event) => {
+                    const { y } = event.nativeEvent.layout;
+                    fieldPositions.current['number'] = y;
+                  }}
+                >
+                  <Input
+                    name='number'
+                    control={control}
+                    error={errors.number?.message}
+                    label={t('onboarding.number')}
+                    className='border-0 rounded-none px-0 py-4 font-medium'
+                    style={{ fontSize: 20 }}
+                    placeholder={t('onboarding.numberPlaceholder')}
+                    keyboardType='numeric'
+                  />
+                </View>
 
                 {/* Complemento */}
-                <Input
-                  name="complement"
-                  control={control}
-                  error={errors.complement?.message}
-                  label={t('onboarding.complement')}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
-                  style={{ fontSize: 20 }}
-                  placeholder={t('onboarding.complementPlaceholder')}
-                  autoCapitalize='words'
-                />
+                <View
+                  onLayout={(event) => {
+                    const { y } = event.nativeEvent.layout;
+                    fieldPositions.current['complement'] = y;
+                  }}
+                >
+                  <Input
+                    name='complement'
+                    control={control}
+                    error={errors.complement?.message}
+                    label={t('onboarding.complement')}
+                    className='border-0 rounded-none px-0 py-4 font-medium'
+                    style={{ fontSize: 20 }}
+                    placeholder={t('onboarding.complementPlaceholder')}
+                    autoCapitalize='words'
+                  />
+                </View>
               </View>
-            </ThemedView>
-          </ScrollView>
+            </ScrollView>
+          </ThemedView>
 
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
-            <Button
+            <IconButton
               variant='primary'
-              size='iconLarge'
+              size='lg'
+              icon='arrow-forward'
+              iconSize={32}
+              iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
-            >
-              <Icon
-                name='arrow-forward'
-                size={32}
-                color={colors.primaryForeground}
-              />
-            </Button>
+            />
           </View>
         </ThemedView>
       </KeyboardAvoidingView>
@@ -261,6 +381,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: 80,
   },
   content: {
     flex: 1,
@@ -276,9 +397,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   buttonContainer: {
-    paddingBottom: 56,
+    paddingTop: 24,
+    paddingBottom: 40,
     paddingHorizontal: 24,
     alignItems: 'flex-end',
   },
 });
-

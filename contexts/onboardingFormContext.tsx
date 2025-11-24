@@ -12,6 +12,9 @@ export interface OnboardingFormData {
   email: string;
   code?: string;
   emailCode?: string;
+  password?: string;
+  termsAccepted?: boolean;
+  privacyAccepted?: boolean;
   address?: {
     postalCode: string;
     street: string;

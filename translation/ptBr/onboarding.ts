@@ -39,4 +39,72 @@ export default {
   complementPlaceholder: 'Apto / Sala / Quadra / Lote',
   loadingAddress: 'Buscando endereço...',
   addressNotFound: 'Endereço não encontrado',
+  password: 'Crie uma senha',
+  passwordPlaceholder: 'Digite sua senha',
+  passwordDescription: 'Sua senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais',
+  passwordRuleMinLength: 'Pelo menos 8 caracteres',
+  passwordRuleUppercase: 'Pelo menos uma letra maiúscula',
+  passwordRuleLowercase: 'Pelo menos uma letra minúscula',
+  passwordRuleNumber: 'Pelo menos um número',
+  passwordRuleSpecial: 'Pelo menos um caractere especial',
+  termsTitle: 'Termos e Condições',
+  termsDescription: 'Por favor, leia e aceite os termos de uso e política de privacidade para continuar',
+  termsAccept: 'Eu aceito os',
+  termsOfUse: 'Termos de Uso',
+  termsLastUpdated: 'Última atualização: Janeiro 2024',
+  termsContent: `TERMOS DE USO
+
+1. ACEITAÇÃO DOS TERMOS
+Ao acessar e usar este aplicativo, você concorda em cumprir e estar vinculado aos seguintes termos e condições de uso.
+
+2. USO DO SERVIÇO
+Você concorda em usar o serviço apenas para fins legais e de acordo com estes termos. Você não deve usar o serviço de forma que possa danificar, desabilitar, sobrecarregar ou comprometer nossos servidores ou redes.
+
+3. CONTA DO USUÁRIO
+Você é responsável por manter a confidencialidade de sua conta e senha. Você concorda em notificar-nos imediatamente sobre qualquer uso não autorizado de sua conta.
+
+4. PROPRIEDADE INTELECTUAL
+Todo o conteúdo do aplicativo, incluindo textos, gráficos, logotipos e software, é propriedade da empresa e está protegido por leis de direitos autorais.
+
+5. LIMITAÇÃO DE RESPONSABILIDADE
+Em nenhuma circunstância seremos responsáveis por quaisquer danos diretos, indiretos, incidentais ou consequenciais resultantes do uso ou incapacidade de usar o serviço.
+
+6. MODIFICAÇÕES DOS TERMOS
+Reservamo-nos o direito de modificar estes termos a qualquer momento. As alterações entrarão em vigor imediatamente após a publicação.
+
+7. LEI APLICÁVEL
+Estes termos serão regidos e interpretados de acordo com as leis do Brasil.`,
+  privacyAccept: 'Eu aceito a',
+  privacyPolicy: 'Política de Privacidade',
+  privacyLastUpdated: 'Última atualização: Janeiro 2024',
+  privacyContent: `POLÍTICA DE PRIVACIDADE
+
+1. INFORMAÇÕES QUE COLETAMOS
+Coletamos informações que você nos fornece diretamente, incluindo nome, email, telefone, endereço e informações de pagamento.
+
+2. COMO USAMOS SUAS INFORMAÇÕES
+Usamos suas informações para:
+- Fornecer e melhorar nossos serviços
+- Processar transações
+- Enviar notificações importantes
+- Personalizar sua experiência
+
+3. COMPARTILHAMENTO DE INFORMAÇÕES
+Não vendemos suas informações pessoais. Podemos compartilhar suas informações apenas com prestadores de serviços confiáveis que nos ajudam a operar nosso negócio.
+
+4. SEGURANÇA DOS DADOS
+Implementamos medidas de segurança técnicas e organizacionais para proteger suas informações pessoais contra acesso não autorizado, alteração, divulgação ou destruição.
+
+5. SEUS DIREITOS
+Você tem o direito de:
+- Acessar suas informações pessoais
+- Corrigir informações incorretas
+- Solicitar a exclusão de suas informações
+- Opor-se ao processamento de suas informações
+
+6. RETENÇÃO DE DADOS
+Mantemos suas informações pessoais apenas pelo tempo necessário para cumprir os propósitos descritos nesta política.
+
+7. ALTERAÇÕES NESTA POLÍTICA
+Podemos atualizar esta política de privacidade periodicamente. Notificaremos você sobre quaisquer alterações publicando a nova política nesta página.`,
 };

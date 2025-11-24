@@ -141,6 +141,19 @@ export const codeSchema = yup.object().shape({
     .matches(/^\d+$/, t('codeNumeric')),
 });
 
+// Password schema
+export const passwordSchema = yup.object().shape({
+  password: yup
+    .string()
+    .required(t('passwordRequired'))
+    .min(8, t('passwordMin'))
+    .max(100, t('passwordMax'))
+    .matches(/[A-Z]/, t('passwordUppercase'))
+    .matches(/[a-z]/, t('passwordLowercase'))
+    .matches(/[0-9]/, t('passwordNumber'))
+    .matches(/[^A-Za-z0-9]/, t('passwordSpecial')),
+});
+
 // Postal code schema factory - creates validation based on country
 export const createPostalCodeSchema = (countryCode?: string) => {
   return yup.object().shape({

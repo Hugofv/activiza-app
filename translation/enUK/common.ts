@@ -37,5 +37,13 @@ export default {
     stateRequired: 'State is required',
     countryRequired: 'Country is required',
     numberRequired: 'Number is required',
+    passwordRequired: 'Password is required',
+    passwordMin: 'Password must be at least 8 characters',
+    passwordMax: 'Password must be at most 100 characters',
+    passwordUppercase: 'Password must contain at least one uppercase letter',
+    passwordLowercase: 'Password must contain at least one lowercase letter',
+    passwordNumber: 'Password must contain at least one number',
+    passwordSpecial: 'Password must contain at least one special character',
   },
+  close: 'Close',
 };
