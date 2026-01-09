@@ -1,0 +1,166 @@
+import { router } from 'expo-router';
+import { useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { ThemedView } from '@/components/themed-view';
+import { IconButton } from '@/components/ui/icon-button';
+import { ListCheck } from '@/components/ui/list-check';
+import { Progress } from '@/components/ui/progress';
+import { Typography } from '@/components/ui/typography';
+import { Colors } from '@/constants/theme';
+import { useOnboardingForm } from '@/contexts/onboardingFormContext';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTranslation } from 'react-i18next';
+
+type ActiveCustomersOption = 'upTo20' | '21To50' | '51To100' | '101To300' | 'moreThan300';
+
+const ACTIVE_CUSTOMERS_OPTIONS: {
+  value: ActiveCustomersOption;
+  keyPt: string;
+  keyEn: string;
+}[] = [
+  { value: 'upTo20', keyPt: 'activeCustomersUpTo20', keyEn: 'activeCustomersUpTo20' },
+  { value: '21To50', keyPt: 'activeCustomers21To50', keyEn: 'activeCustomers21To50' },
+  { value: '51To100', keyPt: 'activeCustomers51To100', keyEn: 'activeCustomers51To100' },
+  { value: '101To300', keyPt: 'activeCustomers101To300', keyEn: 'activeCustomers101To300' },
+  { value: 'moreThan300', keyPt: 'activeCustomersMoreThan300', keyEn: 'activeCustomersMoreThan300' },
+];
+
+/**
+ * Active customers selection screen for onboarding
+ */
+const ActiveCustomersScreen = () => {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  const { t } = useTranslation();
+  const { formData, updateFormData } = useOnboardingForm();
+  const [selectedOption, setSelectedOption] = useState<ActiveCustomersOption | null>(
+    (formData.activeCustomers as ActiveCustomersOption) || null
+  );
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  const handleContinue = () => {
+    if (!selectedOption) return;
+
+    updateFormData({ activeCustomers: selectedOption });
+    router.push('/onboarding/financialOperations');
+  };
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ThemedView style={styles.container}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <ThemedView style={styles.content}>
+              {/* Progress Bar */}
+              <View style={styles.progressContainer}>
+                <Progress value={40} />
+              </View>
+
+              {/* Back Button */}
+              <IconButton
+                variant='secondary'
+                size='sm'
+                icon='chevron-back'
+                iconSize={32}
+                iconColor={colors.primary}
+                onPress={handleBack}
+              />
+
+              {/* Title */}
+              <Typography variant='h4' style={styles.title}>
+                {t('onboarding.activeCustomers')}
+              </Typography>
+
+              {/* Description */}
+              <Typography variant='body2' style={styles.description}>
+                {t('onboarding.activeCustomersDescription')}
+              </Typography>
+
+              {/* Options List */}
+              <View style={styles.optionsList}>
+                <ListCheck<ActiveCustomersOption>
+                  options={ACTIVE_CUSTOMERS_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: t(`onboarding.${option.keyPt}`),
+                  }))}
+                  selectedValue={selectedOption}
+                  onValueChange={(value) => setSelectedOption(value)}
+                />
+              </View>
+            </ThemedView>
+          </ScrollView>
+
+          {/* Continue Button */}
+          <View style={styles.buttonContainer}>
+            <IconButton
+              variant='primary'
+              size='lg'
+              icon='arrow-forward'
+              iconSize={32}
+              iconColor={colors.primaryForeground}
+              onPress={handleContinue}
+              disabled={!selectedOption}
+            />
+          </View>
+        </ThemedView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+export default ActiveCustomersScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  content: {
+    flex: 1,
+    paddingTop: 18,
+    paddingHorizontal: 24,
+    gap: 20,
+  },
+  progressContainer: {
+    marginBottom: 8,
+  },
+  title: {
+    marginTop: 8,
+  },
+  description: {
+    marginTop: -8,
+    opacity: 0.7,
+  },
+  optionsList: {
+    marginTop: 8,
+  },
+  buttonContainer: {
+    paddingBottom: 56,
+    paddingHorizontal: 24,
+    alignItems: 'flex-end',
+  },
+});

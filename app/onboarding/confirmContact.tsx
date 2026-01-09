@@ -24,8 +24,8 @@ const ConfirmContactScreen = () => {
   };
 
   const handleContinue = () => {
-    // Navigate to next step
-    router.push('/onboarding/email');
+    // Navigate to Active Customers
+    router.push('/onboarding/activeCustomers');
   };
 
   return (

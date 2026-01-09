@@ -24,8 +24,8 @@ const ConfirmEmailScreen = () => {
   };
 
   const handleContinue = () => {
-    // Navigate to password creation
-    router.push('/onboarding/password');
+    // Navigate to Business Duration
+    router.push('/onboarding/businessDuration');
   };
 
   return (

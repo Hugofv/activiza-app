@@ -98,7 +98,7 @@ const CountryScreen = () => {
             <ThemedView style={styles.content}>
               {/* Progress Bar */}
               <View style={styles.progressContainer}>
-                <Progress value={63} />
+                <Progress value={75} />
               </View>
 
               {/* Back Button */}

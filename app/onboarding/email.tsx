@@ -62,7 +62,7 @@ const EmailScreen = () => {
           <ThemedView style={styles.content}>
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
-              <Progress value={45} />
+              <Progress value={50} />
             </View>
 
             {/* Back Button */}

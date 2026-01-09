@@ -38,7 +38,7 @@ const TermsScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { updateFormData } = useOnboardingForm();
+  const { updateFormData, saveFormData } = useOnboardingForm();
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
@@ -54,8 +54,9 @@ const TermsScreen = () => {
         termsAccepted: true,
         privacyAccepted: true,
       });
-      // Navigate to registration finished screen
-      router.push('/onboarding/registerFinished');
+      // Navigate to options screen
+      saveFormData();
+      router.push('/onboarding/options');
     }
   };
 
@@ -72,7 +73,7 @@ const TermsScreen = () => {
           <ThemedView style={styles.content}>
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
-              <Progress value={90} />
+              <Progress value={85} />
             </View>
 
             {/* Back Button */}

@@ -162,7 +162,7 @@ const AddressScreen = () => {
           <ThemedView style={styles.content}>
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
-              <Progress value={81} />
+              <Progress value={80} />
             </View>
 
             {/* Back Button */}

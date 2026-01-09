@@ -138,6 +138,46 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name='onboarding/activeCustomers'
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+              animationDuration: 300,
+            }}
+          />
+          <Stack.Screen
+            name='onboarding/financialOperations'
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+              animationDuration: 300,
+            }}
+          />
+          <Stack.Screen
+            name='onboarding/capital'
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+              animationDuration: 300,
+            }}
+          />
+          <Stack.Screen
+            name='onboarding/businessDuration'
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+              animationDuration: 300,
+            }}
+          />
+          <Stack.Screen
+            name='onboarding/options'
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+              animationDuration: 300,
+            }}
+          />
+          <Stack.Screen
             name='onboarding/country'
             options={{
               headerShown: false,

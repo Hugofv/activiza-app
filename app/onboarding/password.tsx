@@ -90,7 +90,7 @@ const PasswordScreen = () => {
 
   const onSubmit = (data: PasswordFormData) => {
     updateFormData({ password: data.password });
-    router.push('/onboarding/country');
+    router.push('/onboarding/capital');
   };
 
   return (
@@ -104,7 +104,7 @@ const PasswordScreen = () => {
           <ThemedView style={styles.content}>
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
-              <Progress value={54} />
+              <Progress value={65} />
             </View>
 
             {/* Back Button */}

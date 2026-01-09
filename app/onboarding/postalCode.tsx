@@ -123,7 +123,7 @@ const PostalCodeScreen = () => {
           <ThemedView style={styles.content}>
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
-              <Progress value={72} />
+              <Progress value={77} />
             </View>
 
             {/* Back Button */}

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "ativiza",
+    "slug": "ativiza",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "app",
+    "scheme": "ativiza",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

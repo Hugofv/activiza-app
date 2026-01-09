@@ -1,0 +1,214 @@
+import { router } from 'expo-router';
+import { useState } from 'react';
+import {
+   KeyboardAvoidingView,
+   Platform,
+   ScrollView,
+   StyleSheet,
+   View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { ThemedView } from '@/components/themed-view';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
+import { IconButton } from '@/components/ui/icon-button';
+import { ListCheck } from '@/components/ui/list-check';
+import { Progress } from '@/components/ui/progress';
+import { Typography } from '@/components/ui/typography';
+import { Colors } from '@/constants/theme';
+import { useOnboardingForm } from '@/contexts/onboardingFormContext';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTranslation } from 'react-i18next';
+
+type BusinessOption =
+  | 'lendMoney'
+  | 'promissoryNotes'
+  | 'rentProperties'
+  | 'rentRooms'
+  | 'rentVehicles';
+
+const BUSINESS_OPTIONS: {
+  value: BusinessOption;
+  keyPt: string;
+  keyEn: string;
+  icon: string;
+  iconLibrary?: 'ionicons' | 'material' | 'feather' | 'fontawesome' | 'antdesign';
+}[] = [
+  { 
+    value: 'lendMoney', 
+    keyPt: 'optionLendMoney', 
+    keyEn: 'optionLendMoney',
+    icon: 'cash-outline',
+    iconLibrary: 'ionicons',
+  },
+  { 
+    value: 'promissoryNotes', 
+    keyPt: 'optionPromissoryNotes', 
+    keyEn: 'optionPromissoryNotes',
+    icon: 'document-text-outline',
+    iconLibrary: 'ionicons',
+  },
+  { 
+    value: 'rentProperties', 
+    keyPt: 'optionRentProperties', 
+    keyEn: 'optionRentProperties',
+    icon: 'home-outline',
+    iconLibrary: 'ionicons',
+  },
+  { 
+    value: 'rentRooms', 
+    keyPt: 'optionRentRooms', 
+    keyEn: 'optionRentRooms',
+    icon: 'door-outline',
+    iconLibrary: 'ionicons',
+  },
+  { 
+    value: 'rentVehicles', 
+    keyPt: 'optionRentVehicles', 
+    keyEn: 'optionRentVehicles',
+    icon: 'car-outline',
+    iconLibrary: 'ionicons',
+  },
+];
+
+/**
+ * Business options selection screen for onboarding
+ */
+const OptionsScreen = () => {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  const { t } = useTranslation();
+  const { formData, updateFormData } = useOnboardingForm();
+  const [selectedOption, setSelectedOption] = useState<BusinessOption | null>(
+    (Array.isArray(formData.businessOptions) 
+      ? formData.businessOptions[0] 
+      : formData.businessOptions) as BusinessOption || null
+  );
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  const handleFinish = () => {
+    if (!selectedOption) return;
+
+    updateFormData({ businessOptions: selectedOption });
+    router.push('/onboarding/registerFinished');
+  };
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ThemedView style={styles.container}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <ThemedView style={styles.content}>
+              {/* Progress Bar */}
+              <View style={styles.progressContainer}>
+                <Progress value={90} />
+              </View>
+
+              {/* Back Button */}
+              <IconButton
+                variant='secondary'
+                size='sm'
+                icon='chevron-back'
+                iconSize={32}
+                iconColor={colors.primary}
+                onPress={handleBack}
+              />
+
+              {/* Title */}
+              <Typography variant='h4' style={styles.title}>
+                {t('onboarding.whatDoYouWantToDo')}
+              </Typography>
+
+              {/* Description */}
+              <Typography variant='body2' style={styles.description}>
+                {t('onboarding.optionsDescription')}
+              </Typography>
+
+              {/* Options List */}
+              <View style={styles.optionsList}>
+                <ListCheck<BusinessOption>
+                  options={BUSINESS_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: t(`onboarding.${option.keyPt}`),
+                    leftContent: (
+                      <Icon
+                        name={option.icon as any}
+                        library={option.iconLibrary || 'ionicons'}
+                        size={24}
+                        color={selectedOption === option.value ? colors.primary : colors.icon}
+                      />
+                    ),
+                  }))}
+                  selectedValue={selectedOption}
+                  onValueChange={(value) => setSelectedOption(value)}
+                />
+              </View>
+            </ThemedView>
+          </ScrollView>
+
+          {/* Finish Button */}
+          <View style={styles.buttonContainer}>
+            <Button
+              variant='primary'
+              size='full'
+              onPress={handleFinish}
+              disabled={!selectedOption}
+            >
+              {t('onboarding.finish')}
+            </Button>
+          </View>
+        </ThemedView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+export default OptionsScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  content: {
+    flex: 1,
+    paddingTop: 18,
+    paddingHorizontal: 24,
+    gap: 20,
+  },
+  progressContainer: {
+    marginBottom: 8,
+  },
+  title: {
+    marginTop: 8,
+  },
+  description: {
+    marginTop: -8,
+    opacity: 0.7,
+  },
+  optionsList: {
+    marginTop: 8,
+  },
+  buttonContainer: {
+    paddingBottom: 56,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+  },
+});

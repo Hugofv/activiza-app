@@ -15,6 +15,11 @@ export interface OnboardingFormData {
   password?: string;
   termsAccepted?: boolean;
   privacyAccepted?: boolean;
+  activeCustomers?: string;
+  financialOperations?: string;
+  workingCapital?: string;
+  businessDuration?: string;
+  businessOptions?: string | string[];
   address?: {
     postalCode: string;
     street: string;
@@ -39,15 +44,20 @@ export interface OnboardingFormData {
 interface OnboardingFormContextType {
   formData: Partial<OnboardingFormData>;
   updateFormData: (data: Partial<OnboardingFormData>) => void;
+  saveFormData: () => Promise<void>;
   resetFormData: () => void;
 }
 
-const OnboardingFormContext = createContext<OnboardingFormContextType | undefined>(undefined);
+const OnboardingFormContext = createContext<
+  OnboardingFormContextType | undefined
+>(undefined);
 
 export const useOnboardingForm = () => {
   const context = useContext(OnboardingFormContext);
   if (!context) {
-    throw new Error('useOnboardingForm must be used within OnboardingFormProvider');
+    throw new Error(
+      'useOnboardingForm must be used within OnboardingFormProvider'
+    );
   }
   return context;
 };
@@ -56,7 +66,9 @@ interface OnboardingFormProviderProps {
   children: ReactNode;
 }
 
-export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({ children }) => {
+export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
+  children,
+}) => {
   const [formData, setFormData] = useState<Partial<OnboardingFormData>>({});
 
   const updateFormData = (data: Partial<OnboardingFormData>) => {
@@ -67,10 +79,20 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({ 
     setFormData({});
   };
 
+  const saveFormData = async () => {
+    try {
+      console.log('saveFormData', formData);
+      // const response = await api.post('/onboarding/save', formData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <OnboardingFormContext.Provider value={{ formData, updateFormData, resetFormData }}>
+    <OnboardingFormContext.Provider
+      value={{ formData, updateFormData, saveFormData, resetFormData }}
+    >
       {children}
     </OnboardingFormContext.Provider>
   );
 };
-
