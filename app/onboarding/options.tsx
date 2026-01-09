@@ -80,10 +80,15 @@ const OptionsScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
-  const [selectedOption, setSelectedOption] = useState<BusinessOption | null>(
-    (Array.isArray(formData.businessOptions) 
-      ? formData.businessOptions[0] 
-      : formData.businessOptions) as BusinessOption || null
+  const [selectedOptions, setSelectedOptions] = useState<BusinessOption[]>(
+    Array.isArray(formData.businessOptions)
+      ? formData.businessOptions.filter((opt): opt is BusinessOption =>
+          typeof opt === 'string' &&
+          ['lendMoney', 'promissoryNotes', 'rentProperties', 'rentRooms', 'rentVehicles'].includes(opt)
+        )
+      : formData.businessOptions
+        ? [formData.businessOptions as BusinessOption]
+        : []
   );
 
   const handleBack = () => {
@@ -91,9 +96,9 @@ const OptionsScreen = () => {
   };
 
   const handleFinish = () => {
-    if (!selectedOption) return;
+    if (selectedOptions.length === 0) return;
 
-    updateFormData({ businessOptions: selectedOption });
+    updateFormData({ businessOptions: selectedOptions });
     router.push('/onboarding/registerFinished');
   };
 
@@ -139,6 +144,7 @@ const OptionsScreen = () => {
               {/* Options List */}
               <View style={styles.optionsList}>
                 <ListCheck<BusinessOption>
+                  multiple
                   options={BUSINESS_OPTIONS.map((option) => ({
                     value: option.value,
                     label: t(`onboarding.${option.keyPt}`),
@@ -147,12 +153,12 @@ const OptionsScreen = () => {
                         name={option.icon as any}
                         library={option.iconLibrary || 'ionicons'}
                         size={24}
-                        color={selectedOption === option.value ? colors.primary : colors.icon}
+                        color={selectedOptions.includes(option.value) ? colors.primary : colors.icon}
                       />
                     ),
                   }))}
-                  selectedValue={selectedOption}
-                  onValueChange={(value) => setSelectedOption(value)}
+                  selectedValue={selectedOptions}
+                  onValueChange={(value) => setSelectedOptions(value as BusinessOption[])}
                 />
               </View>
             </ThemedView>
@@ -164,7 +170,7 @@ const OptionsScreen = () => {
               variant='primary'
               size='full'
               onPress={handleFinish}
-              disabled={!selectedOption}
+              disabled={selectedOptions.length === 0}
             >
               {t('onboarding.finish')}
             </Button>

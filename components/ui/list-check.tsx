@@ -15,10 +15,12 @@ export interface ListCheckOption<T = string> {
 export interface ListCheckProps<T = string> {
   /** Array of options to display */
   options: ListCheckOption<T>[];
-  /** Currently selected value */
-  selectedValue?: T | null;
-  /** Callback when an option is selected */
-  onValueChange?: (value: T) => void;
+  /** Currently selected value(s). For single select, use T | null. For multiple select, use T[]. */
+  selectedValue?: T | T[] | null;
+  /** Callback when an option is selected. For multiple select, receives the array of selected values. */
+  onValueChange?: (value: T | T[]) => void;
+  /** Whether to allow multiple selections */
+  multiple?: boolean;
   /** Whether the component is disabled */
   disabled?: boolean;
   /** Custom style for the container */
@@ -37,6 +39,7 @@ export function ListCheck<T = string>({
   options,
   selectedValue,
   onValueChange,
+  multiple = false,
   disabled = false,
   style,
   itemStyle,
@@ -47,14 +50,32 @@ export function ListCheck<T = string>({
 
   const handlePress = (value: T) => {
     if (!disabled && onValueChange) {
-      onValueChange(value);
+      if (multiple) {
+        // Multiple selection mode: toggle value in array
+        const currentValues = Array.isArray(selectedValue) ? selectedValue : [];
+        const isCurrentlySelected = currentValues.includes(value);
+        const newValues = isCurrentlySelected
+          ? currentValues.filter((v) => v !== value)
+          : [...currentValues, value];
+        onValueChange(newValues as T | T[]);
+      } else {
+        // Single selection mode
+        onValueChange(value);
+      }
     }
+  };
+
+  const isValueSelected = (value: T): boolean => {
+    if (multiple) {
+      return Array.isArray(selectedValue) && selectedValue.includes(value);
+    }
+    return selectedValue === value;
   };
 
   return (
     <View style={[styles.container, { gap }, style]}>
       {options.map((option) => {
-        const isSelected = selectedValue === option.value;
+        const isSelected = isValueSelected(option.value);
         return (
           <TouchableOpacity
             key={String(option.value)}
