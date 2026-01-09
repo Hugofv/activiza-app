@@ -19,23 +19,18 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTranslation } from 'react-i18next';
 
-type WorkingCapitalOption =
-  | 'upTo5k'
-  | '5kTo20k'
-  | '20kTo50k'
-  | '50kTo100k'
-  | 'moreThan100k';
-
+// Numeric values represent working capital in actual currency units
+// 0 = unlimited/more than the highest range
 const WORKING_CAPITAL_OPTIONS: {
-  value: WorkingCapitalOption;
+  value: number; // Working capital in actual currency units (e.g., 5000 = 5k, 100000 = 100k)
   keyPt: string;
   keyEn: string;
 }[] = [
-  { value: 'upTo5k', keyPt: 'workingCapitalUpTo5k', keyEn: 'workingCapitalUpTo5k' },
-  { value: '5kTo20k', keyPt: 'workingCapital5kTo20k', keyEn: 'workingCapital5kTo20k' },
-  { value: '20kTo50k', keyPt: 'workingCapital20kTo50k', keyEn: 'workingCapital20kTo50k' },
-  { value: '50kTo100k', keyPt: 'workingCapital50kTo100k', keyEn: 'workingCapital50kTo100k' },
-  { value: 'moreThan100k', keyPt: 'workingCapitalMoreThan100k', keyEn: 'workingCapitalMoreThan100k' },
+  { value: 5000, keyPt: 'workingCapitalUpTo5k', keyEn: 'workingCapitalUpTo5k' },
+  { value: 20000, keyPt: 'workingCapital5kTo20k', keyEn: 'workingCapital5kTo20k' },
+  { value: 50000, keyPt: 'workingCapital20kTo50k', keyEn: 'workingCapital20kTo50k' },
+  { value: 100000, keyPt: 'workingCapital50kTo100k', keyEn: 'workingCapital50kTo100k' },
+  { value: 0, keyPt: 'workingCapitalMoreThan100k', keyEn: 'workingCapitalMoreThan100k' }, // Represents "more than 100k"
 ];
 
 /**
@@ -46,8 +41,8 @@ const CapitalScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
-  const [selectedOption, setSelectedOption] = useState<WorkingCapitalOption | null>(
-    (formData.workingCapital as WorkingCapitalOption) || null
+  const [selectedOption, setSelectedOption] = useState<number | null>(
+    formData.workingCapital || null
   );
 
   const handleBack = () => {
@@ -55,7 +50,7 @@ const CapitalScreen = () => {
   };
 
   const handleContinue = () => {
-    if (!selectedOption) return;
+    if (selectedOption === null) return;
 
     updateFormData({ workingCapital: selectedOption });
     router.push('/onboarding/country');
@@ -97,7 +92,7 @@ const CapitalScreen = () => {
 
               {/* Options List */}
               <View style={styles.optionsList}>
-                <ListCheck<WorkingCapitalOption>
+                <ListCheck<number>
                   options={WORKING_CAPITAL_OPTIONS.map((option) => ({
                     value: option.value,
                     label: t(`onboarding.${option.keyPt}`),
@@ -118,7 +113,7 @@ const CapitalScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
-              disabled={!selectedOption}
+              disabled={selectedOption === null}
             />
           </View>
         </ThemedView>

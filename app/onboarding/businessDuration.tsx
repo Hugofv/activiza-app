@@ -19,21 +19,17 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTranslation } from 'react-i18next';
 
-type BusinessDurationOption =
-  | 'lessThan6Months'
-  | '6MonthsTo1Year'
-  | '1To3Years'
-  | 'moreThan3Years';
-
+// Numeric values represent business duration in months
+// 0 = unlimited/more than the highest range
 const BUSINESS_DURATION_OPTIONS: {
-  value: BusinessDurationOption;
+  value: number; // Duration in months
   keyPt: string;
   keyEn: string;
 }[] = [
-  { value: 'lessThan6Months', keyPt: 'businessDurationLessThan6Months', keyEn: 'businessDurationLessThan6Months' },
-  { value: '6MonthsTo1Year', keyPt: 'businessDuration6MonthsTo1Year', keyEn: 'businessDuration6MonthsTo1Year' },
-  { value: '1To3Years', keyPt: 'businessDuration1To3Years', keyEn: 'businessDuration1To3Years' },
-  { value: 'moreThan3Years', keyPt: 'businessDurationMoreThan3Years', keyEn: 'businessDurationMoreThan3Years' },
+  { value: 6, keyPt: 'businessDurationLessThan6Months', keyEn: 'businessDurationLessThan6Months' }, // Less than 6 months (max 6)
+  { value: 12, keyPt: 'businessDuration6MonthsTo1Year', keyEn: 'businessDuration6MonthsTo1Year' }, // 6 months to 1 year (max 12)
+  { value: 36, keyPt: 'businessDuration1To3Years', keyEn: 'businessDuration1To3Years' }, // 1 to 3 years (max 36 months)
+  { value: 0, keyPt: 'businessDurationMoreThan3Years', keyEn: 'businessDurationMoreThan3Years' }, // 0 = unlimited/more than 3 years (36+ months)
 ];
 
 /**
@@ -44,8 +40,8 @@ const BusinessDurationScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
-  const [selectedOption, setSelectedOption] = useState<BusinessDurationOption | null>(
-    (formData.businessDuration as BusinessDurationOption) || null
+  const [selectedOption, setSelectedOption] = useState<number | null>(
+    formData.businessDuration || null
   );
 
   const handleBack = () => {
@@ -53,7 +49,7 @@ const BusinessDurationScreen = () => {
   };
 
   const handleContinue = () => {
-    if (!selectedOption) return;
+    if (selectedOption === null) return;
 
     updateFormData({ businessDuration: selectedOption });
     router.push('/onboarding/password');
@@ -95,7 +91,7 @@ const BusinessDurationScreen = () => {
 
               {/* Options List */}
               <View style={styles.optionsList}>
-                <ListCheck<BusinessDurationOption>
+                <ListCheck<number>
                   options={BUSINESS_DURATION_OPTIONS.map((option) => ({
                     value: option.value,
                     label: t(`onboarding.${option.keyPt}`),
@@ -116,7 +112,7 @@ const BusinessDurationScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
-              disabled={!selectedOption}
+              disabled={selectedOption === null}
             />
           </View>
         </ThemedView>

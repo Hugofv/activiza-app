@@ -15,10 +15,10 @@ export interface OnboardingFormData {
   password?: string;
   termsAccepted?: boolean;
   privacyAccepted?: boolean;
-  activeCustomers?: string;
-  financialOperations?: string;
-  workingCapital?: string;
-  businessDuration?: string;
+  activeCustomers?: number; // Max number of active customers
+  financialOperations?: number; // Max operations per month
+  workingCapital?: number; // Working capital in thousands (e.g., 5 = 5k, 100 = 100k)
+  businessDuration?: number; // Business duration in months
   businessOptions?: string | string[];
   address?: {
     postalCode: string;

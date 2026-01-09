@@ -19,27 +19,20 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTranslation } from 'react-i18next';
 
-type FinancialOperationsOption =
-  | 'upTo5'
-  | '6To10'
-  | '11To20'
-  | '21To50'
-  | '51To100'
-  | '101To200'
-  | 'moreThan200';
-
+// Numeric values represent the maximum operations per month
+// 0 = unlimited/more than the highest range
 const FINANCIAL_OPERATIONS_OPTIONS: {
-  value: FinancialOperationsOption;
+  value: number; // Max operations per month
   keyPt: string;
   keyEn: string;
 }[] = [
-  { value: 'upTo5', keyPt: 'financialOperationsUpTo5', keyEn: 'financialOperationsUpTo5' },
-  { value: '6To10', keyPt: 'financialOperations6To10', keyEn: 'financialOperations6To10' },
-  { value: '11To20', keyPt: 'financialOperations11To20', keyEn: 'financialOperations11To20' },
-  { value: '21To50', keyPt: 'financialOperations21To50', keyEn: 'financialOperations21To50' },
-  { value: '51To100', keyPt: 'financialOperations51To100', keyEn: 'financialOperations51To100' },
-  { value: '101To200', keyPt: 'financialOperations101To200', keyEn: 'financialOperations101To200' },
-  { value: 'moreThan200', keyPt: 'financialOperationsMoreThan200', keyEn: 'financialOperationsMoreThan200' },
+  { value: 5, keyPt: 'financialOperationsUpTo5', keyEn: 'financialOperationsUpTo5' },
+  { value: 10, keyPt: 'financialOperations6To10', keyEn: 'financialOperations6To10' },
+  { value: 20, keyPt: 'financialOperations11To20', keyEn: 'financialOperations11To20' },
+  { value: 50, keyPt: 'financialOperations21To50', keyEn: 'financialOperations21To50' },
+  { value: 100, keyPt: 'financialOperations51To100', keyEn: 'financialOperations51To100' },
+  { value: 200, keyPt: 'financialOperations101To200', keyEn: 'financialOperations101To200' },
+  { value: 0, keyPt: 'financialOperationsMoreThan200', keyEn: 'financialOperationsMoreThan200' }, // 0 = unlimited/more than 200
 ];
 
 /**
@@ -50,8 +43,8 @@ const FinancialOperationsScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
-  const [selectedOption, setSelectedOption] = useState<FinancialOperationsOption | null>(
-    (formData.financialOperations as FinancialOperationsOption) || null
+  const [selectedOption, setSelectedOption] = useState<number | null>(
+    formData.financialOperations || null
   );
 
   const handleBack = () => {
@@ -59,7 +52,7 @@ const FinancialOperationsScreen = () => {
   };
 
   const handleContinue = () => {
-    if (!selectedOption) return;
+    if (selectedOption === null) return;
 
     updateFormData({ financialOperations: selectedOption });
     router.push('/onboarding/email');
@@ -106,7 +99,7 @@ const FinancialOperationsScreen = () => {
 
               {/* Options List */}
               <View style={styles.optionsList}>
-                <ListCheck<FinancialOperationsOption>
+                <ListCheck<number>
                   options={FINANCIAL_OPERATIONS_OPTIONS.map((option) => ({
                     value: option.value,
                     label: t(`onboarding.${option.keyPt}`),
@@ -127,7 +120,7 @@ const FinancialOperationsScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
-              disabled={!selectedOption}
+              disabled={selectedOption === null}
             />
           </View>
         </ThemedView>

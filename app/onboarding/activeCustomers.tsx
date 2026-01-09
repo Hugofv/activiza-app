@@ -19,18 +19,18 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTranslation } from 'react-i18next';
 
-type ActiveCustomersOption = 'upTo20' | '21To50' | '51To100' | '101To300' | 'moreThan300';
-
+// Numeric values represent the maximum number of active customers
+// 0 = unlimited/more than the highest range
 const ACTIVE_CUSTOMERS_OPTIONS: {
-  value: ActiveCustomersOption;
+  value: number; // Max number of customers
   keyPt: string;
   keyEn: string;
 }[] = [
-  { value: 'upTo20', keyPt: 'activeCustomersUpTo20', keyEn: 'activeCustomersUpTo20' },
-  { value: '21To50', keyPt: 'activeCustomers21To50', keyEn: 'activeCustomers21To50' },
-  { value: '51To100', keyPt: 'activeCustomers51To100', keyEn: 'activeCustomers51To100' },
-  { value: '101To300', keyPt: 'activeCustomers101To300', keyEn: 'activeCustomers101To300' },
-  { value: 'moreThan300', keyPt: 'activeCustomersMoreThan300', keyEn: 'activeCustomersMoreThan300' },
+  { value: 20, keyPt: 'activeCustomersUpTo20', keyEn: 'activeCustomersUpTo20' },
+  { value: 50, keyPt: 'activeCustomers21To50', keyEn: 'activeCustomers21To50' },
+  { value: 100, keyPt: 'activeCustomers51To100', keyEn: 'activeCustomers51To100' },
+  { value: 300, keyPt: 'activeCustomers101To300', keyEn: 'activeCustomers101To300' },
+  { value: 0, keyPt: 'activeCustomersMoreThan300', keyEn: 'activeCustomersMoreThan300' }, // 0 = unlimited/more than 300
 ];
 
 /**
@@ -41,8 +41,8 @@ const ActiveCustomersScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
-  const [selectedOption, setSelectedOption] = useState<ActiveCustomersOption | null>(
-    (formData.activeCustomers as ActiveCustomersOption) || null
+  const [selectedOption, setSelectedOption] = useState<number | null>(
+    formData.activeCustomers || null
   );
 
   const handleBack = () => {
@@ -50,7 +50,7 @@ const ActiveCustomersScreen = () => {
   };
 
   const handleContinue = () => {
-    if (!selectedOption) return;
+    if (selectedOption === null) return;
 
     updateFormData({ activeCustomers: selectedOption });
     router.push('/onboarding/financialOperations');
@@ -97,7 +97,7 @@ const ActiveCustomersScreen = () => {
 
               {/* Options List */}
               <View style={styles.optionsList}>
-                <ListCheck<ActiveCustomersOption>
+                <ListCheck<number>
                   options={ACTIVE_CUSTOMERS_OPTIONS.map((option) => ({
                     value: option.value,
                     label: t(`onboarding.${option.keyPt}`),
@@ -118,7 +118,7 @@ const ActiveCustomersScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
-              disabled={!selectedOption}
+              disabled={selectedOption === null}
             />
           </View>
         </ThemedView>
