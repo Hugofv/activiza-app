@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { checkEmailStatus } from '@/lib/services/authService';
 import { emailSchema } from '@/lib/validations/onboarding';
 
 import { Typography } from '@/components/ui/typography';
@@ -28,6 +30,7 @@ const EmailScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
+  const [isChecking, setIsChecking] = useState(false);
 
   const {
     control,
@@ -45,10 +48,68 @@ const EmailScreen = () => {
     router.back();
   };
 
-  const onSubmit = (data: EmailFormData) => {
-    updateFormData({ email: data.email });
-    // New flow: Email -> Password -> Email Verification -> Document
-    router.push('/onboarding/password');
+  const onSubmit = async (data: EmailFormData) => {
+    setIsChecking(true);
+    try {
+      // Check if email exists and registration status
+      const emailStatus = await checkEmailStatus(data.email);
+      
+      updateFormData({ email: data.email });
+
+      // Check if user is fully registered (completed) vs in-progress onboarding
+      const isFullyRegistered = emailStatus.exists && 
+                                emailStatus.isRegistered && 
+                                emailStatus.clientStatus === 'COMPLETED';
+      
+      const isInProgressOnboarding = emailStatus.exists && 
+                                      emailStatus.isRegistered && 
+                                      emailStatus.clientStatus === 'IN_PROGRESS';
+
+      if (isFullyRegistered) {
+        // User is fully registered, redirect to password authentication
+        router.push({
+          pathname: '/authPassword',
+          params: { email: data.email },
+        });
+      } else if (isInProgressOnboarding) {
+        // User exists but registration is incomplete, continue onboarding from last step
+        // Map API onboardingStep values to route names based on API response examples
+        const onboardingStep = emailStatus.onboardingStep || 'password';
+        const stepToRouteMap: Record<string, string> = {
+          // API step values -> route names (from API examples)
+          phone_verification: '/onboarding/codeContact',        // Step after phone verification
+          active_customers: '/onboarding/activeCustomers',      // Active customers step
+          financial_operations: '/onboarding/financialOperations', // Financial operations step
+          working_capital: '/onboarding/capital',               // Working capital step
+          business_duration: '/onboarding/businessDuration',    // Business duration step
+          postal_code: '/onboarding/postalCode',                // Postal code step
+          address: '/onboarding/address',                       // Address step
+          terms: '/onboarding/terms',                           // Terms and conditions step
+          // Additional possible steps
+          email: '/onboarding/email',
+          email_verification: '/onboarding/codeEmail',
+          password: '/onboarding/password',
+          document: '/onboarding/document',
+          name: '/onboarding/name',
+          contact: '/onboarding/contact',
+          country: '/onboarding/country',
+          options: '/onboarding/options',
+        };
+        const route = stepToRouteMap[onboardingStep] || '/onboarding/password';
+        router.push(route as any);
+      } else {
+        // New user, continue normal onboarding flow
+        // New flow: Email -> Password -> Email Verification -> Document
+        router.push('/onboarding/password');
+      }
+    } catch (error: any) {
+      console.error('Check email status error:', error);
+      // On error, assume new user and continue with onboarding
+      updateFormData({ email: data.email });
+      router.push('/onboarding/password');
+    } finally {
+      setIsChecking(false);
+    }
   };
 
   return (
@@ -110,8 +171,8 @@ const EmailScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
-              disabled={!isValid}
-              />
+              disabled={!isValid || isChecking}
+            />
           </View>
         </ThemedView>
       </KeyboardAvoidingView>

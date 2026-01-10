@@ -18,6 +18,8 @@ export default {
   login: 'Login',
   register: 'Register',
   forgotPassword: 'Forgot your password?',
+  enterPassword: 'Enter your password',
+  enterPasswordDescription: 'Enter your password to sign in to your account {email}',
   createAccount: 'Create account',
   alreadyHaveAccount: 'Already have an account?',
   loginWithEmail: 'Login with email',

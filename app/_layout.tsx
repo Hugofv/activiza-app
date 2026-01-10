@@ -91,15 +91,23 @@ export default function RootLayout() {
                 animation: 'default',
               }}
             />
-            <Stack.Screen
-              name='login'
-              options={{
-                headerShown: false,
-                animation: 'fade',
-                animationDuration: 400,
-              }}
-            />
-          </Stack>
+              <Stack.Screen
+                name='login'
+                options={{
+                  headerShown: false,
+                  animation: 'fade',
+                  animationDuration: 400,
+                }}
+              />
+              <Stack.Screen
+                name='authPassword'
+                options={{
+                  headerShown: false,
+                  animation: 'slide_from_right',
+                  animationDuration: 300,
+                }}
+              />
+            </Stack>
           <StatusBar style='auto' />
         </ThemeProvider>
       </PersistQueryClientProvider>

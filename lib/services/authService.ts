@@ -5,14 +5,14 @@ import { apiClient } from '../api/client';
 import { ENDPOINTS } from '../api/endpoints';
 import { queryClient } from '../api/queryClient';
 import {
-   clearTokens,
-   getRefreshToken,
-   isTokenExpired,
-   setAccessToken,
-   setRefreshToken,
-   setTokenExpiry,
+  clearTokens,
+  getRefreshToken,
+  isTokenExpired,
+  setAccessToken,
+  setRefreshToken,
+  setTokenExpiry,
 } from '../storage/secureStorage';
-import { AuthResponse, LoginCredentials, RefreshTokenResponse, User } from '../types/authTypes';
+import { AuthResponse, EmailStatus, EmailStatusResponse, LoginCredentials, RefreshTokenResponse, User } from '../types/authTypes';
 
 // Use the extended config type for skipAuth
 type ApiConfig = { skipAuth?: boolean };
@@ -189,4 +189,31 @@ export async function resendVerificationCode(emailOrPhone: string, type: 'email'
  */
 export function getCurrentUser(): User | undefined {
   return queryClient.getQueryData<User>(['auth', 'user']);
+}
+
+/**
+ * Check if email exists and registration status
+ * GET /onboarding/check-email?email=user@example.com
+ */
+export async function checkEmailStatus(email: string): Promise<EmailStatus> {
+  try {
+    const response = await apiClient.get<EmailStatusResponse>(
+      `${ENDPOINTS.ONBOARDING.CHECK_EMAIL}?email=${encodeURIComponent(email)}`,
+      { skipAuth: true } as ApiConfig
+    );
+
+    const { data } = response.data;
+
+    // Transform API response to simplified format
+    return {
+      exists: data.existsAs !== null,
+      isRegistered: data.registered,
+      clientStatus: data.clientStatus,
+      onboardingStep: data.onboardingStep,
+      message: data.message,
+    };
+  } catch (error: any) {
+    console.error('Check email status error:', error);
+    throw error;
+  }
 }
