@@ -1,6 +1,7 @@
 /**
  * Postal code lookup service
  * Supports multiple countries with different APIs
+ * Migrated from postalCode.ts to follow camelCase naming convention
  */
 
 export interface AddressData {
@@ -242,4 +243,3 @@ export function getPostalCodeFormat(countryCode: CountryCode): {
       };
   }
 }
-

@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedView } from '@/components/themed-view';
+import { ThemedView } from '@/components/ThemedView';
 
 import Illustration from '@/assets/images/illustration.svg';
 import Logo from '@/assets/images/logo.svg';

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedView } from '@/components/themed-view';
+import { ThemedView } from '@/components/ThemedView';
 import { IconButton } from '@/components/ui/icon-button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
@@ -21,7 +21,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import {
   getPostalCodeFormat,
   type CountryCode,
-} from '@/lib/services/postalCode';
+} from '@/lib/services/postalCodeService';
 import { addressSchema } from '@/lib/validations/onboarding';
 
 import { useTranslation } from 'react-i18next';

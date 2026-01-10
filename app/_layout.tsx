@@ -4,6 +4,8 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -14,6 +16,8 @@ import '../global.css';
 
 import { OnboardingFormProvider } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { persistOptions, queryClient } from '@/lib/api/queryClient';
+import { initializeBackgroundSync } from '@/lib/sync/backgroundSync';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -44,14 +48,26 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError]);
 
+  // Initialize background sync on app start
+  useEffect(() => {
+    initializeBackgroundSync();
+    
+    // Cleanup on unmount
+    return () => {
+      // cleanupBackgroundSync will be called automatically
+    };
+  }, []);
+
   if (!fontsLoaded && !fontError) {
     return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <OnboardingFormProvider>
-        <Stack
+    <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <OnboardingFormProvider>
+            <Stack
           screenOptions={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -232,9 +248,11 @@ export default function RootLayout() {
               animation: 'default',
             }}
           />
-        </Stack>
-        <StatusBar style='auto' />
-      </OnboardingFormProvider>
-    </ThemeProvider>
+            </Stack>
+            <StatusBar style='auto' />
+          </OnboardingFormProvider>
+        </ThemeProvider>
+      </PersistQueryClientProvider>
+    </QueryClientProvider>
   );
 }

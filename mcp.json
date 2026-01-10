@@ -1,8 +1,27 @@
 {
-   "servers": {
-     "figma-desktop": {
-       "type": "http",
-       "url": "http://127.0.0.1:3845/mcp"
-     }
-   }
- }
+  "servers": {
+    "figma-desktop": {
+      "type": "http",
+      "url": "http://127.0.0.1:3845/mcp"
+    },
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Volumes/Dev/ativiza/app"
+      ]
+    },
+    "git": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-git",
+        "--repository",
+        "/Volumes/Dev/ativiza"
+      ]
+    }
+  }
+}

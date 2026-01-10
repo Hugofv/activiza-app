@@ -1,15 +1,15 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-   KeyboardAvoidingView,
-   Platform,
-   ScrollView,
-   StyleSheet,
-   View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedView } from '@/components/themed-view';
+import { ThemedView } from '@/components/ThemedView';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { IconButton } from '@/components/ui/icon-button';

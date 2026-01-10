@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedView } from '@/components/themed-view';
+import { ThemedView } from '@/components/ThemedView';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';

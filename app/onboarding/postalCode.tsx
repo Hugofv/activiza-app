@@ -5,14 +5,14 @@ import { useForm } from 'react-hook-form';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedView } from '@/components/themed-view';
+import { ThemedView } from '@/components/ThemedView';
 import { IconButton } from '@/components/ui/icon-button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { getPostalCodeFormat, lookupPostalCode, type CountryCode } from '@/lib/services/postalCode';
+import { getPostalCodeFormat, lookupPostalCode, type CountryCode } from '@/lib/services/postalCodeService';
 import { createPostalCodeSchema } from '@/lib/validations/onboarding';
 
 import { Typography } from '@/components/ui/typography';
