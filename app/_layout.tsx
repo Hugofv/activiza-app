@@ -14,7 +14,6 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
 
-import { OnboardingFormProvider } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { persistOptions, queryClient } from '@/lib/api/queryClient';
 import { initializeBackgroundSync } from '@/lib/sync/backgroundSync';
@@ -29,7 +28,7 @@ import {
 SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
-  initialRouteName: 'onboarding/email', // Email é agora a primeira tela (identificador primário)
+  initialRouteName: 'index', // Home screen is now the initial route
 };
 
 export default function RootLayout() {
@@ -71,184 +70,37 @@ export default function RootLayout() {
         <ThemeProvider
           value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
         >
-          <OnboardingFormProvider>
-            <Stack
-              screenOptions={{
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: 'slide_from_right',
+              animationDuration: 300,
+            }}
+          >
+            <Stack.Screen
+              name='index'
+              options={{
                 headerShown: false,
-                animation: 'slide_from_right',
-                animationDuration: 300,
+                animation: 'default',
               }}
-            >
-              <Stack.Screen
-                name='onboarding/document'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/name'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/contact'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/codeContact'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/confirmContact'
-                options={{
-                  headerShown: false,
-                  animation: 'fade',
-                  animationDuration: 400,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/email'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/codeEmail'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/confirmEmail'
-                options={{
-                  headerShown: false,
-                  animation: 'fade',
-                  animationDuration: 400,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/password'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/activeCustomers'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/financialOperations'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/capital'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/businessDuration'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/options'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/country'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/postalCode'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/address'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/terms'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='onboarding/registerFinished'
-                options={{
-                  headerShown: false,
-                  animation: 'fade',
-                  animationDuration: 500,
-                }}
-              />
-              <Stack.Screen
-                name='login'
-                options={{
-                  headerShown: false,
-                  animation: 'fade',
-                  animationDuration: 400,
-                }}
-              />
-              <Stack.Screen
-                name='(tabs)'
-                options={{
-                  headerShown: false,
-                  animation: 'default',
-                }}
-              />
-            </Stack>
-            <StatusBar style='auto' />
-          </OnboardingFormProvider>
+            />
+            <Stack.Screen
+              name='onboarding'
+              options={{
+                headerShown: false,
+                animation: 'default',
+              }}
+            />
+            <Stack.Screen
+              name='login'
+              options={{
+                headerShown: false,
+                animation: 'fade',
+                animationDuration: 400,
+              }}
+            />
+          </Stack>
+          <StatusBar style='auto' />
         </ThemeProvider>
       </PersistQueryClientProvider>
     </QueryClientProvider>

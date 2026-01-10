@@ -18,7 +18,7 @@ export default function HomeScreen() {
   
   const handleStart = async () => {
     // Navigate to Document screen (first step of onboarding)
-    router.push('/onboarding/document');
+    router.push('/onboarding/email');
   };
 
   return (
