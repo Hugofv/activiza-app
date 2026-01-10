@@ -4,7 +4,15 @@ import { useMutation } from '@tanstack/react-query';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 
 export interface OnboardingFormData {
-  document: string;
+  // Email como identificador primário (obrigatório)
+  email: string;
+  password?: string;
+  emailCode?: string;
+  
+  // Documento como informação simples (opcional)
+  document?: string; // Valor formatado do documento
+  documentType?: string; // Tipo: 'cpf', 'cnpj', 'ssn', 'ein', 'ni', 'crn', etc.
+  
   name: string;
   phone: {
     country: string | null;
@@ -12,10 +20,7 @@ export interface OnboardingFormData {
     phoneNumber: string;
     formattedPhoneNumber: string;
   } | null;
-  email: string;
   code?: string;
-  emailCode?: string;
-  password?: string;
   termsAccepted?: boolean;
   privacyAccepted?: boolean;
   activeCustomers?: number; // Max number of active customers
@@ -117,8 +122,10 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
 
   const submitFormData = async () => {
     // Ensure we have all required data before submitting
-    if (!formData.document || !formData.name || !formData.email || !formData.password) {
-      throw new Error('Missing required fields for submission');
+    // Email é obrigatório (identificador primário)
+    // Documento é opcional (informação de identificação)
+    if (!formData.email || !formData.password || !formData.name) {
+      throw new Error('Missing required fields for submission: email, password, and name are required');
     }
     await submitMutation.mutateAsync(formData as OnboardingFormData);
   };

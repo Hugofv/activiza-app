@@ -99,11 +99,12 @@ const OptionsScreen = () => {
     if (selectedOptions.length === 0) return;
 
     updateFormData({ businessOptions: selectedOptions });
+    // Options é a última tela (apresentação de planos), então vai para tela final
     router.push('/onboarding/registerFinished');
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -118,7 +119,7 @@ const OptionsScreen = () => {
             <ThemedView style={styles.content}>
               {/* Progress Bar */}
               <View style={styles.progressContainer}>
-                <Progress value={90} />
+                <Progress value={99} />
               </View>
 
               {/* Back Button */}

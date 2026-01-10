@@ -1,39 +1,57 @@
 import { router } from 'expo-router';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export default function HomeScreen() {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'dark'];
+import Illustration from '@/assets/images/illustration.svg';
+import Logo from '@/assets/images/logo.svg';
+import { Button } from '@/components/ui/button';
+import { Typography } from '@/components/ui/typography';
+import { useTranslation } from 'react-i18next';
 
-  const handleLogout = () => {
-    router.replace('/onboarding');
+export default function HomeScreen() {
+  const { t } = useTranslation();
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  
+  const handleStart = async () => {
+    // Navigate to Document screen (first step of onboarding)
+    router.push('/onboarding/document');
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView style={styles.content}>
-        <ThemedText type="title" style={styles.title}>
-          Home
-        </ThemedText>
-        <ThemedText style={styles.subtitle}>
-          Welcome to your app
-        </ThemedText>
+    <SafeAreaView 
+      style={[styles.container, { backgroundColor: colors.background }]} 
+      edges={['top', 'bottom']}
+    >
+      <View style={styles.content}>
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <Logo width={197.889} height={44} style={styles.logo} />
+          </View>
 
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.tint }]}
-          onPress={handleLogout}
-          activeOpacity={0.8}>
-          <ThemedText style={[styles.buttonText, { color: colorScheme === 'dark' ? '#000' : '#fff' }]}>
-            Logout
-          </ThemedText>
-        </TouchableOpacity>
-      </ThemedView>
-    </ThemedView>
+          {/* Title Text */}
+          <Typography variant='h2' style={styles.title}>
+            {t('onboarding.title')}
+          </Typography>
+
+          {/* Illustration */}
+          <View style={styles.illustrationContainer}>
+            <Illustration
+              width={300 * 1}
+              height={316}
+              style={styles.illustration}
+            />
+          </View>
+
+          {/* Start Button */}
+          <Button variant='primary' size='full' onPress={handleStart}>
+            {t('onboarding.start')}
+          </Button>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -43,27 +61,50 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 24,
+    paddingTop: 18,
+    paddingBottom: 0,
+    paddingHorizontal: 24,
+  },
+  logoContainer: {
+    width: 197.889,
+    height: 44,
+    alignSelf: 'flex-start',
+  },
+  logo: {
+    width: '100%',
+    height: '100%',
   },
   title: {
-    marginBottom: 8,
+    fontSize: 36,
+    fontFamily: 'Inter_600SemiBold',
+    lineHeight: 36,
+    alignSelf: 'flex-start',
+    marginTop: 20,
   },
-  subtitle: {
-    marginBottom: 32,
-    opacity: 0.7,
+  illustrationContainer: {
+    width: 311.688,
+    height: 316,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  illustration: {
+    width: '100%',
+    height: '100%',
   },
   button: {
-    height: 50,
-    borderRadius: 8,
+    height: 56,
+    borderRadius: 99,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    marginTop: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    width: '100%',
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: '500',
+    lineHeight: 18,
   },
 });

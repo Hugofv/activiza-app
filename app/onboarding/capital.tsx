@@ -53,11 +53,11 @@ const CapitalScreen = () => {
     if (selectedOption === null) return;
 
     updateFormData({ workingCapital: selectedOption });
-    router.push('/onboarding/country');
+    router.push('/onboarding/businessDuration');
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -98,7 +98,7 @@ const CapitalScreen = () => {
                     label: t(`onboarding.${option.keyPt}`),
                   }))}
                   selectedValue={selectedOption}
-                  onValueChange={(value) => setSelectedOption(value)}
+                  onValueChange={(value) => setSelectedOption(value as number)}
                 />
               </View>
             </ThemedView>

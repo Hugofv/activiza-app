@@ -19,6 +19,7 @@ export default {
     documentRequired: 'Documento é obrigatório',
     documentInvalid: 'CPF ou CNPJ inválido',
     documentFormat: 'Documento deve ter 11 dígitos (CPF) ou 14 dígitos (CNPJ)',
+    documentTypeInvalid: 'Tipo de documento inválido',
     nameRequired: 'Nome é obrigatório',
     nameMin: 'Nome deve ter pelo menos 3 caracteres',
     nameMax: 'Nome deve ter no máximo 100 caracteres',

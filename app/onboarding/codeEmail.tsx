@@ -2,7 +2,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -60,6 +66,7 @@ const CodeEmailScreen = () => {
   const onSubmit = (data: CodeEmailFormData) => {
     // TODO: Verify code with backend
     updateFormData({ emailCode: data.code });
+    // New flow: After email verification, go to document (optional)
     router.push('/onboarding/confirmEmail');
   };
 
@@ -69,7 +76,10 @@ const CodeEmailScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -79,7 +89,7 @@ const CodeEmailScreen = () => {
           <ThemedView style={styles.content}>
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
-              <Progress value={55} />
+              <Progress value={30} />
             </View>
 
             {/* Back Button */}
@@ -100,7 +110,7 @@ const CodeEmailScreen = () => {
             {/* Code Input */}
             <View style={styles.codeContainer}>
               <CodeInput
-                name="code"
+                name='code'
                 control={control}
                 error={errors.code?.message}
                 length={6}
@@ -115,7 +125,10 @@ const CodeEmailScreen = () => {
                   {t('onboarding.codeResendTimer', { seconds: resendTimer })}
                 </Typography>
               ) : (
-                <TouchableOpacity onPress={handleResendCode} activeOpacity={0.7}>
+                <TouchableOpacity
+                  onPress={handleResendCode}
+                  activeOpacity={0.7}
+                >
                   <Typography variant='body2' style={{ color: colors.primary }}>
                     {t('onboarding.codeResend')}
                   </Typography>
@@ -174,4 +187,3 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
 });
-

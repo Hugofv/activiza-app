@@ -47,12 +47,12 @@ const EmailScreen = () => {
 
   const onSubmit = (data: EmailFormData) => {
     updateFormData({ email: data.email });
-    // Navigate to email code verification
-    router.push('/onboarding/codeEmail');
+    // New flow: Email -> Password -> Email Verification -> Document
+    router.push('/onboarding/password');
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -62,7 +62,7 @@ const EmailScreen = () => {
           <ThemedView style={styles.content}>
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
-              <Progress value={50} />
+              <Progress value={10} />
             </View>
 
             {/* Back Button */}

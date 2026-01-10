@@ -54,7 +54,7 @@ const TermsScreen = () => {
         termsAccepted: true,
         privacyAccepted: true,
       });
-      // Navigate to options screen
+      // Options é a última tela (apresentação de planos) antes do registro finalizado
       saveFormData();
       router.push('/onboarding/options');
     }
@@ -63,7 +63,7 @@ const TermsScreen = () => {
   const isContinueDisabled = !termsAccepted || !privacyAccepted;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -73,7 +73,7 @@ const TermsScreen = () => {
           <ThemedView style={styles.content}>
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
-              <Progress value={85} />
+              <Progress value={97} />
             </View>
 
             {/* Back Button */}

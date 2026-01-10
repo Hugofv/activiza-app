@@ -24,12 +24,15 @@ const ConfirmEmailScreen = () => {
   };
 
   const handleContinue = () => {
-    // Navigate to Business Duration
-    router.push('/onboarding/businessDuration');
+    // New flow: After email verification, go to Document (optional, then Name)
+    router.push('/onboarding/document');
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <ThemedView style={styles.container}>
         <ThemedView style={styles.content}>
           {/* Back Button */}
@@ -131,4 +134,3 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
 });
-

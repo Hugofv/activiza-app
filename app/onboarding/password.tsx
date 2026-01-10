@@ -80,7 +80,10 @@ const PasswordScreen = () => {
     {
       key: 'match',
       label: t('onboarding.passwordRuleMatch'),
-      isValid: password.length > 0 && confirmPassword.length > 0 && password === confirmPassword,
+      isValid:
+        password.length > 0 &&
+        confirmPassword.length > 0 &&
+        password === confirmPassword,
     },
   ];
 
@@ -90,11 +93,15 @@ const PasswordScreen = () => {
 
   const onSubmit = (data: PasswordFormData) => {
     updateFormData({ password: data.password });
-    router.push('/onboarding/capital');
+    // New flow: Email -> Password -> Email Verification -> Document
+    router.push('/onboarding/codeEmail');
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -104,7 +111,7 @@ const PasswordScreen = () => {
           <ThemedView style={styles.content}>
             {/* Progress Bar */}
             <View style={styles.progressContainer}>
-              <Progress value={65} />
+              <Progress value={20} />
             </View>
 
             {/* Back Button */}

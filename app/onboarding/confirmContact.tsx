@@ -29,7 +29,10 @@ const ConfirmContactScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <ThemedView style={styles.container}>
         <ThemedView style={styles.content}>
           {/* Back Button */}
@@ -79,7 +82,7 @@ const ConfirmContactScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
-              />
+            />
           </View>
         </ThemedView>
       </ThemedView>

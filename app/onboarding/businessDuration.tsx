@@ -52,11 +52,12 @@ const BusinessDurationScreen = () => {
     if (selectedOption === null) return;
 
     updateFormData({ businessDuration: selectedOption });
-    router.push('/onboarding/password');
+    // Options é a última tela (apresentação de planos), então vai para country
+    router.push('/onboarding/country');
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -71,7 +72,7 @@ const BusinessDurationScreen = () => {
             <ThemedView style={styles.content}>
               {/* Progress Bar */}
               <View style={styles.progressContainer}>
-                <Progress value={60} />
+                <Progress value={85} />
               </View>
 
               {/* Back Button */}
@@ -97,7 +98,7 @@ const BusinessDurationScreen = () => {
                     label: t(`onboarding.${option.keyPt}`),
                   }))}
                   selectedValue={selectedOption}
-                  onValueChange={(value) => setSelectedOption(value)}
+                  onValueChange={(value) => setSelectedOption(value as number)}
                 />
               </View>
             </ThemedView>

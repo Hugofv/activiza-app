@@ -1,100 +1,74 @@
 import i18n from '@/translation';
 import * as yup from 'yup';
 
-// CPF validation helper
-const validateCPF = (cpf: string): boolean => {
-  const numbers = cpf.replace(/\D/g, '');
-  if (numbers.length !== 11) return false;
-
-  // Check for known invalid CPFs
-  if (/^(\d)\1{10}$/.test(numbers)) return false;
-
-  // Validate CPF algorithm
-  let sum = 0;
-  for (let i = 0; i < 9; i++) {
-    sum += parseInt(numbers.charAt(i)) * (10 - i);
-  }
-  let digit = 11 - (sum % 11);
-  if (digit >= 10) digit = 0;
-  if (digit !== parseInt(numbers.charAt(9))) return false;
-
-  sum = 0;
-  for (let i = 0; i < 10; i++) {
-    sum += parseInt(numbers.charAt(i)) * (11 - i);
-  }
-  digit = 11 - (sum % 11);
-  if (digit >= 10) digit = 0;
-  if (digit !== parseInt(numbers.charAt(10))) return false;
-
-  return true;
-};
-
-// CNPJ validation helper
-const validateCNPJ = (cnpj: string): boolean => {
-  const numbers = cnpj.replace(/\D/g, '');
-  if (numbers.length !== 14) return false;
-
-  // Check for known invalid CNPJs
-  if (/^(\d)\1{13}$/.test(numbers)) return false;
-
-  // Validate CNPJ algorithm
-  let length = numbers.length - 2;
-  let digits = numbers.substring(0, length);
-  const checkDigits = numbers.substring(length);
-  let sum = 0;
-  let pos = length - 7;
-
-  for (let i = length; i >= 1; i--) {
-    sum += parseInt(digits.charAt(length - i)) * pos--;
-    if (pos < 2) pos = 9;
-  }
-
-  let result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
-  if (result !== parseInt(checkDigits.charAt(0))) return false;
-
-  length = length + 1;
-  digits = numbers.substring(0, length);
-  sum = 0;
-  pos = length - 7;
-
-  for (let i = length; i >= 1; i--) {
-    sum += parseInt(digits.charAt(length - i)) * pos--;
-    if (pos < 2) pos = 9;
-  }
-
-  result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
-  if (result !== parseInt(checkDigits.charAt(1))) return false;
-
-  return true;
-};
-
 // Helper function to get translated error message
 // Returns a function so translation is resolved at validation time, not schema definition time
 const t = (key: string): (() => string) => {
   return () => i18n.t(`common.validation.${key}`) || key;
 };
 
-// Document (CPF or CNPJ) schema
-export const documentSchema = yup.object().shape({
-  document: yup
-    .string()
-    .required(t('documentRequired'))
-    .test('document-format', t('documentFormat'), (value) => {
-      if (!value) return false;
-      const numbers = value.replace(/\D/g, '');
-      return numbers.length === 11 || numbers.length === 14;
-    })
-    .test('document-valid', t('documentInvalid'), (value) => {
-      if (!value) return false;
-      const numbers = value.replace(/\D/g, '');
-      if (numbers.length === 11) {
-        return validateCPF(value);
-      } else if (numbers.length === 14) {
-        return validateCNPJ(value);
-      }
-      return false;
-    }),
-});
+// Document schema simplificado (validação mínima baseada em país e tipo)
+// Validação de algoritmo (CPF/CNPJ, etc) fica no backend
+export const createDocumentSchema = (countryCode?: string, documentType?: string) => {
+  return yup.object().shape({
+    document: yup
+      .string()
+      .optional() // Documento agora é opcional
+      .test('document-format', t('documentFormat'), (value) => {
+        // Se não fornecido, é válido (opcional)
+        if (!value) return true;
+        
+        const normalized = value.replace(/\D/g, '');
+        
+        // Validação mínima baseada no país e tipo
+        switch (countryCode) {
+          case 'BR':
+            if (documentType === 'cpf') {
+              return normalized.length === 11;
+            } else if (documentType === 'cnpj') {
+              return normalized.length === 14;
+            }
+            // Se tipo não especificado, aceita CPF ou CNPJ
+            return normalized.length === 11 || normalized.length === 14;
+          
+          case 'US':
+            if (documentType === 'ssn' || documentType === 'ein') {
+              return normalized.length === 9;
+            }
+            return normalized.length >= 9 && normalized.length <= 10;
+          
+          case 'UK':
+            // UK NI Number: formato alfanumérico 2 letras + 6 números + 1 letra
+            // Conforme especificado no plano: /^[A-Z]{2}\d{6}[A-Z]$/
+            if (documentType === 'ni') {
+              const cleaned = value.replace(/\s/g, '').toUpperCase();
+              return /^[A-Z]{2}\d{6}[A-Z]$/.test(cleaned);
+            } else if (documentType === 'crn') {
+              // UK Company Number: 8 digits
+              return normalized.length === 8;
+            }
+            // Para UK sem tipo específico, aceita formato NI Number ou qualquer alfanumérico
+            const cleaned = value.replace(/\s/g, '').toUpperCase();
+            if (/^[A-Z]{2}\d{6}[A-Z]$/.test(cleaned)) {
+              return true; // Formato NI Number válido
+            }
+            // Aceita qualquer formato alfanumérico com pelo menos 5 caracteres
+            return value.replace(/[^A-Z0-9]/gi, '').length >= 5 && value.replace(/[^A-Z0-9]/gi, '').length <= 10;
+          
+          default:
+            // Para outros países, aceita qualquer formato com pelo menos 5 caracteres
+            return value.length >= 5 && value.length <= 30;
+        }
+      }),
+    documentType: yup
+      .string()
+      .optional()
+      .oneOf(['cpf', 'cnpj', 'ssn', 'ein', 'ni', 'crn', 'other'], t('documentTypeInvalid')),
+  });
+};
+
+// Schema padrão (retrocompatibilidade)
+export const documentSchema = createDocumentSchema('BR');
 
 // Name schema
 export const nameSchema = yup.object().shape({
@@ -217,24 +191,17 @@ export const addressSchema = yup.object().shape({
 
 // Combined onboarding schema
 export const onboardingSchema = yup.object().shape({
-  document: yup
+  // Email é obrigatório (identificador primário)
+  email: yup
     .string()
-    .required(t('documentRequired'))
-    .test('document-format', t('documentFormat'), (value) => {
-      if (!value) return false;
-      const numbers = value.replace(/\D/g, '');
-      return numbers.length === 11 || numbers.length === 14;
-    })
-    .test('document-valid', t('documentInvalid'), (value) => {
-      if (!value) return false;
-      const numbers = value.replace(/\D/g, '');
-      if (numbers.length === 11) {
-        return validateCPF(value);
-      } else if (numbers.length === 14) {
-        return validateCNPJ(value);
-      }
-      return false;
-    }),
+    .required(t('emailRequired'))
+    .email(t('emailInvalid'))
+    .max(100, t('emailMax')),
+  
+  // Documento é opcional (informação de identificação)
+  document: yup.string().optional(),
+  documentType: yup.string().optional(),
+  
   name: yup
     .string()
     .required(t('nameRequired'))
@@ -254,10 +221,5 @@ export const onboardingSchema = yup.object().shape({
       if (!value) return false;
       return !!value.phoneNumber && value.phoneNumber.length >= 8;
     }),
-  email: yup
-    .string()
-    .required(t('emailRequired'))
-    .email(t('emailInvalid'))
-    .max(100, t('emailMax')),
 });
 

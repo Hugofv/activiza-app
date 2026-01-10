@@ -26,13 +26,41 @@ const FINANCIAL_OPERATIONS_OPTIONS: {
   keyPt: string;
   keyEn: string;
 }[] = [
-  { value: 5, keyPt: 'financialOperationsUpTo5', keyEn: 'financialOperationsUpTo5' },
-  { value: 10, keyPt: 'financialOperations6To10', keyEn: 'financialOperations6To10' },
-  { value: 20, keyPt: 'financialOperations11To20', keyEn: 'financialOperations11To20' },
-  { value: 50, keyPt: 'financialOperations21To50', keyEn: 'financialOperations21To50' },
-  { value: 100, keyPt: 'financialOperations51To100', keyEn: 'financialOperations51To100' },
-  { value: 200, keyPt: 'financialOperations101To200', keyEn: 'financialOperations101To200' },
-  { value: 0, keyPt: 'financialOperationsMoreThan200', keyEn: 'financialOperationsMoreThan200' }, // 0 = unlimited/more than 200
+  {
+    value: 5,
+    keyPt: 'financialOperationsUpTo5',
+    keyEn: 'financialOperationsUpTo5',
+  },
+  {
+    value: 10,
+    keyPt: 'financialOperations6To10',
+    keyEn: 'financialOperations6To10',
+  },
+  {
+    value: 20,
+    keyPt: 'financialOperations11To20',
+    keyEn: 'financialOperations11To20',
+  },
+  {
+    value: 50,
+    keyPt: 'financialOperations21To50',
+    keyEn: 'financialOperations21To50',
+  },
+  {
+    value: 100,
+    keyPt: 'financialOperations51To100',
+    keyEn: 'financialOperations51To100',
+  },
+  {
+    value: 200,
+    keyPt: 'financialOperations101To200',
+    keyEn: 'financialOperations101To200',
+  },
+  {
+    value: 0,
+    keyPt: 'financialOperationsMoreThan200',
+    keyEn: 'financialOperationsMoreThan200',
+  }, // 0 = unlimited/more than 200
 ];
 
 /**
@@ -55,11 +83,14 @@ const FinancialOperationsScreen = () => {
     if (selectedOption === null) return;
 
     updateFormData({ financialOperations: selectedOption });
-    router.push('/onboarding/email');
+    router.push('/onboarding/capital');
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -74,7 +105,7 @@ const FinancialOperationsScreen = () => {
             <ThemedView style={styles.content}>
               {/* Progress Bar */}
               <View style={styles.progressContainer}>
-                <Progress value={45} />
+                <Progress value={75} />
               </View>
 
               {/* Back Button */}
@@ -105,7 +136,7 @@ const FinancialOperationsScreen = () => {
                     label: t(`onboarding.${option.keyPt}`),
                   }))}
                   selectedValue={selectedOption}
-                  onValueChange={(value) => setSelectedOption(value)}
+                  onValueChange={(value) => setSelectedOption(value as number)}
                 />
               </View>
             </ThemedView>

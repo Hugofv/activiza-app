@@ -28,9 +28,21 @@ const ACTIVE_CUSTOMERS_OPTIONS: {
 }[] = [
   { value: 20, keyPt: 'activeCustomersUpTo20', keyEn: 'activeCustomersUpTo20' },
   { value: 50, keyPt: 'activeCustomers21To50', keyEn: 'activeCustomers21To50' },
-  { value: 100, keyPt: 'activeCustomers51To100', keyEn: 'activeCustomers51To100' },
-  { value: 300, keyPt: 'activeCustomers101To300', keyEn: 'activeCustomers101To300' },
-  { value: 0, keyPt: 'activeCustomersMoreThan300', keyEn: 'activeCustomersMoreThan300' }, // 0 = unlimited/more than 300
+  {
+    value: 100,
+    keyPt: 'activeCustomers51To100',
+    keyEn: 'activeCustomers51To100',
+  },
+  {
+    value: 300,
+    keyPt: 'activeCustomers101To300',
+    keyEn: 'activeCustomers101To300',
+  },
+  {
+    value: 0,
+    keyPt: 'activeCustomersMoreThan300',
+    keyEn: 'activeCustomersMoreThan300',
+  }, // 0 = unlimited/more than 300
 ];
 
 /**
@@ -57,7 +69,10 @@ const ActiveCustomersScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -72,7 +87,7 @@ const ActiveCustomersScreen = () => {
             <ThemedView style={styles.content}>
               {/* Progress Bar */}
               <View style={styles.progressContainer}>
-                <Progress value={40} />
+                <Progress value={70} />
               </View>
 
               {/* Back Button */}
@@ -103,7 +118,7 @@ const ActiveCustomersScreen = () => {
                     label: t(`onboarding.${option.keyPt}`),
                   }))}
                   selectedValue={selectedOption}
-                  onValueChange={(value) => setSelectedOption(value)}
+                  onValueChange={(value) => setSelectedOption(value as number)}
                 />
               </View>
             </ThemedView>
