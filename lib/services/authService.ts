@@ -12,15 +12,70 @@ import {
   setRefreshToken,
   setTokenExpiry,
 } from '../storage/secureStorage';
-import { AuthResponse, EmailStatus, EmailStatusResponse, LoginCredentials, RefreshTokenResponse, User } from '../types/authTypes';
+import {
+  AuthResponse,
+  EmailStatus,
+  EmailStatusResponse,
+  LoginCredentials,
+  RefreshTokenResponse,
+  RegisterCredentials,
+  User,
+} from '../types/authTypes';
 
 // Use the extended config type for skipAuth
 type ApiConfig = { skipAuth?: boolean };
 
 /**
+ * Register new user with email and password
+ */
+export async function register(
+  credentials: RegisterCredentials
+): Promise<AuthResponse> {
+  try {
+    const response = await apiClient.post<AuthResponse>(
+      ENDPOINTS.AUTH.REGISTER,
+      credentials,
+      { skipAuth: true } as ApiConfig
+    );
+
+    console.log('Register response:', JSON.stringify(response.data, null, 2));
+    
+    const { user, accessToken, refreshToken, expiresIn } = response.data;
+
+    // Validate tokens before storing
+    if (!accessToken || !refreshToken) {
+      console.error('Invalid response: missing tokens', { accessToken: !!accessToken, refreshToken: !!refreshToken });
+      throw new Error('Invalid response: access token or refresh token is missing');
+    }
+
+    // Ensure tokens are strings
+    const accessTokenString = String(accessToken);
+    const refreshTokenString = String(refreshToken);
+
+    // Store tokens securely after registration
+    await setAccessToken(accessTokenString);
+    await setRefreshToken(refreshTokenString);
+    await setTokenExpiry(expiresIn || 0);
+
+    // Update query client cache with user data
+    queryClient.setQueryData<User>(['auth', 'user'], user);
+
+    // Invalidate token validation query to ensure auth guard detects authentication immediately
+    queryClient.invalidateQueries({ queryKey: ['auth', 'token-valid'] });
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Register error:', error);
+    throw error;
+  }
+}
+
+/**
  * Login with email and password
  */
-export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
+export async function login(
+  credentials: LoginCredentials
+): Promise<AuthResponse> {
   try {
     const response = await apiClient.post<AuthResponse>(
       ENDPOINTS.AUTH.LOGIN,
@@ -28,15 +83,30 @@ export async function login(credentials: LoginCredentials): Promise<AuthResponse
       { skipAuth: true } as ApiConfig
     );
 
-    const { user, tokens } = response.data;
+    // Handle response structure: API may return { success: true, data: {...} } or direct data
+    const responseData = (response.data as any).data || response.data;
+    const { user, accessToken, refreshToken, expiresIn } = responseData;
+
+    // Validate tokens before storing
+    if (!accessToken || !refreshToken) {
+      console.error('Invalid response: missing tokens', { accessToken: !!accessToken, refreshToken: !!refreshToken });
+      throw new Error('Invalid response: access token or refresh token is missing');
+    }
+
+    // Ensure tokens are strings
+    const accessTokenString = String(accessToken);
+    const refreshTokenString = String(refreshToken);
 
     // Store tokens securely
-    await setAccessToken(tokens.accessToken);
-    await setRefreshToken(tokens.refreshToken);
-    await setTokenExpiry(tokens.expiresIn);
+    await setAccessToken(accessTokenString);
+    await setRefreshToken(refreshTokenString);
+    await setTokenExpiry(expiresIn);
 
     // Update query client cache with user data
     queryClient.setQueryData<User>(['auth', 'user'], user);
+
+    // Invalidate token validation query to ensure auth guard detects authentication immediately
+    queryClient.invalidateQueries({ queryKey: ['auth', 'token-valid'] });
 
     return response.data;
   } catch (error: any) {
@@ -55,7 +125,10 @@ export async function logout(): Promise<void> {
       await apiClient.post(ENDPOINTS.AUTH.LOGOUT, {}, { skipAuth: false });
     } catch (error) {
       // Continue even if logout endpoint fails (e.g., offline)
-      console.warn('Logout endpoint failed, continuing with local cleanup:', error);
+      console.warn(
+        'Logout endpoint failed, continuing with local cleanup:',
+        error
+      );
     }
 
     // Clear tokens
@@ -76,7 +149,7 @@ export async function logout(): Promise<void> {
 export async function refreshAccessToken(): Promise<string> {
   try {
     const refreshToken = await getRefreshToken();
-    
+
     if (!refreshToken) {
       throw new Error('No refresh token available');
     }
@@ -96,11 +169,11 @@ export async function refreshAccessToken(): Promise<string> {
     return accessToken;
   } catch (error: any) {
     console.error('Refresh token error:', error);
-    
+
     // If refresh fails, clear tokens and force re-login
     await clearTokens();
     queryClient.removeQueries({ queryKey: ['auth'] });
-    
+
     throw error;
   }
 }
@@ -111,7 +184,7 @@ export async function refreshAccessToken(): Promise<string> {
 export async function ensureValidToken(): Promise<string | null> {
   try {
     const tokenExpired = await isTokenExpired();
-    
+
     if (tokenExpired) {
       console.log('Token expired or expiring soon, refreshing...');
       return await refreshAccessToken();
@@ -129,7 +202,10 @@ export async function ensureValidToken(): Promise<string | null> {
 /**
  * Verify email with code
  */
-export async function verifyEmail(email: string, code: string): Promise<boolean> {
+export async function verifyEmail(
+  email: string,
+  code: string
+): Promise<boolean> {
   try {
     const response = await apiClient.post(
       ENDPOINTS.AUTH.VERIFY_EMAIL,
@@ -147,7 +223,10 @@ export async function verifyEmail(email: string, code: string): Promise<boolean>
 /**
  * Verify phone with code
  */
-export async function verifyPhone(phone: string, code: string): Promise<boolean> {
+export async function verifyPhone(
+  phone: string,
+  code: string
+): Promise<boolean> {
   try {
     const response = await apiClient.post(
       ENDPOINTS.AUTH.VERIFY_PHONE,
@@ -165,17 +244,19 @@ export async function verifyPhone(phone: string, code: string): Promise<boolean>
 /**
  * Resend verification code
  */
-export async function resendVerificationCode(emailOrPhone: string, type: 'email' | 'phone'): Promise<boolean> {
+export async function resendVerificationCode(
+  emailOrPhone: string,
+  type: 'email' | 'phone'
+): Promise<boolean> {
   try {
-    const endpoint = type === 'email' 
-      ? ENDPOINTS.AUTH.RESEND_CODE 
-      : ENDPOINTS.AUTH.RESEND_CODE;
+    const endpoint =
+      type === 'email'
+        ? ENDPOINTS.AUTH.RESEND_CODE
+        : ENDPOINTS.AUTH.RESEND_CODE;
 
-    const response = await apiClient.post(
-      endpoint,
-      { [type]: emailOrPhone },
-      { skipAuth: true } as ApiConfig
-    );
+    const response = await apiClient.post(endpoint, { [type]: emailOrPhone }, {
+      skipAuth: true,
+    } as ApiConfig);
 
     return response.status === 200;
   } catch (error: any) {
@@ -193,16 +274,17 @@ export function getCurrentUser(): User | undefined {
 
 /**
  * Check if email exists and registration status
- * GET /onboarding/check-email?email=user@example.com
+ * GET /auth/check-email?email=user@example.com (public route)
  */
 export async function checkEmailStatus(email: string): Promise<EmailStatus> {
   try {
     const response = await apiClient.get<EmailStatusResponse>(
-      `${ENDPOINTS.ONBOARDING.CHECK_EMAIL}?email=${encodeURIComponent(email)}`,
+      `${ENDPOINTS.AUTH.CHECK_EMAIL}?email=${encodeURIComponent(email)}`,
       { skipAuth: true } as ApiConfig
     );
 
-    const { data } = response.data;
+    // Axios returns data in response.data
+    const data = response.data;
 
     // Transform API response to simplified format
     return {

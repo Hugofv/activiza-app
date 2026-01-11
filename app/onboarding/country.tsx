@@ -40,7 +40,7 @@ const CountryScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t, i18n } = useTranslation();
-  const { formData, updateFormData } = useOnboardingForm();
+  const { formData, updateFormData, saveFormData } = useOnboardingForm();
   const [selectedCountry, setSelectedCountry] = useState<CountryCode | null>(
     (formData.address?.country as CountryCode) || null
   );
@@ -49,7 +49,7 @@ const CountryScreen = () => {
     router.back();
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!selectedCountry) return;
 
     const country = COUNTRIES.find((c) => c.code === selectedCountry);
@@ -75,6 +75,15 @@ const CountryScreen = () => {
         },
       } as any,
     });
+    
+    // Save country step to API
+    try {
+      await saveFormData();
+    } catch (error) {
+      // Don't block navigation if save fails (offline mode will queue it)
+      console.warn('Failed to save country step, will retry:', error);
+    }
+    
     router.push('/onboarding/postalCode');
   };
 

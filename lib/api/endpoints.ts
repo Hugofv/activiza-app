@@ -6,29 +6,30 @@
 // Expo SDK 50+ automatically loads EXPO_PUBLIC_* variables from .env file
 // Note: You may need to restart the Expo server after changing .env
 // Variables are injected at build time by Metro bundler
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://api.ativiza.com';
+export const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL || 'https://api.ativiza.com';
 
-
-const PREFIX = '/api/';
+const PREFIX = '/api';
 // API endpoints
 export const ENDPOINTS = {
-  // Auth endpoints
+  // Auth endpoints (public routes)
   AUTH: {
-    LOGIN: `${PREFIX}/auth/login`,
-    LOGOUT: `${PREFIX}/auth/logout`,
-    REFRESH_TOKEN: `${PREFIX}/auth/refresh`,
-    VERIFY_EMAIL: `${PREFIX}/auth/verify-email`,
-    VERIFY_PHONE: `${PREFIX}/auth/verify-phone`,
-    RESEND_CODE: `${PREFIX}/auth/resend-code`,
+    REGISTER: `/auth/register`,
+    LOGIN: `/auth/login`,
+    LOGOUT: `/auth/logout`,
+    REFRESH_TOKEN: `/auth/refresh`,
+    VERIFY_EMAIL: `/auth/verify-email`,
+    VERIFY_PHONE: `/auth/verify-phone`,
+    RESEND_CODE: `/auth/resend-code`,
+    CHECK_EMAIL: `/auth/check-email`,
   },
-  
-  // Onboarding endpoints
+
+  // Onboarding endpoints (protected routes - require authentication)
   ONBOARDING: {
     SAVE: `${PREFIX}/onboarding/save`,
     SUBMIT: `${PREFIX}/onboarding/submit`,
-    CHECK_EMAIL: `${PREFIX}/onboarding/check-email`,
   },
-  
+
   // User endpoints
   USER: {
     PROFILE: `${PREFIX}/user/profile`,

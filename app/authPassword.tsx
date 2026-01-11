@@ -30,8 +30,9 @@ const AuthPasswordScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const params = useLocalSearchParams<{ email?: string }>();
+  const params = useLocalSearchParams<{ email?: string; onboardingStep?: string }>();
   const email = params.email || '';
+  const onboardingStep = params.onboardingStep || '';
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -59,13 +60,43 @@ const AuthPasswordScreen = () => {
 
     setIsLoading(true);
     try {
+      // Login user
       await login({
         email,
         password: data.password,
       });
 
-      // Navigate to home or main app
-      router.replace('/');
+      // After login, redirect based on onboardingStep from params
+      // If user is fully registered (COMPLETED), onboardingStep will be empty and redirect to home
+      // If user is in progress (IN_PROGRESS), onboardingStep will contain the step to continue
+      if (onboardingStep) {
+        // User is in progress onboarding, redirect to the step from params
+        const stepToRouteMap: Record<string, string> = {
+          // API step values -> route names (from API examples)
+          phone_verification: '/onboarding/codeContact',
+          active_customers: '/onboarding/activeCustomers',
+          financial_operations: '/onboarding/financialOperations',
+          working_capital: '/onboarding/capital',
+          business_duration: '/onboarding/businessDuration',
+          postal_code: '/onboarding/postalCode',
+          address: '/onboarding/address',
+          terms: '/onboarding/terms',
+          // Additional possible steps
+          email: '/onboarding/email',
+          email_verification: '/onboarding/codeEmail',
+          password: '/onboarding/password',
+          document: '/onboarding/document',
+          name: '/onboarding/name',
+          contact: '/onboarding/contact',
+          country: '/onboarding/country',
+          options: '/onboarding/options',
+        };
+        const route = stepToRouteMap[onboardingStep] || '/onboarding/password';
+        router.replace(route as any);
+      } else {
+        // User is fully registered (COMPLETED), redirect to home
+        router.replace('/');
+      }
     } catch (error: any) {
       console.error('Login error:', error);
       Alert.alert(

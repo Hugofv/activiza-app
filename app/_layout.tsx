@@ -70,27 +70,27 @@ export default function RootLayout() {
         <ThemeProvider
           value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
         >
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              animation: 'slide_from_right',
-              animationDuration: 300,
-            }}
-          >
-            <Stack.Screen
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                animation: 'slide_from_right',
+                animationDuration: 300,
+              }}
+            >
+              <Stack.Screen
               name='index'
-              options={{
-                headerShown: false,
+                options={{
+                  headerShown: false,
                 animation: 'default',
-              }}
-            />
-            <Stack.Screen
+                }}
+              />
+              <Stack.Screen
               name='onboarding'
-              options={{
-                headerShown: false,
+                options={{
+                  headerShown: false,
                 animation: 'default',
-              }}
-            />
+                }}
+              />
               <Stack.Screen
                 name='login'
                 options={{
@@ -108,7 +108,7 @@ export default function RootLayout() {
                 }}
               />
             </Stack>
-          <StatusBar style='auto' />
+            <StatusBar style='auto' />
         </ThemeProvider>
       </PersistQueryClientProvider>
     </QueryClientProvider>

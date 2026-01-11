@@ -40,7 +40,7 @@ const DocumentScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData } = useOnboardingForm();
+  const { formData, updateFormData, saveFormData } = useOnboardingForm();
 
   // Get country code from address or default to BR
   const countryCode: CountryCode = (formData.address?.countryCode as CountryCode) || 'BR';
@@ -120,11 +120,20 @@ const DocumentScreen = () => {
     router.back();
   };
 
-  const onSubmit = (data: DocumentFormData) => {
+  const onSubmit = async (data: DocumentFormData) => {
     updateFormData({
       document: data.document || undefined,
       documentType: data.documentType || undefined,
     });
+    
+    // Save document step to API
+    try {
+      await saveFormData();
+    } catch (error) {
+      // Don't block navigation if save fails (offline mode will queue it)
+      console.warn('Failed to save document step, will retry:', error);
+    }
+    
     router.push('/onboarding/name');
   };
 

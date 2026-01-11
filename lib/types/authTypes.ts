@@ -7,6 +7,11 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface RegisterCredentials {
+  email: string;
+  password: string;
+}
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
@@ -21,8 +26,11 @@ export interface User {
 }
 
 export interface AuthResponse {
-  user: User;
-  tokens: AuthTokens;
+  success?: boolean;
+  user?: User;
+  accessToken?: string;
+  refreshToken?: string;
+  expiresIn?: number;
 }
 
 export interface RefreshTokenResponse {
@@ -31,15 +39,11 @@ export interface RefreshTokenResponse {
 }
 
 export interface EmailStatusResponse {
-  success: boolean;
-  data: {
-    email: string;
-    registered: boolean;
-    existsAs: 'client' | 'user' | null;
-    clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING';
-    onboardingStep?: string; // e.g., 'phone_verification', 'active_customers', etc.
-    message?: string;
-  };
+  existsAs: 'client' | 'user' | null;
+  registered: boolean;
+  clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING';
+  onboardingStep?: string; // e.g., 'phone_verification', 'active_customers', etc.
+  message?: string;
 }
 
 // Helper type for simplified access

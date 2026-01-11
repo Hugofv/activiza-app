@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -12,6 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { register } from '@/lib/services/authService';
 import { passwordSchema } from '@/lib/validations/onboarding';
 
 import { Icon } from '@/components/ui/icon';
@@ -30,8 +31,9 @@ const PasswordScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { updateFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
   const [showPassword, setShowPassword] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const {
     control,
@@ -91,10 +93,37 @@ const PasswordScreen = () => {
     router.back();
   };
 
-  const onSubmit = (data: PasswordFormData) => {
-    updateFormData({ password: data.password });
-    // New flow: Email -> Password -> Email Verification -> Document
-    router.push('/onboarding/codeEmail');
+  const onSubmit = async (data: PasswordFormData) => {
+    if (!formData.email) {
+      Alert.alert('Error', 'Email is required. Please go back to email screen.');
+      return;
+    }
+
+    setIsRegistering(true);
+    try {
+      // Register user with email and password (this creates the account and authenticates automatically)
+      // The register() function already:
+      // - Creates the user account
+      // - Stores tokens securely
+      // - Updates React Query cache with user data
+      // - User is now authenticated
+      await register({
+        email: formData.email,
+        password: data.password,
+      });
+      
+      // Continue to next step (email verification)
+      // User is now authenticated, so onboarding routes are accessible
+      router.push('/onboarding/codeEmail');
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      Alert.alert(
+        'Registration Failed',
+        error?.message || 'Failed to create account. Please try again.'
+      );
+    } finally {
+      setIsRegistering(false);
+    }
   };
 
   return (
@@ -230,7 +259,7 @@ const PasswordScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
-              disabled={!isValid}
+              disabled={!isValid || isRegistering}
             />
           </View>
         </ThemedView>

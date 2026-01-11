@@ -29,7 +29,7 @@ const PostalCodeScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData } = useOnboardingForm();
+  const { formData, updateFormData, saveFormData } = useOnboardingForm();
   const [loading, setLoading] = useState(false);
 
   const countryCode = (formData.address as any)?.countryCode as CountryCode || 'BR';
@@ -94,6 +94,14 @@ const PostalCodeScreen = () => {
         });
       }
 
+      // Save postalCode step to API
+      try {
+        await saveFormData();
+      } catch (saveError) {
+        // Don't block navigation if save fails (offline mode will queue it)
+        console.warn('Failed to save postalCode step, will retry:', saveError);
+      }
+
       // Navigate to address screen
       router.push('/onboarding/address');
     } catch (error) {
@@ -106,6 +114,14 @@ const PostalCodeScreen = () => {
           countryCode: countryCode,
         } as any,
       });
+      
+      // Try to save even if lookup failed
+      try {
+        await saveFormData();
+      } catch (saveError) {
+        console.warn('Failed to save postalCode step, will retry:', saveError);
+      }
+      
       router.push('/onboarding/address');
     } finally {
       setLoading(false);

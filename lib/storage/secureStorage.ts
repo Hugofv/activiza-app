@@ -12,9 +12,23 @@ const TOKEN_KEYS = {
 /**
  * Store access token securely
  */
-export async function setAccessToken(token: string): Promise<boolean> {
+export async function setAccessToken(token: string | null | undefined): Promise<boolean> {
   try {
-    await SecureStore.setItemAsync(TOKEN_KEYS.ACCESS_TOKEN, token);
+    // SecureStore requires string values - validate and convert if necessary
+    if (!token) {
+      console.error('Error storing access token: token is null or undefined');
+      return false;
+    }
+    
+    // Ensure token is a string
+    const tokenString = typeof token === 'string' ? token : String(token);
+    
+    if (!tokenString || tokenString.trim().length === 0) {
+      console.error('Error storing access token: token is empty');
+      return false;
+    }
+    
+    await SecureStore.setItemAsync(TOKEN_KEYS.ACCESS_TOKEN, tokenString);
     return true;
   } catch (error) {
     console.error('Error storing access token:', error);
@@ -37,9 +51,23 @@ export async function getAccessToken(): Promise<string | null> {
 /**
  * Store refresh token securely
  */
-export async function setRefreshToken(token: string): Promise<boolean> {
+export async function setRefreshToken(token: string | null | undefined): Promise<boolean> {
   try {
-    await SecureStore.setItemAsync(TOKEN_KEYS.REFRESH_TOKEN, token);
+    // SecureStore requires string values - validate and convert if necessary
+    if (!token) {
+      console.error('Error storing refresh token: token is null or undefined');
+      return false;
+    }
+    
+    // Ensure token is a string
+    const tokenString = typeof token === 'string' ? token : String(token);
+    
+    if (!tokenString || tokenString.trim().length === 0) {
+      console.error('Error storing refresh token: token is empty');
+      return false;
+    }
+    
+    await SecureStore.setItemAsync(TOKEN_KEYS.REFRESH_TOKEN, tokenString);
     return true;
   } catch (error) {
     console.error('Error storing refresh token:', error);

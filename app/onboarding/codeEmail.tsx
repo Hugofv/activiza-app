@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -18,6 +19,7 @@ import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { resendVerificationCode, verifyEmail } from '@/lib/services/authService';
 import { codeSchema } from '@/lib/validations/onboarding';
 
 import { Typography } from '@/components/ui/typography';
@@ -34,8 +36,10 @@ const CodeEmailScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { updateFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
   const [resendTimer, setResendTimer] = useState(60);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const {
     control,
@@ -63,16 +67,57 @@ const CodeEmailScreen = () => {
     router.back();
   };
 
-  const onSubmit = (data: CodeEmailFormData) => {
-    // TODO: Verify code with backend
-    updateFormData({ emailCode: data.code });
-    // New flow: After email verification, go to document (optional)
-    router.push('/onboarding/confirmEmail');
+  const onSubmit = async (data: CodeEmailFormData) => {
+    if (!formData.email) {
+      Alert.alert('Error', 'Email is required. Please go back to email screen.');
+      return;
+    }
+
+    setIsVerifying(true);
+    try {
+      // Verify email code with API
+      await verifyEmail(formData.email, data.code);
+      
+      // Code verified successfully
+      updateFormData({ emailCode: data.code });
+      
+      // Continue to confirmation screen
+      router.push('/onboarding/confirmEmail');
+    } catch (error: any) {
+      console.error('Email verification error:', error);
+      Alert.alert(
+        'Verification Failed',
+        error?.response?.data?.message || error?.message || 'Invalid verification code. Please try again.'
+      );
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
-  const handleResendCode = () => {
-    // TODO: Resend code via email
-    setResendTimer(60);
+  const handleResendCode = async () => {
+    if (!formData.email) {
+      Alert.alert('Error', 'Email is required.');
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      // Resend verification code via email
+      await resendVerificationCode(formData.email, 'email');
+      
+      // Reset timer
+      setResendTimer(60);
+      
+      Alert.alert('Success', 'Verification code sent to your email.');
+    } catch (error: any) {
+      console.error('Resend code error:', error);
+      Alert.alert(
+        'Failed to Resend',
+        error?.response?.data?.message || error?.message || 'Failed to resend verification code. Please try again.'
+      );
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
@@ -128,9 +173,10 @@ const CodeEmailScreen = () => {
                 <TouchableOpacity
                   onPress={handleResendCode}
                   activeOpacity={0.7}
+                  disabled={isResending}
                 >
-                  <Typography variant='body2' style={{ color: colors.primary }}>
-                    {t('onboarding.codeResend')}
+                  <Typography variant='body2' style={{ color: colors.primary, opacity: isResending ? 0.5 : 1 }}>
+                    {isResending ? (t('onboarding.codeResending') || 'Sending...') : t('onboarding.codeResend')}
                   </Typography>
                 </TouchableOpacity>
               )}
@@ -146,7 +192,7 @@ const CodeEmailScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
-              disabled={!isValid}
+              disabled={!isValid || isVerifying}
             />
           </View>
         </ThemedView>

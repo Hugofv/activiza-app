@@ -19,7 +19,7 @@ export default {
   register: 'Registrar',
   forgotPassword: 'Esqueceu sua senha?',
   enterPassword: 'Digite sua senha',
-  enterPasswordDescription: 'Digite sua senha para entrar na sua conta {email}',
+  enterPasswordDescription: 'Digite sua senha para entrar na sua conta {{email}}',
   createAccount: 'Criar conta',
   alreadyHaveAccount: 'Já tem uma conta?',
   loginWithEmail: 'Entrar com email',

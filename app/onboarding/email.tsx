@@ -54,7 +54,8 @@ const EmailScreen = () => {
       // Check if email exists and registration status
       const emailStatus = await checkEmailStatus(data.email);
       
-      updateFormData({ email: data.email });
+      // Just update form data (don't save to API yet - user doesn't have account)
+    updateFormData({ email: data.email });
 
       // Check if user is fully registered (completed) vs in-progress onboarding
       const isFullyRegistered = emailStatus.exists && 
@@ -67,9 +68,13 @@ const EmailScreen = () => {
 
       if (isFullyRegistered) {
         // User is fully registered, redirect to password authentication
+        // Pass onboardingStep to redirect user after login
         router.push({
           pathname: '/authPassword',
-          params: { email: data.email },
+          params: { 
+            email: data.email,
+            onboardingStep: emailStatus.onboardingStep || '',
+          },
         });
       } else if (isInProgressOnboarding) {
         // User exists but registration is incomplete, continue onboarding from last step
@@ -99,8 +104,8 @@ const EmailScreen = () => {
         router.push(route as any);
       } else {
         // New user, continue normal onboarding flow
-        // New flow: Email -> Password -> Email Verification -> Document
-        router.push('/onboarding/password');
+    // New flow: Email -> Password -> Email Verification -> Document
+    router.push('/onboarding/password');
       }
     } catch (error: any) {
       console.error('Check email status error:', error);
@@ -172,7 +177,7 @@ const EmailScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid || isChecking}
-            />
+              />
           </View>
         </ThemedView>
       </KeyboardAvoidingView>
