@@ -11,7 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { IconButton } from '@/components/ui/icon-button';
 import { ListCheck } from '@/components/ui/list-check';
@@ -176,14 +175,15 @@ const OptionsScreen = () => {
 
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
-            <Button
+            <IconButton
               variant='primary'
-              size='full'
+              size='lg'
+              icon='arrow-forward'
+              iconSize={32}
+              iconColor={colors.primaryForeground}
               onPress={handleContinue}
               disabled={selectedOptions.length === 0}
-            >
-              {t('common.continue') || 'Continuar'}
-            </Button>
+            />
           </View>
         </ThemedView>
       </KeyboardAvoidingView>
@@ -225,6 +225,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,
-    paddingTop: 16,
+    alignItems: 'flex-end',
   },
 });
