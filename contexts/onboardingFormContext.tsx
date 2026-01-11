@@ -1,5 +1,6 @@
+import { isStepCompleted as checkStepCompleted, isOnboardingCompleted, OnboardingStepKey } from '@/lib/config/onboardingSteps';
 import { isOfflineError } from '@/lib/hooks/useMutation';
-import { saveOnboardingData, submitOnboarding } from '@/lib/services/onboardingService';
+import { saveOnboardingData, submitOnboarding, updateOnboardingStep } from '@/lib/services/onboardingService';
 import { useMutation } from '@tanstack/react-query';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 
@@ -51,14 +52,19 @@ export interface OnboardingFormData {
 
 interface OnboardingFormContextType {
   formData: Partial<OnboardingFormData>;
-  updateFormData: (data: Partial<OnboardingFormData>) => void;
-  saveFormData: () => Promise<void>;
+  currentStep: OnboardingStepKey | null;
+  clientStatus: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' | null;
+  updateFormData: (data: Partial<OnboardingFormData>, step?: OnboardingStepKey) => Promise<void>;
+  updateStep: (step: OnboardingStepKey) => Promise<void>; // Para steps de verificação
   submitFormData: () => Promise<void>;
   resetFormData: () => void;
   isSaving: boolean;
   isSubmitting: boolean;
   saveError: Error | null;
   submitError: Error | null;
+  // Helper functions
+  isStepCompleted: (step: OnboardingStepKey) => boolean;
+  isOnboardingFullyCompleted: () => boolean;
 }
 
 const OnboardingFormContext = createContext<
@@ -83,23 +89,55 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
   children,
 }) => {
   const [formData, setFormData] = useState<Partial<OnboardingFormData>>({});
-
-  const updateFormData = (data: Partial<OnboardingFormData>) => {
-    setFormData((prev) => ({ ...prev, ...data }));
-  };
+  const [currentStep, setCurrentStep] = useState<OnboardingStepKey | null>(null);
+  const [clientStatus, setClientStatus] = useState<'IN_PROGRESS' | 'COMPLETED' | 'PENDING' | null>(null);
 
   const resetFormData = () => {
     setFormData({});
+    setCurrentStep(null);
+    setClientStatus(null);
   };
 
   // Mutation for saving onboarding data (intermediate saves)
   const saveMutation = useMutation({
-    mutationFn: (data: Partial<OnboardingFormData>) => saveOnboardingData(data),
+    mutationFn: ({ data, step }: { data: Partial<OnboardingFormData>; step?: OnboardingStepKey }) => 
+      saveOnboardingData(data, step),
     onError: (error: any) => {
       if (isOfflineError(error)) {
         console.log('Offline: data will be saved when connection is restored');
       } else {
         console.error('Error saving onboarding data:', error);
+      }
+    },
+    onSuccess: (response) => {
+      // Update current step from API response (next step to complete)
+      if (response.onboardingStep) {
+        setCurrentStep(response.onboardingStep as OnboardingStepKey);
+      }
+      // Update client status
+      if (response.clientStatus) {
+        setClientStatus(response.clientStatus);
+      }
+    },
+  });
+
+  // Mutation for updating step only (for verification steps)
+  const updateStepMutation = useMutation({
+    mutationFn: (step: OnboardingStepKey) => updateOnboardingStep(step),
+    onError: (error: any) => {
+      if (isOfflineError(error)) {
+        console.log('Offline: step update will be saved when connection is restored');
+      } else {
+        console.error('Error updating onboarding step:', error);
+      }
+    },
+    onSuccess: (response) => {
+      // Update to next step after verification
+      if (response.onboardingStep) {
+        setCurrentStep(response.onboardingStep as OnboardingStepKey);
+      }
+      if (response.clientStatus) {
+        setClientStatus(response.clientStatus);
       }
     },
   });
@@ -114,10 +152,33 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
         console.error('Error submitting onboarding data:', error);
       }
     },
+    onSuccess: (response) => {
+      // After submit, onboarding should be COMPLETED
+      if (response.clientStatus) {
+        setClientStatus(response.clientStatus);
+      }
+      // Clear current step as onboarding is complete
+      setCurrentStep(null);
+    },
   });
 
-  const saveFormData = async () => {
-    await saveMutation.mutateAsync(formData);
+  // Unified updateFormData: updates local state and saves to API if step is provided
+  const updateFormData = async (data: Partial<OnboardingFormData>, step?: OnboardingStepKey) => {
+    // Merge data with current formData for API call
+    const mergedData = { ...formData, ...data };
+    
+    // Update local state first
+    setFormData((prev) => ({ ...prev, ...data }));
+    
+    // If step is provided, save to API immediately with merged data
+    if (step) {
+      await saveMutation.mutateAsync({ data: mergedData, step });
+    }
+  };
+
+  const updateStep = async (step: OnboardingStepKey) => {
+    setCurrentStep(step);
+    await updateStepMutation.mutateAsync(step);
   };
 
   const submitFormData = async () => {
@@ -130,18 +191,34 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
     await submitMutation.mutateAsync(formData as OnboardingFormData);
   };
 
+  // Helper: Check if a step is completed
+  const isStepCompletedHelper = (step: OnboardingStepKey): boolean => {
+    return checkStepCompleted(step, currentStep);
+  };
+
+  // Helper: Check if onboarding is fully completed
+  const isOnboardingFullyCompletedHelper = (): boolean => {
+    // Filter out PENDING status as it's not part of the completion check
+    const status = clientStatus === 'PENDING' ? undefined : (clientStatus || undefined);
+    return isOnboardingCompleted(status as 'IN_PROGRESS' | 'COMPLETED' | undefined);
+  };
+
   return (
     <OnboardingFormContext.Provider
       value={{
         formData,
+        currentStep,
+        clientStatus,
         updateFormData,
-        saveFormData,
+        updateStep,
         submitFormData,
         resetFormData,
         isSaving: saveMutation.isPending,
         isSubmitting: submitMutation.isPending,
         saveError: saveMutation.error as Error | null,
         submitError: submitMutation.error as Error | null,
+        isStepCompleted: isStepCompletedHelper,
+        isOnboardingFullyCompleted: isOnboardingFullyCompletedHelper,
       }}
     >
       {children}

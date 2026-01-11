@@ -29,7 +29,7 @@ const PostalCodeScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, saveFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
   const [loading, setLoading] = useState(false);
 
   const countryCode = (formData.address as any)?.countryCode as CountryCode || 'BR';
@@ -62,9 +62,10 @@ const PostalCodeScreen = () => {
       // Try to lookup address from API
       const addressData = await lookupPostalCode(data.postalCode, countryCode);
 
+      let addressUpdate: any;
       if (addressData) {
         // Auto-fill address data and mark which fields came from API
-        updateFormData({
+        addressUpdate = {
           address: {
             ...addressData,
             number: formData.address?.number || '',
@@ -79,10 +80,10 @@ const PostalCodeScreen = () => {
               country: !!addressData.country,
             },
           },
-        });
+        };
       } else {
         // If not found, just save postal code and let user fill manually
-        updateFormData({
+        addressUpdate = {
           address: {
             ...formData.address,
             postalCode: data.postalCode,
@@ -91,38 +92,34 @@ const PostalCodeScreen = () => {
               // No fields filled by API
             },
           } as any,
-        });
+        };
       }
 
-      // Save postalCode step to API
+      // Update form data and save to API with step tracking (unified)
       try {
-        await saveFormData();
+        await updateFormData(addressUpdate, 'postal_code');
+        router.push('/onboarding/address');
       } catch (saveError) {
         // Don't block navigation if save fails (offline mode will queue it)
         console.warn('Failed to save postalCode step, will retry:', saveError);
+        router.push('/onboarding/address');
       }
-
-      // Navigate to address screen
-      router.push('/onboarding/address');
     } catch (error) {
       console.error('Error looking up postal code:', error);
       // Still navigate, user can fill manually
-      updateFormData({
-        address: {
-          ...formData.address,
-          postalCode: data.postalCode,
-          countryCode: countryCode,
-        } as any,
-      });
-      
-      // Try to save even if lookup failed
       try {
-        await saveFormData();
+        await updateFormData({
+          address: {
+            ...formData.address,
+            postalCode: data.postalCode,
+            countryCode: countryCode,
+          } as any,
+        }, 'postal_code');
+        router.push('/onboarding/address');
       } catch (saveError) {
         console.warn('Failed to save postalCode step, will retry:', saveError);
+        router.push('/onboarding/address');
       }
-      
-      router.push('/onboarding/address');
     } finally {
       setLoading(false);
     }

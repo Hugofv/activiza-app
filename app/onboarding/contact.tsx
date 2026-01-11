@@ -26,7 +26,7 @@ const ContactScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, saveFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
 
   const {
     control,
@@ -45,17 +45,15 @@ const ContactScreen = () => {
   };
 
   const onSubmit = async (data: ContactFormData) => {
-    updateFormData({ phone: data.phone as any });
-    
-    // Save contact step to API
+    // Update form data and save to API with step tracking (unified)
     try {
-      await saveFormData();
+      await updateFormData({ phone: data.phone as any }, 'contact');
+      router.push('/onboarding/codeContact');
     } catch (error) {
       // Don't block navigation if save fails (offline mode will queue it)
       console.warn('Failed to save contact step, will retry:', error);
+      router.push('/onboarding/codeContact');
     }
-    
-    router.push('/onboarding/codeContact');
   };
 
   return (

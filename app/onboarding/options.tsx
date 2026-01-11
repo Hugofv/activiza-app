@@ -95,12 +95,18 @@ const OptionsScreen = () => {
     router.back();
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     if (selectedOptions.length === 0) return;
 
-    updateFormData({ businessOptions: selectedOptions });
-    // Options é a última tela (apresentação de planos), então vai para tela final
-    router.push('/onboarding/registerFinished');
+    // Update form data and save to API with step tracking (unified)
+    try {
+      await updateFormData({ businessOptions: selectedOptions }, 'options');
+      router.push('/onboarding/registerFinished');
+    } catch (error) {
+      // Don't block navigation if save fails (offline mode will queue it)
+      console.warn('Failed to save options step, will retry:', error);
+      router.push('/onboarding/registerFinished');
+    }
   };
 
   return (

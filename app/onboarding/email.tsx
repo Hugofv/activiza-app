@@ -12,6 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { createStepToRouteMap } from '@/lib/config/onboardingSteps';
 import { checkEmailStatus } from '@/lib/services/authService';
 import { emailSchema } from '@/lib/validations/onboarding';
 
@@ -78,28 +79,9 @@ const EmailScreen = () => {
         });
       } else if (isInProgressOnboarding) {
         // User exists but registration is incomplete, continue onboarding from last step
-        // Map API onboardingStep values to route names based on API response examples
+        // Use centralized step to route mapping
         const onboardingStep = emailStatus.onboardingStep || 'password';
-        const stepToRouteMap: Record<string, string> = {
-          // API step values -> route names (from API examples)
-          phone_verification: '/onboarding/codeContact',        // Step after phone verification
-          active_customers: '/onboarding/activeCustomers',      // Active customers step
-          financial_operations: '/onboarding/financialOperations', // Financial operations step
-          working_capital: '/onboarding/capital',               // Working capital step
-          business_duration: '/onboarding/businessDuration',    // Business duration step
-          postal_code: '/onboarding/postalCode',                // Postal code step
-          address: '/onboarding/address',                       // Address step
-          terms: '/onboarding/terms',                           // Terms and conditions step
-          // Additional possible steps
-          email: '/onboarding/email',
-          email_verification: '/onboarding/codeEmail',
-          password: '/onboarding/password',
-          document: '/onboarding/document',
-          name: '/onboarding/name',
-          contact: '/onboarding/contact',
-          country: '/onboarding/country',
-          options: '/onboarding/options',
-        };
+        const stepToRouteMap = createStepToRouteMap();
         const route = stepToRouteMap[onboardingStep] || '/onboarding/password';
         router.push(route as any);
       } else {

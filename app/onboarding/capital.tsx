@@ -40,7 +40,7 @@ const CapitalScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, saveFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
   const [selectedOption, setSelectedOption] = useState<number | null>(
     formData.workingCapital || null
   );
@@ -52,17 +52,15 @@ const CapitalScreen = () => {
   const handleContinue = async () => {
     if (selectedOption === null) return;
 
-    updateFormData({ workingCapital: selectedOption });
-    
-    // Save capital step to API
+    // Update form data and save to API with step tracking (unified)
     try {
-      await saveFormData();
+      await updateFormData({ workingCapital: selectedOption }, 'working_capital');
+      router.push('/onboarding/businessDuration');
     } catch (error) {
       // Don't block navigation if save fails (offline mode will queue it)
       console.warn('Failed to save capital step, will retry:', error);
+      router.push('/onboarding/businessDuration');
     }
-    
-    router.push('/onboarding/businessDuration');
   };
 
   return (

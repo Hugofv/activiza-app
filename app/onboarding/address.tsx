@@ -44,7 +44,7 @@ const AddressScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, saveFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
   const countryCode =
     ((formData.address as any)?.countryCode as CountryCode) || 'BR';
   const postalCodeFormat = getPostalCodeFormat(countryCode);
@@ -135,29 +135,27 @@ const AddressScreen = () => {
   };
 
   const onSubmit = async (data: AddressFormData) => {
-    updateFormData({
-      address: {
-        ...formData.address, // Preserve existing address data including _apiFilled and countryCode
-        postalCode: data.postalCode,
-        street: data.street,
-        neighborhood: data.neighborhood,
-        city: data.city,
-        state: data.state,
-        country: data.country,
-        number: data.number,
-        complement: data.complement,
-      },
-    });
-    
-    // Save address step to API
+    // Update form data and save to API with step tracking (unified)
     try {
-      await saveFormData();
+      await updateFormData({
+        address: {
+          ...formData.address, // Preserve existing address data including _apiFilled and countryCode
+          postalCode: data.postalCode,
+          street: data.street,
+          neighborhood: data.neighborhood,
+          city: data.city,
+          state: data.state,
+          country: data.country,
+          number: data.number,
+          complement: data.complement,
+        },
+      }, 'address');
+      router.push('/onboarding/terms');
     } catch (error) {
       // Don't block navigation if save fails (offline mode will queue it)
       console.warn('Failed to save address step, will retry:', error);
+      router.push('/onboarding/terms');
     }
-    
-    router.push('/onboarding/terms');
   };
 
   return (

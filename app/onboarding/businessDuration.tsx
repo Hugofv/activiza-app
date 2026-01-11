@@ -39,7 +39,7 @@ const BusinessDurationScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, saveFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
   const [selectedOption, setSelectedOption] = useState<number | null>(
     formData.businessDuration || null
   );
@@ -51,18 +51,15 @@ const BusinessDurationScreen = () => {
   const handleContinue = async () => {
     if (selectedOption === null) return;
 
-    updateFormData({ businessDuration: selectedOption });
-    
-    // Save businessDuration step to API
+    // Update form data and save to API with step tracking (unified)
     try {
-      await saveFormData();
+      await updateFormData({ businessDuration: selectedOption }, 'business_duration');
+      router.push('/onboarding/country');
     } catch (error) {
       // Don't block navigation if save fails (offline mode will queue it)
       console.warn('Failed to save businessDuration step, will retry:', error);
+      router.push('/onboarding/country');
     }
-    
-    // Options é a última tela (apresentação de planos), então vai para country
-    router.push('/onboarding/country');
   };
 
   return (

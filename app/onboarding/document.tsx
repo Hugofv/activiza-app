@@ -40,7 +40,7 @@ const DocumentScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, saveFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
 
   // Get country code from address or default to BR
   const countryCode: CountryCode = (formData.address?.countryCode as CountryCode) || 'BR';
@@ -121,20 +121,18 @@ const DocumentScreen = () => {
   };
 
   const onSubmit = async (data: DocumentFormData) => {
-    updateFormData({
-      document: data.document || undefined,
-      documentType: data.documentType || undefined,
-    });
-    
-    // Save document step to API
+    // Update form data and save to API with step tracking (unified)
     try {
-      await saveFormData();
+      await updateFormData({
+        document: data.document || undefined,
+        documentType: data.documentType || undefined,
+      }, 'document');
+      router.push('/onboarding/name');
     } catch (error) {
       // Don't block navigation if save fails (offline mode will queue it)
       console.warn('Failed to save document step, will retry:', error);
+      router.push('/onboarding/name');
     }
-    
-    router.push('/onboarding/name');
   };
 
   // Build document type options for ListCheck

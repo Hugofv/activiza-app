@@ -38,7 +38,7 @@ const TermsScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { updateFormData, saveFormData } = useOnboardingForm();
+  const { updateFormData } = useOnboardingForm();
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
@@ -48,15 +48,20 @@ const TermsScreen = () => {
     router.back();
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (termsAccepted && privacyAccepted) {
-      updateFormData({
-        termsAccepted: true,
-        privacyAccepted: true,
-      });
-      // Options é a última tela (apresentação de planos) antes do registro finalizado
-      saveFormData();
-      router.push('/onboarding/options');
+      // Update form data and save to API with step tracking (unified)
+      try {
+        await updateFormData({
+          termsAccepted: true,
+          privacyAccepted: true,
+        }, 'terms');
+        router.push('/onboarding/options');
+      } catch (error) {
+        // Don't block navigation if save fails (offline mode will queue it)
+        console.warn('Failed to save terms step, will retry:', error);
+        router.push('/onboarding/options');
+      }
     }
   };
 

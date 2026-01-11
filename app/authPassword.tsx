@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/ui/typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { createStepToRouteMap } from '@/lib/config/onboardingSteps';
 import { login } from '@/lib/services/authService';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -66,31 +67,14 @@ const AuthPasswordScreen = () => {
         password: data.password,
       });
 
+      console.log('onboardingStep', onboardingStep);
       // After login, redirect based on onboardingStep from params
       // If user is fully registered (COMPLETED), onboardingStep will be empty and redirect to home
       // If user is in progress (IN_PROGRESS), onboardingStep will contain the step to continue
       if (onboardingStep) {
         // User is in progress onboarding, redirect to the step from params
-        const stepToRouteMap: Record<string, string> = {
-          // API step values -> route names (from API examples)
-          phone_verification: '/onboarding/codeContact',
-          active_customers: '/onboarding/activeCustomers',
-          financial_operations: '/onboarding/financialOperations',
-          working_capital: '/onboarding/capital',
-          business_duration: '/onboarding/businessDuration',
-          postal_code: '/onboarding/postalCode',
-          address: '/onboarding/address',
-          terms: '/onboarding/terms',
-          // Additional possible steps
-          email: '/onboarding/email',
-          email_verification: '/onboarding/codeEmail',
-          password: '/onboarding/password',
-          document: '/onboarding/document',
-          name: '/onboarding/name',
-          contact: '/onboarding/contact',
-          country: '/onboarding/country',
-          options: '/onboarding/options',
-        };
+        // Use centralized step to route mapping
+        const stepToRouteMap = createStepToRouteMap();
         const route = stepToRouteMap[onboardingStep] || '/onboarding/password';
         router.replace(route as any);
       } else {

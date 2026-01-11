@@ -70,7 +70,7 @@ const FinancialOperationsScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, saveFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
   const [selectedOption, setSelectedOption] = useState<number | null>(
     formData.financialOperations || null
   );
@@ -82,17 +82,15 @@ const FinancialOperationsScreen = () => {
   const handleContinue = async () => {
     if (selectedOption === null) return;
 
-    updateFormData({ financialOperations: selectedOption });
-    
-    // Save financialOperations step to API
+    // Update form data and save to API with step tracking (unified)
     try {
-      await saveFormData();
+      await updateFormData({ financialOperations: selectedOption }, 'financial_operations');
+      router.push('/onboarding/capital');
     } catch (error) {
       // Don't block navigation if save fails (offline mode will queue it)
       console.warn('Failed to save financialOperations step, will retry:', error);
+      router.push('/onboarding/capital');
     }
-    
-    router.push('/onboarding/capital');
   };
 
   return (

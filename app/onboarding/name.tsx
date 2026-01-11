@@ -25,7 +25,7 @@ interface NameFormData {
 const NameScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const { formData, updateFormData, saveFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
 
   const {
     control,
@@ -44,17 +44,15 @@ const NameScreen = () => {
   };
 
   const onSubmit = async (data: NameFormData) => {
-    updateFormData({ name: data.name });
-    
-    // Save name step to API
+    // Update form data and save to API with step tracking (unified)
     try {
-      await saveFormData();
+      await updateFormData({ name: data.name }, 'name');
+      router.push('/onboarding/contact');
     } catch (error) {
       // Don't block navigation if save fails (offline mode will queue it)
       console.warn('Failed to save name step, will retry:', error);
+      router.push('/onboarding/contact');
     }
-    
-    router.push('/onboarding/contact');
   };
 
   return (

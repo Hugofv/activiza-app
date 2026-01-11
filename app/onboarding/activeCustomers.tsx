@@ -52,7 +52,7 @@ const ActiveCustomersScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, saveFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
   const [selectedOption, setSelectedOption] = useState<number | null>(
     formData.activeCustomers || null
   );
@@ -64,17 +64,15 @@ const ActiveCustomersScreen = () => {
   const handleContinue = async () => {
     if (selectedOption === null) return;
 
-    updateFormData({ activeCustomers: selectedOption });
-    
-    // Save activeCustomers step to API
+    // Update form data and save to API with step tracking (unified)
     try {
-      await saveFormData();
+      await updateFormData({ activeCustomers: selectedOption }, 'active_customers');
+      router.push('/onboarding/financialOperations');
     } catch (error) {
       // Don't block navigation if save fails (offline mode will queue it)
       console.warn('Failed to save activeCustomers step, will retry:', error);
+      router.push('/onboarding/financialOperations');
     }
-    
-    router.push('/onboarding/financialOperations');
   };
 
   return (

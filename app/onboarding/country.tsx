@@ -40,7 +40,7 @@ const CountryScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t, i18n } = useTranslation();
-  const { formData, updateFormData, saveFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
   const [selectedCountry, setSelectedCountry] = useState<CountryCode | null>(
     (formData.address?.country as CountryCode) || null
   );
@@ -53,38 +53,37 @@ const CountryScreen = () => {
     if (!selectedCountry) return;
 
     const country = COUNTRIES.find((c) => c.code === selectedCountry);
-    updateFormData({
-      address: {
-        ...formData.address,
-        postalCode: '',
-        street: '',
-        neighborhood: '',
-        city: '',
-        state: '',
-        number: '',
-        complement: '',
-        country: country?.name || selectedCountry,
-        countryCode: selectedCountry,
-        _apiFilled: {
-          postalCode: false,
-          street: false,
-          neighborhood: false,
-          city: false,
-          state: false,
-          country: false,
-        },
-      } as any,
-    });
     
-    // Save country step to API
+    // Update form data and save to API with step tracking (unified)
     try {
-      await saveFormData();
+      await updateFormData({
+        address: {
+          ...formData.address,
+          postalCode: '',
+          street: '',
+          neighborhood: '',
+          city: '',
+          state: '',
+          number: '',
+          complement: '',
+          country: country?.name || selectedCountry,
+          countryCode: selectedCountry,
+          _apiFilled: {
+            postalCode: false,
+            street: false,
+            neighborhood: false,
+            city: false,
+            state: false,
+            country: false,
+          },
+        } as any,
+      }, 'country');
+      router.push('/onboarding/postalCode');
     } catch (error) {
       // Don't block navigation if save fails (offline mode will queue it)
       console.warn('Failed to save country step, will retry:', error);
+      router.push('/onboarding/postalCode');
     }
-    
-    router.push('/onboarding/postalCode');
   };
 
   const getCountryName = (country: (typeof COUNTRIES)[0]) => {

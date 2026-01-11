@@ -36,7 +36,7 @@ const CodeEmailScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData } = useOnboardingForm();
+  const { formData, updateFormData, updateStep } = useOnboardingForm();
   const [resendTimer, setResendTimer] = useState(60);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -75,11 +75,20 @@ const CodeEmailScreen = () => {
 
     setIsVerifying(true);
     try {
-      // Verify email code with API
+      // Verify email code with API (endpoint diferente)
       await verifyEmail(formData.email, data.code);
       
       // Code verified successfully
       updateFormData({ emailCode: data.code });
+      
+      // Update onboarding step (verification step uses different endpoint)
+      // API should mark email_verification as completed and return next step
+      try {
+        await updateStep('email_verification');
+      } catch (stepError) {
+        // Don't block navigation if step update fails (offline mode will queue it)
+        console.warn('Failed to update email verification step, will retry:', stepError);
+      }
       
       // Continue to confirmation screen
       router.push('/onboarding/confirmEmail');

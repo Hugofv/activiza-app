@@ -28,7 +28,7 @@ const CodeContactScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { updateFormData } = useOnboardingForm();
+  const { formData, updateFormData, updateStep } = useOnboardingForm();
   const [resendTimer, setResendTimer] = useState(60);
 
   const {
