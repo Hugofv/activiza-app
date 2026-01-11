@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -56,10 +57,12 @@ const CapitalScreen = () => {
     try {
       await updateFormData({ workingCapital: selectedOption }, 'working_capital');
       router.push('/onboarding/businessDuration');
-    } catch (error) {
-      // Don't block navigation if save fails (offline mode will queue it)
-      console.warn('Failed to save capital step, will retry:', error);
-      router.push('/onboarding/businessDuration');
+    } catch (error: any) {
+      console.error('Failed to save capital step:', error);
+      Alert.alert(
+        t('common.error') || 'Error',
+        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      );
     }
   };
 

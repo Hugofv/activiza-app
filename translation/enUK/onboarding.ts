@@ -28,7 +28,7 @@ export default {
   codeTitle: 'Enter verification code',
   codeDescription: 'We sent a 6-digit code to your WhatsApp',
   codeResend: 'Resend code',
-  codeResendTimer: 'Resend code in {seconds}s',
+  codeResendTimer: 'Resend code in {{seconds}}s',
   emailCodeTitle: 'Enter the code we sent to your email',
   emailCodeDescription: 'Access code',
   emailVerified: 'Email Verified',

@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -15,6 +15,7 @@ import { phoneSchema } from '@/lib/validations/onboarding';
 import type { InferType } from 'yup';
 
 import { Typography } from '@/components/ui/typography';
+import { sendVerificationCode } from '@/lib/services/authService';
 import { useTranslation } from 'react-i18next';
 
 type ContactFormData = InferType<typeof phoneSchema>;
@@ -48,11 +49,30 @@ const ContactScreen = () => {
     // Update form data and save to API with step tracking (unified)
     try {
       await updateFormData({ phone: data.phone as any }, 'contact');
+      
+      // After saving phone, send verification code automatically
+      if (data.phone?.phoneNumber) {
+        const phoneNumber = data.phone.formattedPhoneNumber || data.phone.phoneNumber;
+        try {
+          await sendVerificationCode(phoneNumber, 'phone');
+          console.log('✅ Verification code sent to phone');
+        } catch (codeError: any) {
+          console.error('Failed to send verification code:', codeError);
+          // Don't block navigation if code sending fails, user can resend on next screen
+          Alert.alert(
+            t('common.warning') || 'Warning',
+            t('onboarding.codeSendError') || 'Failed to send verification code. You can resend it on the next screen.'
+          );
+        }
+      }
+      
       router.push('/onboarding/codeContact');
-    } catch (error) {
-      // Don't block navigation if save fails (offline mode will queue it)
-      console.warn('Failed to save contact step, will retry:', error);
-      router.push('/onboarding/codeContact');
+    } catch (error: any) {
+      console.error('Failed to save contact step:', error);
+      Alert.alert(
+        t('common.error') || 'Error',
+        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      );
     }
   };
 

@@ -18,9 +18,9 @@ export const ENDPOINTS = {
     LOGIN: `/auth/login`,
     LOGOUT: `/auth/logout`,
     REFRESH_TOKEN: `/auth/refresh`,
-    VERIFY_EMAIL: `/auth/verify-email`,
-    VERIFY_PHONE: `/auth/verify-phone`,
-    RESEND_CODE: `/auth/resend-code`,
+    VERIFY_SEND: `/auth/verify/send`,      // Send verification code
+    VERIFY: `/auth/verify`,                // Verify code
+    VERIFY_RESEND: `/auth/verify/resend`,  // Resend verification code
     CHECK_EMAIL: `/auth/check-email`,
   },
 

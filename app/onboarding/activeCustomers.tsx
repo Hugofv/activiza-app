@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -68,10 +69,12 @@ const ActiveCustomersScreen = () => {
     try {
       await updateFormData({ activeCustomers: selectedOption }, 'active_customers');
       router.push('/onboarding/financialOperations');
-    } catch (error) {
-      // Don't block navigation if save fails (offline mode will queue it)
-      console.warn('Failed to save activeCustomers step, will retry:', error);
-      router.push('/onboarding/financialOperations');
+    } catch (error: any) {
+      console.error('Failed to save activeCustomers step:', error);
+      Alert.alert(
+        t('common.error') || 'Error',
+        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      );
     }
   };
 

@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -55,10 +56,12 @@ const BusinessDurationScreen = () => {
     try {
       await updateFormData({ businessDuration: selectedOption }, 'business_duration');
       router.push('/onboarding/country');
-    } catch (error) {
-      // Don't block navigation if save fails (offline mode will queue it)
-      console.warn('Failed to save businessDuration step, will retry:', error);
-      router.push('/onboarding/country');
+    } catch (error: any) {
+      console.error('Failed to save businessDuration step:', error);
+      Alert.alert(
+        t('common.error') || 'Error',
+        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      );
     }
   };
 

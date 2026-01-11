@@ -1,6 +1,7 @@
-import { isStepCompleted as checkStepCompleted, isOnboardingCompleted, OnboardingStepKey } from '@/lib/config/onboardingSteps';
+import { isStepCompleted as checkStepCompleted, getNextStep, isOnboardingCompleted, OnboardingStepKey } from '@/lib/config/onboardingSteps';
 import { isOfflineError } from '@/lib/hooks/useMutation';
-import { saveOnboardingData, submitOnboarding, updateOnboardingStep } from '@/lib/services/onboardingService';
+import { getCurrentUser } from '@/lib/services/authService';
+import { OnboardingResponse, saveOnboardingData, submitOnboarding, updateOnboardingStep } from '@/lib/services/onboardingService';
 import { useMutation } from '@tanstack/react-query';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 
@@ -55,7 +56,7 @@ interface OnboardingFormContextType {
   currentStep: OnboardingStepKey | null;
   clientStatus: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' | null;
   updateFormData: (data: Partial<OnboardingFormData>, step?: OnboardingStepKey) => Promise<void>;
-  updateStep: (step: OnboardingStepKey) => Promise<void>; // Para steps de verificação
+  updateStep: (step: OnboardingStepKey) => Promise<OnboardingResponse>; // Para steps de verificação
   submitFormData: () => Promise<void>;
   resetFormData: () => void;
   isSaving: boolean;
@@ -109,21 +110,34 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
         console.error('Error saving onboarding data:', error);
       }
     },
-    onSuccess: (response) => {
-      // Update current step from API response (next step to complete)
-      if (response.onboardingStep) {
-        setCurrentStep(response.onboardingStep as OnboardingStepKey);
-      }
-      // Update client status
+    onSuccess: (response, variables) => {
+      // Update client status first
       if (response.clientStatus) {
         setClientStatus(response.clientStatus);
+      }
+
+      // API already returns the next step after marking the current step as completed
+      // Just update the current step from the API response
+      if (response.onboardingStep) {
+        setCurrentStep(response.onboardingStep as OnboardingStepKey);
+        console.log(`✅ Step ${variables.step || 'unknown'} completed. Next step: ${response.onboardingStep}`);
+      } else if (variables.step) {
+        // If API doesn't return next step, calculate it locally
+        const nextStep = getNextStep(variables.step);
+        if (nextStep) {
+          setCurrentStep(nextStep.key);
+          console.log(`✅ Step ${variables.step} completed. Next step: ${nextStep.key}`);
+        }
       }
     },
   });
 
   // Mutation for updating step only (for verification steps)
   const updateStepMutation = useMutation({
-    mutationFn: (step: OnboardingStepKey) => updateOnboardingStep(step),
+    mutationFn: async (step: OnboardingStepKey) => {
+      console.log('Updating onboarding step to:', step);
+      return updateOnboardingStep(step);
+    },
     onError: (error: any) => {
       if (isOfflineError(error)) {
         console.log('Offline: step update will be saved when connection is restored');
@@ -131,20 +145,35 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
         console.error('Error updating onboarding step:', error);
       }
     },
-    onSuccess: (response) => {
-      // Update to next step after verification
-      if (response.onboardingStep) {
-        setCurrentStep(response.onboardingStep as OnboardingStepKey);
-      }
+    onSuccess: (response, completedStep) => {
+      // Update client status first
       if (response.clientStatus) {
         setClientStatus(response.clientStatus);
+        console.log('Client status updated to:', response.clientStatus);
+      }
+
+      // API marks the verification step as completed and returns the NEXT step
+      // Just update the current step from the API response
+      if (response.onboardingStep) {
+        setCurrentStep(response.onboardingStep as OnboardingStepKey);
+        console.log(`✅ Verification step ${completedStep} completed. Next step: ${response.onboardingStep}`);
+      } else {
+        // If API doesn't return next step, calculate it locally
+        const nextStep = getNextStep(completedStep);
+        if (nextStep) {
+          setCurrentStep(nextStep.key);
+          console.log(`✅ Verification step ${completedStep} completed. Next step: ${nextStep.key}`);
+        } else {
+          console.warn('⚠️ No onboardingStep in response, step may already be completed or onboarding is finished');
+        }
       }
     },
   });
 
   // Mutation for submitting final onboarding data
   const submitMutation = useMutation({
-    mutationFn: (data: OnboardingFormData) => submitOnboarding(data),
+    mutationFn: ({ data, userId }: { data: OnboardingFormData; userId: string }) => 
+      submitOnboarding(data, userId),
     onError: (error: any) => {
       if (isOfflineError(error)) {
         console.log('Offline: submission will be queued for when connection is restored');
@@ -172,13 +201,20 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
     
     // If step is provided, save to API immediately with merged data
     if (step) {
+      console.log(JSON.stringify(mergedData, null, 2));
       await saveMutation.mutateAsync({ data: mergedData, step });
     }
   };
 
   const updateStep = async (step: OnboardingStepKey) => {
-    setCurrentStep(step);
-    await updateStepMutation.mutateAsync(step);
+    // Update step via API - this marks the step as completed
+    // The API will return the next step in the response
+    // Don't update local state first, wait for API response
+    console.log(`🔄 Updating step: ${step}`);
+    const response = await updateStepMutation.mutateAsync(step);
+    console.log(`✅ Step update completed. Response:`, response);
+    // Local state will be updated in onSuccess callback from the mutation
+    return response;
   };
 
   const submitFormData = async () => {
@@ -188,7 +224,17 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
     if (!formData.email || !formData.password || !formData.name) {
       throw new Error('Missing required fields for submission: email, password, and name are required');
     }
-    await submitMutation.mutateAsync(formData as OnboardingFormData);
+
+    // Get authenticated user ID (required by API)
+    const currentUser = getCurrentUser();
+    if (!currentUser?.id) {
+      throw new Error('User is not authenticated. Please log in and try again.');
+    }
+
+    await submitMutation.mutateAsync({
+      data: formData as OnboardingFormData,
+      userId: currentUser.id,
+    });
   };
 
   // Helper: Check if a step is completed

@@ -76,18 +76,26 @@ const CodeEmailScreen = () => {
     setIsVerifying(true);
     try {
       // Verify email code with API (endpoint diferente)
-      await verifyEmail(formData.email, data.code);
+      await verifyEmail(data.code);
       
       // Code verified successfully
       updateFormData({ emailCode: data.code });
       
       // Update onboarding step (verification step uses different endpoint)
-      // API should mark email_verification as completed and return next step
+      // API marks email_verification as completed and returns the next step
+      // After success, currentStep will be updated to the next step (not email_verification anymore)
       try {
-        await updateStep('email_verification');
-      } catch (stepError) {
-        // Don't block navigation if step update fails (offline mode will queue it)
-        console.warn('Failed to update email verification step, will retry:', stepError);
+        console.log('📧 Calling updateStep for email_verification...');
+        const response = await updateStep('email_verification');
+        console.log('✅ Email verification step marked as completed');
+        console.log('📊 Response from updateStep:', response);
+      } catch (stepError: any) {
+        console.error('❌ Failed to update email verification step:', stepError);
+        Alert.alert(
+          t('common.error') || 'Error',
+          stepError?.response?.data?.message || stepError?.message || t('onboarding.stepUpdateError') || 'Failed to update step. Please try again.'
+        );
+        return; // Don't navigate if step update fails
       }
       
       // Continue to confirmation screen
@@ -112,7 +120,7 @@ const CodeEmailScreen = () => {
     setIsResending(true);
     try {
       // Resend verification code via email
-      await resendVerificationCode(formData.email, 'email');
+      await resendVerificationCode('email');
       
       // Reset timer
       setResendTimer(60);

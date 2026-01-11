@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -79,7 +80,7 @@ const OptionsScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData } = useOnboardingForm();
+  const { formData, updateFormData, submitFormData } = useOnboardingForm();
   const [selectedOptions, setSelectedOptions] = useState<BusinessOption[]>(
     Array.isArray(formData.businessOptions)
       ? formData.businessOptions.filter((opt): opt is BusinessOption =>
@@ -98,14 +99,21 @@ const OptionsScreen = () => {
   const handleFinish = async () => {
     if (selectedOptions.length === 0) return;
 
-    // Update form data and save to API with step tracking (unified)
     try {
+      // First, save the options step
       await updateFormData({ businessOptions: selectedOptions }, 'options');
+      
+      // Then, submit the complete onboarding (this creates/updates the account with userId)
+      // This is the final step - API will mark onboarding as COMPLETED
+      await submitFormData();
+      
       router.push('/onboarding/registerFinished');
-    } catch (error) {
-      // Don't block navigation if save fails (offline mode will queue it)
-      console.warn('Failed to save options step, will retry:', error);
-      router.push('/onboarding/registerFinished');
+    } catch (error: any) {
+      console.error('Failed to finish onboarding:', error);
+      Alert.alert(
+        t('common.error') || 'Error',
+        error?.response?.data?.message || error?.message || t('onboarding.submitError') || 'Failed to complete registration. Please try again.'
+      );
     }
   };
 

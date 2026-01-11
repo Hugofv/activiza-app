@@ -12,7 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { createStepToRouteMap } from '@/lib/config/onboardingSteps';
+import { createStepToRouteMap, getNextStep, getStepByApiName } from '@/lib/config/onboardingSteps';
 import { checkEmailStatus } from '@/lib/services/authService';
 import { emailSchema } from '@/lib/validations/onboarding';
 
@@ -79,10 +79,33 @@ const EmailScreen = () => {
         });
       } else if (isInProgressOnboarding) {
         // User exists but registration is incomplete, continue onboarding from last step
-        // Use centralized step to route mapping
         const onboardingStep = emailStatus.onboardingStep || 'password';
+        console.log('Email status - onboardingStep from API:', onboardingStep);
+        console.log('Email status - clientStatus:', emailStatus.clientStatus);
+        
+        // Use centralized step to route mapping
         const stepToRouteMap = createStepToRouteMap();
-        const route = stepToRouteMap[onboardingStep] || '/onboarding/password';
+        
+        // If the step is a verification step, check if we should skip it
+        // Verification steps might already be completed but API still returns them
+        // API returns apiStepName, so we need to find the step by apiStepName first
+        const stepInfo = getStepByApiName(onboardingStep);
+        let targetStep = onboardingStep;
+        
+        if (stepInfo?.isVerificationStep) {
+          // If API returned a verification step, it might already be completed
+          // Try to get the next step instead (using the key, not apiStepName)
+          const nextStep = getNextStep(stepInfo.key);
+          if (nextStep) {
+            targetStep = nextStep.apiStepName;
+            console.log(`⏭️ Skipping verification step ${onboardingStep}, redirecting to next step: ${targetStep} (${nextStep.route})`);
+          } else {
+            console.warn(`⚠️ Verification step ${onboardingStep} is the last step, cannot skip`);
+          }
+        }
+        
+        const route = stepToRouteMap[targetStep] || '/onboarding/password';
+        console.log('Redirecting to route:', route);
         router.push(route as any);
       } else {
         // New user, continue normal onboarding flow

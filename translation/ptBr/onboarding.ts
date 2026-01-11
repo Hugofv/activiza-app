@@ -28,7 +28,7 @@ export default {
   codeTitle: 'Digite o código de verificação',
   codeDescription: 'Enviamos um código de 6 dígitos para o seu WhatsApp',
   codeResend: 'Reenviar código',
-  codeResendTimer: 'Reenviar código em {seconds}s',
+  codeResendTimer: 'Reenviar código em {{seconds}}s',
   emailCodeTitle: 'Digite o código que enviamos no seu e-mail',
   emailCodeDescription: 'Código de acesso',
   emailVerified: 'E-mail Verificado',

@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -14,6 +14,7 @@ import { nameSchema } from '@/lib/validations/onboarding';
 
 import { IconButton } from '@/components/ui/icon-button';
 import { Typography } from '@/components/ui/typography';
+import { useTranslation } from 'react-i18next';
 
 interface NameFormData {
   name: string;
@@ -25,6 +26,7 @@ interface NameFormData {
 const NameScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
 
   const {
@@ -48,10 +50,12 @@ const NameScreen = () => {
     try {
       await updateFormData({ name: data.name }, 'name');
       router.push('/onboarding/contact');
-    } catch (error) {
-      // Don't block navigation if save fails (offline mode will queue it)
-      console.warn('Failed to save name step, will retry:', error);
-      router.push('/onboarding/contact');
+    } catch (error: any) {
+      console.error('Failed to save name step:', error);
+      Alert.alert(
+        t('common.error') || 'Error',
+        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      );
     }
   };
 
@@ -83,7 +87,7 @@ const NameScreen = () => {
             />
 
             {/* Title */}
-            <Typography variant='h4'>Qual seu nome completo?</Typography>
+            <Typography variant='h4'>{t('onboarding.name')}</Typography>
 
             {/* Input Field */}
             <Input
@@ -97,7 +101,7 @@ const NameScreen = () => {
                   borderBottomColor: errors.name ? '#ef4444' : colors.icon,
                 },
               ]}
-              placeholder='Nome completo'
+              placeholder={t('onboarding.namePlaceholder')}
               placeholderTextColor={colors.icon}
               keyboardType='default'
               maxLength={100}

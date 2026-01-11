@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -12,6 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { resendVerificationCode, verifyPhone } from '@/lib/services/authService';
 import { codeSchema } from '@/lib/validations/onboarding';
 
 import { Typography } from '@/components/ui/typography';
@@ -30,6 +31,8 @@ const CodeContactScreen = () => {
   const { t } = useTranslation();
   const { formData, updateFormData, updateStep } = useOnboardingForm();
   const [resendTimer, setResendTimer] = useState(60);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const {
     control,
@@ -57,15 +60,75 @@ const CodeContactScreen = () => {
     router.back();
   };
 
-  const onSubmit = (data: CodeFormData) => {
-    // TODO: Verify code with backend
-    updateFormData({ code: data.code });
-    router.push('/onboarding/confirmContact');
+  const onSubmit = async (data: CodeFormData) => {
+    if (!formData.phone?.phoneNumber) {
+      Alert.alert('Error', 'Phone number is required. Please go back to contact screen.');
+      return;
+    }
+
+    setIsVerifying(true);
+    try {
+      // Verify phone code with API
+      const phoneNumber = formData.phone.formattedPhoneNumber || formData.phone.phoneNumber;
+      await verifyPhone(phoneNumber, data.code);
+      
+      // Code verified successfully
+      updateFormData({ code: data.code });
+
+      // Update onboarding step (verification step uses different endpoint)
+      // API marks phone_verification as completed and returns the next step
+      // After success, currentStep will be updated to the next step (not phone_verification anymore)
+      try {
+        console.log('📱 Calling updateStep for phone_verification...');
+        const response = await updateStep('phone_verification');
+        console.log('✅ Phone verification step marked as completed');
+        console.log('📊 Response from updateStep:', response);
+      } catch (stepError: any) {
+        console.error('❌ Failed to update phone verification step:', stepError);
+        Alert.alert(
+          t('common.error') || 'Error',
+          stepError?.response?.data?.message || stepError?.message || t('onboarding.stepUpdateError') || 'Failed to update step. Please try again.'
+        );
+        return; // Don't navigate if step update fails
+      }
+      
+      // Continue to confirmation screen
+      router.push('/onboarding/confirmContact');
+    } catch (error: any) {
+      console.error('Phone verification error:', error);
+      Alert.alert(
+        'Verification Failed',
+        error?.response?.data?.message || error?.message || 'Invalid verification code. Please try again.'
+      );
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
-  const handleResendCode = () => {
-    // TODO: Resend code via WhatsApp
-    setResendTimer(60);
+  const handleResendCode = async () => {
+    if (!formData.phone?.phoneNumber) {
+      Alert.alert('Error', 'Phone number is required.');
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      // Resend verification code via phone (WhatsApp/SMS)
+      await resendVerificationCode('phone');
+      
+      // Reset timer
+      setResendTimer(60);
+      
+      Alert.alert('Success', 'Verification code sent to your phone.');
+    } catch (error: any) {
+      console.error('Resend code error:', error);
+      Alert.alert(
+        'Failed to Resend',
+        error?.response?.data?.message || error?.message || 'Failed to resend verification code. Please try again.'
+      );
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
@@ -120,7 +183,11 @@ const CodeContactScreen = () => {
                   {t('onboarding.codeResendTimer', { seconds: resendTimer })}
                 </Typography>
               ) : (
-                <TouchableOpacity onPress={handleResendCode} activeOpacity={0.7}>
+                <TouchableOpacity
+                  onPress={handleResendCode}
+                  activeOpacity={0.7}
+                  disabled={isResending}
+                >
                   <Typography variant='body2' style={{ color: colors.primary }}>
                     {t('onboarding.codeResend')}
                   </Typography>
@@ -138,7 +205,7 @@ const CodeContactScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
-              disabled={!isValid}
+              disabled={!isValid || isVerifying}
             />
           </View>
         </ThemedView>

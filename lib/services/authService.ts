@@ -122,7 +122,7 @@ export async function logout(): Promise<void> {
   try {
     // Call logout endpoint (optional, may fail if offline)
     try {
-      await apiClient.post(ENDPOINTS.AUTH.LOGOUT, {}, { skipAuth: false });
+      await apiClient.post(ENDPOINTS.AUTH.LOGOUT, {});
     } catch (error) {
       // Continue even if logout endpoint fails (e.g., offline)
       console.warn(
@@ -157,7 +157,6 @@ export async function refreshAccessToken(): Promise<string> {
     const response = await apiClient.post<RefreshTokenResponse>(
       ENDPOINTS.AUTH.REFRESH_TOKEN,
       { refreshToken },
-      { skipAuth: true } as ApiConfig
     );
 
     const { accessToken, expiresIn } = response.data;
@@ -200,63 +199,87 @@ export async function ensureValidToken(): Promise<string | null> {
 }
 
 /**
- * Verify email with code
+ * Send verification code (email or phone)
+ * POST /api/auth/verify/send
+ * Body: { type: "email" | "phone", contact: "user@example.com" }
  */
-export async function verifyEmail(
-  email: string,
-  code: string
+export async function sendVerificationCode(
+  contact: string,
+  type: 'email' | 'phone'
 ): Promise<boolean> {
   try {
     const response = await apiClient.post(
-      ENDPOINTS.AUTH.VERIFY_EMAIL,
-      { email, code },
-      { skipAuth: true } as ApiConfig
+      ENDPOINTS.AUTH.VERIFY_SEND,
+      { type, contact },
     );
 
     return response.status === 200;
   } catch (error: any) {
-    console.error('Verify email error:', error);
+    console.error('Send verification code error:', error);
     throw error;
   }
 }
 
 /**
- * Verify phone with code
+ * Verify code (email or phone)
+ * POST /api/auth/verify
+ * Body: { type: "email" | "phone", code: "123456" }
+ * Note: Requires authentication token
+ */
+export async function verifyCode(
+  type: 'email' | 'phone',
+  code: string
+): Promise<boolean> {
+  try {
+    const response = await apiClient.post(
+      ENDPOINTS.AUTH.VERIFY,
+      { type, code },
+    );
+
+    return response.status === 200;
+  } catch (error: any) {
+    console.error('Verify code error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Verify email with code (wrapper for backward compatibility)
+ */
+export async function verifyEmail(
+  code: string
+): Promise<boolean> {
+  // Note: The API uses unified verify endpoint with type field
+  // This function is kept for backward compatibility
+  return verifyCode('email', code);
+}
+
+/**
+ * Verify phone with code (wrapper for backward compatibility)
  */
 export async function verifyPhone(
   phone: string,
   code: string
 ): Promise<boolean> {
-  try {
-    const response = await apiClient.post(
-      ENDPOINTS.AUTH.VERIFY_PHONE,
-      { phone, code },
-      { skipAuth: true } as ApiConfig
-    );
-
-    return response.status === 200;
-  } catch (error: any) {
-    console.error('Verify phone error:', error);
-    throw error;
-  }
+  // Note: The API uses unified verify endpoint with type field
+  // This function is kept for backward compatibility
+  return verifyCode('phone', code);
 }
 
 /**
  * Resend verification code
+ * POST /api/auth/verify/resend
+ * Body: { type: "email" | "phone" }
+ * Note: Requires authentication token
  */
 export async function resendVerificationCode(
-  emailOrPhone: string,
   type: 'email' | 'phone'
 ): Promise<boolean> {
   try {
-    const endpoint =
-      type === 'email'
-        ? ENDPOINTS.AUTH.RESEND_CODE
-        : ENDPOINTS.AUTH.RESEND_CODE;
-
-    const response = await apiClient.post(endpoint, { [type]: emailOrPhone }, {
-      skipAuth: true,
-    } as ApiConfig);
+    const response = await apiClient.post(
+      ENDPOINTS.AUTH.VERIFY_RESEND,
+      { type }
+    );
 
     return response.status === 200;
   } catch (error: any) {

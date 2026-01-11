@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -151,10 +152,12 @@ const AddressScreen = () => {
         },
       }, 'address');
       router.push('/onboarding/terms');
-    } catch (error) {
-      // Don't block navigation if save fails (offline mode will queue it)
-      console.warn('Failed to save address step, will retry:', error);
-      router.push('/onboarding/terms');
+    } catch (error: any) {
+      console.error('Failed to save address step:', error);
+      Alert.alert(
+        t('common.error') || 'Error',
+        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      );
     }
   };
 

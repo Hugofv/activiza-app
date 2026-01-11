@@ -99,14 +99,16 @@ const PostalCodeScreen = () => {
       try {
         await updateFormData(addressUpdate, 'postal_code');
         router.push('/onboarding/address');
-      } catch (saveError) {
-        // Don't block navigation if save fails (offline mode will queue it)
-        console.warn('Failed to save postalCode step, will retry:', saveError);
-        router.push('/onboarding/address');
+      } catch (saveError: any) {
+        console.error('Failed to save postalCode step:', saveError);
+        Alert.alert(
+          t('common.error') || 'Error',
+          saveError?.response?.data?.message || saveError?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+        );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error looking up postal code:', error);
-      // Still navigate, user can fill manually
+      // Try to save postal code anyway
       try {
         await updateFormData({
           address: {
@@ -116,9 +118,12 @@ const PostalCodeScreen = () => {
           } as any,
         }, 'postal_code');
         router.push('/onboarding/address');
-      } catch (saveError) {
-        console.warn('Failed to save postalCode step, will retry:', saveError);
-        router.push('/onboarding/address');
+      } catch (saveError: any) {
+        console.error('Failed to save postalCode step:', saveError);
+        Alert.alert(
+          t('common.error') || 'Error',
+          saveError?.response?.data?.message || saveError?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+        );
       }
     } finally {
       setLoading(false);

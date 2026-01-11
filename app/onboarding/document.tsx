@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -128,10 +128,12 @@ const DocumentScreen = () => {
         documentType: data.documentType || undefined,
       }, 'document');
       router.push('/onboarding/name');
-    } catch (error) {
-      // Don't block navigation if save fails (offline mode will queue it)
-      console.warn('Failed to save document step, will retry:', error);
-      router.push('/onboarding/name');
+    } catch (error: any) {
+      console.error('Failed to save document step:', error);
+      Alert.alert(
+        t('common.error') || 'Error',
+        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      );
     }
   };
 

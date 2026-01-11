@@ -44,8 +44,14 @@ class ApiClientClass {
 
         // Add access token if available
         const token = await getAccessToken();
+        console.log('token', token);
         if (token && !config.headers.Authorization) {
           config.headers.Authorization = `Bearer ${token}`;
+          console.log('Authorization header set:', config.headers.Authorization?.substring(0, 20) + '...');
+        } else if (!token) {
+          console.warn('No token available for request to:', config.url);
+        } else {
+          console.log('Authorization header already set');
         }
 
         // Check if token is expired (will be handled by response interceptor)

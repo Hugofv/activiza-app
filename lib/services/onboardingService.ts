@@ -32,7 +32,7 @@ export async function saveOnboardingData(
       ...(currentStep && { onboardingStep: currentStep }),
     };
 
-    const response = await apiClient.post<OnboardingResponse>(
+    const response = await apiClient.put<OnboardingResponse>(
       ENDPOINTS.ONBOARDING.SAVE,
       payload
     );
@@ -52,14 +52,19 @@ export async function updateOnboardingStep(
   step: OnboardingStepKey
 ): Promise<OnboardingResponse> {
   try {
-    const response = await apiClient.post<OnboardingResponse>(
+    console.log(`📤 Calling API to update onboarding step: ${step}`);
+    console.log(`📤 Endpoint: ${ENDPOINTS.ONBOARDING.SAVE}`);
+    console.log(`📤 Payload:`, { onboardingStep: step });
+    
+    const response = await apiClient.put<OnboardingResponse>(
       ENDPOINTS.ONBOARDING.SAVE,
       { onboardingStep: step }
     );
 
+    console.log(`📥 API Response:`, JSON.stringify(response.data, null, 2));
     return response.data;
   } catch (error: any) {
-    console.error('Update onboarding step error:', error);
+    console.error('❌ Update onboarding step error:', error);
     throw error;
   }
 }
@@ -67,13 +72,25 @@ export async function updateOnboardingStep(
 /**
  * Submit final onboarding form (complete registration)
  * This marks the entire onboarding as COMPLETED
+ * API expects userId of authenticated user
  */
-export async function submitOnboarding(data: OnboardingFormData): Promise<OnboardingResponse> {
+export async function submitOnboarding(
+  data: OnboardingFormData,
+  userId: string
+): Promise<OnboardingResponse> {
   try {
+    const payload = {
+      ...data,
+      userId, // Pass authenticated user ID to API
+    };
+
+    console.log(`📤 Submitting onboarding with userId: ${userId}`);
     const response = await apiClient.post<OnboardingResponse>(
       ENDPOINTS.ONBOARDING.SUBMIT,
-      data
+      payload
     );
+
+    console.log(`📥 Submit response:`, JSON.stringify(response.data, null, 2));
 
     // After submit, onboarding should be COMPLETED
     // API should return clientStatus: 'COMPLETED'

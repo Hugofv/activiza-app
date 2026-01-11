@@ -57,10 +57,12 @@ const TermsScreen = () => {
           privacyAccepted: true,
         }, 'terms');
         router.push('/onboarding/options');
-      } catch (error) {
-        // Don't block navigation if save fails (offline mode will queue it)
-        console.warn('Failed to save terms step, will retry:', error);
-        router.push('/onboarding/options');
+      } catch (error: any) {
+        console.error('Failed to save terms step:', error);
+        Alert.alert(
+          t('common.error') || 'Error',
+          error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+        );
       }
     }
   };

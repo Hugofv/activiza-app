@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -86,10 +87,12 @@ const FinancialOperationsScreen = () => {
     try {
       await updateFormData({ financialOperations: selectedOption }, 'financial_operations');
       router.push('/onboarding/capital');
-    } catch (error) {
-      // Don't block navigation if save fails (offline mode will queue it)
-      console.warn('Failed to save financialOperations step, will retry:', error);
-      router.push('/onboarding/capital');
+    } catch (error: any) {
+      console.error('Failed to save financialOperations step:', error);
+      Alert.alert(
+        t('common.error') || 'Error',
+        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      );
     }
   };
 
