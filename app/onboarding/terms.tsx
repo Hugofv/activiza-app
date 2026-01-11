@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -56,7 +57,7 @@ const TermsScreen = () => {
           termsAccepted: true,
           privacyAccepted: true,
         }, 'terms');
-        router.push('/onboarding/options');
+        router.push('/onboarding/customization');
       } catch (error: any) {
         console.error('Failed to save terms step:', error);
         Alert.alert(

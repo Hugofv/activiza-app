@@ -213,6 +213,22 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
+          name='customization'
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+            animationDuration: 300,
+          }}
+        />
+        <Stack.Screen
+          name='plans'
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+            animationDuration: 300,
+          }}
+        />
+        <Stack.Screen
           name='registerFinished'
           options={{
             headerShown: false,

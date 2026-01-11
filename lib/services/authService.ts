@@ -308,6 +308,7 @@ export async function checkEmailStatus(email: string): Promise<EmailStatus> {
 
     // Axios returns data in response.data
     const data = response.data;
+    console.log('Check email status response:', JSON.stringify(data, null, 2));
 
     // Transform API response to simplified format
     return {

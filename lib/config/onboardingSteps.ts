@@ -20,7 +20,9 @@ export type OnboardingStepKey =
   | 'postal_code'
   | 'address'
   | 'terms'
-  | 'options';
+  | 'customization'
+  | 'options'
+  | 'plans';
 
 export interface OnboardingStep {
   key: OnboardingStepKey;
@@ -49,7 +51,9 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   { key: 'postal_code', route: '/onboarding/postalCode', apiStepName: 'postal_code', requiresAuth: true, isVerificationStep: false },
   { key: 'address', route: '/onboarding/address', apiStepName: 'address', requiresAuth: true, isVerificationStep: false },
   { key: 'terms', route: '/onboarding/terms', apiStepName: 'terms', requiresAuth: true, isVerificationStep: false },
+  { key: 'customization', route: '/onboarding/customization', apiStepName: 'customization', requiresAuth: true, isVerificationStep: false },
   { key: 'options', route: '/onboarding/options', apiStepName: 'options', requiresAuth: true, isVerificationStep: false },
+  { key: 'plans', route: '/onboarding/plans', apiStepName: 'plans', requiresAuth: true, isVerificationStep: false },
 ];
 
 /**

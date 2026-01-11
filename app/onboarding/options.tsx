@@ -80,7 +80,7 @@ const OptionsScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, submitFormData } = useOnboardingForm();
+  const { formData, updateFormData } = useOnboardingForm();
   const [selectedOptions, setSelectedOptions] = useState<BusinessOption[]>(
     Array.isArray(formData.businessOptions)
       ? formData.businessOptions.filter((opt): opt is BusinessOption =>
@@ -96,23 +96,18 @@ const OptionsScreen = () => {
     router.back();
   };
 
-  const handleFinish = async () => {
+  const handleContinue = async () => {
     if (selectedOptions.length === 0) return;
 
     try {
-      // First, save the options step
+      // Save the options step and navigate to plans screen
       await updateFormData({ businessOptions: selectedOptions }, 'options');
-      
-      // Then, submit the complete onboarding (this creates/updates the account with userId)
-      // This is the final step - API will mark onboarding as COMPLETED
-      await submitFormData();
-      
-      router.push('/onboarding/registerFinished');
+      router.push('/onboarding/plans');
     } catch (error: any) {
-      console.error('Failed to finish onboarding:', error);
+      console.error('Failed to save options step:', error);
       Alert.alert(
         t('common.error') || 'Error',
-        error?.response?.data?.message || error?.message || t('onboarding.submitError') || 'Failed to complete registration. Please try again.'
+        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
     }
   };
@@ -179,15 +174,15 @@ const OptionsScreen = () => {
             </ThemedView>
           </ScrollView>
 
-          {/* Finish Button */}
+          {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <Button
               variant='primary'
               size='full'
-              onPress={handleFinish}
+              onPress={handleContinue}
               disabled={selectedOptions.length === 0}
             >
-              {t('onboarding.finish')}
+              {t('common.continue') || 'Continuar'}
             </Button>
           </View>
         </ThemedView>

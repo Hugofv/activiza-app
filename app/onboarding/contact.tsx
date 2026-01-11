@@ -47,8 +47,16 @@ const ContactScreen = () => {
 
   const onSubmit = async (data: ContactFormData) => {
     // Update form data and save to API with step tracking (unified)
+    // Save country and countryCode in meta
     try {
-      await updateFormData({ phone: data.phone as any }, 'contact');
+      const phoneData = data.phone ? {
+        ...data.phone,
+        meta: {
+          country: data.phone.country,
+          countryCode: data.phone.countryCode,
+        },
+      } : null;
+      await updateFormData({ phone: phoneData as any }, 'contact');
       
       // After saving phone, send verification code automatically
       if (data.phone?.phoneNumber) {

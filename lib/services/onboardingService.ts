@@ -15,6 +15,23 @@ export interface OnboardingResponse {
 }
 
 /**
+ * Get complete onboarding data for authenticated user
+ * Returns all onboarding data to populate the form
+ */
+export async function getOnboardingData(): Promise<Partial<OnboardingFormData> & { onboardingStep?: string; clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' }> {
+  try {
+    const response = await apiClient.get<Partial<OnboardingFormData> & { onboardingStep?: string; clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' }>(
+      ENDPOINTS.ONBOARDING.GET
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Get onboarding data error:', error);
+    throw error;
+  }
+}
+
+/**
  * Save onboarding form data with current step
  * When step is saved, it's considered completed
  * API will return the next step to complete
@@ -32,14 +49,24 @@ export async function saveOnboardingData(
       ...(currentStep && { onboardingStep: currentStep }),
     };
 
+    console.log(`📤 PUT ${ENDPOINTS.ONBOARDING.SAVE}`);
+    console.log(`📤 Payload:`, JSON.stringify(payload, null, 2));
+    console.log(`📤 Current Step:`, currentStep);
+
     const response = await apiClient.put<OnboardingResponse>(
       ENDPOINTS.ONBOARDING.SAVE,
       payload
     );
 
+    console.log(`📥 Response:`, JSON.stringify(response.data, null, 2));
+
     return response.data;
   } catch (error: any) {
     console.error('Save onboarding data error:', error);
+    if (error?.response) {
+      console.error('Error response:', JSON.stringify(error.response.data, null, 2));
+      console.error('Error status:', error.response.status);
+    }
     throw error;
   }
 }
@@ -84,7 +111,10 @@ export async function submitOnboarding(
       userId, // Pass authenticated user ID to API
     };
 
-    console.log(`📤 Submitting onboarding with userId: ${userId}`);
+    console.log(`📤 POST ${ENDPOINTS.ONBOARDING.SUBMIT}`);
+    console.log(`📤 Payload:`, JSON.stringify(payload, null, 2));
+    console.log(`📤 UserId:`, userId);
+
     const response = await apiClient.post<OnboardingResponse>(
       ENDPOINTS.ONBOARDING.SUBMIT,
       payload
@@ -97,6 +127,10 @@ export async function submitOnboarding(
     return response.data;
   } catch (error: any) {
     console.error('Submit onboarding error:', error);
+    if (error?.response) {
+      console.error('Error response:', JSON.stringify(error.response.data, null, 2));
+      console.error('Error status:', error.response.status);
+    }
     throw error;
   }
 }

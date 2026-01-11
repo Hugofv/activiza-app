@@ -1,9 +1,9 @@
 import { isStepCompleted as checkStepCompleted, getNextStep, isOnboardingCompleted, OnboardingStepKey } from '@/lib/config/onboardingSteps';
 import { isOfflineError } from '@/lib/hooks/useMutation';
 import { getCurrentUser } from '@/lib/services/authService';
-import { OnboardingResponse, saveOnboardingData, submitOnboarding, updateOnboardingStep } from '@/lib/services/onboardingService';
-import { useMutation } from '@tanstack/react-query';
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { getOnboardingData, OnboardingResponse, saveOnboardingData, submitOnboarding, updateOnboardingStep } from '@/lib/services/onboardingService';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 export interface OnboardingFormData {
   // Email como identificador primário (obrigatório)
@@ -21,6 +21,10 @@ export interface OnboardingFormData {
     countryCode: string;
     phoneNumber: string;
     formattedPhoneNumber: string;
+    meta?: {
+      country: string | null;
+      countryCode: string;
+    };
   } | null;
   code?: string;
   termsAccepted?: boolean;
@@ -92,6 +96,28 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
   const [formData, setFormData] = useState<Partial<OnboardingFormData>>({});
   const [currentStep, setCurrentStep] = useState<OnboardingStepKey | null>(null);
   const [clientStatus, setClientStatus] = useState<'IN_PROGRESS' | 'COMPLETED' | 'PENDING' | null>(null);
+
+  // Fetch onboarding data on mount
+  const { data: fetchedData } = useQuery({
+    queryKey: ['onboarding', 'data'],
+    queryFn: getOnboardingData,
+    staleTime: 0, // Always fetch fresh data
+    retry: 1, // Only retry once on error
+  });
+
+  // Update formData when fetched data is available
+  useEffect(() => {
+    if (fetchedData) {
+      const { onboardingStep, clientStatus: status, ...data } = fetchedData;
+      setFormData(data);
+      if (onboardingStep) {
+        setCurrentStep(onboardingStep as OnboardingStepKey);
+      }
+      if (status) {
+        setClientStatus(status);
+      }
+    }
+  }, [fetchedData]);
 
   const resetFormData = () => {
     setFormData({});
@@ -218,14 +244,6 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
   };
 
   const submitFormData = async () => {
-    // Ensure we have all required data before submitting
-    // Email é obrigatório (identificador primário)
-    // Documento é opcional (informação de identificação)
-    if (!formData.email || !formData.password || !formData.name) {
-      throw new Error('Missing required fields for submission: email, password, and name are required');
-    }
-
-    // Get authenticated user ID (required by API)
     const currentUser = getCurrentUser();
     if (!currentUser?.id) {
       throw new Error('User is not authenticated. Please log in and try again.');

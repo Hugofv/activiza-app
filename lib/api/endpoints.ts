@@ -26,6 +26,7 @@ export const ENDPOINTS = {
 
   // Onboarding endpoints (protected routes - require authentication)
   ONBOARDING: {
+    GET: `${PREFIX}/onboarding`,
     SAVE: `${PREFIX}/onboarding/save`,
     SUBMIT: `${PREFIX}/onboarding/submit`,
   },
