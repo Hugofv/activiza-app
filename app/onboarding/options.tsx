@@ -1,6 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -11,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Icon } from '@/components/ui/icon';
+import { Icon, IconLibrary } from '@/components/ui/icon';
 import { IconButton } from '@/components/ui/icon-button';
 import { ListCheck } from '@/components/ui/list-check';
 import { Progress } from '@/components/ui/progress';
@@ -19,58 +21,52 @@ import { Typography } from '@/components/ui/typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { getModules, Module } from '@/lib/services/onboardingService';
 import { useTranslation } from 'react-i18next';
 
-type BusinessOption =
-  | 'lendMoney'
-  | 'promissoryNotes'
-  | 'rentProperties'
-  | 'rentRooms'
-  | 'rentVehicles';
+type BusinessOption = string;
 
-const BUSINESS_OPTIONS: {
-  value: BusinessOption;
-  keyPt: string;
-  keyEn: string;
-  icon: string;
-  iconLibrary?: 'ionicons' | 'material' | 'feather' | 'fontawesome' | 'antdesign';
-}[] = [
-  { 
-    value: 'lendMoney', 
-    keyPt: 'optionLendMoney', 
-    keyEn: 'optionLendMoney',
-    icon: 'cash-outline',
-    iconLibrary: 'ionicons',
-  },
-  { 
-    value: 'promissoryNotes', 
-    keyPt: 'optionPromissoryNotes', 
-    keyEn: 'optionPromissoryNotes',
-    icon: 'document-text-outline',
-    iconLibrary: 'ionicons',
-  },
-  { 
-    value: 'rentProperties', 
-    keyPt: 'optionRentProperties', 
-    keyEn: 'optionRentProperties',
-    icon: 'home-outline',
-    iconLibrary: 'ionicons',
-  },
-  { 
-    value: 'rentRooms', 
-    keyPt: 'optionRentRooms', 
-    keyEn: 'optionRentRooms',
-    icon: 'door-outline',
-    iconLibrary: 'ionicons',
-  },
-  { 
-    value: 'rentVehicles', 
-    keyPt: 'optionRentVehicles', 
-    keyEn: 'optionRentVehicles',
-    icon: 'car-outline',
-    iconLibrary: 'ionicons',
-  },
-];
+/**
+ * Map module keys to icon configuration
+ * This maps the 'key' field from the API (UPPER_SNAKE_CASE) to the appropriate icon and library
+ */
+const MODULE_ICON_MAP: Record<
+  string,
+  { icon: string; library: IconLibrary }
+> = {
+  LOAN: { icon: 'cash-outline', library: 'ionicons' },
+  PROMISSORY_NOTE: { icon: 'document-text-outline', library: 'ionicons' },
+  RENT_HOUSE: { icon: 'home-outline', library: 'ionicons' },
+  RENT_ROOM: { icon: 'door-outline', library: 'ionicons' },
+  RENT_VEHICLE: { icon: 'car-outline', library: 'ionicons' },
+  // Default fallback icon
+  default: { icon: 'ellipse-outline', library: 'ionicons' },
+};
+
+/**
+ * Map API module keys (UPPER_SNAKE_CASE) to translation keys (camelCase)
+ */
+const MODULE_TRANSLATION_MAP: Record<string, string> = {
+  LOAN: 'optionLendMoney',
+  PROMISSORY_NOTE: 'optionPromissoryNotes',
+  RENT_HOUSE: 'optionRentProperties',
+  RENT_ROOM: 'optionRentRooms',
+  RENT_VEHICLE: 'optionRentVehicles',
+};
+
+/**
+ * Get icon configuration for a module key
+ */
+const getModuleIcon = (key: string) => {
+  return MODULE_ICON_MAP[key] || MODULE_ICON_MAP.default;
+};
+
+/**
+ * Get translation key for a module key
+ */
+const getModuleTranslationKey = (key: string): string => {
+  return MODULE_TRANSLATION_MAP[key] || `option${key}`;
+};
 
 /**
  * Business options selection screen for onboarding
@@ -80,16 +76,52 @@ const OptionsScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
+
+  // Fetch modules from API
+  const {
+    data: modules,
+    isLoading: isLoadingModules,
+    error: modulesError,
+  } = useQuery<Module[]>({
+    queryKey: ['modules'],
+    queryFn: getModules,
+    staleTime: 1000 * 60 * 60, // 1 hour - modules don't change frequently
+  });
+
+  // Initialize selected options from formData
   const [selectedOptions, setSelectedOptions] = useState<BusinessOption[]>(
     Array.isArray(formData.businessOptions)
-      ? formData.businessOptions.filter((opt): opt is BusinessOption =>
-          typeof opt === 'string' &&
-          ['lendMoney', 'promissoryNotes', 'rentProperties', 'rentRooms', 'rentVehicles'].includes(opt)
-        )
+      ? formData.businessOptions.filter((opt): opt is BusinessOption => typeof opt === 'string')
       : formData.businessOptions
         ? [formData.businessOptions as BusinessOption]
         : []
   );
+
+  // Map modules to ListCheck options format
+  const moduleOptions = useMemo(() => {
+    console.log(modules);
+    
+    if (!modules || !Array.isArray(modules) || modules.length === 0) return [];
+    console.log(modules);
+
+    return modules.map((module) => {
+      const iconConfig = getModuleIcon(module.key);
+      const translationKey = getModuleTranslationKey(module.key);
+
+      return {
+        value: module.key,
+        label: t(`onboarding.${translationKey}`) || module.name || module.key,
+        leftContent: (
+          <Icon
+            name={iconConfig.icon as any}
+            library={iconConfig.library}
+            size={24}
+            color={selectedOptions.includes(module.key) ? colors.primary : colors.icon}
+          />
+        ),
+      };
+    });
+  }, [modules, selectedOptions, colors, t]);
 
   const handleBack = () => {
     router.back();
@@ -110,6 +142,8 @@ const OptionsScreen = () => {
       );
     }
   };
+
+  console.log(moduleOptions);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
@@ -152,23 +186,33 @@ const OptionsScreen = () => {
 
               {/* Options List */}
               <View style={styles.optionsList}>
-                <ListCheck<BusinessOption>
-                  multiple
-                  options={BUSINESS_OPTIONS.map((option) => ({
-                    value: option.value,
-                    label: t(`onboarding.${option.keyPt}`),
-                    leftContent: (
-                      <Icon
-                        name={option.icon as any}
-                        library={option.iconLibrary || 'ionicons'}
-                        size={24}
-                        color={selectedOptions.includes(option.value) ? colors.primary : colors.icon}
-                      />
-                    ),
-                  }))}
-                  selectedValue={selectedOptions}
-                  onValueChange={(value) => setSelectedOptions(value as BusinessOption[])}
-                />
+                {isLoadingModules ? (
+                  <View style={styles.loadingContainer}>
+                    <ActivityIndicator size='large' color={colors.primary} />
+                    <Typography variant='body2' style={[styles.loadingText, { color: colors.icon }]}>
+                      {t('common.loading') || 'Carregando...'}
+                    </Typography>
+                  </View>
+                ) : modulesError ? (
+                  <View style={styles.errorContainer}>
+                    <Typography variant='body2' style={[styles.errorText, { color: colors.text }]}>
+                      {t('common.error') || 'Erro ao carregar módulos'}
+                    </Typography>
+                  </View>
+                ) : moduleOptions?.length > 0 ? (
+                  <ListCheck<BusinessOption>
+                    multiple
+                    options={moduleOptions}
+                    selectedValue={selectedOptions}
+                    onValueChange={(value) => setSelectedOptions(value as BusinessOption[])}
+                  />
+                ) : (
+                  <View style={styles.emptyContainer}>
+                    <Typography variant='body2' style={[styles.emptyText, { color: colors.icon }]}>
+                      {t('common.noData') || 'Nenhum módulo disponível'}
+                    </Typography>
+                  </View>
+                )}
               </View>
             </ThemedView>
           </ScrollView>
@@ -226,5 +270,27 @@ const styles = StyleSheet.create({
     paddingBottom: 56,
     paddingHorizontal: 24,
     alignItems: 'flex-end',
+  },
+  loadingContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    marginTop: 8,
+  },
+  errorContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  errorText: {
+    textAlign: 'center',
+  },
+  emptyContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  emptyText: {
+    textAlign: 'center',
   },
 });

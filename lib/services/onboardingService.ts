@@ -14,6 +14,42 @@ export interface OnboardingResponse {
   clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING'; // Status geral
 }
 
+export interface Module {
+  id: number;
+  key: string;
+  name?: string;
+  description?: string;
+  category?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+}
+
+export interface ModulesResponse {
+  success: boolean;
+  results: Module[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+/**
+ * Get available modules from API
+ * Returns list of modules that can be selected during onboarding
+ */
+export async function getModules(): Promise<Module[]> {
+  try {
+    const response = await apiClient.get<ModulesResponse>(ENDPOINTS.MODULES.GET);
+    console.log(response.data);
+    return response.data.results || [];
+  } catch (error: any) {
+    console.error('Get modules error:', error);
+    throw error;
+  }
+}
+
 /**
  * Get complete onboarding data for authenticated user
  * Returns all onboarding data to populate the form

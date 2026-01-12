@@ -36,6 +36,11 @@ export const ENDPOINTS = {
     PROFILE: `${PREFIX}/user/profile`,
     UPDATE_PROFILE: `${PREFIX}/user/profile`,
   },
+
+  // Modules endpoints
+  MODULES: {
+    GET: `${PREFIX}/modules`,
+  },
 } as const;
 
 // Request timeout (ms)
