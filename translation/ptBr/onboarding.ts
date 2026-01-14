@@ -171,4 +171,5 @@ Podemos atualizar esta política de privacidade periodicamente. Notificaremos vo
   storageUnit: 'GB',
   planFeatures: 'Recursos Incluídos',
   noPlans: 'Nenhum plano disponível no momento.',
+  wantThisPlan: 'Quero este',
 };

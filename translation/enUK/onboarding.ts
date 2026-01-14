@@ -171,4 +171,5 @@ We may update this privacy policy from time to time. We will notify you of any c
   storageUnit: 'GB',
   planFeatures: 'Included Features',
   noPlans: 'No plans available at the moment.',
+  wantThisPlan: 'I want this',
 };

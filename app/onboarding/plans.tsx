@@ -62,30 +62,6 @@ const PlansScreen = () => {
     router.back();
   };
 
-  const handleFinish = async () => {
-    if (!selectedPlan) return;
-
-    setIsSubmitting(true);
-    try {
-      // Submit the complete onboarding (this creates/updates the account with userId)
-      // This is the final step - API will mark onboarding as COMPLETED
-      await submitFormData();
-      
-      // TODO: Save selected plan to API (separate call or included in submitFormData)
-      // For now, we'll just complete the onboarding
-      
-      router.push('/onboarding/registerFinished');
-    } catch (error: any) {
-      console.error('Failed to finish onboarding:', error);
-      Alert.alert(
-        t('common.error') || 'Error',
-        error?.response?.data?.message || error?.message || t('onboarding.submitError') || 'Failed to complete registration. Please try again.'
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
@@ -97,7 +73,9 @@ const PlansScreen = () => {
           <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
+            nestedScrollEnabled={true}
+            scrollEnabled={true}
           >
             <ThemedView style={styles.content}>
               {/* Progress Bar */}
@@ -160,6 +138,8 @@ const PlansScreen = () => {
                       parallaxScrollingOffset: 50,
                     }}
                     style={styles.carousel}
+                    enabled={true}
+                    vertical={false}
                     onSnapToItem={(index: number) => {
                       const plan = plans[index];
                       if (plan) {
@@ -179,13 +159,7 @@ const PlansScreen = () => {
                             },
                           ]}
                         >
-                          <Button
-                            variant='ghost'
-                            size='full'
-                            onPress={() => setSelectedPlan(Number(plan.id))}
-                            style={styles.planButton}
-                          >
-                            <View style={styles.planContent}>
+                          <View style={styles.planContent}>
                               {/* Plan Name */}
                               <Typography variant='h4' style={styles.planName}>
                                 {plan.name}
@@ -264,8 +238,36 @@ const PlansScreen = () => {
                                     })}
                                 </View>
                               )}
-                            </View>
-                          </Button>
+
+                              {/* Select Plan Button */}
+                              <View style={styles.planButtonContainer}>
+                                <Button
+                                  variant='primary'
+                                  size='full'
+                                  onPress={async () => {
+                                    setSelectedPlan(Number(plan.id));
+                                    setIsSubmitting(true);
+                                    try {
+                                      await submitFormData();
+                                      router.push('/onboarding/registerFinished');
+                                    } catch (error: any) {
+                                      console.error('Failed to finish onboarding:', error);
+                                      Alert.alert(
+                                        t('common.error') || 'Error',
+                                        error?.response?.data?.message || error?.message || t('onboarding.submitError') || 'Failed to complete registration. Please try again.'
+                                      );
+                                    } finally {
+                                      setIsSubmitting(false);
+                                    }
+                                  }}
+                                  disabled={isSubmitting}
+                                >
+                                  {isSubmitting && selectedPlan === Number(plan.id)
+                                    ? (t('common.loading') || 'Carregando...')
+                                    : (t('onboarding.wantThisPlan') || 'Quero este')}
+                                </Button>
+                              </View>
+                          </View>
                         </View>
                       );
                     }}
@@ -274,18 +276,6 @@ const PlansScreen = () => {
               </View>
             </ThemedView>
           </ScrollView>
-
-          {/* Finish Button */}
-          <View style={styles.buttonContainer}>
-            <Button
-              variant='primary'
-              size='full'
-              onPress={handleFinish}
-              disabled={!selectedPlan || isSubmitting}
-            >
-              {isSubmitting ? (t('common.loading') || 'Carregando...') : (t('onboarding.finish') || 'Finalizar')}
-            </Button>
-          </View>
         </ThemedView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -303,9 +293,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: 20,
   },
   content: {
-    flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
@@ -323,19 +313,17 @@ const styles = StyleSheet.create({
   plansContainer: {
     marginTop: 8,
     marginHorizontal: -24, // Offset content padding for full-width carousel
+    minHeight: Dimensions.get('window').height * 0.6, // Minimum height to ensure visibility
   },
   carousel: {
     width: '100%',
+    height: Dimensions.get('window').height * 0.65, // Set explicit height for carousel
   },
   planCard: {
     width: '100%',
-    flex: 1,
     borderRadius: 12,
     borderWidth: 2,
     marginHorizontal: 12, // Horizontal margin for spacing between cards
-  },
-  planButton: {
-    padding: 0,
   },
   planContent: {
     padding: 24,
@@ -399,9 +387,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 20,
   },
-  buttonContainer: {
-    paddingBottom: 56,
-    paddingHorizontal: 24,
+  planButtonContainer: {
+    marginTop: 16,
     paddingTop: 16,
   },
   loadingContainer: {
