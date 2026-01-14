@@ -99,10 +99,7 @@ const OptionsScreen = () => {
 
   // Map modules to ListCheck options format
   const moduleOptions = useMemo(() => {
-    console.log(modules);
-    
     if (!modules || !Array.isArray(modules) || modules.length === 0) return [];
-    console.log(modules);
 
     return modules.map((module) => {
       const iconConfig = getModuleIcon(module.key);
@@ -142,8 +139,6 @@ const OptionsScreen = () => {
       );
     }
   };
-
-  console.log(moduleOptions);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>

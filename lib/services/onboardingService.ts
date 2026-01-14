@@ -35,6 +35,63 @@ export interface ModulesResponse {
   };
 }
 
+export interface PlanFeature {
+  id?: number;
+  planId?: number;
+  featureId?: number;
+  isEnabled?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  operationLimit?: number | null;
+  resetPeriod?: string | null;
+  feature?: {
+    id?: number;
+    name?: string;
+    description?: string;
+    key?: string;
+  };
+  prices?: any[];
+  [key: string]: any;
+}
+
+export interface PlanPrice {
+  id?: number;
+  planId?: number;
+  amount?: number;
+  currency?: string;
+  billingPeriod?: string;
+  [key: string]: any;
+}
+
+export interface SuggestedPlan {
+  id: number;
+  name: string;
+  description?: string;
+  totalPrice?: number;
+  billingPeriod?: string;
+  isActive?: boolean;
+  isPublic?: boolean;
+  sortOrder?: number;
+  maxClients?: number | null;
+  maxOperations?: number | null;
+  maxStorage?: number | null;
+  maxUsers?: number | null;
+  matchScore?: number;
+  priceScore?: number;
+  features?: PlanFeature[];
+  prices?: PlanPrice[];
+  meta?: any;
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: any; // Allow for additional fields from API
+}
+
+export interface SuggestedPlansResponse {
+  success?: boolean;
+  plans?: SuggestedPlan[];
+  [key: string]: any; // Allow for flexible response structure
+}
+
 /**
  * Get available modules from API
  * Returns list of modules that can be selected during onboarding
@@ -46,6 +103,22 @@ export async function getModules(): Promise<Module[]> {
     return response.data.results || [];
   } catch (error: any) {
     console.error('Get modules error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get suggested plans from API
+ * Returns list of suggested plans based on user's onboarding data
+ */
+export async function getSuggestedPlans(): Promise<SuggestedPlan[]> {
+  try {
+    const response = await apiClient.get<SuggestedPlansResponse>(ENDPOINTS.ONBOARDING.SUGGESTED_PLANS);
+    console.log('Suggested plans response:', response.data);
+    
+    return response.data?.data || [];
+  } catch (error: any) {
+    console.error('Get suggested plans error:', error);
     throw error;
   }
 }

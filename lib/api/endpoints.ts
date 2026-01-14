@@ -29,6 +29,7 @@ export const ENDPOINTS = {
     GET: `${PREFIX}/onboarding`,
     SAVE: `${PREFIX}/onboarding/save`,
     SUBMIT: `${PREFIX}/onboarding/submit`,
+    SUGGESTED_PLANS: `${PREFIX}/onboarding/suggested-plans`,
   },
 
   // User endpoints

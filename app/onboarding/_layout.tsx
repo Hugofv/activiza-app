@@ -19,7 +19,7 @@ export default function OnboardingLayout() {
   const pathname = usePathname();
 
   // Routes that don't require authentication (where user creates account)
-  const publicRoutes = useMemo(() => ['/onboarding/email', '/onboarding/password'], []);
+  const publicRoutes = useMemo(() => ['/onboarding/email', '/onboarding/password', '/authPassword'], []);
 
   useEffect(() => {
     if (isChecking) return;

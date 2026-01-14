@@ -12,11 +12,16 @@ import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { createStepToRouteMap, getNextStep, getStepByApiName } from '@/lib/config/onboardingSteps';
+import {
+  createStepToRouteMap,
+  getNextStep,
+  getStepByApiName,
+} from '@/lib/config/onboardingSteps';
 import { checkEmailStatus } from '@/lib/services/authService';
 import { emailSchema } from '@/lib/validations/onboarding';
 
 import { Typography } from '@/components/ui/typography';
+import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
 import { useTranslation } from 'react-i18next';
 
 interface EmailFormData {
@@ -32,6 +37,7 @@ const EmailScreen = () => {
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
   const [isChecking, setIsChecking] = useState(false);
+  const { isAuthenticated } = useAuthGuard();
 
   const {
     control,
@@ -54,25 +60,27 @@ const EmailScreen = () => {
     try {
       // Check if email exists and registration status
       const emailStatus = await checkEmailStatus(data.email);
-      
+
       // Just update form data (don't save to API yet - user doesn't have account)
-    updateFormData({ email: data.email });
+      updateFormData({ email: data.email });
 
       // Check if user is fully registered (completed) vs in-progress onboarding
-      const isFullyRegistered = emailStatus.exists && 
-                                emailStatus.isRegistered && 
-                                emailStatus.clientStatus === 'COMPLETED';
-      
-      const isInProgressOnboarding = emailStatus.exists && 
-                                      emailStatus.isRegistered && 
-                                      emailStatus.clientStatus === 'IN_PROGRESS';
+      const isFullyRegistered =
+        emailStatus.exists &&
+        emailStatus.isRegistered &&
+        emailStatus.clientStatus === 'COMPLETED';
 
-      if (isFullyRegistered) {
+      const isInProgressOnboarding =
+        emailStatus.exists &&
+        emailStatus.isRegistered &&
+        emailStatus.clientStatus === 'IN_PROGRESS';
+
+      if (isFullyRegistered || !isAuthenticated) {
         // User is fully registered, redirect to password authentication
         // Pass onboardingStep to redirect user after login
         router.push({
           pathname: '/authPassword',
-          params: { 
+          params: {
             email: data.email,
             onboardingStep: emailStatus.onboardingStep || '',
           },
@@ -82,35 +90,39 @@ const EmailScreen = () => {
         const onboardingStep = emailStatus.onboardingStep || 'password';
         console.log('Email status - onboardingStep from API:', onboardingStep);
         console.log('Email status - clientStatus:', emailStatus.clientStatus);
-        
+
         // Use centralized step to route mapping
         const stepToRouteMap = createStepToRouteMap();
-        
+
         // If the step is a verification step, check if we should skip it
         // Verification steps might already be completed but API still returns them
         // API returns apiStepName, so we need to find the step by apiStepName first
         const stepInfo = getStepByApiName(onboardingStep);
         let targetStep = onboardingStep;
-        
+
         if (stepInfo?.isVerificationStep) {
           // If API returned a verification step, it might already be completed
           // Try to get the next step instead (using the key, not apiStepName)
           const nextStep = getNextStep(stepInfo.key);
           if (nextStep) {
             targetStep = nextStep.apiStepName;
-            console.log(`⏭️ Skipping verification step ${onboardingStep}, redirecting to next step: ${targetStep} (${nextStep.route})`);
+            console.log(
+              `⏭️ Skipping verification step ${onboardingStep}, redirecting to next step: ${targetStep} (${nextStep.route})`
+            );
           } else {
-            console.warn(`⚠️ Verification step ${onboardingStep} is the last step, cannot skip`);
+            console.warn(
+              `⚠️ Verification step ${onboardingStep} is the last step, cannot skip`
+            );
           }
         }
-        
+
         const route = stepToRouteMap[targetStep] || '/onboarding/password';
         console.log('Redirecting to route:', route);
         router.push(route as any);
       } else {
         // New user, continue normal onboarding flow
-    // New flow: Email -> Password -> Email Verification -> Document
-    router.push('/onboarding/password');
+        // New flow: Email -> Password -> Email Verification -> Document
+        router.push('/onboarding/password');
       }
     } catch (error: any) {
       console.error('Check email status error:', error);
@@ -123,7 +135,10 @@ const EmailScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -151,12 +166,12 @@ const EmailScreen = () => {
 
             {/* Input Field */}
             <Input
-              name="email"
+              name='email'
               control={control}
               error={errors.email?.message}
               className='border-0 rounded-none px-0 py-4 font-medium'
               style={[
-                { 
+                {
                   fontSize: 24,
                   borderBottomColor: errors.email ? '#ef4444' : colors.icon,
                 },
@@ -182,7 +197,7 @@ const EmailScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid || isChecking}
-              />
+            />
           </View>
         </ThemedView>
       </KeyboardAvoidingView>
