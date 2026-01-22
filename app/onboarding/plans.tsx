@@ -245,13 +245,19 @@ const PlansScreen = () => {
                                   variant='primary'
                                   size='full'
                                   onPress={async () => {
-                                    setSelectedPlan(Number(plan.id));
+                                    const planId = Number(plan.id);
+                                    setSelectedPlan(planId);
                                     setIsSubmitting(true);
                                     try {
-                                      await submitFormData();
+                                      // Submit the complete onboarding form with selected plan ID
+                                      await submitFormData({ planId });
                                       router.push('/onboarding/registerFinished');
                                     } catch (error: any) {
                                       console.error('Failed to finish onboarding:', error);
+                                      // Log detailed error information
+                                      if (error?.response?.data?.details) {
+                                        console.error('Validation errors:', JSON.stringify(error.response.data.details, null, 2));
+                                      }
                                       Alert.alert(
                                         t('common.error') || 'Error',
                                         error?.response?.data?.message || error?.message || t('onboarding.submitError') || 'Failed to complete registration. Please try again.'

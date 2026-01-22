@@ -34,6 +34,7 @@ export interface OnboardingFormData {
   workingCapital?: number; // Working capital in thousands (e.g., 5 = 5k, 100 = 100k)
   businessDuration?: number; // Business duration in months
   businessOptions?: string | string[];
+  planId?: number; // Selected plan ID
   address?: {
     postalCode: string;
     street: string;
@@ -61,7 +62,7 @@ interface OnboardingFormContextType {
   clientStatus: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' | null;
   updateFormData: (data: Partial<OnboardingFormData>, step?: OnboardingStepKey) => Promise<void>;
   updateStep: (step: OnboardingStepKey) => Promise<OnboardingResponse>; // Para steps de verificação
-  submitFormData: () => Promise<void>;
+  submitFormData: (additionalData?: Partial<OnboardingFormData>) => Promise<void>;
   resetFormData: () => void;
   isSaving: boolean;
   isSubmitting: boolean;
@@ -243,14 +244,17 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
     return response;
   };
 
-  const submitFormData = async () => {
+  const submitFormData = async (additionalData?: Partial<OnboardingFormData>) => {
     const currentUser = getCurrentUser();
     if (!currentUser?.id) {
       throw new Error('User is not authenticated. Please log in and try again.');
     }
 
+    // Merge formData with any additional data provided (e.g., planId)
+    const finalData = { ...formData, ...additionalData } as OnboardingFormData;
+
     await submitMutation.mutateAsync({
-      data: formData as OnboardingFormData,
+      data: finalData,
       userId: currentUser.id,
     });
   };
