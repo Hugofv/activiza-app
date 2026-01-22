@@ -1,0 +1,13 @@
+export default {
+  thisMonth: 'This month',
+  receivedThisMonth: 'Received this month',
+  of: 'of',
+  loans: 'Loans',
+  roomRentals: 'Room rentals',
+  vehicleRentals: 'Vehicle rentals',
+  overduePayments: 'overdue payments',
+  reports: 'Reports',
+  inLoans: 'in loans',
+  inRentals: 'in rentals',
+  operations: 'Operations',
+};

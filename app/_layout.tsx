@@ -23,6 +23,8 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
+import { Toast } from '@/components/ui/toast';
+import { ToastProvider } from '@/contexts/toastContext';
 
 // Prevent the splash screen from auto-hiding before fonts are loaded
 SplashScreen.preventAutoHideAsync();
@@ -70,6 +72,7 @@ export default function RootLayout() {
         <ThemeProvider
           value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
         >
+          <ToastProvider>
             <Stack
               screenOptions={{
                 headerShown: false,
@@ -109,6 +112,8 @@ export default function RootLayout() {
               />
             </Stack>
             <StatusBar style='auto' />
+            <Toast />
+          </ToastProvider>
         </ThemeProvider>
       </PersistQueryClientProvider>
     </QueryClientProvider>

@@ -163,11 +163,35 @@ class ApiClientClass {
 
   private handleError(error: AxiosError | Error): ApiError {
     if (isAxiosError(error)) {
+      const responseData = error.response?.data as any;
+      
+      // Extract error code from API response structure:
+      // { success: false, error: { code: "ERROR_CODE", message: "...", details: {...} } }
+      // Also supports legacy format: { code: "ERROR_CODE", message: "..." }
+      const errorCode = 
+        responseData?.error?.code || 
+        responseData?.code || 
+        error.code || 
+        'UNKNOWN_ERROR';
+      
+      // Extract error message (for debugging/logs only, not for UI)
+      const errorMessage = 
+        responseData?.error?.message || 
+        responseData?.message || 
+        error.message || 
+        'An error occurred';
+      
+      // Extract error details
+      const errorDetails = 
+        responseData?.error?.details || 
+        responseData?.details || 
+        responseData;
+
       return {
-        message: error.response?.data?.message || error.message || 'An error occurred',
-        code: error.response?.data?.code || error.code || 'UNKNOWN_ERROR',
+        message: errorMessage, // For debugging/logs only
+        code: errorCode, // Use this for translation in UI
         statusCode: error.response?.status,
-        details: error.response?.data,
+        details: errorDetails,
       };
     }
 
