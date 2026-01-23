@@ -67,11 +67,10 @@ const AuthPasswordScreen = () => {
         password: data.password,
       });
 
-      console.log('onboardingStep', onboardingStep);
       // After login, redirect based on onboardingStep from params
       // If user is fully registered (COMPLETED), onboardingStep will be empty and redirect to home
       // If user is in progress (IN_PROGRESS), onboardingStep will contain the step to continue
-      if (onboardingStep) {
+      if (onboardingStep && onboardingStep !== 'completed') {
         // User is in progress onboarding, redirect to the step from params
         // Use centralized step to route mapping
         const stepToRouteMap = createStepToRouteMap();
@@ -79,7 +78,7 @@ const AuthPasswordScreen = () => {
         router.replace(route as any);
       } else {
         // User is fully registered (COMPLETED), redirect to home
-        router.replace('/');
+        router.replace('/home');
       }
     } catch (error: any) {
       console.error('Login error:', error);

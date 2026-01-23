@@ -14,6 +14,8 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
 
+import { Toast } from '@/components/ui/toast';
+import { ToastProvider } from '@/contexts/toastContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { persistOptions, queryClient } from '@/lib/api/queryClient';
 import { initializeBackgroundSync } from '@/lib/sync/backgroundSync';
@@ -23,8 +25,6 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
-import { Toast } from '@/components/ui/toast';
-import { ToastProvider } from '@/contexts/toastContext';
 
 // Prevent the splash screen from auto-hiding before fonts are loaded
 SplashScreen.preventAutoHideAsync();
@@ -81,32 +81,32 @@ export default function RootLayout() {
               }}
             >
               <Stack.Screen
-              name='index'
+                name='index'
                 options={{
                   headerShown: false,
-                animation: 'default',
+                  animation: 'default',
                 }}
               />
               <Stack.Screen
-              name='onboarding'
+                name='onboarding'
                 options={{
                   headerShown: false,
-                animation: 'default',
+                  animation: 'default',
                 }}
               />
               <Stack.Screen
-                name='login'
-                options={{
-                  headerShown: false,
-                  animation: 'fade',
-                  animationDuration: 400,
-                }}
-              />
-              <Stack.Screen
-                name='authPassword'
+                name='auth'
                 options={{
                   headerShown: false,
                   animation: 'slide_from_right',
+                  animationDuration: 300,
+                }}
+              />
+              <Stack.Screen
+                name='home'
+                options={{
+                  headerShown: false,
+                  animation: 'fade',
                   animationDuration: 300,
                 }}
               />

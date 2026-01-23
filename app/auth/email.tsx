@@ -8,7 +8,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedView } from '@/components/ThemedView';
 import { IconButton } from '@/components/ui/icon-button';
 import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -79,7 +78,7 @@ const EmailScreen = () => {
         // User is fully registered, redirect to password authentication
         // Pass onboardingStep to redirect user after login
         router.push({
-          pathname: '/authPassword',
+          pathname: '/auth/password',
           params: {
             email: data.email,
             onboardingStep: emailStatus.onboardingStep || '',
@@ -146,10 +145,6 @@ const EmailScreen = () => {
       >
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
-            {/* Progress Bar */}
-            <View style={styles.progressContainer}>
-              <Progress value={10} />
-            </View>
 
             {/* Back Button */}
             <IconButton
