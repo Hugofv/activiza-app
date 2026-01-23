@@ -41,6 +41,7 @@ const DocumentScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Get country code from address or default to BR
   const countryCode: CountryCode = (formData.address?.countryCode as CountryCode) || 'BR';
@@ -122,6 +123,7 @@ const DocumentScreen = () => {
 
   const onSubmit = async (data: DocumentFormData) => {
     // Update form data and save to API with step tracking (unified)
+    setIsSubmitting(true);
     try {
       await updateFormData({
         document: data.document || undefined,
@@ -134,6 +136,8 @@ const DocumentScreen = () => {
         t('common.error') || 'Error',
         error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -229,6 +233,7 @@ const DocumentScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={false} // Document is optional, so always enabled
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>

@@ -45,6 +45,7 @@ const CapitalScreen = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(
     formData.workingCapital || null
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBack = () => {
     router.back();
@@ -54,6 +55,7 @@ const CapitalScreen = () => {
     if (selectedOption === null) return;
 
     // Update form data and save to API with step tracking (unified)
+    setIsSubmitting(true);
     try {
       await updateFormData({ workingCapital: selectedOption }, 'working_capital');
       router.push('/onboarding/businessDuration');
@@ -63,6 +65,8 @@ const CapitalScreen = () => {
         t('common.error') || 'Error',
         error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -124,6 +128,7 @@ const CapitalScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
               disabled={selectedOption === null}
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>

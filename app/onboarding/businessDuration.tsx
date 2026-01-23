@@ -44,6 +44,7 @@ const BusinessDurationScreen = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(
     formData.businessDuration || null
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBack = () => {
     router.back();
@@ -53,6 +54,7 @@ const BusinessDurationScreen = () => {
     if (selectedOption === null) return;
 
     // Update form data and save to API with step tracking (unified)
+    setIsSubmitting(true);
     try {
       await updateFormData({ businessDuration: selectedOption }, 'business_duration');
       router.push('/onboarding/country');
@@ -62,6 +64,8 @@ const BusinessDurationScreen = () => {
         t('common.error') || 'Error',
         error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -123,6 +127,7 @@ const BusinessDurationScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
               disabled={selectedOption === null}
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>

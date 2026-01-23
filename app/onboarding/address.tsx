@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Alert,
@@ -46,6 +46,7 @@ const AddressScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const countryCode =
     ((formData.address as any)?.countryCode as CountryCode) || 'BR';
   const postalCodeFormat = getPostalCodeFormat(countryCode);
@@ -137,6 +138,7 @@ const AddressScreen = () => {
 
   const onSubmit = async (data: AddressFormData) => {
     // Update form data and save to API with step tracking (unified)
+    setIsSubmitting(true);
     try {
       await updateFormData({
         address: {
@@ -158,6 +160,8 @@ const AddressScreen = () => {
         t('common.error') || 'Error',
         error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -372,6 +376,7 @@ const AddressScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>

@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { Pressable, type PressableProps, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, type PressableProps, type ViewStyle } from 'react-native';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -45,6 +45,7 @@ export interface IconButtonProps
   iconColor?: string;
   className?: string;
   width?: 'sm' | 'default' | 'lg';
+  loading?: boolean;
 }
 
 const IconButton = React.forwardRef<
@@ -63,12 +64,16 @@ const IconButton = React.forwardRef<
       iconColor,
       style,
       disabled,
+      loading,
       ...props
     },
     ref
   ) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
+    
+    // Disable button when loading
+    const isDisabled = disabled || loading;
 
     // Get variant-specific styles
     const getVariantStyle = (): ViewStyle => {
@@ -109,20 +114,20 @@ const IconButton = React.forwardRef<
       switch (variant) {
         case 'primary':
           baseStyle.backgroundColor = colors.primary;
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
         case 'secondary':
           baseStyle.backgroundColor =
             colorScheme === 'dark' ? '#1a2a24' : '#f1f9f5';
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
         case 'error':
           baseStyle.backgroundColor = '#ef4444';
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
@@ -130,19 +135,19 @@ const IconButton = React.forwardRef<
           baseStyle.backgroundColor = 'transparent';
           baseStyle.borderColor = colors.icon;
           baseStyle.borderWidth = 1;
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
         case 'ghost':
           baseStyle.backgroundColor = 'transparent';
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
         default:
           baseStyle.backgroundColor = colors.primary;
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
       }
@@ -185,6 +190,7 @@ const IconButton = React.forwardRef<
     };
 
     const variantStyle = getVariantStyle();
+    const iconColorValue = getIconColor();
 
     return (
       <Pressable
@@ -198,15 +204,22 @@ const IconButton = React.forwardRef<
         )}
         style={[variantStyle, style] as any}
         ref={ref}
-        disabled={disabled}
+        disabled={isDisabled}
         {...props}
       >
-        <Icon
-          name={icon}
-          library={iconLibrary}
-          size={getIconSize()}
-          color={getIconColor()}
-        />
+        {loading ? (
+          <ActivityIndicator 
+            size="small" 
+            color={iconColorValue}
+          />
+        ) : (
+          <Icon
+            name={icon}
+            library={iconLibrary}
+            size={getIconSize()}
+            color={iconColorValue}
+          />
+        )}
       </Pressable>
     );
   }

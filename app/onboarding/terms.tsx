@@ -44,6 +44,7 @@ const TermsScreen = () => {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBack = () => {
     router.back();
@@ -52,6 +53,7 @@ const TermsScreen = () => {
   const handleContinue = async () => {
     if (termsAccepted && privacyAccepted) {
       // Update form data and save to API with step tracking (unified)
+      setIsSubmitting(true);
       try {
         await updateFormData({
           termsAccepted: true,
@@ -64,6 +66,8 @@ const TermsScreen = () => {
           t('common.error') || 'Error',
           error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
         );
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -249,6 +253,7 @@ const TermsScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
               disabled={isContinueDisabled}
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>

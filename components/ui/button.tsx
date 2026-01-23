@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { Pressable, type PressableProps, type TextProps, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, type PressableProps, type TextProps, type ViewStyle } from 'react-native';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -38,12 +38,16 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   children?: React.ReactNode;
   textProps?: TextProps;
+  loading?: boolean;
 }
 
 const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
-  ({ className, variant = 'primary', size, children, textProps, style, disabled, ...props }, ref) => {
+  ({ className, variant = 'primary', size, children, textProps, style, disabled, loading, ...props }, ref) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
+    
+    // Disable button when loading
+    const isDisabled = disabled || loading;
 
     // Get variant-specific styles
     const getVariantStyle = (): ViewStyle => {
@@ -68,7 +72,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
       switch (variant) {
         case 'primary':
           baseStyle.backgroundColor = colors.primary; // Green (#a7e203)
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
@@ -76,13 +80,13 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           // Secondary button: light muted background (like back button in Figma)
           baseStyle.backgroundColor = colorScheme === 'dark' ? '#1a2a24' : '#f1f9f5'; // Light green tint from Figma
           // No border for secondary - just muted background
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
         case 'error':
           baseStyle.backgroundColor = '#ef4444';
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
@@ -90,25 +94,25 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           baseStyle.backgroundColor = 'transparent';
           baseStyle.borderColor = colors.icon;
           baseStyle.borderWidth = 1;
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
         case 'ghost':
           baseStyle.backgroundColor = 'transparent';
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
         case 'link':
           baseStyle.backgroundColor = 'transparent';
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
           break;
         default:
           baseStyle.backgroundColor = colors.primary;
-          if (disabled) {
+          if (isDisabled) {
             baseStyle.opacity = 0.5;
           }
       }
@@ -139,23 +143,29 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
     };
 
     const variantStyle = getVariantStyle();
+    const textColor = getTextColor();
 
     return (
       <Pressable
         className={cn(buttonVariants({ variant, size, className }))}
         style={[variantStyle, style] as any}
         ref={ref}
-        disabled={disabled}
+        disabled={isDisabled}
         {...props}>
-          {typeof children === 'string' ? (
-          <Typography 
-            variant="lead"
-            style={{ color: getTextColor() }}>
-            {children}
-          </Typography>
-        ) : (
-          children
-        )}
+          {loading ? (
+            <ActivityIndicator 
+              size="small" 
+              color={textColor}
+            />
+          ) : typeof children === 'string' ? (
+            <Typography 
+              variant="lead"
+              style={{ color: textColor }}>
+              {children}
+            </Typography>
+          ) : (
+            children
+          )}
       </Pressable>
     );
   }

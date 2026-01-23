@@ -82,6 +82,7 @@ const CustomizationScreen = () => {
     return null;
   }, [formData.phone, currentUser?.phone]);
   const userDocument = formData.document || currentUser?.document || '';
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     control,
@@ -121,6 +122,7 @@ const CustomizationScreen = () => {
   const onSubmit = async (data: CustomizationFormData) => {
     // Update form data and save to API with step tracking (unified)
     // Send Account (business*) fields directly to API
+    setIsSubmitting(true);
     try {
       await updateFormData(
         {
@@ -138,6 +140,8 @@ const CustomizationScreen = () => {
         t('common.error') || 'Error',
         error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -268,6 +272,7 @@ const CustomizationScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid}
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>

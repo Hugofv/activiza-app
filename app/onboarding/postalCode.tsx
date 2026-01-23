@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';

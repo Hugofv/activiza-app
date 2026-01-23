@@ -45,6 +45,7 @@ const CountryScreen = () => {
   const [selectedCountry, setSelectedCountry] = useState<CountryCode | null>(
     (formData.address?.country as CountryCode) || null
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBack = () => {
     router.back();
@@ -56,6 +57,7 @@ const CountryScreen = () => {
     const country = COUNTRIES.find((c) => c.code === selectedCountry);
     
     // Update form data and save to API with step tracking (unified)
+    setIsSubmitting(true);
     try {
       await updateFormData({
         address: {
@@ -86,6 +88,8 @@ const CountryScreen = () => {
         t('common.error') || 'Error',
         error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -191,6 +195,7 @@ const CountryScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
               disabled={!selectedCountry}
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>

@@ -22,7 +22,7 @@ const RegisterFinishedScreen = () => {
 
   const handleGoToLogin = () => {
     // Navigate to login screen
-    router.replace('/login');
+    router.replace('/auth/email');
   };
 
   return (

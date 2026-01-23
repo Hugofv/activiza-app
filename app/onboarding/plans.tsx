@@ -266,11 +266,9 @@ const PlansScreen = () => {
                                       setIsSubmitting(false);
                                     }
                                   }}
-                                  disabled={isSubmitting}
+                                  loading={isSubmitting && selectedPlan === Number(plan.id)}
                                 >
-                                  {isSubmitting && selectedPlan === Number(plan.id)
-                                    ? (t('common.loading') || 'Carregando...')
-                                    : (t('onboarding.wantThisPlan') || 'Quero este')}
+                                  {t('onboarding.wantThisPlan') || 'Quero este'}
                                 </Button>
                               </View>
                           </View>

@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,6 +29,7 @@ const NameScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     control,
@@ -47,6 +49,7 @@ const NameScreen = () => {
 
   const onSubmit = async (data: NameFormData) => {
     // Update form data and save to API with step tracking (unified)
+    setIsSubmitting(true);
     try {
       await updateFormData({ name: data.name }, 'name');
       router.push('/onboarding/contact');
@@ -56,6 +59,8 @@ const NameScreen = () => {
         t('common.error') || 'Error',
         error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -119,6 +124,7 @@ const NameScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid}
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>

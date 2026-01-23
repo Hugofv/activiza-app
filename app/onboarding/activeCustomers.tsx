@@ -57,6 +57,7 @@ const ActiveCustomersScreen = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(
     formData.activeCustomers || null
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBack = () => {
     router.back();
@@ -66,6 +67,7 @@ const ActiveCustomersScreen = () => {
     if (selectedOption === null) return;
 
     // Update form data and save to API with step tracking (unified)
+    setIsSubmitting(true);
     try {
       await updateFormData({ activeCustomers: selectedOption }, 'active_customers');
       router.push('/onboarding/financialOperations');
@@ -75,6 +77,8 @@ const ActiveCustomersScreen = () => {
         t('common.error') || 'Error',
         error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -144,6 +148,7 @@ const ActiveCustomersScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
               disabled={selectedOption === null}
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>
