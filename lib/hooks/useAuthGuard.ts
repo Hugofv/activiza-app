@@ -4,7 +4,14 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useMemo } from 'react';
+import {
+  createStepToRouteMap,
+  getNextStep,
+  getStepByApiName,
+  isOnboardingCompleted,
+} from '../config/onboardingSteps';
 import { ensureValidToken, getCurrentUser } from '../services/authService';
+import { getOnboardingData } from '../services/onboardingService';
 import { getAccessToken } from '../storage/secureStorage';
 import { User } from '../types/authTypes';
 
@@ -74,6 +81,79 @@ export function useAuthGuard() {
     router.replace('/auth/email');
   };
 
+  /**
+   * Resolve where an authenticated user should go based on onboarding status.
+   * Centralized logic used after login and on app start.
+   */
+  const resolvePostAuthRoute = async (): Promise<string> => {
+    try {
+      console.log('[AuthGuard] Resolving post-auth route based on onboarding status...');
+      const data = await getOnboardingData();
+      const { clientStatus, onboardingStep } = data ?? {};
+
+      // Normalize status for completion helper (PENDING treated as not completed)
+      const normalizedStatus =
+        clientStatus === 'PENDING'
+          ? undefined
+          : (clientStatus as 'IN_PROGRESS' | 'COMPLETED' | undefined);
+
+      const completed = isOnboardingCompleted(normalizedStatus);
+
+      console.log('[AuthGuard] Onboarding status:', {
+        clientStatus,
+        onboardingStep,
+        completed,
+      });
+
+      if (completed) {
+        console.log('[AuthGuard] Onboarding completed → tabs home');
+        return '/(tabs)/home';
+      }
+
+      // User must finish onboarding instead of going to home
+      const stepToRouteMap = createStepToRouteMap();
+      const apiStepName = onboardingStep || 'document'; // fallback to first protected step
+
+      // If API points to a verification step (e.g. email_verification), skip to the next real step
+      const stepInfo = getStepByApiName(apiStepName);
+      let targetStep = apiStepName;
+
+      if (stepInfo?.isVerificationStep) {
+        const nextStep = getNextStep(stepInfo.key);
+        if (nextStep) {
+          targetStep = nextStep.apiStepName;
+          console.log(
+            `[AuthGuard] Skipping verification step ${apiStepName}, redirecting to next step: ${targetStep}`
+          );
+        }
+      }
+
+      const route = stepToRouteMap[targetStep] || '/onboarding/document';
+
+      console.log('[AuthGuard] Redirecting authenticated user to onboarding route:', {
+        route,
+        targetStep,
+      });
+
+      return route as string;
+    } catch (error) {
+      console.error(
+        '[AuthGuard] Error resolving post-auth route; defaulting to home tabs',
+        error
+      );
+      return '/(tabs)/home';
+    }
+  };
+
+  /**
+   * Redirect an authenticated user to the correct route (home vs onboarding)
+   * based on onboarding status.
+   */
+  const redirectAfterAuth = async () => {
+    const route = await resolvePostAuthRoute();
+    router.replace(route as any);
+  };
+
   // Function to refresh auth status (useful after login/register)
   const refreshAuth = async () => {
     // Invalidate all auth queries to force refresh
@@ -87,5 +167,7 @@ export function useAuthGuard() {
     isChecking,
     refreshAuth,
     redirectToLogin,
+    resolvePostAuthRoute,
+    redirectAfterAuth,
   };
 }

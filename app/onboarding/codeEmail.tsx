@@ -77,10 +77,10 @@ const CodeEmailScreen = () => {
     try {
       // Verify email code with API (endpoint diferente)
       await verifyEmail(data.code);
-      
+
       // Code verified successfully
       updateFormData({ emailCode: data.code });
-      
+
       // Update onboarding step (verification step uses different endpoint)
       // API marks email_verification as completed and returns the next step
       // After success, currentStep will be updated to the next step (not email_verification anymore)
@@ -97,7 +97,7 @@ const CodeEmailScreen = () => {
         );
         return; // Don't navigate if step update fails
       }
-      
+
       // Continue to confirmation screen
       router.push('/onboarding/confirmEmail');
     } catch (error: any) {
@@ -121,10 +121,10 @@ const CodeEmailScreen = () => {
     try {
       // Resend verification code via email
       await resendVerificationCode('email');
-      
+
       // Reset timer
       setResendTimer(60);
-      
+
       Alert.alert('Success', 'Verification code sent to your email.');
     } catch (error: any) {
       console.error('Resend code error:', error);
@@ -210,6 +210,7 @@ const CodeEmailScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid || isVerifying}
+              loading={isVerifying}
             />
           </View>
         </ThemedView>

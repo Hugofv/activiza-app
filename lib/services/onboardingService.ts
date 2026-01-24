@@ -115,7 +115,7 @@ export async function getSuggestedPlans(): Promise<SuggestedPlan[]> {
   try {
     const response = await apiClient.get<SuggestedPlansResponse>(ENDPOINTS.ONBOARDING.SUGGESTED_PLANS);
     console.log('Suggested plans response:', response.data);
-    
+
     return response.data?.data || [];
   } catch (error: any) {
     console.error('Get suggested plans error:', error);
@@ -127,7 +127,7 @@ export async function getSuggestedPlans(): Promise<SuggestedPlan[]> {
  * Get complete onboarding data for authenticated user
  * Returns all onboarding data to populate the form
  */
-export async function getOnboardingData(): Promise<Partial<OnboardingFormData> & { onboardingStep?: string; clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' }> {
+export async function getOnboardingData(): Promise<Partial<OnboardingFormData> & { onboardingStep?: string; clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' } | undefined> {
   try {
     const response = await apiClient.get<Partial<OnboardingFormData> & { onboardingStep?: string; clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' }>(
       ENDPOINTS.ONBOARDING.GET
@@ -135,8 +135,7 @@ export async function getOnboardingData(): Promise<Partial<OnboardingFormData> &
 
     return response.data;
   } catch (error: any) {
-    console.error('Get onboarding data error:', error);
-    throw error;
+    console.log('Get onboarding data error:', error);
   }
 }
 
@@ -191,7 +190,7 @@ export async function updateOnboardingStep(
     console.log(`📤 Calling API to update onboarding step: ${step}`);
     console.log(`📤 Endpoint: ${ENDPOINTS.ONBOARDING.SAVE}`);
     console.log(`📤 Payload:`, { onboardingStep: step });
-    
+
     const response = await apiClient.put<OnboardingResponse>(
       ENDPOINTS.ONBOARDING.SAVE,
       { onboardingStep: step }

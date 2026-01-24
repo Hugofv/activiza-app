@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Typography } from '@/components/ui/typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { createStepToRouteMap } from '@/lib/config/onboardingSteps';
+import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
 import { login } from '@/lib/services/authService';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -33,9 +33,9 @@ const AuthPasswordScreen = () => {
   const { t } = useTranslation();
   const params = useLocalSearchParams<{ email?: string; onboardingStep?: string }>();
   const email = params.email || '';
-  const onboardingStep = params.onboardingStep || '';
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { redirectAfterAuth } = useAuthGuard();
 
   const {
     control,
@@ -67,19 +67,8 @@ const AuthPasswordScreen = () => {
         password: data.password,
       });
 
-      // After login, redirect based on onboardingStep from params
-      // If user is fully registered (COMPLETED), onboardingStep will be empty and redirect to home
-      // If user is in progress (IN_PROGRESS), onboardingStep will contain the step to continue
-      if (onboardingStep && onboardingStep !== 'completed') {
-        // User is in progress onboarding, redirect to the step from params
-        // Use centralized step to route mapping
-        const stepToRouteMap = createStepToRouteMap();
-        const route = stepToRouteMap[onboardingStep] || '/onboarding/password';
-        router.replace(route as any);
-      } else {
-        // User is fully registered (COMPLETED), redirect to home tab
-        router.replace('/(tabs)/home');
-      }
+      // After login, delegate redirect (home vs onboarding) to centralized AuthGuard logic
+      await redirectAfterAuth();
     } catch (error: any) {
       console.error('Login error:', error);
       Alert.alert(
@@ -185,6 +174,7 @@ const AuthPasswordScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid || isLoading}
+              loading={isLoading}
             />
           </View>
         </ThemedView>

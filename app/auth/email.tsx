@@ -72,12 +72,6 @@ const EmailScreen = () => {
         emailStatus.clientStatus === 'COMPLETED' &&
         !isPlatformUser;
 
-      console.log('Email status response:', emailStatus);
-      console.log('isPlatformUser:', isPlatformUser);
-      console.log('isNewUser:', isNewUser);
-      console.log('isFullyRegistered:', isFullyRegistered);
-      console.log('isInProgressOnboarding:', isInProgressOnboarding);
-
       if (isNewUser) {
         // Brand new user: start full onboarding flow from password creation
         // Pass email via params so onboarding context can persist it
@@ -185,6 +179,7 @@ const EmailScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid || isChecking}
+              loading={isChecking}
             />
           </View>
         </ThemedView>

@@ -267,6 +267,7 @@ const PasswordScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid || isRegistering}
+              loading={isRegistering}
             />
           </View>
         </ThemedView>

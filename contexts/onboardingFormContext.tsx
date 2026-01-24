@@ -10,11 +10,11 @@ export interface OnboardingFormData {
   email: string;
   password?: string;
   emailCode?: string;
-  
+
   // Documento como informação simples (opcional)
   document?: string; // Valor formatado do documento
   documentType?: string; // Tipo: 'cpf', 'cnpj', 'ssn', 'ein', 'ni', 'crn', etc.
-  
+
   name: string;
   phone: {
     country: string | null;
@@ -101,9 +101,29 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
   // Fetch onboarding data on mount
   const { data: fetchedData } = useQuery({
     queryKey: ['onboarding', 'data'],
-    queryFn: getOnboardingData,
+    // Wrap service call to ensure we NEVER return undefined to React Query
+    queryFn: async () => {
+      try {
+        const data = await getOnboardingData();
+        if (data === undefined) {
+          console.log(
+            '[OnboardingFormContext] getOnboardingData returned undefined, normalizing to null'
+          );
+          return null;
+        }
+        return data;
+      } catch (error) {
+        console.error(
+          '[OnboardingFormContext] getOnboardingData error (ignored, returning null):',
+          error
+        );
+        // Ignore error for this query and avoid crashing/logbox
+        return null;
+      }
+    },
     staleTime: 0, // Always fetch fresh data
     retry: 1, // Only retry once on error
+    enabled: !!formData?.email,
   });
 
   // Update formData when fetched data is available
@@ -128,7 +148,7 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
 
   // Mutation for saving onboarding data (intermediate saves)
   const saveMutation = useMutation({
-    mutationFn: ({ data, step }: { data: Partial<OnboardingFormData>; step?: OnboardingStepKey }) => 
+    mutationFn: ({ data, step }: { data: Partial<OnboardingFormData>; step?: OnboardingStepKey }) =>
       saveOnboardingData(data, step),
     onError: (error: any) => {
       if (isOfflineError(error)) {
@@ -199,7 +219,7 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
 
   // Mutation for submitting final onboarding data
   const submitMutation = useMutation({
-    mutationFn: ({ data, userId }: { data: OnboardingFormData; userId: string }) => 
+    mutationFn: ({ data, userId }: { data: OnboardingFormData; userId: string }) =>
       submitOnboarding(data, userId),
     onError: (error: any) => {
       if (isOfflineError(error)) {
@@ -222,10 +242,10 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
   const updateFormData = async (data: Partial<OnboardingFormData>, step?: OnboardingStepKey) => {
     // Merge data with current formData for API call
     const mergedData = { ...formData, ...data };
-    
+
     // Update local state first
     setFormData((prev) => ({ ...prev, ...data }));
-    
+
     // If step is provided, save to API immediately with merged data
     if (step) {
       console.log(JSON.stringify(mergedData, null, 2));
