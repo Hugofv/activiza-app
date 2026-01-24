@@ -22,6 +22,8 @@ export const ENDPOINTS = {
     VERIFY: `/auth/verify`,                // Verify code
     VERIFY_RESEND: `/auth/verify/resend`,  // Resend verification code
     CHECK_EMAIL: `/auth/check-email`,
+    FORGOT_PASSWORD: `/auth/forgot-password`,        // Request password reset (sends link with token)
+    RESET_PASSWORD: `/auth/reset-password`,          // Reset password with token from email link
   },
 
   // Onboarding endpoints (protected routes - require authentication)

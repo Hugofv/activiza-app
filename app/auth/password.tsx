@@ -153,8 +153,10 @@ const AuthPasswordScreen = () => {
             <View style={styles.forgotPasswordContainer}>
               <TouchableOpacity
                 onPress={() => {
-                  // TODO: Navigate to forgot password screen
-                  Alert.alert('Forgot Password', 'Feature coming soon');
+                  router.push({
+                    pathname: '/auth/forgotPassword',
+                    params: { email },
+                  });
                 }}
                 disabled={isLoading}
                 activeOpacity={0.7}
@@ -163,9 +165,31 @@ const AuthPasswordScreen = () => {
                   variant='body2'
                   style={[styles.forgotPasswordText, { color: colors.primary }]}
                 >
-                  {t('onboarding.forgotPassword')}
+                  {t('auth.forgotPassword') || t('onboarding.forgotPassword')}
                 </Typography>
               </TouchableOpacity>
+              {/* Temporary test button - remove in production */}
+              {__DEV__ && (
+                <TouchableOpacity
+                  onPress={() => {
+                    router.push({
+                      pathname: '/auth/resetPassword',
+                      params: {
+                        token:
+                          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE1LCJ0eXBlIjoicGFzc3dvcmQtcmVzZXQiLCJpYXQiOjE3NjkyODU5MDMsImV4cCI6MTc2OTI4OTUwM30.nOdDcprXLEgEAdn2jNkC8BfbXCNTGbk85f85m0CXRDw',
+                      },
+                    });
+                  }}
+                  style={{ marginTop: 10 }}
+                >
+                  <Typography
+                    variant='body2'
+                    style={[styles.forgotPasswordText, { color: colors.placeholder, fontSize: 12 }]}
+                  >
+                    [DEV] Test Reset Password
+                  </Typography>
+                </TouchableOpacity>
+              )}
             </View>
           </ThemedView>
 

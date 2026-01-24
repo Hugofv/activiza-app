@@ -323,3 +323,46 @@ export async function checkEmailStatus(email: string): Promise<EmailStatus> {
     throw error;
   }
 }
+
+/**
+ * Request password reset - sends verification code to email
+ * POST /auth/forgot-password
+ * Body: { email: "user@example.com" }
+ */
+export async function requestPasswordReset(email: string): Promise<boolean> {
+  try {
+    const response = await apiClient.post(
+      ENDPOINTS.AUTH.FORGOT_PASSWORD,
+      { email },
+      { skipAuth: true } as ApiConfig
+    );
+
+    return response.status === 200;
+  } catch (error: any) {
+    console.error('Request password reset error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Reset password with token
+ * POST /auth/reset-password
+ * Body: { token: "reset-token-from-email-link", password: "newPassword123" }
+ */
+export async function resetPassword(
+  token: string,
+  password: string
+): Promise<boolean> {
+  try {
+    const response = await apiClient.post(
+      ENDPOINTS.AUTH.RESET_PASSWORD,
+      { token, password },
+      { skipAuth: true } as ApiConfig
+    );
+
+    return response.status === 200;
+  } catch (error: any) {
+    console.error('Reset password error:', error);
+    throw error;
+  }
+}

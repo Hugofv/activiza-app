@@ -28,6 +28,22 @@ export default function AuthLayout() {
                   animationDuration: 300,
                }}
             />
+            <Stack.Screen
+               name="forgotPassword"
+               options={{
+                  headerShown: false,
+                  animation: 'slide_from_right',
+                  animationDuration: 300,
+               }}
+            />
+            <Stack.Screen
+               name="resetPassword"
+               options={{
+                  headerShown: false,
+                  animation: 'slide_from_right',
+                  animationDuration: 300,
+               }}
+            />
          </Stack>
       </OnboardingFormProvider>
    );
