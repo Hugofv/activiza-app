@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Icon, IconLibrary } from '@/components/ui/icon';
+import { Icon } from '@/components/ui/icon';
 import { IconButton } from '@/components/ui/icon-button';
 import { ListCheck } from '@/components/ui/list-check';
 import { Progress } from '@/components/ui/progress';
@@ -32,15 +32,15 @@ type BusinessOption = string;
  */
 const MODULE_ICON_MAP: Record<
   string,
-  { icon: string; library: IconLibrary }
+  { icon: string }
 > = {
-  LOAN: { icon: 'cash-outline', library: 'ionicons' },
-  PROMISSORY_NOTE: { icon: 'document-text-outline', library: 'ionicons' },
-  RENT_HOUSE: { icon: 'home-outline', library: 'ionicons' },
-  RENT_ROOM: { icon: 'door-outline', library: 'ionicons' },
-  RENT_VEHICLE: { icon: 'car-outline', library: 'ionicons' },
+  LOAN: { icon: 'cash-outline' },
+  PROMISSORY_NOTE: { icon: 'document-text-outline' },
+  RENT_HOUSE: { icon: 'home' },
+  RENT_ROOM: { icon: 'door-outline' },
+  RENT_VEHICLE: { icon: 'car' },
   // Default fallback icon
-  default: { icon: 'ellipse-outline', library: 'ionicons' },
+  default: { icon: 'ellipse-outline' },
 };
 
 /**
@@ -111,7 +111,6 @@ const OptionsScreen = () => {
         leftContent: (
           <Icon
             name={iconConfig.icon as any}
-            library={iconConfig.library}
             size={24}
             color={selectedOptions.includes(module.key) ? colors.primary : colors.icon}
           />

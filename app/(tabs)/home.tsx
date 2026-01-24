@@ -67,7 +67,7 @@ export default function HomeScreen() {
       edges={['top']}
     >
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.primary }]}>
+      <View style={[styles.header]}>
         <TouchableOpacity style={styles.profileButton}>
           <ExpoImage
             source={{ uri: 'https://i.pravatar.cc/150?img=12' }}
@@ -79,7 +79,7 @@ export default function HomeScreen() {
           <Typography variant="body2" style={{ color: colors.text }}>
             {t('home.thisMonth')}
           </Typography>
-          <Icon name="chevron-down" library="ionicons" size={16} color={colors.text} />
+          <Icon name="chevron-down" size={16} color={colors.text} />
         </TouchableOpacity>
       </View>
 
@@ -89,7 +89,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Dashboard Summary Section */}
-        <View style={[styles.summarySection, { borderColor: colors.primary, borderStyle: 'dashed' }]}>
+        <View style={[styles.summarySection]}>
           {/* Received This Month Card */}
           <View style={styles.receivedCard}>
             <Typography variant="caption" style={{ color: colors.icon, marginBottom: 4 }}>
@@ -106,7 +106,7 @@ export default function HomeScreen() {
           {/* Summary Cards Row */}
           <View style={styles.summaryCardsRow}>
             <View style={[styles.summaryCard, { backgroundColor: '#F3F7F5' }]}>
-              <Icon name="person" library="ionicons" size={24} color={colors.primary} />
+              <Icon name="person" size={24} color={colors.primary} />
               <Typography variant="h3" style={{ color: colors.text, marginTop: 8 }}>
                 {loansCount}
               </Typography>
@@ -116,7 +116,7 @@ export default function HomeScreen() {
             </View>
 
             <View style={[styles.summaryCard, { backgroundColor: '#F3F7F5' }]}>
-              <Icon name="home" library="ionicons" size={24} color={colors.primary} />
+              <Icon name="home" size={24} color={colors.primary} />
               <Typography variant="h3" style={{ color: colors.text, marginTop: 8 }}>
                 {roomRentalsCount}
               </Typography>
@@ -126,7 +126,7 @@ export default function HomeScreen() {
             </View>
 
             <View style={[styles.summaryCard, { backgroundColor: '#F3F7F5' }]}>
-              <Icon name="car" library="ionicons" size={24} color={colors.primary} />
+              <Icon name="car" size={24} color={colors.primary} />
               <Typography variant="h3" style={{ color: colors.text, marginTop: 8 }}>
                 {vehicleRentalsCount}
               </Typography>
@@ -141,11 +141,11 @@ export default function HomeScreen() {
             style={[styles.overdueAlert, { backgroundColor: '#FFF4E6' }]}
             activeOpacity={0.7}
           >
-            <Icon name="information-circle" library="ionicons" size={20} color="#F59E0B" />
+            <Icon name="information-circle" size={20} color="#F59E0B" />
             <Typography variant="body2" style={{ color: '#92400E', marginLeft: 8, flex: 1 }}>
               {overduePaymentsCount} {t('home.overduePayments')}
             </Typography>
-            <Icon name="chevron-forward" library="ionicons" size={20} color="#92400E" />
+            <Icon name="chevron-forward" size={20} color="#92400E" />
           </TouchableOpacity>
         </View>
 
@@ -204,23 +204,6 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
-
-      {/* Bottom Navigation Bar */}
-      <View style={[styles.bottomNav, { backgroundColor: colors.background, shadowColor: '#000' }]}>
-        <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
-          <View style={[styles.navItemActiveBg, { backgroundColor: '#E6F4FE' }]}>
-            <View style={[styles.navItemActiveCircle, { backgroundColor: '#A7E203' }]}>
-              <Icon name="home" library="ionicons" size={24} color="#064e3b" />
-            </View>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="add" library="ionicons" size={28} color={colors.icon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="people" library="ionicons" size={24} color={colors.icon} />
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 }
@@ -235,7 +218,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingVertical: 16,
-    borderBottomWidth: 1,
   },
   profileButton: {
     width: 40,
@@ -260,14 +242,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 24,
-    paddingTop: 24,
+    paddingHorizontal: 16,
+    paddingTop: 16,
     paddingBottom: 100,
   },
   summarySection: {
-    borderWidth: 2,
-    borderRadius: 16,
-    padding: 16,
+    padding: 5,
     marginBottom: 32,
   },
   receivedCard: {
@@ -310,41 +290,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  navItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 8,
-  },
-  navItemActive: {
-    flex: 0,
-    paddingHorizontal: 24,
-  },
-  navItemActiveBg: {
-    borderRadius: 24,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  navItemActiveCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   loadingContainer: {
     flex: 1,

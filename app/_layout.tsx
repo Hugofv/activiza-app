@@ -10,6 +10,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import * as React from 'react';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
@@ -35,6 +36,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const [isSplashHidden, setIsSplashHidden] = React.useState(false);
 
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
@@ -44,10 +46,19 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
+    if ((fontsLoaded || fontError) && !isSplashHidden) {
+      // Hide splash screen after fonts are loaded
+      // Only hide once to prevent multiple calls
+      setIsSplashHidden(true);
+      SplashScreen.hideAsync().catch((error) => {
+        // Ignore errors if splash screen is not available
+        // This can happen in development or if splash screen was already hidden
+        if (__DEV__) {
+          console.warn('SplashScreen.hideAsync error (can be ignored in dev):', error.message);
+        }
+      });
     }
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded, fontError, isSplashHidden]);
 
   // Initialize background sync on app start
   useEffect(() => {
@@ -103,7 +114,7 @@ export default function RootLayout() {
                 }}
               />
               <Stack.Screen
-                name='home'
+                name='(tabs)'
                 options={{
                   headerShown: false,
                   animation: 'fade',

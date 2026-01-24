@@ -78,7 +78,7 @@ const AuthPasswordScreen = () => {
         router.replace(route as any);
       } else {
         // User is fully registered (COMPLETED), redirect to home
-        router.replace('/home');
+        router.replace('/(tabs)/home');
       }
     } catch (error: any) {
       console.error('Login error:', error);
@@ -149,7 +149,6 @@ const AuthPasswordScreen = () => {
                 icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
                 iconSize={24}
                 iconColor={colors.icon}
-                iconLibrary='ionicons'
                 onPress={() => setShowPassword(!showPassword)}
                 style={styles.eyeButton}
                 disabled={isLoading}

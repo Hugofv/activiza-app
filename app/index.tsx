@@ -22,7 +22,7 @@ export default function LandingScreen() {
    // Redirect to home if authenticated
    useEffect(() => {
       if (!isChecking && isAuthenticated) {
-         router.replace('/home');
+         router.replace('/(tabs)/home');
       }
    }, [isAuthenticated, isChecking]);
 

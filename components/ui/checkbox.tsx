@@ -49,7 +49,6 @@ const Checkbox = React.forwardRef<
             name='checkmark'
             size={16}
             color={checked ? colors.primaryForeground : colors.text}
-            library='ionicons'
           />
         )}
       </Pressable>

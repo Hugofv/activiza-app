@@ -188,7 +188,6 @@ const PasswordScreen = () => {
                 icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
                 iconSize={24}
                 iconColor={colors.icon}
-                iconLibrary='ionicons'
                 onPress={() => setShowPassword(!showPassword)}
                 style={styles.eyeButton}
               />
@@ -218,7 +217,6 @@ const PasswordScreen = () => {
                 icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
                 iconSize={24}
                 iconColor={colors.icon}
-                iconLibrary='ionicons'
                 onPress={() => setShowPassword(!showPassword)}
                 style={styles.eyeButton}
               />
@@ -232,7 +230,6 @@ const PasswordScreen = () => {
                     name={rule.isValid ? 'checkmark-circle' : 'close-circle'}
                     size={20}
                     color={rule.isValid ? '#10b981' : '#ef4444'}
-                    library='ionicons'
                   />
                   <Typography
                     variant='body2'

@@ -1,50 +1,121 @@
-import { AntDesign, Feather, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import {
+  IconAlertTriangle,
+  IconArrowRight,
+  IconCar,
+  IconCheck,
+  IconChevronDown,
+  IconChevronLeft,
+  IconChevronRight,
+  IconCircle,
+  IconCircleCheck,
+  IconCircleX,
+  IconCurrencyDollar,
+  IconDoor,
+  IconEye,
+  IconEyeOff,
+  IconFileText,
+  IconHome,
+  IconHourglass,
+  IconInfoCircle,
+  IconPlus,
+  IconReceipt2,
+  IconUser,
+  IconUserDollar,
+  IconUsers
+} from '@tabler/icons-react-native';
 import * as React from 'react';
-import { type StyleProp, type TextStyle } from 'react-native';
+import { type StyleProp, type ViewStyle, View } from 'react-native';
 
-export type IconLibrary = 'ionicons' | 'material' | 'feather' | 'fontawesome' | 'antdesign';
-export type IconName = 
-  | keyof typeof Ionicons.glyphMap
-  | keyof typeof MaterialIcons.glyphMap
-  | keyof typeof Feather.glyphMap
-  | keyof typeof FontAwesome.glyphMap
-  | keyof typeof AntDesign.glyphMap;
+// Map old icon names to Tabler icon components
+const ICON_MAP: Record<string, React.ComponentType<any>> = {
+  // Navigation
+  'chevron-back': IconChevronLeft,
+  'chevron-left': IconChevronLeft,
+  'chevron-forward': IconChevronRight,
+  'chevron-right': IconChevronRight,
+  'chevron-down': IconChevronDown,
+  'arrow-forward': IconArrowRight,
+  'arrow-right': IconArrowRight,
+  
+  // Actions
+  'checkmark': IconCheck,
+  'check': IconCheck,
+  'add': IconPlus,
+  'plus': IconPlus,
+  
+  // Visibility
+  'eye-outline': IconEye,
+  'eye': IconEye,
+  'eye-off-outline': IconEyeOff,
+  'eye-off': IconEyeOff,
+  
+  // Status
+  'hourglass-outline': IconHourglass,
+  'hourglass': IconHourglass,
+  'checkmark-circle': IconCircleCheck,
+  'close-circle': IconCircleX,
+  'information-circle': IconInfoCircle,
+  'info-circle': IconInfoCircle,
+  'warning': IconAlertTriangle,
+  
+  // People
+  'person': IconUser,
+  'user-dollar': IconUserDollar,
+  'receipt-2': IconReceipt2,
+  'user': IconUser,
+  'people': IconUsers,
+  'users': IconUsers,
+  
+  // Places
+  'home': IconHome,
+  'car': IconCar,
+  'door-outline': IconDoor,
+  'door': IconDoor,
+  
+  // Business
+  'cash-outline': IconCurrencyDollar,
+  'currency-dollar': IconCurrencyDollar,
+  'document-text-outline': IconFileText,
+  'file-text': IconFileText,
+  
+  // Shapes
+  'ellipse-outline': IconCircle,
+  'circle': IconCircle,
+};
+
+export type IconName = keyof typeof ICON_MAP | string;
 
 export interface IconProps {
   name: IconName;
-  library?: IconLibrary;
+  library?: never; // Deprecated - no longer needed with Tabler icons
   size?: number;
   color?: string;
-  style?: StyleProp<TextStyle>;
+  style?: StyleProp<ViewStyle>;
 }
 
 const Icon = React.forwardRef<any, IconProps>(
-  ({ name, library = 'ionicons', size = 24, color, style, ...props }, ref) => {
-    const iconProps = {
-      name: name as any,
-      size,
-      color,
-      style,
-      ...props,
-    };
-
-    switch (library) {
-      case 'ionicons':
-        return <Ionicons ref={ref} {...iconProps} />;
-      case 'material':
-        return <MaterialIcons ref={ref} {...iconProps} />;
-      case 'feather':
-        return <Feather ref={ref} {...iconProps} />;
-      case 'fontawesome':
-        return <FontAwesome ref={ref} {...iconProps} />;
-      case 'antdesign':
-        return <AntDesign ref={ref} {...iconProps} />;
-      default:
-        return <Ionicons ref={ref} {...iconProps} />;
+  ({ name, library, size = 24, color, style, ...props }, ref) => {
+    // Get the Tabler icon component from the map
+    const IconComponent = ICON_MAP[name as string];
+    
+    // If icon not found, use a default or show warning
+    if (!IconComponent) {
+      console.warn(`Icon "${name}" not found in icon map. Using Circle as fallback.`);
+      return (
+        <View ref={ref} style={[{ width: size, height: size }, style]}>
+          <IconCircle size={size} color={color || '#000000'} strokeWidth={2} {...props} />
+        </View>
+      );
     }
+    
+    // Render the Tabler icon
+    return (
+      <View ref={ref} style={style}>
+        <IconComponent size={size} color={color || '#000000'} strokeWidth={2} {...props} />
+      </View>
+    );
   }
 );
 Icon.displayName = 'Icon';
 
 export { Icon };
-

@@ -15,6 +15,8 @@ export const Colors = {
     tint: tintColorLight,
     primary: '#a7e203', // Primary green
     primaryForeground: '#064e3b', // Primary foreground (text on primary)
+    primaryWhiten: '#9ED600',
+    primaryWhitenOpacity: '#9ED60066',
     icon: '#687076',
     placeholder: '#9BAAA2', // Placeholder text color (lighter than icon for better contrast with label)
     muted: '#f3f7f5', // Muted background for progress bars
@@ -28,6 +30,8 @@ export const Colors = {
     tint: tintColorDark,
     primary: '#a7e203',
     primaryForeground: '#001a00', // Very dark green/black for better contrast on bright green
+    primaryWhiten: '#9ED600',
+    primaryWhitenOpacity: '#9ED60066',
     icon: '#9BA1A6',
     placeholder: '#6B7280', // Placeholder text color (lighter than icon for better contrast with label)
     muted: '#1a2a24', // Muted background for progress bars (dark mode)
