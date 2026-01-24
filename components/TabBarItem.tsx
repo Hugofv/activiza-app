@@ -2,7 +2,13 @@ import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import { PlatformPressable } from '@react-navigation/elements';
 import { useNavigationState } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
+import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 import { Icon, type IconName } from '@/components/ui/icon';
 import { Colors } from '@/constants/theme';
@@ -30,6 +36,46 @@ export function TabBarItem({
   });
 
   const focused = navigationState === routeName;
+  
+  const scale = useSharedValue(focused ? 1 : 0);
+  const opacity = useSharedValue(focused ? 1 : 0);
+
+  useEffect(() => {
+    if (focused) {
+      scale.value = withSpring(1, {
+        damping: 25,
+        stiffness: 120,
+        mass: 0.8,
+      });
+      opacity.value = withSpring(1, {
+        damping: 25,
+        stiffness: 120,
+        mass: 0.8,
+      });
+    } else {
+      scale.value = withSpring(0, {
+        damping: 25,
+        stiffness: 120,
+        mass: 0.8,
+      });
+      opacity.value = withSpring(0, {
+        damping: 25,
+        stiffness: 120,
+        mass: 0.8,
+      });
+    }
+  }, [focused, scale, opacity]);
+
+  const animatedContainerStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  const animatedCircleStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
   return (
     <View style={styles.wrapper}>
       <PlatformPressable
@@ -43,15 +89,28 @@ export function TabBarItem({
         }}
       >
         <View style={styles.iconWrapper}>
-          <View style={focused && styles.tabIconContainerFocused}>
-            <View style={focused && styles.tabIconCircle}>
-              <Icon
-                name={icon}
-                size={32}
-                color={focusedColor}
-              />
-            </View>
-          </View>
+          {focused ? (
+            <Animated.View
+              style={[
+                styles.tabIconContainerFocused,
+                animatedContainerStyle,
+              ]}
+            >
+              <Animated.View style={[styles.tabIconCircle, animatedCircleStyle]}>
+                <Icon
+                  name={icon}
+                  size={32}
+                  color={focusedColor}
+                />
+              </Animated.View>
+            </Animated.View>
+          ) : (
+            <Icon
+              name={icon}
+              size={24}
+              color={color}
+            />
+          )}
         </View>
       </PlatformPressable>
     </View>

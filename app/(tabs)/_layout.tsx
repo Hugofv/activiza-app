@@ -4,6 +4,11 @@ import { Tabs } from 'expo-router';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 import { TabBarItem } from '@/components/TabBarItem';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
@@ -25,13 +30,30 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { open } = useBottomSheet();
+  const scale = useSharedValue(1);
 
   const handlePress = () => {
     if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
+    // Animação de press
+    scale.value = withSpring(0.9, {
+      damping: 25,
+      stiffness: 120,
+      mass: 0.8,
+    }, () => {
+      scale.value = withSpring(1, {
+        damping: 25,
+        stiffness: 120,
+        mass: 0.8,
+      });
+    });
     open();
   };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   return (
     <TouchableOpacity
@@ -41,7 +63,9 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
       accessibilityRole="button"
       accessibilityLabel={props.accessibilityLabel}
     >
-      <Icon name="square-rounded-plus" size={28} color={colors.primaryForeground} />
+      <Animated.View style={animatedStyle}>
+        <Icon name="square-rounded-plus" size={28} color={colors.primaryForeground} />
+      </Animated.View>
     </TouchableOpacity>
   );
 }
@@ -168,7 +192,7 @@ function TabLayoutContent() {
               onPress={() => handleOptionPress(option.route)}
               android_ripple={{ color: colors.icon + '10' }}
             >
-              <Icon name={option.icon} size={24} color={colors.text} />
+              <Icon name={option.icon} size={28} color={colors.text} />
               <Typography variant="body1" style={[styles.optionText, { color: colors.text }]}>
                 {t(`tabs.${option.labelKey}`)}
               </Typography>

@@ -2,12 +2,21 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import * as React from 'react';
 import {
-   Animated,
+   Dimensions,
    Modal,
    StyleSheet,
    TouchableWithoutFeedback,
-   View
+   View,
 } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+   Extrapolate,
+   interpolate,
+   runOnJS,
+   useAnimatedStyle,
+   useSharedValue,
+   withSpring,
+} from 'react-native-reanimated';
 
 interface BottomSheetProps {
   visible: boolean;
@@ -15,6 +24,8 @@ interface BottomSheetProps {
   children: React.ReactNode;
   title?: string;
 }
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export function BottomSheet({
   visible,
@@ -24,66 +35,114 @@ export function BottomSheet({
 }: BottomSheetProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const slideAnim = React.useRef(new Animated.Value(0)).current;
+  const translateY = useSharedValue(0);
+  const context = useSharedValue({ y: 0 });
 
   React.useEffect(() => {
     if (visible) {
-      Animated.spring(slideAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 50,
-        friction: 7,
-      }).start();
+      translateY.value = withSpring(0, {
+        damping: 25,
+        stiffness: 120,
+        mass: 0.8,
+      });
     } else {
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
+      translateY.value = withSpring(SCREEN_HEIGHT, {
+        damping: 25,
+        stiffness: 120,
+        mass: 0.8,
+      });
     }
-  }, [visible, slideAnim]);
+  }, [visible, translateY]);
 
-  const translateY = slideAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [600, 0],
+  const gesture = Gesture.Pan()
+    .onStart(() => {
+      context.value = { y: translateY.value };
+    })
+    .onUpdate((event) => {
+      const newTranslateY = context.value.y + event.translationY;
+      // Só permite arrastar para baixo (valores positivos)
+      translateY.value = Math.max(0, newTranslateY);
+    })
+    .onEnd(() => {
+      const shouldClose = translateY.value > SCREEN_HEIGHT * 0.2;
+
+      if (shouldClose) {
+        translateY.value = withSpring(SCREEN_HEIGHT, {
+          damping: 25,
+          stiffness: 120,
+          mass: 0.8,
+        });
+        runOnJS(onClose)();
+      } else {
+        translateY.value = withSpring(0, {
+          damping: 25,
+          stiffness: 120,
+          mass: 0.8,
+        });
+      }
+    });
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
+
+  const containerAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: colors.background,
+      opacity: 1,
+    };
+  });
+
+  const overlayAnimatedStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      translateY.value,
+      [0, SCREEN_HEIGHT],
+      [1, 0],
+      Extrapolate.CLAMP
+    );
+
+    return {
+      opacity,
+    };
   });
 
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="none"
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-            <Animated.View
-              style={[
-                styles.container,
-                {
-                  backgroundColor: colors.background,
-                  transform: [{ translateY }],
-                },
-              ]}
-            >
-              {/* Handle */}
-              <View style={[styles.handle, { backgroundColor: colors.icon }]} />
-              
-              {/* Title */}
-              {title && (
-                <View style={styles.titleContainer}>
-                  <View style={[styles.titleLine, { backgroundColor: colors.icon }]} />
-                </View>
-              )}
+      <Animated.View style={[styles.overlay, overlayAnimatedStyle]}>
+        <TouchableWithoutFeedback onPress={onClose} style={{ flex: 1 }}>
+          <View style={{ flex: 1 }} />
+        </TouchableWithoutFeedback>
+        <GestureDetector gesture={gesture}>
+          <Animated.View
+            style={[
+              styles.container,
+              containerAnimatedStyle,
+              animatedStyle,
+            ]}
+          >
+            {/* Handle */}
+            <View style={[styles.handle, { backgroundColor: colors.icon }]} />
+            
+            {/* Title */}
+            {title && (
+              <View style={styles.titleContainer}>
+                <View style={[styles.titleLine, { backgroundColor: colors.icon }]} />
+              </View>
+            )}
 
-              {/* Content */}
-              <View style={styles.content}>{children}</View>
-            </Animated.View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
+            {/* Content */}
+            <View style={styles.content}>{children}</View>
+          </Animated.View>
+        </GestureDetector>
+      </Animated.View>
     </Modal>
   );
 }
@@ -95,11 +154,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   container: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingTop: 12,
     paddingBottom: 32,
-    maxHeight: '90%',
+    backgroundColor: 'transparent',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -108,6 +171,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 10,
+    maxHeight: SCREEN_HEIGHT * 0.9,
   },
   handle: {
     width: 40,
