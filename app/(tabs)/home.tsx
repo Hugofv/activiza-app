@@ -3,15 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { FinancialSummary } from '@/components/home/FinancialSummary';
+import { Header } from '@/components/home/Header';
+import { OverdueAlert } from '@/components/home/OverdueAlert';
+import { ReportCard } from '@/components/home/ReportCard';
 import { Typography } from '@/components/ui/typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
-
-import { FinancialSummary } from './components/FinancialSummary';
-import { Header } from './components/Header';
-import { OverdueAlert } from './components/OverdueAlert';
-import { ReportCard } from './components/ReportCard';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -62,6 +61,10 @@ export default function HomeScreen() {
 
   const operations = [
     { icon: 'person' as const, count: loansCount, label: t('home.loans') },
+    { icon: 'home' as const, count: roomRentalsCount, label: t('home.roomRentals') },
+    { icon: 'car' as const, count: vehicleRentalsCount, label: t('home.vehicleRentals') },
+    { icon: 'home' as const, count: roomRentalsCount, label: t('home.roomRentals') },
+    { icon: 'car' as const, count: vehicleRentalsCount, label: t('home.vehicleRentals') },
     { icon: 'home' as const, count: roomRentalsCount, label: t('home.roomRentals') },
     { icon: 'car' as const, count: vehicleRentalsCount, label: t('home.vehicleRentals') },
   ];

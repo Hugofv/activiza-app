@@ -36,19 +36,23 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
     if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    // Animação de press
+    open();
+  };
+
+  const handlePressIn = () => {
     scale.value = withSpring(0.9, {
       damping: 25,
       stiffness: 120,
       mass: 0.8,
-    }, () => {
-      scale.value = withSpring(1, {
-        damping: 25,
-        stiffness: 120,
-        mass: 0.8,
-      });
     });
-    open();
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, {
+      damping: 25,
+      stiffness: 120,
+      mass: 0.8,
+    });
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -58,6 +62,8 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
   return (
     <TouchableOpacity
       onPress={handlePress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       style={styles.createButton}
       activeOpacity={0.7}
       accessibilityRole="button"
@@ -89,36 +95,32 @@ function TabLayoutContent() {
     close();
   }, [close]);
 
-  const tabBarStyle = StyleSheet.create({
-    container: {
-      backgroundColor: colorScheme === 'dark'
-        ? 'rgba(0, 0, 0, 0.7)'
-        : 'rgba(255, 255, 255, 0.8)',
-      borderTopWidth: 0,
-      borderRadius: 40,
-      marginBottom: 30,
-      marginHorizontal: '20%' as any,
-      paddingHorizontal: 24,
-      height: 65,
-      width: '60%' as any,
-      position: 'absolute',
-      shadowColor: '#000',
-      shadowOpacity: 0.1,
-      shadowRadius: 20,
-      elevation: 10,
-      borderWidth: 1,
-      borderColor: colorScheme === 'dark'
-        ? 'rgba(255, 255, 255, 0.1)'
-        : 'rgba(0, 0, 0, 0.1)',
-      overflow: 'hidden',
-    },
-  }).container;
+  const tabBarStyle = {
+    backgroundColor: colorScheme === 'dark'
+      ? 'rgba(0, 0, 0, 0.7)'
+      : 'rgba(255, 255, 255, 0.8)',
+    borderTopWidth: 0,
+    borderRadius: 40,
+    marginBottom: 30,
+    marginHorizontal: '20%' as any,
+    paddingHorizontal: 24,
+    height: 65,
+    width: '60%' as any,
+    position: 'absolute' as const,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 10,
+    borderWidth: 1,
+    borderColor: colorScheme === 'dark'
+      ? 'rgba(255, 255, 255, 0.1)'
+      : 'rgba(0, 0, 0, 0.1)',
+    overflow: 'hidden' as const,
+  };
 
-  const tabBarItemStyle = StyleSheet.create({
-    item: {
-      height: 65,
-    },
-  }).item;
+  const tabBarItemStyle = {
+    height: 65,
+  };
 
   return (
     <>
@@ -135,7 +137,7 @@ function TabLayoutContent() {
           name="home"
           options={{
             title: t('tabs.home') || 'Home',
-              tabBarButton: (props) => (
+            tabBarButton: (props) => (
               <TabBarItem
                 {...props}
                 icon="home"
@@ -143,8 +145,6 @@ function TabLayoutContent() {
                 color={colors.icon}
               />
             ),
-            tabBarIcon: () => null,
-            tabBarShowLabel: false,
           }}
         />
         <Tabs.Screen
@@ -152,14 +152,13 @@ function TabLayoutContent() {
           options={{
             title: t('tabs.create') || 'Criar',
             tabBarButton: (props) => <CreateTabButton {...props} />,
-            tabBarShowLabel: false,
           }}
         />
         <Tabs.Screen
           name="contacts"
           options={{
             title: t('tabs.contacts') || 'Contatos',
-              tabBarButton: (props) => (
+            tabBarButton: (props) => (
               <TabBarItem
                 {...props}
                 icon="people"
@@ -167,8 +166,6 @@ function TabLayoutContent() {
                 color={colors.icon}
               />
             ),
-            tabBarIcon: () => null,
-            tabBarShowLabel: false,
           }}
         />
 
