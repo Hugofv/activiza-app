@@ -200,9 +200,9 @@ const DocumentScreen = () => {
         showError(
           t('common.error') || 'Error',
           error?.response?.data?.message ||
-            error?.message ||
-            t('onboarding.saveError') ||
-            'Failed to save. Please try again.'
+          error?.message ||
+          t('onboarding.saveError') ||
+          'Failed to save. Please try again.'
         );
       } finally {
         setIsSubmitting(false);
@@ -260,38 +260,40 @@ const DocumentScreen = () => {
                 {t('onboarding.documentDescriptionOptional') || t('onboarding.documentDescription')}
               </Typography>
 
-              {/* Document Type Selector - Always show since we have multiple options */}
-              <View style={styles.typeSelector}>
-                <Autocomplete<DocumentType>
-                  options={documentTypeOptions}
-                  value={documentType || null}
-                  onValueChange={handleDocumentTypeChange}
-                  placeholder={t('onboarding.documentType') || 'Tipo de documento'}
-                  searchable={true}
-                  label={t('onboarding.documentType')}
+              <View style={styles.documentContainer}>
+                {/* Document Type Selector - Always show since we have multiple options */}
+                <View style={styles.typeSelector}>
+                  <Autocomplete<DocumentType>
+                    options={documentTypeOptions}
+                    value={documentType || null}
+                    onValueChange={handleDocumentTypeChange}
+                    placeholder={t('onboarding.documentType') || 'Tipo de documento'}
+                    searchable={true}
+                    label={t('onboarding.documentType')}
+                  />
+                </View>
+
+                {/* Input Field */}
+                <Input
+                  name='document'
+                  control={control}
+                  error={errors.document?.message}
+                  onFormat={handleDocumentFormat}
+                  className='border-0 rounded-none px-0 py-4 font-medium'
+                  style={[
+                    {
+                      fontSize: 22,
+                      borderBottomColor: errors.document ? '#ef4444' : colors.icon,
+                    },
+                  ]}
+                  placeholder={formatConfig.placeholder}
+                  placeholderTextColor={colors.icon}
+                  keyboardType={documentType === 'ni' || documentType === 'crn' ? 'default' : 'numeric'}
+                  autoCapitalize={documentType === 'ni' || documentType === 'crn' ? 'characters' : 'none'}
+                  maxLength={formatConfig.maxLength}
+                  autoFocus={false}
                 />
               </View>
-
-              {/* Input Field */}
-              <Input
-                name='document'
-                control={control}
-                error={errors.document?.message}
-                onFormat={handleDocumentFormat}
-                className='border-0 rounded-none px-0 py-4 font-medium'
-                style={[
-                  {
-                    fontSize: 28,
-                    borderBottomColor: errors.document ? '#ef4444' : colors.icon,
-                  },
-                ]}
-                placeholder={formatConfig.placeholder}
-                placeholderTextColor={colors.icon}
-                keyboardType={documentType === 'ni' || documentType === 'crn' ? 'default' : 'numeric'}
-                autoCapitalize={documentType === 'ni' || documentType === 'crn' ? 'characters' : 'none'}
-                maxLength={formatConfig.maxLength}
-                autoFocus={false}
-              />
             </ThemedView>
           </ScrollView>
 
@@ -348,5 +350,9 @@ const styles = StyleSheet.create({
     paddingBottom: 56,
     paddingHorizontal: 24,
     alignItems: 'flex-end',
+  },
+  documentContainer: {
+    flex: 1,
+    gap: 30,
   },
 });
