@@ -41,7 +41,7 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
       accessibilityRole="button"
       accessibilityLabel={props.accessibilityLabel}
     >
-      <Icon name="add" size={28} color={colors.primary} />
+      <Icon name="square-rounded-plus" size={28} color={colors.primaryForeground} />
     </TouchableOpacity>
   );
 }

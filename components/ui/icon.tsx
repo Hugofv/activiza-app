@@ -14,11 +14,12 @@ import {
   IconEye,
   IconEyeOff,
   IconFileText,
-  IconHome,
+  IconHomeFilled,
   IconHourglass,
   IconInfoCircle,
   IconPlus,
   IconReceipt2,
+  IconSquareRoundedPlusFilled,
   IconUser,
   IconUserDollar,
   IconUsers
@@ -42,6 +43,7 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'check': IconCheck,
   'add': IconPlus,
   'plus': IconPlus,
+  'square-rounded-plus': IconSquareRoundedPlusFilled,
   
   // Visibility
   'eye-outline': IconEye,
@@ -67,7 +69,7 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'users': IconUsers,
   
   // Places
-  'home': IconHome,
+  'home': IconHomeFilled,
   'car': IconCar,
   'door-outline': IconDoor,
   'door': IconDoor,

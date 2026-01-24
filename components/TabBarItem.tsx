@@ -47,7 +47,7 @@ export function TabBarItem({
             <View style={focused && styles.tabIconCircle}>
               <Icon
                 name={icon}
-                size={24}
+                size={32}
                 color={focusedColor}
               />
             </View>
@@ -81,14 +81,14 @@ const styles = StyleSheet.create({
   },
   tabIconContainerFocused: {
     backgroundColor: Colors.light.primaryWhitenOpacity,
-    borderRadius: 20,
+    borderRadius: 30,
     paddingHorizontal: 10,
     paddingVertical: 4,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tabIconCircle: {
-    width: 40,
+    width: 45,
     height: 40,
     borderRadius: 20,
     alignItems: 'center',
