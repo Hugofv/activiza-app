@@ -123,6 +123,14 @@ export default function RootLayout() {
                   animationDuration: 300,
                 }}
               />
+              <Stack.Screen
+                name='profile'
+                options={{
+                  headerShown: false,
+                  animation: 'slide_from_right',
+                  animationDuration: 300,
+                }}
+              />
             </Stack>
             <StatusBar style='auto' />
             <Toast />

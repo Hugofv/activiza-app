@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
@@ -20,7 +21,8 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (!isChecking && !isAuthenticated) {
-      redirectToLogin();
+      console.log('[HomeScreen] User not authenticated, calling redirectToLogin("home")');
+      redirectToLogin('home');
     }
   }, [isAuthenticated, isChecking, redirectToLogin]);
 
@@ -70,7 +72,11 @@ export default function HomeScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={['top']}
     >
-      <Header />
+      <Header
+        onProfilePress={() => {
+          router.push('/profile');
+        }}
+      />
 
       <ScrollView
         style={styles.scrollView}

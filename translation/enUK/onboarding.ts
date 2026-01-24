@@ -172,4 +172,6 @@ We may update this privacy policy from time to time. We will notify you of any c
   planFeatures: 'Included Features',
   noPlans: 'No plans available at the moment.',
   wantThisPlan: 'I want this',
+  customizationTitle: 'Review your business information',
+  customizationDescription: 'Check and update the main information about your business before continuing',
 };

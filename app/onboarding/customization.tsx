@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,8 +14,8 @@ import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import {
-   getDocumentFormat,
-   type DocumentType
+  getDocumentFormat,
+  type DocumentType
 } from '@/lib/services/documentService';
 import type { CountryCode } from '@/lib/services/postalCodeService';
 import { createDocumentSchema, emailSchema, nameSchema, phoneSchema } from '@/lib/validations/onboarding';
@@ -43,7 +43,7 @@ const CustomizationScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
-  
+
   // Get User data from React Query cache (from login/register)
   // Use User data as fallback when formData doesn't have these values
   const currentUser = getCurrentUser();

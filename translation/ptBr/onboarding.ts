@@ -172,4 +172,6 @@ Podemos atualizar esta política de privacidade periodicamente. Notificaremos vo
   planFeatures: 'Recursos Incluídos',
   noPlans: 'Nenhum plano disponível no momento.',
   wantThisPlan: 'Quero este',
+  customizationTitle: 'Revise as informações do seu negócio',
+  customizationDescription: 'Confira e atualize as principais informações do seu negócio antes de continuar',
 };

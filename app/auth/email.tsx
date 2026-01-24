@@ -11,11 +11,6 @@ import { Input } from '@/components/ui/input';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import {
-  createStepToRouteMap,
-  getNextStep,
-  getStepByApiName,
-} from '@/lib/config/onboardingSteps';
 import { checkEmailStatus } from '@/lib/services/authService';
 import { emailSchema } from '@/lib/validations/onboarding';
 
@@ -63,24 +58,50 @@ const EmailScreen = () => {
 
       // Check if user is fully registered (COMPLETED) vs in-progress onboarding
       // Rule:
-      // - isRegistered + clientStatus === COMPLETED  -> login/password flow
-      // - isRegistered + clientStatus === IN_PROGRESS -> resume onboarding flow
-      // - otherwise (no registration) -> start onboarding from password step
-      const isFullyRegistered =
-        emailStatus.isRegistered &&
-        emailStatus.clientStatus === 'COMPLETED';
-
+      // - !isRegistered                                 -> start onboarding from password step
+      // - existsAs === 'platformUser'                  -> must go through onboarding flow
+      // - isRegistered + clientStatus === IN_PROGRESS  -> resume onboarding flow
+      // - isRegistered + clientStatus === COMPLETED    -> login/password flow → home
+      const isPlatformUser = emailStatus.existsAs === 'platformUser';
+      const isNewUser = !emailStatus.isRegistered;
       const isInProgressOnboarding =
         emailStatus.isRegistered &&
-        emailStatus.clientStatus === 'IN_PROGRESS';
+        (emailStatus.clientStatus === 'IN_PROGRESS' || isPlatformUser);
+      const isFullyRegistered =
+        emailStatus.isRegistered &&
+        emailStatus.clientStatus === 'COMPLETED' &&
+        !isPlatformUser;
 
       console.log('Email status response:', emailStatus);
+      console.log('isPlatformUser:', isPlatformUser);
+      console.log('isNewUser:', isNewUser);
       console.log('isFullyRegistered:', isFullyRegistered);
       console.log('isInProgressOnboarding:', isInProgressOnboarding);
 
-      if (isFullyRegistered) {
-        // User is fully registered, redirect to password authentication
-        // Pass onboardingStep to redirect user after login
+      if (isNewUser) {
+        // Brand new user: start full onboarding flow from password creation
+        // Pass email via params so onboarding context can persist it
+        router.push({
+          pathname: '/onboarding/password',
+          params: { email: data.email },
+        });
+      } else if (isInProgressOnboarding) {
+        // User exists but onboarding is not completed (or is a platformUser)
+        // Require login, then redirect to the correct onboarding step after authentication
+        const targetOnboardingStep =
+          emailStatus.onboardingStep && emailStatus.onboardingStep !== 'completed'
+            ? emailStatus.onboardingStep
+            : 'document';
+
+        router.push({
+          pathname: '/auth/password',
+          params: {
+            email: data.email,
+            onboardingStep: targetOnboardingStep,
+          },
+        });
+      } else if (isFullyRegistered) {
+        // User is fully registered and already completed onboarding, go to login → home
         router.push({
           pathname: '/auth/password',
           params: {
@@ -88,44 +109,12 @@ const EmailScreen = () => {
             onboardingStep: emailStatus.onboardingStep || '',
           },
         });
-      } else if (isInProgressOnboarding) {
-        // User exists but registration is incomplete, continue onboarding from last step
-        const onboardingStep = emailStatus.onboardingStep || 'password';
-        console.log('Email status - onboardingStep from API:', onboardingStep);
-        console.log('Email status - clientStatus:', emailStatus.clientStatus);
-
-        // Use centralized step to route mapping
-        const stepToRouteMap = createStepToRouteMap();
-
-        // If the step is a verification step, check if we should skip it
-        // Verification steps might already be completed but API still returns them
-        // API returns apiStepName, so we need to find the step by apiStepName first
-        const stepInfo = getStepByApiName(onboardingStep);
-        let targetStep = onboardingStep;
-
-        if (stepInfo?.isVerificationStep) {
-          // If API returned a verification step, it might already be completed
-          // Try to get the next step instead (using the key, not apiStepName)
-          const nextStep = getNextStep(stepInfo.key);
-          if (nextStep) {
-            targetStep = nextStep.apiStepName;
-            console.log(
-              `⏭️ Skipping verification step ${onboardingStep}, redirecting to next step: ${targetStep} (${nextStep.route})`
-            );
-          } else {
-            console.warn(
-              `⚠️ Verification step ${onboardingStep} is the last step, cannot skip`
-            );
-          }
-        }
-
-        const route = stepToRouteMap[targetStep] || '/onboarding/password';
-        console.log('Redirecting to route:', route);
-        router.push(route as any);
       } else {
-        // New user, continue normal onboarding flow
-        // New flow: Email -> Password -> Email Verification -> Document
-        router.push('/onboarding/password');
+        // Fallback: treat as new onboarding flow starting at password
+        router.push({
+          pathname: '/onboarding/password',
+          params: { email: data.email },
+        });
       }
     } catch (error: any) {
       console.error('Check email status error:', error);

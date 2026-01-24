@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
@@ -34,6 +34,8 @@ const PasswordScreen = () => {
   const { formData, updateFormData } = useOnboardingForm();
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const params = useLocalSearchParams<{ email?: string }>();
+  const emailFromParams = typeof params.email === 'string' ? params.email : undefined;
 
   const {
     control,
@@ -94,9 +96,16 @@ const PasswordScreen = () => {
   };
 
   const onSubmit = async (data: PasswordFormData) => {
-    if (!formData.email) {
+    const effectiveEmail = formData.email || emailFromParams;
+
+    if (!effectiveEmail) {
       Alert.alert('Error', 'Email is required. Please go back to email screen.');
       return;
+    }
+
+    // Ensure email is persisted in onboarding form data for subsequent steps
+    if (!formData.email && emailFromParams) {
+      await updateFormData({ email: emailFromParams });
     }
 
     setIsRegistering(true);
@@ -108,12 +117,13 @@ const PasswordScreen = () => {
       // - Updates React Query cache with user data
       // - User is now authenticated
       await register({
-        email: formData.email,
+        email: effectiveEmail,
         password: data.password,
       });
-      
+
       // Continue to next step (email verification)
       // User is now authenticated, so onboarding routes are accessible
+      console.log('📧 Calling updateStep for email_verification...');
       router.push('/onboarding/codeEmail');
     } catch (error: any) {
       console.error('Registration error:', error);

@@ -18,22 +18,28 @@ export default function OnboardingLayout() {
   const segments = useSegments();
   const pathname = usePathname();
 
-  // Routes that don't require authentication (where user creates account)
-  const publicRoutes = useMemo(() => ['/onboarding/email', '/onboarding/password', '/authPassword'], []);
+  // Routes that don't require authentication (pre-auth creation + immediate email verification after register)
+  const publicRoutes = useMemo(
+    () => ['/onboarding/email', '/onboarding/password', '/onboarding/codeEmail', '/authPassword'],
+    []
+  );
 
   useEffect(() => {
     if (isChecking) return;
 
     // Get current route path
     const currentRoute = pathname || `/${segments.join('/')}`;
-    
+
     // Check if current route is public (email or password)
     const isPublicRoute = publicRoutes.some((route: string) => currentRoute.includes(route));
-    
+
     // If route is not public and user is not authenticated, redirect to email
     if (!isPublicRoute && !isAuthenticated) {
-      console.log('Onboarding route requires authentication, redirecting to email...');
-      redirectToLogin();
+      console.log(
+        '[OnboardingLayout] Protected onboarding route without auth, calling redirectToLogin("onboarding_layout")',
+        { currentRoute }
+      );
+      redirectToLogin('onboarding_layout');
     }
   }, [isAuthenticated, isChecking, pathname, segments, redirectToLogin, publicRoutes]);
 
@@ -49,7 +55,7 @@ export default function OnboardingLayout() {
   // Check if current route requires auth and user is not authenticated
   const currentRoute = pathname || `/${segments.join('/')}`;
   const isCurrentRoutePublic = publicRoutes.some((route: string) => currentRoute.includes(route));
-  
+
   if (!isCurrentRoutePublic && !isAuthenticated) {
     // Don't render protected routes if not authenticated
     return (

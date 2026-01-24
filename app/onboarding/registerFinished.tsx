@@ -20,9 +20,9 @@ const RegisterFinishedScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
 
-  const handleGoToLogin = () => {
-    // Navigate to login screen
-    router.replace('/auth/email');
+  const handleGoToHome = () => {
+    // Navigate directly to home tabs after completing onboarding
+    router.replace('/(tabs)/home');
   };
 
   return (
@@ -51,7 +51,7 @@ const RegisterFinishedScreen = () => {
             {t('onboarding.registerFinished')}
           </Typography>
 
-          {/* Go to Login Button - Circular */}
+          {/* Go to Home Button - Circular */}
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
@@ -59,7 +59,7 @@ const RegisterFinishedScreen = () => {
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}
-              onPress={handleGoToLogin}
+              onPress={handleGoToHome}
             />
           </View>
         </ThemedView>

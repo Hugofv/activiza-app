@@ -1,11 +1,18 @@
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import {
+  createStepToRouteMap,
+  getNextStep,
+  getStepByApiName,
+  isOnboardingCompleted,
+} from '@/lib/config/onboardingSteps';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
+import { getOnboardingData } from '@/lib/services/onboardingService';
 
 import Illustration from '@/assets/images/illustration.svg';
 import Logo from '@/assets/images/logo.svg';
@@ -18,13 +25,71 @@ export default function LandingScreen() {
    const colorScheme = useColorScheme();
    const colors = Colors[colorScheme ?? 'light'];
    const { isAuthenticated, isChecking } = useAuthGuard();
+   const pathname = usePathname();
 
-   // Redirect to home tab if authenticated
+   // If authenticated and we are on the root route, decide between onboarding and home
    useEffect(() => {
-      if (!isChecking && isAuthenticated) {
-         router.replace('/(tabs)/home');
-      }
-   }, [isAuthenticated, isChecking]);
+      const checkAndRedirect = async () => {
+        if (isChecking || !isAuthenticated) return;
+        if (pathname !== '/' && pathname !== '/index') return;
+
+        try {
+          console.log('[Landing] Authenticated user on root, checking onboarding status...');
+          const data = await getOnboardingData();
+          const { clientStatus, onboardingStep } = data ?? {};
+
+          // Normalize status for completion helper (PENDING treated as not completed)
+          const normalizedStatus =
+            clientStatus === 'PENDING' ? undefined : (clientStatus as 'IN_PROGRESS' | 'COMPLETED' | undefined);
+
+          const completed = isOnboardingCompleted(normalizedStatus);
+
+          console.log('[Landing] Onboarding status:', {
+            clientStatus,
+            onboardingStep,
+            completed,
+          });
+
+          if (!completed) {
+            // User must finish onboarding instead of going to home
+            const stepToRouteMap = createStepToRouteMap();
+            const apiStepName = onboardingStep || 'document'; // fallback to first protected step
+
+            // If API points to a verification step (e.g. email_verification), skip to the next real step
+            const stepInfo = getStepByApiName(apiStepName);
+            let targetStep = apiStepName;
+
+            if (stepInfo?.isVerificationStep) {
+              const nextStep = getNextStep(stepInfo.key);
+              if (nextStep) {
+                targetStep = nextStep.apiStepName;
+                console.log(
+                  `[Landing] Skipping verification step ${apiStepName}, redirecting to next step: ${targetStep}`
+                );
+              }
+            }
+
+            const route = stepToRouteMap[targetStep] || '/onboarding/document';
+
+            console.log('[Landing] Redirecting authenticated user to onboarding route:', {
+              route,
+              targetStep,
+            });
+
+            router.replace(route as any);
+          } else {
+            // Onboarding fully completed, go to home tabs
+            console.log('[Landing] Onboarding completed, redirecting to home tabs');
+            router.replace('/(tabs)/home');
+          }
+        } catch (error) {
+          console.error('[Landing] Error checking onboarding status; redirecting to home as fallback', error);
+          router.replace('/(tabs)/home');
+        }
+      };
+
+      checkAndRedirect();
+   }, [isAuthenticated, isChecking, pathname]);
 
    const handleStart = async () => {
       // Navigate to auth email screen (first step of onboarding)

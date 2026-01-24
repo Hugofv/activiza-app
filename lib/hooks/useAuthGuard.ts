@@ -66,10 +66,14 @@ export function useAuthGuard() {
 
   const isChecking = isUserLoading || isTokenLoading;
 
-  const redirectToLogin = () => {
-    router.replace('/onboarding/email');
+  const redirectToLogin = (source?: string) => {
+    const context = source ? `[redirectToLogin:${source}]` : '[redirectToLogin]';
+    console.log(
+      `${context} Redirecting to /auth/email (isAuthenticated=${isAuthenticated})`
+    );
+    router.replace('/auth/email');
   };
-  
+
   // Function to refresh auth status (useful after login/register)
   const refreshAuth = async () => {
     // Invalidate all auth queries to force refresh

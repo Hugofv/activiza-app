@@ -11,9 +11,9 @@ export default function AuthLayout() {
                animationDuration: 300,
             }}
          >
-
+            {/* Names here are relative to /auth, so just 'email' and 'password' */}
             <Stack.Screen
-               name="auth/email"
+               name="email"
                options={{
                   headerShown: false,
                   animation: 'slide_from_right',
@@ -21,7 +21,7 @@ export default function AuthLayout() {
                }}
             />
             <Stack.Screen
-               name="auth/password"
+               name="password"
                options={{
                   headerShown: false,
                   animation: 'slide_from_right',
