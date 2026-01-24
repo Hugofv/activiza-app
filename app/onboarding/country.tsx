@@ -11,15 +11,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { IconButton } from '@/components/ui/icon-button';
-import { Progress } from '@/components/ui/progress';
+import { IconButton } from '@/components/ui/IconButton';
+import { Progress } from '@/components/ui/Progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { CountryCode } from '@/lib/services/postalCodeService';
 
-import { Icon } from '@/components/ui/icon';
-import { Typography } from '@/components/ui/typography';
+import { Icon } from '@/components/ui/Icon';
+import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 

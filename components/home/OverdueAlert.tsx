@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
-import { Icon } from '@/components/ui/icon';
-import { Typography } from '@/components/ui/typography';
+import { Icon } from '@/components/ui/Icon';
+import { Typography } from '@/components/ui/Typography';
 
 interface OverdueAlertProps {
   count: number;

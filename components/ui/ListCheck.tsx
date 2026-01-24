@@ -2,8 +2,8 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import * as React from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { Icon } from './icon';
-import { Typography } from './typography';
+import { Icon } from './Icon';
+import { Typography } from './Typography';
 
 export interface ListCheckOption<T = string> {
   value: T;

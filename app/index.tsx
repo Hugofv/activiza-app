@@ -9,8 +9,8 @@ import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
 
 import Illustration from '@/assets/images/illustration.svg';
 import Logo from '@/assets/images/logo.svg';
-import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/ui/typography';
+import { Button } from '@/components/ui/Button';
+import { Typography } from '@/components/ui/Typography';
 import { useTranslation } from 'react-i18next';
 
 export default function LandingScreen() {

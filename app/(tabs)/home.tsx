@@ -8,7 +8,7 @@ import { FinancialSummary } from '@/components/home/FinancialSummary';
 import { Header } from '@/components/home/Header';
 import { OverdueAlert } from '@/components/home/OverdueAlert';
 import { ReportCard } from '@/components/home/ReportCard';
-import { Typography } from '@/components/ui/typography';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';

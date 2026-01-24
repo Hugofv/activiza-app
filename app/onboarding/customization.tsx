@@ -6,10 +6,10 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { IconButton } from '@/components/ui/icon-button';
-import { Input } from '@/components/ui/input';
-import { PhoneInput } from '@/components/ui/phone-input';
-import { Progress } from '@/components/ui/progress';
+import { IconButton } from '@/components/ui/IconButton';
+import { Input } from '@/components/ui/Input';
+import { PhoneInput } from '@/components/ui/PhoneInput';
+import { Progress } from '@/components/ui/Progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -22,7 +22,7 @@ import { createDocumentSchema, emailSchema, nameSchema, phoneSchema } from '@/li
 import type { InferType } from 'yup';
 import * as yup from 'yup';
 
-import { Typography } from '@/components/ui/typography';
+import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { getCurrentUser } from '@/lib/services/authService';
 import { useTranslation } from 'react-i18next';

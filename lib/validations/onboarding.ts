@@ -1,11 +1,13 @@
 import i18n from '@/translation';
 import * as yup from 'yup';
+import type { DocumentType } from '../services/documentService';
 
 // Helper function to get translated error message
 // Returns a function so translation is resolved at validation time, not schema definition time
-const t = (key: string): (() => string) => {
-  return () => i18n.t(`common.validation.${key}`) || key;
-};
+const t = (key: string) => () => i18n.t(`common.validation.${key}`) || key;
+
+// Valid document types array (reused for validation)
+const VALID_DOCUMENT_TYPES: DocumentType[] = ['cpf', 'cnpj', 'ssn', 'ein', 'ni', 'crn', 'other'];
 
 // Document schema simplificado (validação mínima baseada em tipo de documento)
 // Validação de algoritmo (CPF/CNPJ, etc) fica no backend
@@ -145,7 +147,7 @@ export const createDocumentSchema = (countryCode?: string, documentType?: string
     documentType: yup
       .string()
       .optional()
-      .oneOf(['cpf', 'cnpj', 'ssn', 'ein', 'ni', 'crn', 'other'], t('documentTypeInvalid')),
+      .oneOf<DocumentType>(VALID_DOCUMENT_TYPES, t('documentTypeInvalid')),
   });
 };
 

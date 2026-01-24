@@ -12,16 +12,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { CodeInput } from '@/components/ui/code-input';
-import { IconButton } from '@/components/ui/icon-button';
-import { Progress } from '@/components/ui/progress';
+import { CodeInput } from '@/components/ui/CodeInput';
+import { IconButton } from '@/components/ui/IconButton';
+import { Progress } from '@/components/ui/Progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { resendVerificationCode, verifyEmail } from '@/lib/services/authService';
 import { codeSchema } from '@/lib/validations/onboarding';
 
-import { Typography } from '@/components/ui/typography';
+import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 

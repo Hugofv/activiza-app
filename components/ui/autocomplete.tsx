@@ -3,8 +3,8 @@ import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Icon } from './icon';
-import { Typography } from './typography';
+import { Icon } from './Icon';
+import { Typography } from './Typography';
 
 export interface AutocompleteOption<T = string> {
   value: T;

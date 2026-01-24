@@ -4,8 +4,8 @@
  */
 import { StyleSheet, View } from 'react-native';
 import BaseToast from 'react-native-toast-message';
-import { Icon } from './icon';
-import { Typography } from './typography';
+import { Icon } from './Icon';
+import { Typography } from './Typography';
 
 export function Toast() {
 

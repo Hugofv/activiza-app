@@ -14,10 +14,10 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Button } from '@/components/ui/button';
-import { IconButton } from '@/components/ui/icon-button';
-import { Progress } from '@/components/ui/progress';
-import { Typography } from '@/components/ui/typography';
+import { Button } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/IconButton';
+import { Progress } from '@/components/ui/Progress';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';

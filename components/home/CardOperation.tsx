@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, useColorScheme, View } from 'react-native';
 
-import { Icon, IconName } from '@/components/ui/icon';
-import { Typography } from '@/components/ui/typography';
+import { Icon, IconName } from '@/components/ui/Icon';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 
 interface CardOperationProps {

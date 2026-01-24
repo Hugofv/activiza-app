@@ -11,9 +11,9 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { TabBarItem } from '@/components/TabBarItem';
-import { BottomSheet } from '@/components/ui/bottom-sheet';
-import { Icon } from '@/components/ui/icon';
-import { Typography } from '@/components/ui/typography';
+import { BottomSheet } from '@/components/ui/BottomSheet';
+import { Icon } from '@/components/ui/Icon';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { BottomSheetProvider, useBottomSheet } from '@/contexts/bottomSheetContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';

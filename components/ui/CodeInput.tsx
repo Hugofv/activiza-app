@@ -4,7 +4,7 @@ import { StyleSheet, TextInput, View } from 'react-native';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Typography } from './typography';
+import { Typography } from './Typography';
 
 export interface CodeInputProps {
   // Number of input fields to render

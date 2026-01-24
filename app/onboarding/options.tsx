@@ -12,11 +12,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Icon } from '@/components/ui/icon';
-import { IconButton } from '@/components/ui/icon-button';
-import { ListCheck } from '@/components/ui/list-check';
-import { Progress } from '@/components/ui/progress';
-import { Typography } from '@/components/ui/typography';
+import { Icon } from '@/components/ui/Icon';
+import { IconButton } from '@/components/ui/IconButton';
+import { ListCheck } from '@/components/ui/ListCheck';
+import { Progress } from '@/components/ui/Progress';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';

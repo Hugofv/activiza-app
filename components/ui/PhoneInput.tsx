@@ -8,8 +8,8 @@ import InternationalPhoneInput, {
   ICountrySelectLanguages,
   ITheme,
 } from 'react-native-international-phone-number';
-import { Icon } from './icon';
-import { Typography } from './typography';
+import { Icon } from './Icon';
+import { Typography } from './Typography';
 
 export interface PhoneInputValue {
   country: string | null;

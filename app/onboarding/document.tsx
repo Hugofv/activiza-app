@@ -1,15 +1,15 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Autocomplete, type AutocompleteOption } from '@/components/ui/autocomplete';
-import { IconButton } from '@/components/ui/icon-button';
-import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
+import { Autocomplete, type AutocompleteOption } from '@/components/ui/Autocomplete';
+import { IconButton } from '@/components/ui/IconButton';
+import { Input } from '@/components/ui/Input';
+import { Progress } from '@/components/ui/Progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -26,7 +26,7 @@ import type { CountryCode } from '@/lib/services/postalCodeService';
 import { detectCountryFromLocale } from '@/lib/utils/geolocation';
 import { createDocumentSchema } from '@/lib/validations/onboarding';
 
-import { Typography } from '@/components/ui/typography';
+import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 
@@ -47,19 +47,25 @@ const DocumentScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showError } = useToast();
 
-  // Detect country from geolocation or use address country code, fallback to detected locale
-  const detectedCountry = detectCountryFromLocale();
-  const countryCode: CountryCode = (formData.address?.countryCode as CountryCode) || detectedCountry;
+  // Memoize country detection (only runs once)
+  const detectedCountry = useMemo(() => detectCountryFromLocale(), []);
+  const countryCode: CountryCode = useMemo(
+    () => (formData.address?.countryCode as CountryCode) || detectedCountry,
+    [formData.address?.countryCode, detectedCountry]
+  );
 
   const [documentType, setDocumentType] = useState<DocumentType | undefined>(
     (formData.documentType as DocumentType) || undefined
   );
 
-  // Get all available document types (not limited by country)
-  const documentTypes = getAllDocumentTypes();
+  // Memoize document types (static array, but prevents recreation)
+  const documentTypes = useMemo(() => getAllDocumentTypes(), []);
 
-  // Get document format config based on country and type
-  const formatConfig = getDocumentFormat(countryCode, documentType);
+  // Memoize format config (only recalculates when country or type changes)
+  const formatConfig = useMemo(
+    () => getDocumentFormat(countryCode, documentType),
+    [countryCode, documentType]
+  );
 
   // Recreate schema when documentType changes to update validation
   const documentSchema = React.useMemo(
@@ -92,156 +98,128 @@ const DocumentScreen = () => {
   const watchedDocument = watch('document');
   const watchedDocumentType = watch('documentType');
 
-  // Sync state with form value
+  // Initialize and sync documentType - combined effect for better performance
   useEffect(() => {
-    if (watchedDocumentType !== documentType) {
-      setDocumentType(watchedDocumentType as DocumentType | undefined);
+    // Initialize with default if not set
+    if (!documentType && !watchedDocumentType) {
+      const defaultType =
+        documentTypes.length === 1
+          ? documentTypes[0].value
+          : getDefaultDocumentTypeForCountry(countryCode);
+      setDocumentType(defaultType);
+      setValue('documentType', defaultType, { shouldValidate: false });
+      return;
     }
-  }, [watchedDocumentType, documentType]);
 
-  // Revalidate when documentType changes - ensure form value is synced
-  useEffect(() => {
-    // Sync form value with state
-    if (documentType) {
+    // Sync form value with state when documentType changes
+    if (documentType && documentType !== watchedDocumentType) {
       setValue('documentType', documentType, { shouldValidate: false });
     }
 
-    // Revalidate document field when type changes
+    // Sync state with form value when form value changes
+    if (watchedDocumentType && watchedDocumentType !== documentType) {
+      setDocumentType(watchedDocumentType);
+    }
+  }, [documentType, watchedDocumentType, countryCode, documentTypes, setValue]);
+
+  // Revalidate document field when type changes
+  useEffect(() => {
     if (watchedDocument && documentType) {
-      // Small delay to ensure form value is updated
-      const timer = setTimeout(() => {
-        trigger('document');
-      }, 50);
+      const timer = setTimeout(() => trigger('document'), 50);
       return () => clearTimeout(timer);
     }
-  }, [documentType, trigger, watchedDocument, setValue, watchedDocumentType]);
-
-  // Initialize documentType with default for country if not set
-  useEffect(() => {
-    if (!documentType) {
-      if (documentTypes.length === 1) {
-        // Only one option, use it
-        setDocumentType(documentTypes[0].value);
-      } else if (documentTypes.length > 1) {
-        // Multiple options, use default for country
-        const defaultType = getDefaultDocumentTypeForCountry(countryCode);
-        setDocumentType(defaultType);
-        setValue('documentType', defaultType);
-      }
-    }
-  }, [countryCode, documentType, documentTypes, setValue]);
+  }, [documentType, watchedDocument, trigger]);
 
   // Format document value based on selected type
   // Also detect document type automatically when possible
-  const handleDocumentFormat = (value: string) => {
-    // Detect document type automatically if not set and value is being entered
-    // Try to detect based on value length and format
-    if (!documentType && value) {
-      const normalized = value.replace(/\D/g, '');
-      const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+  const handleDocumentFormat = useCallback(
+    (value: string) => {
+      // Auto-detect document type if not set and we have enough characters
+      if (!documentType && value) {
+        const normalized = value.replace(/\D/g, '');
+        const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
 
-      // Only detect when we have enough characters (at least 8 for most document types)
-      if (normalized.length >= 8 || cleaned.length >= 8) {
-        // Try to detect from country first, then try all types
-        let detectedType = detectDocumentType(value, countryCode);
-
-        // If not detected from country, try common patterns
-        if (!detectedType) {
-          // CPF: 11 digits
-          if (normalized.length === 11) {
-            detectedType = 'cpf';
+        // Only detect when we have enough characters (at least 8 for most document types)
+        if (normalized.length >= 8 || cleaned.length >= 8) {
+          const detectedType = detectDocumentType(value, countryCode);
+          if (detectedType && documentTypes.some(dt => dt.value === detectedType)) {
+            setDocumentType(detectedType);
+            setValue('documentType', detectedType, { shouldValidate: false });
           }
-          // CNPJ: 14 digits
-          else if (normalized.length === 14) {
-            detectedType = 'cnpj';
-          }
-          // SSN/EIN: 9 digits
-          else if (normalized.length === 9) {
-            detectedType = 'ssn'; // Default to SSN
-          }
-          // UK NI: 9 alphanumeric (2 letters + 6 numbers + 1 letter)
-          else if (/^[A-Z]{2}\d{6}[A-Z]$/.test(cleaned)) {
-            detectedType = 'ni';
-          }
-          // UK CRN: 8 digits
-          else if (normalized.length === 8) {
-            detectedType = 'crn';
-          }
-        }
-
-        if (detectedType && documentTypes.some(dt => dt.value === detectedType)) {
-          setDocumentType(detectedType);
-          setValue('documentType', detectedType);
         }
       }
-    }
 
-    // Use current documentType for formatting
-    // If type is set, use it; otherwise try to detect
-    if (documentType) {
-      return formatDocumentValue(value, countryCode, documentType);
-    }
+      // Format using current type or detected type
+      const typeToUse = documentType || (value ? detectDocumentType(value, countryCode) : null);
+      return formatDocumentValue(value, countryCode, typeToUse || undefined);
+    },
+    [documentType, countryCode, documentTypes, setValue]
+  );
 
-    // Try to detect type for formatting
-    const detectedType = value ? detectDocumentType(value, countryCode) : null;
-    return formatDocumentValue(value, countryCode, detectedType || undefined);
-  };
+  const handleDocumentTypeChange = useCallback(
+    (type: DocumentType) => {
+      // Update documentType in form and state
+      setValue('documentType', type, { shouldValidate: false });
+      setDocumentType(type);
 
-  const handleDocumentTypeChange = async (type: DocumentType) => {
-    // CRITICAL: Update documentType in form FIRST - this is the source of truth for validation
-    setValue('documentType', type, { shouldValidate: false });
-
-    // Then update state
-    setDocumentType(type);
-
-    // Reformat document value when type changes
-    if (watchedDocument) {
-      const normalized = normalizeDocument(watchedDocument, countryCode, documentType || undefined);
-      const formatted = formatDocumentValue(normalized, countryCode, type);
-      setValue('document', formatted, { shouldValidate: false });
-    }
-
-    // Force revalidation after form value is updated
-    // Use a small delay to ensure form value is committed
-    setTimeout(() => {
+      // Reformat document value when type changes
       if (watchedDocument) {
-        trigger('document');
+        const normalized = normalizeDocument(watchedDocument, countryCode, documentType || undefined);
+        const formatted = formatDocumentValue(normalized, countryCode, type);
+        setValue('document', formatted, { shouldValidate: false });
       }
-    }, 100);
-  };
 
-  const handleBack = () => {
+      // Force revalidation after form value is updated
+      setTimeout(() => {
+        if (watchedDocument) {
+          trigger('document');
+        }
+      }, 100);
+    },
+    [watchedDocument, countryCode, documentType, setValue, trigger]
+  );
+
+  const handleBack = useCallback(() => {
     router.back();
-  };
+  }, []);
 
-  const onSubmit = async (data: DocumentFormData) => {
-    // Update form data and save to API with step tracking (unified)
-    setIsSubmitting(true);
-    try {
-      await updateFormData({
-        document: data.document || undefined,
-        documentType: data.documentType || undefined,
-      }, 'document');
-      router.push('/onboarding/name');
-    } catch (error: any) {
-      console.error('Failed to save document step:', error);
-      showError(
-        t('common.error') || 'Error',
-        error?.response?.data?.message ||
-          error?.message ||
-          t('onboarding.saveError') ||
-          'Failed to save. Please try again.'
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const onSubmit = useCallback(
+    async (data: DocumentFormData) => {
+      setIsSubmitting(true);
+      try {
+        await updateFormData(
+          {
+            document: data.document || undefined,
+            documentType: data.documentType || undefined,
+          },
+          'document'
+        );
+        router.push('/onboarding/name');
+      } catch (error: any) {
+        console.error('Failed to save document step:', error);
+        showError(
+          t('common.error') || 'Error',
+          error?.response?.data?.message ||
+            error?.message ||
+            t('onboarding.saveError') ||
+            'Failed to save. Please try again.'
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [updateFormData, showError, t]
+  );
 
-  // Build document type options for Autocomplete
-  const documentTypeOptions: AutocompleteOption<DocumentType>[] = documentTypes.map((dt: { value: DocumentType; label: string; labelKey: string }) => ({
-    value: dt.value,
-    label: t(`onboarding.${dt.labelKey}`) || dt.label,
-  }));
+  // Memoize document type options (only recalculates when translations change)
+  const documentTypeOptions: AutocompleteOption<DocumentType>[] = useMemo(
+    () =>
+      documentTypes.map((dt) => ({
+        value: dt.value,
+        label: t(`onboarding.${dt.labelKey}`) || dt.label,
+      })),
+    [documentTypes, t]
+  );
 
   return (
     <SafeAreaView

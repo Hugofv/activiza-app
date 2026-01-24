@@ -16,7 +16,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import '../global.css';
 
-import { Toast } from '@/components/ui/toast';
+import { Toast } from '@/components/ui/Toast';
 import { ToastProvider } from '@/contexts/toastContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { persistOptions, queryClient } from '@/lib/api/queryClient';

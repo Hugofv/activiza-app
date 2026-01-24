@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { Typography } from '@/components/ui/typography';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 

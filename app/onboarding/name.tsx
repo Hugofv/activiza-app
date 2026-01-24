@@ -6,15 +6,15 @@ import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/Input';
+import { Progress } from '@/components/ui/Progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { nameSchema } from '@/lib/validations/onboarding';
 
-import { IconButton } from '@/components/ui/icon-button';
-import { Typography } from '@/components/ui/typography';
+import { IconButton } from '@/components/ui/IconButton';
+import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { useTranslation } from 'react-i18next';

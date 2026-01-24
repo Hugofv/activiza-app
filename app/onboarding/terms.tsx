@@ -11,8 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/Button';
+import { Checkbox } from '@/components/ui/Checkbox';
 import {
   Dialog,
   DialogClose,
@@ -22,10 +22,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { IconButton } from '@/components/ui/icon-button';
-import { Progress } from '@/components/ui/progress';
-import { Typography } from '@/components/ui/typography';
+} from '@/components/ui/Dialog';
+import { IconButton } from '@/components/ui/IconButton';
+import { Progress } from '@/components/ui/Progress';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';

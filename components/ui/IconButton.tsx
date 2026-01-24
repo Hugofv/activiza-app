@@ -5,7 +5,7 @@ import { ActivityIndicator, Pressable, type PressableProps, type ViewStyle } fro
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { cn } from '@/lib/utils';
-import { Icon, type IconName } from './icon';
+import { Icon, type IconName } from './Icon';
 
 const iconButtonVariants = cva(
   'active:opacity-80 flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',

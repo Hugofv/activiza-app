@@ -6,16 +6,16 @@ import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View } f
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { IconButton } from '@/components/ui/icon-button';
-import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
+import { IconButton } from '@/components/ui/IconButton';
+import { Input } from '@/components/ui/Input';
+import { Progress } from '@/components/ui/Progress';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { getPostalCodeFormat, lookupPostalCode, type CountryCode } from '@/lib/services/postalCodeService';
 import { createPostalCodeSchema } from '@/lib/validations/onboarding';
 
-import { Typography } from '@/components/ui/typography';
+import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 

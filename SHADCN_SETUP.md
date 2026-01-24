@@ -37,7 +37,7 @@ export function MyComponent() {
 Components are located in `components/ui/`. Example:
 
 ```tsx
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 
 export function MyScreen() {
   return (

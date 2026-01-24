@@ -10,7 +10,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { Icon, type IconName } from '@/components/ui/icon';
+import { Icon, type IconName } from '@/components/ui/Icon';
 import { Colors } from '@/constants/theme';
 
 interface TabBarItemProps extends BottomTabBarButtonProps {

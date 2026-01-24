@@ -5,7 +5,7 @@ import { TextInput, type TextInputProps, View } from 'react-native';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { cn } from '@/lib/utils';
-import { Typography } from './typography';
+import { Typography } from './Typography';
 
 export interface InputProps extends Omit<TextInputProps, 'value' | 'onChangeText' | 'editable'> {
   className?: string;

@@ -2,7 +2,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import * as React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import { Icon } from './icon';
+import { Icon } from './Icon';
 
 export interface CheckboxProps {
   checked?: boolean;

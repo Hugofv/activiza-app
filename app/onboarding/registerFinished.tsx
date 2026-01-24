@@ -3,13 +3,13 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { IconButton } from '@/components/ui/icon-button';
-import { Progress } from '@/components/ui/progress';
+import { IconButton } from '@/components/ui/IconButton';
+import { Progress } from '@/components/ui/Progress';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import Illustration from '@/assets/images/registrationComplete.svg';
-import { Typography } from '@/components/ui/typography';
+import { Typography } from '@/components/ui/Typography';
 import { useTranslation } from 'react-i18next';
 
 /**

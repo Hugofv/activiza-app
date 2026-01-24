@@ -5,7 +5,7 @@
  */
 import { useBottomSheet } from '@/contexts/bottomSheetContext';
 import React from 'react';
-import { BottomSheet } from './bottom-sheet';
+import { BottomSheet } from './BottomSheet';
 
 interface BottomSheetWrapperProps {
   children: React.ReactNode;
@@ -21,7 +21,7 @@ interface BottomSheetWrapperProps {
  * 
  * @example
  * ```tsx
- * import { BottomSheetWrapper } from '@/components/ui/bottom-sheet-wrapper';
+ * import { BottomSheetWrapper } from '@/components/ui/BottomSheetWrapper';
  * import { useBottomSheet } from '@/contexts/bottomSheetContext';
  * 
  * function MyComponent() {

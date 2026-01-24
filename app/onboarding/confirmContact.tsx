@@ -3,12 +3,12 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { IconButton } from '@/components/ui/icon-button';
+import { IconButton } from '@/components/ui/IconButton';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-import { Icon } from '@/components/ui/icon';
-import { Typography } from '@/components/ui/typography';
+import { Icon } from '@/components/ui/Icon';
+import { Typography } from '@/components/ui/Typography';
 import { useTranslation } from 'react-i18next';
 
 /**

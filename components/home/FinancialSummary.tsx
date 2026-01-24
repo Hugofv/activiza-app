@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 
-import { IconName } from '@/components/ui/icon';
-import { Typography } from '@/components/ui/typography';
+import { IconName } from '@/components/ui/Icon';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import CardOperation from './CardOperation';

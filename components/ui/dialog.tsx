@@ -2,7 +2,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import * as React from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
-import { Typography } from './typography';
+import { Typography } from './Typography';
 
 interface DialogContextValue {
   open: boolean;
