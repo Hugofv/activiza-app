@@ -77,7 +77,7 @@ const AuthPasswordScreen = () => {
         const route = stepToRouteMap[onboardingStep] || '/onboarding/password';
         router.replace(route as any);
       } else {
-        // User is fully registered (COMPLETED), redirect to home
+        // User is fully registered (COMPLETED), redirect to home tab
         router.replace('/(tabs)/home');
       }
     } catch (error: any) {

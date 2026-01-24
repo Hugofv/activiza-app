@@ -39,7 +39,7 @@ export async function register(
     );
 
     console.log('Register response:', JSON.stringify(response.data, null, 2));
-    
+
     const { user, accessToken, refreshToken, expiresIn } = response.data;
 
     // Validate tokens before storing
@@ -310,13 +310,13 @@ export async function checkEmailStatus(email: string): Promise<EmailStatus> {
     const data = response.data;
     console.log('Check email status response:', JSON.stringify(data, null, 2));
 
-    // Transform API response to simplified format
+    // Transform API response to simplified format, preserving original fields
     return {
-      exists: data.existsAs !== null,
+      ...data,
+      // Explicitly derive helper flags from API fields
+      // Treat any value different from 'none'/null as existing
+      exists: !!data.existsAs && data.existsAs !== 'none',
       isRegistered: data.registered,
-      clientStatus: data.clientStatus,
-      onboardingStep: data.onboardingStep,
-      message: data.message,
     };
   } catch (error: any) {
     console.error('Check email status error:', error);

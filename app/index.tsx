@@ -19,7 +19,7 @@ export default function LandingScreen() {
    const colors = Colors[colorScheme ?? 'light'];
    const { isAuthenticated, isChecking } = useAuthGuard();
 
-   // Redirect to home if authenticated
+   // Redirect to home tab if authenticated
    useEffect(() => {
       if (!isChecking && isAuthenticated) {
          router.replace('/(tabs)/home');

@@ -39,18 +39,17 @@ export interface RefreshTokenResponse {
 }
 
 export interface EmailStatusResponse {
-  existsAs: 'client' | 'user' | null;
+  success?: boolean;
+  email?: string;
+  existsAs: 'platformUser' | 'client' | 'user' | 'none' | null;
   registered: boolean;
   clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING';
   onboardingStep?: string; // e.g., 'phone_verification', 'active_customers', etc.
   message?: string;
 }
 
-// Helper type for simplified access
-export interface EmailStatus {
+// Helper type for simplified access, extending API response
+export interface EmailStatus extends EmailStatusResponse {
   exists: boolean;
   isRegistered: boolean;
-  clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING';
-  onboardingStep?: string;
-  message?: string;
 }

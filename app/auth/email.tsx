@@ -20,7 +20,6 @@ import { checkEmailStatus } from '@/lib/services/authService';
 import { emailSchema } from '@/lib/validations/onboarding';
 
 import { Typography } from '@/components/ui/typography';
-import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
 import { useTranslation } from 'react-i18next';
 
 interface EmailFormData {
@@ -36,7 +35,6 @@ const EmailScreen = () => {
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
   const [isChecking, setIsChecking] = useState(false);
-  const { isAuthenticated } = useAuthGuard();
 
   const {
     control,
@@ -63,18 +61,24 @@ const EmailScreen = () => {
       // Just update form data (don't save to API yet - user doesn't have account)
       updateFormData({ email: data.email });
 
-      // Check if user is fully registered (completed) vs in-progress onboarding
+      // Check if user is fully registered (COMPLETED) vs in-progress onboarding
+      // Rule:
+      // - isRegistered + clientStatus === COMPLETED  -> login/password flow
+      // - isRegistered + clientStatus === IN_PROGRESS -> resume onboarding flow
+      // - otherwise (no registration) -> start onboarding from password step
       const isFullyRegistered =
-        emailStatus.exists &&
         emailStatus.isRegistered &&
         emailStatus.clientStatus === 'COMPLETED';
 
       const isInProgressOnboarding =
-        emailStatus.exists &&
         emailStatus.isRegistered &&
         emailStatus.clientStatus === 'IN_PROGRESS';
 
-      if (isFullyRegistered || !isAuthenticated) {
+      console.log('Email status response:', emailStatus);
+      console.log('isFullyRegistered:', isFullyRegistered);
+      console.log('isInProgressOnboarding:', isInProgressOnboarding);
+
+      if (isFullyRegistered) {
         // User is fully registered, redirect to password authentication
         // Pass onboardingStep to redirect user after login
         router.push({
