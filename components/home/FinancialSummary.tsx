@@ -44,10 +44,10 @@ export function FinancialSummary({
         <Typography variant="caption" style={{ color: colors.icon, marginBottom: 4 }}>
           {t('home.receivedThisMonth')}
         </Typography>
-        <Typography variant="h2" style={{ color: '#064e3b', marginBottom: 4 }}>
+        <Typography variant="h3" style={{ color: '#064e3b', marginBottom: 4 }}>
           {formatCurrency(receivedAmount)}
         </Typography>
-        <Typography variant="caption" style={{ color: colors.icon }}>
+        <Typography variant="h2Medium" style={{ color: colors.icon }}>
           {t('home.of')} {formatCurrency(totalExpected)}
         </Typography>
       </View>
@@ -81,13 +81,13 @@ export function FinancialSummary({
 const styles = StyleSheet.create({
   summarySection: {
     padding: 5,
-    marginBottom: 32,
+    marginBottom: 10,
   },
   receivedCard: {
-    marginBottom: 16,
+    marginBottom: 15,
   },
   carouselContainer: {
-    marginBottom: 16,
+    marginBottom: 5,
     marginLeft: -5,
   },
   carouselContent: {

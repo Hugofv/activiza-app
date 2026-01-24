@@ -26,8 +26,8 @@ export default function HomeScreen() {
 
   if (isChecking) {
     return (
-      <SafeAreaView 
-        style={[styles.container, { backgroundColor: colors.background }]} 
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
         edges={['top']}
       >
         <View style={styles.loadingContainer}>
@@ -63,20 +63,16 @@ export default function HomeScreen() {
     { icon: 'person' as const, count: loansCount, label: t('home.loans') },
     { icon: 'home' as const, count: roomRentalsCount, label: t('home.roomRentals') },
     { icon: 'car' as const, count: vehicleRentalsCount, label: t('home.vehicleRentals') },
-    { icon: 'home' as const, count: roomRentalsCount, label: t('home.roomRentals') },
-    { icon: 'car' as const, count: vehicleRentalsCount, label: t('home.vehicleRentals') },
-    { icon: 'home' as const, count: roomRentalsCount, label: t('home.roomRentals') },
-    { icon: 'car' as const, count: vehicleRentalsCount, label: t('home.vehicleRentals') },
   ];
 
   return (
-    <SafeAreaView 
-      style={[styles.container, { backgroundColor: colors.background }]} 
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
       edges={['top']}
     >
       <Header />
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -87,7 +83,7 @@ export default function HomeScreen() {
           operations={operations}
         />
 
-        <OverdueAlert 
+        <OverdueAlert
           count={overduePaymentsCount}
           onPress={() => {/* Navigate to overdue screen */}}
         />

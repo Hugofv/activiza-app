@@ -70,7 +70,7 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
       accessibilityLabel={props.accessibilityLabel}
     >
       <Animated.View style={animatedStyle}>
-        <Icon name="square-rounded-plus" size={28} color={colors.primaryForeground} />
+        <Icon name="square-rounded-plus" size={34} color={colors.primaryForeground} />
       </Animated.View>
     </TouchableOpacity>
   );

@@ -16,16 +16,19 @@ export function ReportCard({ title, subtitle, description }: ReportCardProps) {
 
   return (
     <View style={[styles.reportCard, { backgroundColor: colors.background }]}>
-      <Typography variant="h4" style={{ color: '#064e3b', marginBottom: 4 }}>
-        {title}
-      </Typography>
-      {subtitle && (
-        <Typography variant="body2" style={{ color: colors.icon, marginBottom: 2 }}>
-          {subtitle}
+      <View style={styles.titleContainer}>
+
+        <Typography variant="h4" style={{ color: '#064e3b', marginBottom: 4 }}>
+          {title}
         </Typography>
-      )}
+        {subtitle && (
+          <Typography variant="body2" style={{ color: colors.placeholder, marginBottom: 2 }}>
+            {subtitle}
+          </Typography>
+        )}
+      </View>
       {description && (
-        <Typography variant="caption" style={{ color: colors.icon }}>
+        <Typography variant="caption" style={{ color: colors.text }}>
           {description}
         </Typography>
       )}
@@ -38,10 +41,17 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 16,
     padding: 20,
+    height: 130,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  titleContainer: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
 });

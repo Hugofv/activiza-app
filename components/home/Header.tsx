@@ -13,10 +13,10 @@ interface HeaderProps {
   onMonthPress?: () => void;
 }
 
-export function Header({ 
+export function Header({
   profileImageUri = 'https://i.pravatar.cc/150?img=12',
   onProfilePress,
-  onMonthPress 
+  onMonthPress
 }: HeaderProps) {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
@@ -31,7 +31,7 @@ export function Header({
           contentFit="cover"
         />
       </TouchableOpacity>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[styles.monthSelector, { backgroundColor: '#F3F7F5' }]}
         onPress={onMonthPress}
       >

@@ -36,7 +36,7 @@ export function TabBarItem({
   });
 
   const focused = navigationState === routeName;
-  
+
   const scale = useSharedValue(focused ? 1 : 0);
   const opacity = useSharedValue(focused ? 1 : 0);
 

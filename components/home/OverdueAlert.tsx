@@ -15,7 +15,7 @@ export function OverdueAlert({ count, onPress }: OverdueAlertProps) {
   if (count === 0) return null;
 
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.overdueAlert, { backgroundColor: '#FFF4E6' }]}
       activeOpacity={0.7}
       onPress={onPress}
@@ -35,5 +35,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     borderRadius: 8,
+    marginBottom: 10,
   },
 });
