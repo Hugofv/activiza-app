@@ -49,6 +49,9 @@ export default {
     passwordMismatch: 'Passwords do not match',
   },
   close: 'Close',
+  error: 'Error',
+  warning: 'Warning',
+  success: 'Success',
   // Error messages
   errors: {
     EMAIL_ALREADY_EXISTS: 'This email is already registered',

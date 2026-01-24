@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -15,6 +15,8 @@ import { nameSchema } from '@/lib/validations/onboarding';
 
 import { IconButton } from '@/components/ui/icon-button';
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/lib/hooks/useToast';
+import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { useTranslation } from 'react-i18next';
 
 interface NameFormData {
@@ -30,6 +32,7 @@ const NameScreen = () => {
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showError } = useToast();
 
   const {
     control,
@@ -55,10 +58,11 @@ const NameScreen = () => {
       router.push('/onboarding/contact');
     } catch (error: any) {
       console.error('Failed to save name step:', error);
-      Alert.alert(
-        t('common.error') || 'Error',
-        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      const apiMessage = getTranslatedError(
+        (error?.response?.data as any) || error,
+        t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+      showError(t('common.error') || 'Error', apiMessage);
     } finally {
       setIsSubmitting(false);
     }

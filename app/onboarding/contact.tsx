@@ -1,7 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -15,7 +16,9 @@ import { phoneSchema } from '@/lib/validations/onboarding';
 import type { InferType } from 'yup';
 
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/lib/hooks/useToast';
 import { sendVerificationCode } from '@/lib/services/authService';
+import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { useTranslation } from 'react-i18next';
 
 type ContactFormData = InferType<typeof phoneSchema>;
@@ -28,6 +31,8 @@ const ContactScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showError, showWarning } = useToast();
 
   const {
     control,
@@ -48,39 +53,48 @@ const ContactScreen = () => {
   const onSubmit = async (data: ContactFormData) => {
     // Update form data and save to API with step tracking (unified)
     // Save country and countryCode in meta
+    setIsSubmitting(true);
     try {
-      const phoneData = data.phone ? {
-        ...data.phone,
-        meta: {
-          country: data.phone.country,
-          countryCode: data.phone.countryCode,
-        },
-      } : null;
+      const phoneData = data.phone
+        ? {
+            ...data.phone,
+            meta: {
+              country: data.phone.country,
+              countryCode: data.phone.countryCode,
+            },
+          }
+        : null;
+
       await updateFormData({ phone: phoneData as any }, 'contact');
-      
+
       // After saving phone, send verification code automatically
       if (data.phone?.phoneNumber) {
-        const phoneNumber = data.phone.formattedPhoneNumber || data.phone.phoneNumber;
+        const phoneNumber =
+          data.phone.formattedPhoneNumber || data.phone.phoneNumber;
         try {
           await sendVerificationCode(phoneNumber, 'phone');
           console.log('✅ Verification code sent to phone');
         } catch (codeError: any) {
           console.error('Failed to send verification code:', codeError);
           // Don't block navigation if code sending fails, user can resend on next screen
-          Alert.alert(
+          showWarning(
             t('common.warning') || 'Warning',
-            t('onboarding.codeSendError') || 'Failed to send verification code. You can resend it on the next screen.'
+            t('onboarding.codeSendError') ||
+              'Failed to send verification code. You can resend it on the next screen.'
           );
         }
       }
-      
+
       router.push('/onboarding/codeContact');
     } catch (error: any) {
       console.error('Failed to save contact step:', error);
-      Alert.alert(
-        t('common.error') || 'Error',
-        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      const apiMessage = getTranslatedError(
+        (error?.response?.data as any) || error,
+        t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+      showError(t('common.error') || 'Error', apiMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -131,7 +145,8 @@ const ContactScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
-              disabled={!isValid}
+              disabled={!isValid || isSubmitting}
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>

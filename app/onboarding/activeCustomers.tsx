@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -18,6 +17,7 @@ import { Typography } from '@/components/ui/typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 
 // Numeric values represent the maximum number of active customers
@@ -58,6 +58,7 @@ const ActiveCustomersScreen = () => {
     formData.activeCustomers || null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showError } = useToast();
 
   const handleBack = () => {
     router.back();
@@ -73,9 +74,12 @@ const ActiveCustomersScreen = () => {
       router.push('/onboarding/financialOperations');
     } catch (error: any) {
       console.error('Failed to save activeCustomers step:', error);
-      Alert.alert(
+      showError(
         t('common.error') || 'Error',
-        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+        error?.response?.data?.message ||
+          error?.message ||
+          t('onboarding.saveError') ||
+          'Failed to save. Please try again.'
       );
     } finally {
       setIsSubmitting(false);

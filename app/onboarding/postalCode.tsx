@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -16,6 +16,7 @@ import { getPostalCodeFormat, lookupPostalCode, type CountryCode } from '@/lib/s
 import { createPostalCodeSchema } from '@/lib/validations/onboarding';
 
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 
 interface PostalCodeFormData {
@@ -30,6 +31,7 @@ const PostalCodeScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
+  const { showError } = useToast();
   const [loading, setLoading] = useState(false);
 
   const countryCode = (formData.address as any)?.countryCode as CountryCode || 'BR';
@@ -101,9 +103,12 @@ const PostalCodeScreen = () => {
         router.push('/onboarding/address');
       } catch (saveError: any) {
         console.error('Failed to save postalCode step:', saveError);
-        Alert.alert(
+        showError(
           t('common.error') || 'Error',
-          saveError?.response?.data?.message || saveError?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+          saveError?.response?.data?.message ||
+            saveError?.message ||
+            t('onboarding.saveError') ||
+            'Failed to save. Please try again.'
         );
       }
     } catch (error: any) {
@@ -120,9 +125,12 @@ const PostalCodeScreen = () => {
         router.push('/onboarding/address');
       } catch (saveError: any) {
         console.error('Failed to save postalCode step:', saveError);
-        Alert.alert(
+        showError(
           t('common.error') || 'Error',
-          saveError?.response?.data?.message || saveError?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+          saveError?.response?.data?.message ||
+            saveError?.message ||
+            t('onboarding.saveError') ||
+            'Failed to save. Please try again.'
         );
       }
     } finally {
@@ -196,11 +204,12 @@ const PostalCodeScreen = () => {
             <IconButton
               variant='primary'
               size='lg'
-              icon={loading ? 'hourglass-outline' : 'arrow-forward'}
+              icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid || loading}
+              loading={loading}
             />
           </View>
         </ThemedView>

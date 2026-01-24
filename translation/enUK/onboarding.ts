@@ -174,4 +174,8 @@ We may update this privacy policy from time to time. We will notify you of any c
   wantThisPlan: 'I want this',
   customizationTitle: 'Review your business information',
   customizationDescription: 'Check and update the main information about your business before continuing',
+  namePlaceholder: 'Enter your full name',
+  saveError: 'Failed to save. Please try again.',
+  codeSendError: 'Failed to send verification code. You can resend it on the next screen.',
+  submitError: 'Failed to complete registration. Please try again.',
 };

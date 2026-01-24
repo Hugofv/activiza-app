@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -16,6 +16,7 @@ import { resendVerificationCode, verifyPhone } from '@/lib/services/authService'
 import { codeSchema } from '@/lib/validations/onboarding';
 
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 
 interface CodeFormData {
@@ -33,6 +34,7 @@ const CodeContactScreen = () => {
   const [resendTimer, setResendTimer] = useState(60);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const { showError, showSuccess } = useToast();
 
   const {
     control,
@@ -62,7 +64,10 @@ const CodeContactScreen = () => {
 
   const onSubmit = async (data: CodeFormData) => {
     if (!formData.phone?.phoneNumber) {
-      Alert.alert('Error', 'Phone number is required. Please go back to contact screen.');
+      showError(
+        t('common.errors.MISSING_REQUIRED_FIELDS') || 'Phone number is required.',
+        t('onboarding.contact') || 'Contact'
+      );
       return;
     }
 
@@ -71,7 +76,7 @@ const CodeContactScreen = () => {
       // Verify phone code with API
       const phoneNumber = formData.phone.formattedPhoneNumber || formData.phone.phoneNumber;
       await verifyPhone(phoneNumber, data.code);
-      
+
       // Code verified successfully
       updateFormData({ code: data.code });
 
@@ -85,20 +90,26 @@ const CodeContactScreen = () => {
         console.log('📊 Response from updateStep:', response);
       } catch (stepError: any) {
         console.error('❌ Failed to update phone verification step:', stepError);
-        Alert.alert(
+        showError(
           t('common.error') || 'Error',
-          stepError?.response?.data?.message || stepError?.message || t('onboarding.stepUpdateError') || 'Failed to update step. Please try again.'
+          stepError?.response?.data?.message ||
+            stepError?.message ||
+            t('onboarding.stepUpdateError') ||
+            'Failed to update step. Please try again.'
         );
         return; // Don't navigate if step update fails
       }
-      
+
       // Continue to confirmation screen
       router.push('/onboarding/confirmContact');
     } catch (error: any) {
       console.error('Phone verification error:', error);
-      Alert.alert(
-        'Verification Failed',
-        error?.response?.data?.message || error?.message || 'Invalid verification code. Please try again.'
+      showError(
+        t('common.error') || 'Verification Failed',
+        error?.response?.data?.message ||
+          error?.message ||
+          t('onboarding.stepUpdateError') ||
+          'Invalid verification code. Please try again.'
       );
     } finally {
       setIsVerifying(false);
@@ -107,7 +118,10 @@ const CodeContactScreen = () => {
 
   const handleResendCode = async () => {
     if (!formData.phone?.phoneNumber) {
-      Alert.alert('Error', 'Phone number is required.');
+      showError(
+        t('common.errors.MISSING_REQUIRED_FIELDS') || 'Phone number is required.',
+        t('onboarding.contact') || 'Contact'
+      );
       return;
     }
 
@@ -115,16 +129,22 @@ const CodeContactScreen = () => {
     try {
       // Resend verification code via phone (WhatsApp/SMS)
       await resendVerificationCode('phone');
-      
+
       // Reset timer
       setResendTimer(60);
-      
-      Alert.alert('Success', 'Verification code sent to your phone.');
+
+      showSuccess(
+        t('common.toast.success') || 'Success',
+        t('onboarding.codeDescription') || 'Verification code sent to your phone.'
+      );
     } catch (error: any) {
       console.error('Resend code error:', error);
-      Alert.alert(
-        'Failed to Resend',
-        error?.response?.data?.message || error?.message || 'Failed to resend verification code. Please try again.'
+      showError(
+        t('common.error') || 'Failed to Resend',
+        error?.response?.data?.message ||
+          error?.message ||
+          t('onboarding.stepUpdateError') ||
+          'Failed to resend verification code. Please try again.'
       );
     } finally {
       setIsResending(false);
@@ -206,6 +226,7 @@ const CodeContactScreen = () => {
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid || isVerifying}
+              loading={isVerifying}
             />
           </View>
         </ThemedView>

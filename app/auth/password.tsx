@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -12,6 +12,7 @@ import { Typography } from '@/components/ui/typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
+import { useToast } from '@/lib/hooks/useToast';
 import { login } from '@/lib/services/authService';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -36,6 +37,7 @@ const AuthPasswordScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { redirectAfterAuth } = useAuthGuard();
+  const { showError } = useToast();
 
   const {
     control,
@@ -55,7 +57,10 @@ const AuthPasswordScreen = () => {
 
   const onSubmit = async (data: PasswordFormData) => {
     if (!email) {
-      Alert.alert('Error', 'Email is required');
+      showError(
+        t('common.errors.MISSING_REQUIRED_FIELDS') || 'Email is required.',
+        t('onboarding.email') || 'Email'
+      );
       return;
     }
 
@@ -71,9 +76,9 @@ const AuthPasswordScreen = () => {
       await redirectAfterAuth();
     } catch (error: any) {
       console.error('Login error:', error);
-      Alert.alert(
-        'Authentication Failed',
-        error?.message || 'Invalid email or password. Please try again.'
+      showError(
+        t('common.errors.INVALID_CREDENTIALS') || 'Authentication Failed',
+        error?.message || t('common.errors.INVALID_CREDENTIALS') || 'Invalid email or password. Please try again.'
       );
     } finally {
       setIsLoading(false);

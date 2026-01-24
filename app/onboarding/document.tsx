@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -25,6 +25,7 @@ import type { CountryCode } from '@/lib/services/postalCodeService';
 import { createDocumentSchema } from '@/lib/validations/onboarding';
 
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 
 interface DocumentFormData {
@@ -42,6 +43,7 @@ const DocumentScreen = () => {
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showError } = useToast();
 
   // Get country code from address or default to BR
   const countryCode: CountryCode = (formData.address?.countryCode as CountryCode) || 'BR';
@@ -89,7 +91,7 @@ const DocumentScreen = () => {
       // For countries with multiple types, try to detect when value is long enough
       const normalized = value.replace(/\D/g, '');
       const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
-      
+
       // Only detect when we have enough characters (at least 8 for most document types)
       if (normalized.length >= 8 || cleaned.length >= 8) {
         const detectedType = detectDocumentType(value, countryCode);
@@ -99,7 +101,7 @@ const DocumentScreen = () => {
         }
       }
     }
-    
+
     // Use detected type or current documentType for formatting
     const detectedType = value ? detectDocumentType(value, countryCode) : null;
     const typeForFormatting = documentType || detectedType || undefined;
@@ -132,9 +134,12 @@ const DocumentScreen = () => {
       router.push('/onboarding/name');
     } catch (error: any) {
       console.error('Failed to save document step:', error);
-      Alert.alert(
+      showError(
         t('common.error') || 'Error',
-        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+        error?.response?.data?.message ||
+          error?.message ||
+          t('onboarding.saveError') ||
+          'Failed to save. Please try again.'
       );
     } finally {
       setIsSubmitting(false);

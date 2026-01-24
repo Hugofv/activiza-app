@@ -174,4 +174,8 @@ Podemos atualizar esta política de privacidade periodicamente. Notificaremos vo
   wantThisPlan: 'Quero este',
   customizationTitle: 'Revise as informações do seu negócio',
   customizationDescription: 'Confira e atualize as principais informações do seu negócio antes de continuar',
+  namePlaceholder: 'Digite seu nome completo',
+  saveError: 'Falha ao salvar. Por favor, tente novamente.',
+  codeSendError: 'Falha ao enviar código de verificação. Você pode reenviá-lo na próxima tela.',
+  submitError: 'Falha ao completar o cadastro. Por favor, tente novamente.',
 };

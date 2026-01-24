@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -23,6 +23,7 @@ import type { InferType } from 'yup';
 import * as yup from 'yup';
 
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/lib/hooks/useToast';
 import { getCurrentUser } from '@/lib/services/authService';
 import { useTranslation } from 'react-i18next';
 
@@ -43,6 +44,7 @@ const CustomizationScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
+  const { showError } = useToast();
 
   // Get User data from React Query cache (from login/register)
   // Use User data as fallback when formData doesn't have these values
@@ -136,9 +138,12 @@ const CustomizationScreen = () => {
       router.push('/onboarding/options');
     } catch (error: any) {
       console.error('Failed to save customization step:', error);
-      Alert.alert(
+      showError(
         t('common.error') || 'Error',
-        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+        error?.response?.data?.message ||
+          error?.message ||
+          t('onboarding.saveError') ||
+          'Failed to save. Please try again.'
       );
     } finally {
       setIsSubmitting(false);

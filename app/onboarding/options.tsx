@@ -3,7 +3,6 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -21,7 +20,9 @@ import { Typography } from '@/components/ui/typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useToast } from '@/lib/hooks/useToast';
 import { getModules, Module } from '@/lib/services/onboardingService';
+import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { useTranslation } from 'react-i18next';
 
 type BusinessOption = string;
@@ -76,6 +77,8 @@ const OptionsScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
+  const { showError } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch modules from API
   const {
@@ -126,16 +129,20 @@ const OptionsScreen = () => {
   const handleContinue = async () => {
     if (selectedOptions.length === 0) return;
 
+    setIsSubmitting(true);
     try {
       // Save the options step and navigate to plans screen
       await updateFormData({ businessOptions: selectedOptions }, 'options');
       router.push('/onboarding/plans');
     } catch (error: any) {
       console.error('Failed to save options step:', error);
-      Alert.alert(
-        t('common.error') || 'Error',
-        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      const apiMessage = getTranslatedError(
+        (error?.response?.data as any) || error,
+        t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+      showError(t('common.error') || 'Error', apiMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -220,7 +227,8 @@ const OptionsScreen = () => {
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
-              disabled={selectedOptions.length === 0}
+              disabled={selectedOptions.length === 0 || isSubmitting}
+              loading={isSubmitting}
             />
           </View>
         </ThemedView>

@@ -3,7 +3,6 @@ import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Dimensions,
   KeyboardAvoidingView,
   Platform,
@@ -22,6 +21,7 @@ import { Typography } from '@/components/ui/typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useToast } from '@/lib/hooks/useToast';
 import { getSuggestedPlans, SuggestedPlan } from '@/lib/services/onboardingService';
 import { useTranslation } from 'react-i18next';
 
@@ -36,8 +36,9 @@ const PlansScreen = () => {
   const { submitFormData } = useOnboardingForm();
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showError } = useToast();
   const carouselRef = useRef<ICarouselInstance>(null);
-  
+
   // Calculate card width for carousel
   const screenWidth = Dimensions.get('window').width;
   const cardWidth = screenWidth - 48; // Screen width minus horizontal padding (24 * 2)
@@ -258,9 +259,12 @@ const PlansScreen = () => {
                                       if (error?.response?.data?.details) {
                                         console.error('Validation errors:', JSON.stringify(error.response.data.details, null, 2));
                                       }
-                                      Alert.alert(
+                                      showError(
                                         t('common.error') || 'Error',
-                                        error?.response?.data?.message || error?.message || t('onboarding.submitError') || 'Failed to complete registration. Please try again.'
+                                        error?.response?.data?.message ||
+                                          error?.message ||
+                                          t('onboarding.submitError') ||
+                                          'Failed to complete registration. Please try again.'
                                       );
                                     } finally {
                                       setIsSubmitting(false);

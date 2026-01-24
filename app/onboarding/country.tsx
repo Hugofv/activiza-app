@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -21,6 +20,7 @@ import type { CountryCode } from '@/lib/services/postalCodeService';
 
 import { Icon } from '@/components/ui/icon';
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 
 const COUNTRIES: {
@@ -46,6 +46,7 @@ const CountryScreen = () => {
     (formData.address?.country as CountryCode) || null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showError } = useToast();
 
   const handleBack = () => {
     router.back();
@@ -55,7 +56,7 @@ const CountryScreen = () => {
     if (!selectedCountry) return;
 
     const country = COUNTRIES.find((c) => c.code === selectedCountry);
-    
+
     // Update form data and save to API with step tracking (unified)
     setIsSubmitting(true);
     try {
@@ -84,9 +85,12 @@ const CountryScreen = () => {
       router.push('/onboarding/postalCode');
     } catch (error: any) {
       console.error('Failed to save country step:', error);
-      Alert.alert(
+      showError(
         t('common.error') || 'Error',
-        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+        error?.response?.data?.message ||
+          error?.message ||
+          t('onboarding.saveError') ||
+          'Failed to save. Please try again.'
       );
     } finally {
       setIsSubmitting(false);

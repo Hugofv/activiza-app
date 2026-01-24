@@ -51,6 +51,9 @@ export default {
     passwordMismatch: 'As senhas não coincidem',
   },
   close: 'Fechar',
+  error: 'Erro',
+  warning: 'Aviso',
+  success: 'Sucesso',
   // Error messages
   errors: {
     EMAIL_ALREADY_EXISTS: 'Este email já está cadastrado',

@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -17,6 +17,7 @@ import { passwordSchema } from '@/lib/validations/onboarding';
 
 import { Icon } from '@/components/ui/icon';
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 
 interface PasswordFormData {
@@ -31,6 +32,7 @@ const PasswordScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
+  const { showError } = useToast();
   const { formData, updateFormData } = useOnboardingForm();
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -99,7 +101,10 @@ const PasswordScreen = () => {
     const effectiveEmail = formData.email || emailFromParams;
 
     if (!effectiveEmail) {
-      Alert.alert('Error', 'Email is required. Please go back to email screen.');
+      showError(
+        t('common.errors.MISSING_REQUIRED_FIELDS') || 'Email is required.',
+        t('onboarding.email') || 'Email'
+      );
       return;
     }
 
@@ -127,9 +132,9 @@ const PasswordScreen = () => {
       router.push('/onboarding/codeEmail');
     } catch (error: any) {
       console.error('Registration error:', error);
-      Alert.alert(
-        'Registration Failed',
-        error?.message || 'Failed to create account. Please try again.'
+      showError(
+        t('common.errors.UNKNOWN_ERROR') || 'Registration Failed',
+        error?.message || t('onboarding.saveError') || 'Failed to create account. Please try again.'
       );
     } finally {
       setIsRegistering(false);

@@ -3,7 +3,6 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -23,6 +22,7 @@ import { resendVerificationCode, verifyEmail } from '@/lib/services/authService'
 import { codeSchema } from '@/lib/validations/onboarding';
 
 import { Typography } from '@/components/ui/typography';
+import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 
 interface CodeEmailFormData {
@@ -37,6 +37,7 @@ const CodeEmailScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { formData, updateFormData, updateStep } = useOnboardingForm();
+  const { showError, showSuccess } = useToast();
   const [resendTimer, setResendTimer] = useState(60);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -68,11 +69,6 @@ const CodeEmailScreen = () => {
   };
 
   const onSubmit = async (data: CodeEmailFormData) => {
-    if (!formData.email) {
-      Alert.alert('Error', 'Email is required. Please go back to email screen.');
-      return;
-    }
-
     setIsVerifying(true);
     try {
       // Verify email code with API (endpoint diferente)
@@ -85,15 +81,16 @@ const CodeEmailScreen = () => {
       // API marks email_verification as completed and returns the next step
       // After success, currentStep will be updated to the next step (not email_verification anymore)
       try {
-        console.log('📧 Calling updateStep for email_verification...');
-        const response = await updateStep('email_verification');
-        console.log('✅ Email verification step marked as completed');
-        console.log('📊 Response from updateStep:', response);
+        await updateStep('email_verification');
+
       } catch (stepError: any) {
         console.error('❌ Failed to update email verification step:', stepError);
-        Alert.alert(
+        showError(
           t('common.error') || 'Error',
-          stepError?.response?.data?.message || stepError?.message || t('onboarding.stepUpdateError') || 'Failed to update step. Please try again.'
+          stepError?.response?.data?.message ||
+            stepError?.message ||
+            t('onboarding.stepUpdateError') ||
+            'Failed to update step. Please try again.'
         );
         return; // Don't navigate if step update fails
       }
@@ -102,9 +99,12 @@ const CodeEmailScreen = () => {
       router.push('/onboarding/confirmEmail');
     } catch (error: any) {
       console.error('Email verification error:', error);
-      Alert.alert(
-        'Verification Failed',
-        error?.response?.data?.message || error?.message || 'Invalid verification code. Please try again.'
+      showError(
+        t('common.error') || 'Verification Failed',
+        error?.response?.data?.message ||
+          error?.message ||
+          t('onboarding.stepUpdateError') ||
+          'Invalid verification code. Please try again.'
       );
     } finally {
       setIsVerifying(false);
@@ -113,7 +113,10 @@ const CodeEmailScreen = () => {
 
   const handleResendCode = async () => {
     if (!formData.email) {
-      Alert.alert('Error', 'Email is required.');
+      showError(
+        t('common.errors.MISSING_REQUIRED_FIELDS') || 'Email is required.',
+        t('onboarding.email') || 'Email'
+      );
       return;
     }
 
@@ -125,12 +128,18 @@ const CodeEmailScreen = () => {
       // Reset timer
       setResendTimer(60);
 
-      Alert.alert('Success', 'Verification code sent to your email.');
+      showSuccess(
+        t('translation.toast.saved') || 'Success',
+        t('onboarding.emailCodeDescription') || 'Verification code sent to your email.'
+      );
     } catch (error: any) {
       console.error('Resend code error:', error);
-      Alert.alert(
-        'Failed to Resend',
-        error?.response?.data?.message || error?.message || 'Failed to resend verification code. Please try again.'
+      showError(
+        t('common.error') || 'Failed to Resend',
+        error?.response?.data?.message ||
+          error?.message ||
+          t('onboarding.stepUpdateError') ||
+          'Failed to resend verification code. Please try again.'
       );
     } finally {
       setIsResending(false);

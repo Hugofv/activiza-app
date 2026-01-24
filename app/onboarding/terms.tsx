@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -30,6 +29,7 @@ import { Typography } from '@/components/ui/typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -45,6 +45,7 @@ const TermsScreen = () => {
   const [termsModalOpen, setTermsModalOpen] = useState(false);
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showError } = useToast();
 
   const handleBack = () => {
     router.back();
@@ -62,9 +63,12 @@ const TermsScreen = () => {
         router.push('/onboarding/customization');
       } catch (error: any) {
         console.error('Failed to save terms step:', error);
-        Alert.alert(
+        showError(
           t('common.error') || 'Error',
-          error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+          error?.response?.data?.message ||
+            error?.message ||
+            t('onboarding.saveError') ||
+            'Failed to save. Please try again.'
         );
       } finally {
         setIsSubmitting(false);

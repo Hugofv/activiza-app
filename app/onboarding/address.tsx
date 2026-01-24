@@ -3,7 +3,6 @@ import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -25,6 +24,8 @@ import {
 } from '@/lib/services/postalCodeService';
 import { addressSchema } from '@/lib/validations/onboarding';
 
+import { useToast } from '@/lib/hooks/useToast';
+import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { useTranslation } from 'react-i18next';
 
 interface AddressFormData {
@@ -47,6 +48,7 @@ const AddressScreen = () => {
   const { t } = useTranslation();
   const { formData, updateFormData } = useOnboardingForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showError } = useToast();
   const countryCode =
     ((formData.address as any)?.countryCode as CountryCode) || 'BR';
   const postalCodeFormat = getPostalCodeFormat(countryCode);
@@ -156,10 +158,11 @@ const AddressScreen = () => {
       router.push('/onboarding/terms');
     } catch (error: any) {
       console.error('Failed to save address step:', error);
-      Alert.alert(
-        t('common.error') || 'Error',
-        error?.response?.data?.message || error?.message || t('onboarding.saveError') || 'Failed to save. Please try again.'
+      const apiMessage = getTranslatedError(
+        (error?.response?.data as any) || error,
+        t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+      showError(t('common.error') || 'Error', apiMessage);
     } finally {
       setIsSubmitting(false);
     }
