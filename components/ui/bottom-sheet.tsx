@@ -60,8 +60,17 @@ export function BottomSheet({
     })
     .onUpdate((event) => {
       const newTranslateY = context.value.y + event.translationY;
-      // Só permite arrastar para baixo (valores positivos)
-      translateY.value = Math.max(0, newTranslateY);
+      
+      // Se tentar arrastar para cima (valores negativos), aplica resistência
+      if (newTranslateY < 0) {
+        // Efeito rubber band: quanto mais arrasta, menor o movimento
+        const resistance = Math.abs(newTranslateY);
+        const damping = 3; // Quanto maior, mais resistência
+        translateY.value = -resistance / damping;
+      } else {
+        // Permite arrastar para baixo normalmente
+        translateY.value = newTranslateY;
+      }
     })
     .onEnd(() => {
       const shouldClose = translateY.value > SCREEN_HEIGHT * 0.2;
@@ -74,10 +83,11 @@ export function BottomSheet({
         });
         runOnJS(onClose)();
       } else {
+        // Sempre volta para a posição inicial (0)
         translateY.value = withSpring(0, {
-          damping: 25,
-          stiffness: 120,
-          mass: 0.8,
+          damping: 20,
+          stiffness: 150,
+          mass: 0.5,
         });
       }
     });

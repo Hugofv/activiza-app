@@ -1,0 +1,39 @@
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+
+import { Icon } from '@/components/ui/icon';
+import { Typography } from '@/components/ui/typography';
+
+interface OverdueAlertProps {
+  count: number;
+  onPress?: () => void;
+}
+
+export function OverdueAlert({ count, onPress }: OverdueAlertProps) {
+  const { t } = useTranslation();
+
+  if (count === 0) return null;
+
+  return (
+    <TouchableOpacity 
+      style={[styles.overdueAlert, { backgroundColor: '#FFF4E6' }]}
+      activeOpacity={0.7}
+      onPress={onPress}
+    >
+      <Icon name="information-circle" size={20} color="#F59E0B" />
+      <Typography variant="body2" style={{ color: '#92400E', marginLeft: 8, flex: 1 }}>
+        {count} {t('home.overduePayments')}
+      </Typography>
+      <Icon name="chevron-forward" size={20} color="#92400E" />
+    </TouchableOpacity>
+  );
+}
+
+const styles = StyleSheet.create({
+  overdueAlert: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 8,
+  },
+});
