@@ -18,6 +18,7 @@ import { passwordSchema } from '@/lib/validations/onboarding';
 import { Icon } from '@/components/ui/icon';
 import { Typography } from '@/components/ui/typography';
 import { useToast } from '@/lib/hooks/useToast';
+import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { useTranslation } from 'react-i18next';
 
 interface PasswordFormData {
@@ -132,9 +133,13 @@ const PasswordScreen = () => {
       router.push('/onboarding/codeEmail');
     } catch (error: any) {
       console.error('Registration error:', error);
+      const apiMessage = getTranslatedError(
+        (error?.response?.data as any) || error,
+        t('onboarding.saveError') || 'Failed to create account. Please try again.'
+      );
       showError(
-        t('common.errors.UNKNOWN_ERROR') || 'Registration Failed',
-        error?.message || t('onboarding.saveError') || 'Failed to create account. Please try again.'
+        t('common.error') || 'Error',
+        apiMessage
       );
     } finally {
       setIsRegistering(false);

@@ -6,6 +6,7 @@ import {
   IconChevronDown,
   IconChevronLeft,
   IconChevronRight,
+  IconChevronUp,
   IconCircle,
   IconCircleCheck,
   IconCircleX,
@@ -35,22 +36,23 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'chevron-forward': IconChevronRight,
   'chevron-right': IconChevronRight,
   'chevron-down': IconChevronDown,
+  'chevron-up': IconChevronUp,
   'arrow-forward': IconArrowRight,
   'arrow-right': IconArrowRight,
-  
+
   // Actions
   'checkmark': IconCheck,
   'check': IconCheck,
   'add': IconPlus,
   'plus': IconPlus,
   'square-rounded-plus': IconSquareRoundedPlusFilled,
-  
+
   // Visibility
   'eye-outline': IconEye,
   'eye': IconEye,
   'eye-off-outline': IconEyeOff,
   'eye-off': IconEyeOff,
-  
+
   // Status
   'hourglass-outline': IconHourglass,
   'hourglass': IconHourglass,
@@ -59,7 +61,7 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'information-circle': IconInfoCircle,
   'info-circle': IconInfoCircle,
   'warning': IconAlertTriangle,
-  
+
   // People
   'person': IconUser,
   'user-dollar': IconUserDollar,
@@ -67,19 +69,19 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'user': IconUser,
   'people': IconUsers,
   'users': IconUsers,
-  
+
   // Places
   'home': IconHomeFilled,
   'car': IconCar,
   'door-outline': IconDoor,
   'door': IconDoor,
-  
+
   // Business
   'cash-outline': IconCurrencyDollar,
   'currency-dollar': IconCurrencyDollar,
   'document-text-outline': IconFileText,
   'file-text': IconFileText,
-  
+
   // Shapes
   'ellipse-outline': IconCircle,
   'circle': IconCircle,
@@ -99,7 +101,7 @@ const Icon = React.forwardRef<any, IconProps>(
   ({ name, library, size = 24, color, style, ...props }, ref) => {
     // Get the Tabler icon component from the map
     const IconComponent = ICON_MAP[name as string];
-    
+
     // If icon not found, use a default or show warning
     if (!IconComponent) {
       console.warn(`Icon "${name}" not found in icon map. Using Circle as fallback.`);
@@ -109,7 +111,7 @@ const Icon = React.forwardRef<any, IconProps>(
         </View>
       );
     }
-    
+
     // Render the Tabler icon
     return (
       <View ref={ref} style={style}>

@@ -17,12 +17,107 @@ export interface DocumentFormatConfig {
 }
 
 /**
- * Get document format configuration based on country and type
+ * Get document format configuration based on document type (country is used as fallback)
  */
 export function getDocumentFormat(
   countryCode: CountryCode,
   documentType?: DocumentType
 ): DocumentFormatConfig {
+  // If document type is specified, use it directly (regardless of country)
+  if (documentType) {
+    switch (documentType) {
+      case 'cpf':
+        return {
+          mask: '000.000.000-00',
+          placeholder: '000.000.000-00',
+          maxLength: 14,
+          minLength: 11,
+          format: (value: string) => {
+            const numbers = value.replace(/\D/g, '').slice(0, 11);
+            if (numbers.length <= 3) return numbers;
+            if (numbers.length <= 6) return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
+            if (numbers.length <= 9) return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
+            return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9)}`;
+          },
+          normalize: (value: string) => value.replace(/\D/g, '').slice(0, 11),
+        };
+      case 'cnpj':
+        return {
+          mask: '00.000.000/0000-00',
+          placeholder: '00.000.000/0000-00',
+          maxLength: 18,
+          minLength: 14,
+          format: (value: string) => {
+            const numbers = value.replace(/\D/g, '').slice(0, 14);
+            if (numbers.length <= 2) return numbers;
+            if (numbers.length <= 5) return `${numbers.slice(0, 2)}.${numbers.slice(2)}`;
+            if (numbers.length <= 8) return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5)}`;
+            if (numbers.length <= 12) return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5, 8)}/${numbers.slice(8)}`;
+            return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5, 8)}/${numbers.slice(8, 12)}-${numbers.slice(12)}`;
+          },
+          normalize: (value: string) => value.replace(/\D/g, '').slice(0, 14),
+        };
+      case 'ssn':
+        return {
+          mask: '000-00-0000',
+          placeholder: '123-45-6789',
+          maxLength: 11,
+          minLength: 9,
+          format: (value: string) => {
+            const numbers = value.replace(/\D/g, '').slice(0, 9);
+            if (numbers.length <= 3) return numbers;
+            if (numbers.length <= 5) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+            return `${numbers.slice(0, 3)}-${numbers.slice(3, 5)}-${numbers.slice(5)}`;
+          },
+          normalize: (value: string) => value.replace(/\D/g, '').slice(0, 9),
+        };
+      case 'ein':
+        return {
+          mask: '00-0000000',
+          placeholder: '12-3456789',
+          maxLength: 10,
+          minLength: 9,
+          format: (value: string) => {
+            const numbers = value.replace(/\D/g, '').slice(0, 9);
+            if (numbers.length <= 2) return numbers;
+            return `${numbers.slice(0, 2)}-${numbers.slice(2)}`;
+          },
+          normalize: (value: string) => value.replace(/\D/g, '').slice(0, 9),
+        };
+      case 'ni':
+        return {
+          mask: 'AA000000A',
+          placeholder: 'AB123456C',
+          maxLength: 9,
+          minLength: 9,
+          format: (value: string) => {
+            const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 9);
+            return cleaned;
+          },
+          normalize: (value: string) => value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 9),
+        };
+      case 'crn':
+        return {
+          mask: '00000000',
+          placeholder: '12345678',
+          maxLength: 8,
+          minLength: 8,
+          format: (value: string) => value.replace(/\D/g, '').slice(0, 8),
+          normalize: (value: string) => value.replace(/\D/g, '').slice(0, 8),
+        };
+      case 'other':
+      default:
+        return {
+          mask: '0000000000',
+          placeholder: 'Document number',
+          maxLength: 30,
+          format: (value: string) => value.slice(0, 30),
+          normalize: (value: string) => value.replace(/\D/g, '').slice(0, 30),
+        };
+    }
+  }
+
+  // Fallback to country-based formatting when type is not specified
   switch (countryCode) {
     case 'BR':
       if (documentType === 'cpf') {
@@ -186,6 +281,37 @@ export function normalizeDocument(value: string, countryCode: CountryCode, docum
 export function formatDocument(value: string, countryCode: CountryCode, documentType?: DocumentType): string {
   const config = getDocumentFormat(countryCode, documentType);
   return config.format(value);
+}
+
+/**
+ * Get default document type for a country based on common usage
+ */
+export function getDefaultDocumentTypeForCountry(countryCode: CountryCode): DocumentType {
+  switch (countryCode) {
+    case 'BR':
+      return 'cpf'; // CPF is more common for individuals
+    case 'US':
+      return 'ssn'; // SSN is more common for individuals
+    case 'UK':
+      return 'ni'; // NI Number is more common for individuals
+    default:
+      return 'other';
+  }
+}
+
+/**
+ * Get all available document types (not limited by country)
+ */
+export function getAllDocumentTypes(): { value: DocumentType; label: string; labelKey: string }[] {
+  return [
+    { value: 'cpf', label: 'CPF', labelKey: 'documentTypeCPF' },
+    { value: 'cnpj', label: 'CNPJ', labelKey: 'documentTypeCNPJ' },
+    { value: 'ssn', label: 'SSN', labelKey: 'documentTypeSSN' },
+    { value: 'ein', label: 'EIN', labelKey: 'documentTypeEIN' },
+    { value: 'ni', label: 'NI Number', labelKey: 'documentTypeNI' },
+    { value: 'crn', label: 'CRN', labelKey: 'documentTypeCRN' },
+    { value: 'other', label: 'Other', labelKey: 'documentTypeOther' },
+  ];
 }
 
 /**

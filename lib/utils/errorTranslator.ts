@@ -15,7 +15,7 @@ import { ApiError } from '../types/apiTypes';
 export function getTranslatedError(error: ApiError | Error, fallback?: string): string {
   // Extract error code
   let errorCode: string | undefined;
-  
+
   if ('code' in error && error.code) {
     errorCode = error.code;
   } else if (error instanceof Error) {
@@ -27,7 +27,7 @@ export function getTranslatedError(error: ApiError | Error, fallback?: string): 
 
   // Get translation key
   const translationKey = `common.errors.${errorCode}`;
-  
+
   // Try to get translation
   const translatedMessage = i18n.t(translationKey, {
     defaultValue: undefined,
@@ -39,13 +39,53 @@ export function getTranslatedError(error: ApiError | Error, fallback?: string): 
     if (errorCode === 'MISSING_REQUIRED_FIELDS' && 'details' in error && error.details) {
       const missingFields = error.details.missingFields || error.details.missing_fields;
       if (missingFields) {
-        const fieldsList = Array.isArray(missingFields) 
-          ? missingFields.join(', ') 
+        const fieldsList = Array.isArray(missingFields)
+          ? missingFields.join(', ')
           : String(missingFields);
         return i18n.t(translationKey, { missingFields: fieldsList });
       }
     }
-    
+
+    // Handle validation errors with details array
+    if (errorCode === 'VALIDATION_ERROR' && 'details' in error && error.details) {
+      const details = error.details;
+      // Check if details is an array of validation errors
+      if (Array.isArray(details) && details.length > 0) {
+        // Get the first validation error message
+        const firstError = details[0];
+        if (firstError && typeof firstError === 'object' && 'message' in firstError) {
+          // Try to translate the specific validation code
+          const validationCode = firstError.code || firstError.validation;
+          const fieldPath = firstError.path;
+
+          // Build a more specific translation key (e.g., INVALID_EMAIL for email field with invalid_string)
+          if (validationCode && fieldPath && Array.isArray(fieldPath) && fieldPath.length > 0) {
+            const fieldName = fieldPath[0];
+            // For email field with invalid_string, use INVALID_EMAIL
+            if (fieldName === 'email' && validationCode === 'invalid_string') {
+              const emailKey = 'common.errors.INVALID_EMAIL';
+              const emailMessage = i18n.t(emailKey, { defaultValue: undefined });
+              if (emailMessage && emailMessage !== emailKey) {
+                return emailMessage;
+              }
+            }
+          }
+
+          if (validationCode) {
+            const validationKey = `common.errors.${validationCode.toUpperCase()}`;
+            const validationMessage = i18n.t(validationKey, { defaultValue: undefined });
+            if (validationMessage && validationMessage !== validationKey) {
+              return validationMessage;
+            }
+          }
+          // Fallback to the message from the API
+          if (typeof firstError.message === 'string') {
+            return firstError.message;
+          }
+        }
+      }
+    }
+
     return translatedMessage;
   }
 
