@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -15,8 +14,10 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { resendVerificationCode, verifyPhone } from '@/lib/services/authService';
 import { codeSchema } from '@/lib/validations/onboarding';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 interface CodeFormData {
@@ -58,10 +59,6 @@ const CodeContactScreen = () => {
     }
   }, [resendTimer]);
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const onSubmit = async (data: CodeFormData) => {
     if (!formData.phone?.phoneNumber) {
       showError(
@@ -101,7 +98,7 @@ const CodeContactScreen = () => {
       }
 
       // Continue to confirmation screen
-      router.push('/onboarding/confirmContact');
+      navigate('/onboarding/confirmContact');
     } catch (error: any) {
       console.error('Phone verification error:', error);
       showError(
@@ -166,14 +163,7 @@ const CodeContactScreen = () => {
             </View>
 
             {/* Back Button */}
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
-            />
+            <BackButton />
 
             {/* Title */}
             <Typography variant='h4' style={styles.title}>
@@ -220,7 +210,7 @@ const CodeContactScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

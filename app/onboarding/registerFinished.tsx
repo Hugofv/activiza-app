@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,6 +9,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import Illustration from '@/assets/images/registrationComplete.svg';
 import { Typography } from '@/components/ui/Typography';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -22,7 +22,7 @@ const RegisterFinishedScreen = () => {
 
   const handleGoToHome = () => {
     // Navigate directly to home tabs after completing onboarding
-    router.replace('/(tabs)/home');
+    navigate('/(tabs)/home');
   };
 
   return (
@@ -55,7 +55,7 @@ const RegisterFinishedScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

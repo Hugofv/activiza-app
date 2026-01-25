@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -22,9 +21,11 @@ import { createDocumentSchema, emailSchema, nameSchema, phoneSchema } from '@/li
 import type { InferType } from 'yup';
 import * as yup from 'yup';
 
+import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { getCurrentUser } from '@/lib/services/authService';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 interface CustomizationFormData {
@@ -117,10 +118,6 @@ const CustomizationScreen = () => {
     }
   }, [userName, userEmail, userPhone, userDocument, documentType, reset]);
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const onSubmit = async (data: CustomizationFormData) => {
     // Update form data and save to API with step tracking (unified)
     // Send Account (business*) fields directly to API
@@ -135,7 +132,7 @@ const CustomizationScreen = () => {
         } as any, // Cast to any to allow business* fields for API (Account table)
         'customization'
       );
-      router.push('/onboarding/options');
+      navigate('/onboarding/options');
     } catch (error: any) {
       console.error('Failed to save customization step:', error);
       showError(
@@ -264,7 +261,7 @@ const CustomizationScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

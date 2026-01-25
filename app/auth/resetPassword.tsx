@@ -1,11 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
@@ -16,6 +17,7 @@ import { useToast } from '@/lib/hooks/useToast';
 import { resetPassword } from '@/lib/services/authService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { passwordSchema } from '@/lib/validations/onboarding';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 interface ResetPasswordFormData {
@@ -90,10 +92,6 @@ const ResetPasswordScreen = () => {
     },
   ];
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!token) {
       showError(
@@ -109,10 +107,10 @@ const ResetPasswordScreen = () => {
       showSuccess(
         t('auth.passwordResetSuccess') || 'Success',
         t('auth.passwordResetSuccessMessage') ||
-          'Your password has been reset successfully. You can now login with your new password.'
+        'Your password has been reset successfully. You can now login with your new password.'
       );
       // Navigate to login
-      router.replace('/auth/email');
+      navigate('/auth/email');
     } catch (error: any) {
       console.error('Reset password error:', error);
       const apiMessage = getTranslatedError(
@@ -138,14 +136,7 @@ const ResetPasswordScreen = () => {
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Back Button */}
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
-            />
+            <BackButton />
 
             {/* Title */}
             <Typography variant='h4'>
@@ -263,7 +254,7 @@ const ResetPasswordScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
@@ -13,10 +12,12 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { nameSchema } from '@/lib/validations/onboarding';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 interface NameFormData {
@@ -46,16 +47,12 @@ const NameScreen = () => {
     mode: 'onChange',
   });
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const onSubmit = async (data: NameFormData) => {
     // Update form data and save to API with step tracking (unified)
     setIsSubmitting(true);
     try {
       await updateFormData({ name: data.name }, 'name');
-      router.push('/onboarding/contact');
+      navigate('/onboarding/contact');
     } catch (error: any) {
       console.error('Failed to save name step:', error);
       const apiMessage = getTranslatedError(
@@ -86,14 +83,7 @@ const NameScreen = () => {
             </View>
 
             {/* Back Button */}
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
-            />
+            <BackButton />
 
             {/* Title */}
             <Typography variant='h4'>{t('onboarding.name')}</Typography>
@@ -122,7 +112,7 @@ const NameScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

@@ -10,6 +10,7 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { useNewClientForm } from './_context';
 
 export default function ReliabilityScreen() {
@@ -52,15 +53,7 @@ export default function ReliabilityScreen() {
           <ThemedView style={styles.content}>
             {/* Header */}
             <View style={styles.header}>
-              <IconButton
-                variant='secondary'
-                shape='cylinder'
-                size='md'
-                icon='chevron-back'
-                iconSize={32}
-                iconColor={colors.primaryForeground}
-                onPress={handleBack}
-              />
+              <BackButton />
               <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
                 Novo cliente
               </Typography>
@@ -102,8 +95,7 @@ export default function ReliabilityScreen() {
           <View style={styles.buttonContainer}>
             <IconButton
               variant="primary"
-              shape="cylinder"
-              size="lg"
+              size="md"
               icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}

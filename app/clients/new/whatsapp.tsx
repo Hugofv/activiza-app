@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { PhoneInput, type PhoneInputValue } from '@/components/ui/PhoneInput';
 import { Typography } from '@/components/ui/Typography';
@@ -89,15 +90,7 @@ export default function WhatsAppScreen() {
           <ThemedView style={styles.content}>
             {/* Header */}
             <View style={styles.header}>
-              <IconButton
-                variant='secondary'
-                shape='cylinder'
-                size='md'
-                icon='chevron-back'
-                iconSize={32}
-                iconColor={colors.primaryForeground}
-                onPress={handleBack}
-              />
+              <BackButton />
               <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
                 Novo cliente
               </Typography>
@@ -125,8 +118,7 @@ export default function WhatsAppScreen() {
           <View style={styles.buttonContainer}>
             <IconButton
               variant="primary"
-              shape="cylinder"
-              size="lg"
+              size="md"
               icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}

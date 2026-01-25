@@ -4,6 +4,7 @@ import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleShe
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
@@ -22,10 +23,6 @@ export default function SummaryScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showSuccess, showError } = useToast();
   const queryClient = useQueryClient();
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const handleConfirm = async () => {
     setIsSubmitting(true);
@@ -98,15 +95,7 @@ export default function SummaryScreen() {
           <ThemedView style={styles.content}>
             {/* Header */}
             <View style={styles.header}>
-              <IconButton
-                variant='secondary'
-                shape='cylinder'
-                size='md'
-                icon='chevron-back'
-                iconSize={32}
-                iconColor={colors.primaryForeground}
-                onPress={handleBack}
-              />
+              <BackButton />
               <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
                 Novo cliente
               </Typography>
@@ -230,8 +219,7 @@ export default function SummaryScreen() {
             ) : (
               <IconButton
                 variant="primary"
-                shape="cylinder"
-                size="lg"
+                size="md"
                 icon="check"
                 iconSize={32}
                 iconColor={colors.primaryForeground}

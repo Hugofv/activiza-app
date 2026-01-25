@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,8 +6,10 @@ import { IconButton } from '@/components/ui/IconButton';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -19,13 +20,9 @@ const ConfirmEmailScreen = () => {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const handleContinue = () => {
     // New flow: After email verification, go to Document (optional, then Name)
-    router.push('/onboarding/document');
+    navigate('/onboarding/document');
   };
 
   return (
@@ -37,14 +34,7 @@ const ConfirmEmailScreen = () => {
         <ThemedView style={styles.content}>
           {/* Back Button */}
           <View style={styles.backButtonContainer}>
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
-            />
+            <BackButton />
           </View>
 
           {/* Checkmark Icon and Text */}
@@ -76,8 +66,7 @@ const ConfirmEmailScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='default'
-              width='lg'
+              size='md'
               icon='checkmark'
               iconSize={32}
               iconColor={colors.primaryForeground}

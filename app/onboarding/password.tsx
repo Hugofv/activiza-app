@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
@@ -15,10 +15,12 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { register } from '@/lib/services/authService';
 import { passwordSchema } from '@/lib/validations/onboarding';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 interface PasswordFormData {
@@ -94,10 +96,6 @@ const PasswordScreen = () => {
     },
   ];
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const onSubmit = async (data: PasswordFormData) => {
     const effectiveEmail = formData.email || emailFromParams;
 
@@ -130,7 +128,7 @@ const PasswordScreen = () => {
       // Continue to next step (email verification)
       // User is now authenticated, so onboarding routes are accessible
       console.log('📧 Calling updateStep for email_verification...');
-      router.push('/onboarding/codeEmail');
+      navigate('/onboarding/codeEmail');
     } catch (error: any) {
       console.error('Registration error:', error);
       const apiMessage = getTranslatedError(
@@ -164,14 +162,7 @@ const PasswordScreen = () => {
             </View>
 
             {/* Back Button */}
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
-            />
+            <BackButton />
 
             {/* Title */}
             <Typography variant='h4'>{t('onboarding.password')}</Typography>
@@ -271,7 +262,7 @@ const PasswordScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

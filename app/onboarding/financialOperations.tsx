@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -10,6 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { ListCheck } from '@/components/ui/ListCheck';
 import { Progress } from '@/components/ui/Progress';
@@ -19,6 +19,7 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 // Numeric values represent the maximum operations per month
@@ -79,10 +80,6 @@ const FinancialOperationsScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showError } = useToast();
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const handleContinue = async () => {
     if (selectedOption === null) return;
 
@@ -90,7 +87,7 @@ const FinancialOperationsScreen = () => {
     setIsSubmitting(true);
     try {
       await updateFormData({ financialOperations: selectedOption }, 'financial_operations');
-      router.push('/onboarding/capital');
+      navigate('/onboarding/capital');
     } catch (error: any) {
       console.error('Failed to save financialOperations step:', error);
       const apiMessage = getTranslatedError(
@@ -126,14 +123,7 @@ const FinancialOperationsScreen = () => {
               </View>
 
               {/* Back Button */}
-              <IconButton
-                variant='secondary'
-                size='sm'
-                icon='chevron-back'
-                iconSize={32}
-                iconColor={colors.primary}
-                onPress={handleBack}
-              />
+              <BackButton />
 
               {/* Title */}
               <Typography variant='h4' style={styles.title}>
@@ -163,7 +153,7 @@ const FinancialOperationsScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

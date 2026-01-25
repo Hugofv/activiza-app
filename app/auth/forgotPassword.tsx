@@ -1,11 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { Typography } from '@/components/ui/Typography';
@@ -15,6 +16,7 @@ import { useToast } from '@/lib/hooks/useToast';
 import { requestPasswordReset } from '@/lib/services/authService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { emailSchema } from '@/lib/validations/onboarding';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 interface ForgotPasswordFormData {
@@ -45,10 +47,6 @@ const ForgotPasswordScreen = () => {
     mode: 'onChange',
   });
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true);
     try {
@@ -56,10 +54,10 @@ const ForgotPasswordScreen = () => {
       showSuccess(
         t('auth.forgotPasswordSuccess') || 'Success',
         t('auth.forgotPasswordSuccessMessage', { email: data.email }) ||
-          `A password reset link has been sent to ${data.email}. Please check your email and click on the link to reset your password.`
+        `A password reset link has been sent to ${data.email}. Please check your email and click on the link to reset your password.`
       );
       // Navigate back to login - user will click the link in email
-      router.back();
+      navigate('/auth/email');
     } catch (error: any) {
       console.error('Request password reset error:', error);
       const apiMessage = getTranslatedError(
@@ -85,14 +83,7 @@ const ForgotPasswordScreen = () => {
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Back Button */}
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
-            />
+            <BackButton />
 
             {/* Title */}
             <Typography variant='h4'>{t('auth.forgotPassword') || 'Forgot Password'}</Typography>
@@ -130,7 +121,7 @@ const ForgotPasswordScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

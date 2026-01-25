@@ -7,6 +7,7 @@ import { IconButton } from '@/components/ui/IconButton';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
 import { useTranslation } from 'react-i18next';
@@ -18,10 +19,6 @@ const ConfirmContactScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const handleContinue = () => {
     // Navigate to Active Customers
@@ -37,14 +34,7 @@ const ConfirmContactScreen = () => {
         <ThemedView style={styles.content}>
           {/* Back Button */}
           <View style={styles.backButtonContainer}>
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
-            />
+            <BackButton />
           </View>
 
           {/* Checkmark Icon and Text */}
@@ -77,7 +67,7 @@ const ConfirmContactScreen = () => {
             <IconButton
               variant='primary'
               size='default'
-              width='lg'
+              width='md'
               icon='checkmark'
               iconSize={32}
               iconColor={colors.primaryForeground}

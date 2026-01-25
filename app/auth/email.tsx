@@ -14,7 +14,9 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { checkEmailStatus } from '@/lib/services/authService';
 import { emailSchema } from '@/lib/validations/onboarding';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { Typography } from '@/components/ui/Typography';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 interface EmailFormData {
@@ -42,10 +44,6 @@ const EmailScreen = () => {
     },
     mode: 'onChange',
   });
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const onSubmit = async (data: EmailFormData) => {
     setIsChecking(true);
@@ -114,7 +112,7 @@ const EmailScreen = () => {
       console.error('Check email status error:', error);
       // On error, assume new user and continue with onboarding
       updateFormData({ email: data.email });
-      router.push('/onboarding/password');
+      navigate('/onboarding/password');
     } finally {
       setIsChecking(false);
     }
@@ -134,14 +132,7 @@ const EmailScreen = () => {
           <ThemedView style={styles.content}>
 
             {/* Back Button */}
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
-            />
+            <BackButton />
 
             {/* Title */}
             <Typography variant='h4'>{t('onboarding.email')}</Typography>
@@ -173,7 +164,7 @@ const EmailScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -32,6 +31,7 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -58,7 +58,7 @@ const TermsScreen = () => {
           termsAccepted: true,
           privacyAccepted: true,
         }, 'terms');
-        router.push('/onboarding/customization');
+        navigate('/onboarding/customization');
       } catch (error: any) {
         console.error('Failed to save terms step:', error);
         const apiMessage = getTranslatedError(
@@ -240,7 +240,7 @@ const TermsScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

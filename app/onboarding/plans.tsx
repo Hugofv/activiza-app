@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { router } from 'expo-router';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -241,7 +241,7 @@ const PlansScreen = () => {
                                     try {
                                       // Submit the complete onboarding form with selected plan ID
                                       await submitFormData({ planId });
-                                      router.push('/onboarding/registerFinished');
+                                      navigate('/onboarding/registerFinished');
                                     } catch (error: any) {
                                       console.error('Failed to finish onboarding:', error);
                                       // Log detailed error information

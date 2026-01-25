@@ -6,6 +6,7 @@ import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { Typography } from '@/components/ui/Typography';
@@ -51,10 +52,6 @@ const AuthPasswordScreen = () => {
     mode: 'onChange',
   });
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const onSubmit = async (data: PasswordFormData) => {
     if (!email) {
       showError(
@@ -98,14 +95,7 @@ const AuthPasswordScreen = () => {
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Back Button */}
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
-            />
+            <BackButton />
 
             {/* Title */}
             <Typography variant='h4'>{t('onboarding.enterPassword')}</Typography>
@@ -197,7 +187,7 @@ const AuthPasswordScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -26,8 +25,10 @@ import type { CountryCode } from '@/lib/services/postalCodeService';
 import { detectCountryFromLocale } from '@/lib/utils/geolocation';
 import { createDocumentSchema } from '@/lib/validations/onboarding';
 
+import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 interface DocumentFormData {
@@ -179,10 +180,6 @@ const DocumentScreen = () => {
     [watchedDocument, countryCode, documentType, setValue, trigger]
   );
 
-  const handleBack = useCallback(() => {
-    router.back();
-  }, []);
-
   const onSubmit = useCallback(
     async (data: DocumentFormData) => {
       setIsSubmitting(true);
@@ -194,7 +191,7 @@ const DocumentScreen = () => {
           },
           'document'
         );
-        router.push('/onboarding/name');
+        navigate('/onboarding/name');
       } catch (error: any) {
         console.error('Failed to save document step:', error);
         showError(
@@ -294,7 +291,7 @@ const DocumentScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

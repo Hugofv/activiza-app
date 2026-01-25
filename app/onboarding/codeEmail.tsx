@@ -21,6 +21,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { resendVerificationCode, verifyEmail } from '@/lib/services/authService';
 import { codeSchema } from '@/lib/validations/onboarding';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { useTranslation } from 'react-i18next';
@@ -63,10 +64,6 @@ const CodeEmailScreen = () => {
       return () => clearTimeout(timer);
     }
   }, [resendTimer]);
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const onSubmit = async (data: CodeEmailFormData) => {
     setIsVerifying(true);
@@ -164,14 +161,7 @@ const CodeEmailScreen = () => {
             </View>
 
             {/* Back Button */}
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
-            />
+            <BackButton />
 
             {/* Title */}
             <Typography variant='h4' style={styles.title}>
@@ -213,7 +203,7 @@ const CodeEmailScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}

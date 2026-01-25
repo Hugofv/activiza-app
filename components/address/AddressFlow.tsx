@@ -267,7 +267,7 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
         {stage === 'country' && (
           <IconButton
             variant='primary'
-            size='lg'
+            size='md'
             icon='arrow-forward'
             iconSize={32}
             iconColor={colors.primaryForeground}
@@ -280,7 +280,7 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
         {stage === 'postalCode' && (
           <IconButton
             variant='primary'
-            size='lg'
+            size='md'
             icon='arrow-forward'
             iconSize={32}
             iconColor={colors.primaryForeground}
@@ -293,7 +293,7 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
         {stage === 'address' && (
           <IconButton
             variant='primary'
-            size='lg'
+            size='md'
             icon='arrow-forward'
             iconSize={32}
             iconColor={colors.primaryForeground}

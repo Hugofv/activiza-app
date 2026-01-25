@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
@@ -15,10 +14,12 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { phoneSchema } from '@/lib/validations/onboarding';
 import type { InferType } from 'yup';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { sendVerificationCode } from '@/lib/services/authService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
+import { navigate } from 'expo-router/build/global-state/routing';
 import { useTranslation } from 'react-i18next';
 
 type ContactFormData = InferType<typeof phoneSchema>;
@@ -46,10 +47,6 @@ const ContactScreen = () => {
     mode: 'onChange',
   });
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const onSubmit = async (data: ContactFormData) => {
     // Update form data and save to API with step tracking (unified)
     // Save country and countryCode in meta
@@ -57,12 +54,12 @@ const ContactScreen = () => {
     try {
       const phoneData = data.phone
         ? {
-            ...data.phone,
-            meta: {
-              country: data.phone.country,
-              countryCode: data.phone.countryCode,
-            },
-          }
+          ...data.phone,
+          meta: {
+            country: data.phone.country,
+            countryCode: data.phone.countryCode,
+          },
+        }
         : null;
 
       await updateFormData({ phone: phoneData as any }, 'contact');
@@ -80,12 +77,12 @@ const ContactScreen = () => {
           showWarning(
             t('common.warning') || 'Warning',
             t('onboarding.codeSendError') ||
-              'Failed to send verification code. You can resend it on the next screen.'
+            'Failed to send verification code. You can resend it on the next screen.'
           );
         }
       }
 
-      router.push('/onboarding/codeContact');
+      navigate('/onboarding/codeContact');
     } catch (error: any) {
       console.error('Failed to save contact step:', error);
       const apiMessage = getTranslatedError(
@@ -116,13 +113,7 @@ const ContactScreen = () => {
             </View>
 
             {/* Back Button */}
-            <IconButton
-              variant='secondary'
-              size='sm'
-              icon='chevron-back'
-              iconSize={32}
-              iconColor={colors.primary}
-              onPress={handleBack}
+            <BackButton
             />
 
             {/* Title */}
@@ -140,7 +131,7 @@ const ContactScreen = () => {
           <View style={styles.buttonContainer}>
             <IconButton
               variant='primary'
-              size='lg'
+              size='md'
               icon='arrow-forward'
               iconSize={32}
               iconColor={colors.primaryForeground}
