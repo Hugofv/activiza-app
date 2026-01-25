@@ -53,11 +53,11 @@ export function CancelButton() {
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" onPress={() => setCancelDialogOpen(false)}>
+            <Button variant="outline" size='sm' onPress={() => setCancelDialogOpen(false)}>
               {t('clients.cancelKeepButton')}
             </Button>
           </DialogClose>
-          <Button variant="error" onPress={handleCancel}>
+          <Button variant="error" size='sm' onPress={handleCancel}>
             {t('clients.cancelConfirmButton')}
           </Button>
         </DialogFooter>

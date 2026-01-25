@@ -45,20 +45,21 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
   ({ className, variant = 'primary', size, children, textProps, style, disabled, loading, ...props }, ref) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
-    
+
     // Disable button when loading
     const isDisabled = disabled || loading;
 
     // Get variant-specific styles
     const getVariantStyle = (): ViewStyle => {
-      const height = size === 'sm' ? 45 : 56;
+      const height = size === 'sm' ? 40 : 50;
       const baseStyle: ViewStyle = {
         borderRadius: 99, // rounded-[99px] from Figma
         minHeight: height, // Ensure minimum height
+        paddingHorizontal: 16,
         alignItems: 'center',
         justifyContent: 'center',
       };
-      
+
       // Handle width based on size
       if (size === 'full') {
         baseStyle.width = '100%';
@@ -68,7 +69,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
         // This prevents circular buttons when text is short
         baseStyle.minWidth = height + 32; // Add extra width to ensure pill shape
       }
-      
+
       switch (variant) {
         case 'primary':
           baseStyle.backgroundColor = colors.primary; // Green (#a7e203)
@@ -116,7 +117,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
             baseStyle.opacity = 0.5;
           }
       }
-      
+
       return baseStyle;
     };
 
@@ -152,20 +153,20 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
         ref={ref}
         disabled={isDisabled}
         {...props}>
-          {loading ? (
-            <ActivityIndicator 
-              size="small" 
-              color={textColor}
-            />
-          ) : typeof children === 'string' ? (
-            <Typography 
-              variant="lead"
-              style={{ color: textColor }}>
-              {children}
-            </Typography>
-          ) : (
-            children
-          )}
+        {loading ? (
+          <ActivityIndicator
+            size="small"
+            color={textColor}
+          />
+        ) : typeof children === 'string' ? (
+          <Typography
+            variant='body1Medium'
+            style={{ color: textColor, fontSize: size === 'sm' ? 14 : 16 }}>
+            {children}
+          </Typography>
+        ) : (
+          children
+        )}
       </Pressable>
     );
   }

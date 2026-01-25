@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
-import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -35,15 +35,15 @@ export default function SummaryScreen() {
         email: formData.email,
         address: formData.address
           ? {
-              postalCode: formData.address.postalCode,
-              street: formData.address.street,
-              neighborhood: formData.address.neighborhood,
-              city: formData.address.city,
-              state: formData.address.state,
-              country: formData.address.country,
-              number: formData.address.number,
-              complement: formData.address.complement,
-            }
+            postalCode: formData.address.postalCode,
+            street: formData.address.street,
+            neighborhood: formData.address.neighborhood,
+            city: formData.address.city,
+            state: formData.address.state,
+            country: formData.address.country,
+            number: formData.address.number,
+            complement: formData.address.complement,
+          }
           : undefined,
         // Additional fields
         observation: formData.observation,
@@ -207,22 +207,14 @@ export default function SummaryScreen() {
 
           {/* Confirm Button */}
           <View style={styles.buttonContainer}>
-            {isSubmitting ? (
-              <ActivityIndicator size="large" color={colors.primary} />
-            ) : (
-              <IconButton
-                variant="primary"
-                size="md"
-                icon="check"
-                iconSize={32}
-                iconColor={colors.primaryForeground}
-                onPress={handleConfirm}
-                disabled={isSubmitting}
-              />
-            )}
-            <Typography variant="body1" style={[styles.buttonLabel, { color: colors.text }]}>
+            <Button
+              variant="primary"
+              onPress={handleConfirm}
+              disabled={isSubmitting}
+              loading={isSubmitting}
+            >
               {t('clients.summaryConfirm')}
-            </Typography>
+            </Button>
           </View>
         </ThemedView>
       </KeyboardAvoidingView>

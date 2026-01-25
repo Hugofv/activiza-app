@@ -22,7 +22,9 @@ export default function NewClientLayout() {
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
         {/* Shared Header */}
         <View style={[styles.header, { backgroundColor: colors.background }]}>
-          <BackButton />
+          <View style={styles.headerLeft}>
+            <BackButton />
+          </View>
           <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
             {t('clients.newClient')}
           </Typography>
@@ -56,13 +58,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerLeft: {
+    width: 80,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingTop: 0,
     paddingHorizontal: 24,
-    paddingBottom: 20,
+    paddingBottom: 26,
   },
   headerTitle: {
     fontSize: 18,
