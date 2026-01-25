@@ -30,6 +30,7 @@ import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
+import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -63,13 +64,11 @@ const TermsScreen = () => {
         router.push('/onboarding/customization');
       } catch (error: any) {
         console.error('Failed to save terms step:', error);
-        showError(
-          t('common.error') || 'Error',
-          error?.response?.data?.message ||
-            error?.message ||
-            t('onboarding.saveError') ||
-            'Failed to save. Please try again.'
+        const apiMessage = getTranslatedError(
+          (error?.response?.data as any) || error,
+          t('onboarding.saveError') || 'Failed to save. Please try again.'
         );
+        showError(t('common.error') || 'Error', apiMessage);
       } finally {
         setIsSubmitting(false);
       }

@@ -155,14 +155,14 @@ function TabLayoutContent() {
           }}
         />
         <Tabs.Screen
-          name="contacts"
+          name="clients"
           options={{
-            title: t('tabs.contacts') || 'Contatos',
+            title: t('tabs.clients') || 'Clientes',
             tabBarButton: (props) => (
               <TabBarItem
                 {...props}
                 icon="people"
-                routeName="contacts"
+                routeName="clients"
                 color={colors.icon}
               />
             ),

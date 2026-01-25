@@ -187,22 +187,6 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='country'
-          options={{
-            headerShown: false,
-            animation: 'slide_from_right',
-            animationDuration: 300,
-          }}
-        />
-        <Stack.Screen
-          name='postalCode'
-          options={{
-            headerShown: false,
-            animation: 'slide_from_right',
-            animationDuration: 300,
-          }}
-        />
-        <Stack.Screen
           name='address'
           options={{
             headerShown: false,

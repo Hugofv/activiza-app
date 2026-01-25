@@ -1,6 +1,7 @@
 import {
   IconAlertTriangle,
   IconArrowRight,
+  IconCalendar,
   IconCar,
   IconCheck,
   IconChevronDown,
@@ -21,6 +22,7 @@ import {
   IconPlus,
   IconReceipt2,
   IconSquareRoundedPlusFilled,
+  IconStar,
   IconUser,
   IconUserDollar,
   IconUsers
@@ -61,6 +63,8 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'information-circle': IconInfoCircle,
   'info-circle': IconInfoCircle,
   'warning': IconAlertTriangle,
+  'star': IconStar,
+  'calendar': IconCalendar,
 
   // People
   'person': IconUser,

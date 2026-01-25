@@ -16,9 +16,7 @@ export type OnboardingStepKey =
   | 'financial_operations'
   | 'working_capital'
   | 'business_duration'
-  | 'country'
-  | 'postal_code'
-  | 'address'
+  | 'address' // Unified address screen (includes country, postal_code, and address stages)
   | 'terms'
   | 'customization'
   | 'options'
@@ -47,9 +45,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   { key: 'financial_operations', route: '/onboarding/financialOperations', apiStepName: 'financial_operations', requiresAuth: true, isVerificationStep: false },
   { key: 'working_capital', route: '/onboarding/capital', apiStepName: 'working_capital', requiresAuth: true, isVerificationStep: false },
   { key: 'business_duration', route: '/onboarding/businessDuration', apiStepName: 'business_duration', requiresAuth: true, isVerificationStep: false },
-  { key: 'country', route: '/onboarding/country', apiStepName: 'country', requiresAuth: true, isVerificationStep: false },
-  { key: 'postal_code', route: '/onboarding/postalCode', apiStepName: 'postal_code', requiresAuth: true, isVerificationStep: false },
-  { key: 'address', route: '/onboarding/address', apiStepName: 'address', requiresAuth: true, isVerificationStep: false },
+  { key: 'address', route: '/onboarding/address', apiStepName: 'address', requiresAuth: true, isVerificationStep: false }, // Unified: handles country, postal_code, and address stages internally
   { key: 'terms', route: '/onboarding/terms', apiStepName: 'terms', requiresAuth: true, isVerificationStep: false },
   { key: 'customization', route: '/onboarding/customization', apiStepName: 'customization', requiresAuth: true, isVerificationStep: false },
   { key: 'options', route: '/onboarding/options', apiStepName: 'options', requiresAuth: true, isVerificationStep: false },
@@ -122,10 +118,10 @@ export function isStepCompleted(
   currentStep: OnboardingStepKey | null
 ): boolean {
   if (!currentStep) return false;
-  
+
   const currentIndex = getStepIndex(currentStep);
   const checkIndex = getStepIndex(stepToCheck);
-  
+
   // If step to check is before current step, it's completed
   return checkIndex < currentIndex;
 }
@@ -146,7 +142,7 @@ export function getCompletedSteps(
   currentStep: OnboardingStepKey | null
 ): OnboardingStepKey[] {
   if (!currentStep) return [];
-  
+
   const currentIndex = getStepIndex(currentStep);
   return ONBOARDING_STEPS.slice(0, currentIndex).map(step => step.key);
 }
@@ -158,10 +154,10 @@ export function getLastCompletedStep(
   currentStep: OnboardingStepKey | null
 ): OnboardingStepKey | null {
   if (!currentStep) return null;
-  
+
   const currentIndex = getStepIndex(currentStep);
   if (currentIndex === 0) return null;
-  
+
   return ONBOARDING_STEPS[currentIndex - 1].key;
 }
 

@@ -44,6 +44,15 @@ export const ENDPOINTS = {
   MODULES: {
     GET: `${PREFIX}/modules`,
   },
+
+  // Clients endpoints
+  CLIENTS: {
+    GET: `${PREFIX}/clients`,
+    GET_BY_ID: (id: string) => `${PREFIX}/clients/${id}`,
+    CREATE: `${PREFIX}/clients`,
+    UPDATE: (id: string) => `${PREFIX}/clients/${id}`,
+    DELETE: (id: string) => `${PREFIX}/clients/${id}`,
+  },
 } as const;
 
 // Request timeout (ms)

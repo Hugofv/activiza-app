@@ -18,6 +18,7 @@ import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
+import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { useTranslation } from 'react-i18next';
 
 // Numeric values represent the maximum number of active customers
@@ -74,13 +75,11 @@ const ActiveCustomersScreen = () => {
       router.push('/onboarding/financialOperations');
     } catch (error: any) {
       console.error('Failed to save activeCustomers step:', error);
-      showError(
-        t('common.error') || 'Error',
-        error?.response?.data?.message ||
-          error?.message ||
-          t('onboarding.saveError') ||
-          'Failed to save. Please try again.'
+      const apiMessage = getTranslatedError(
+        (error?.response?.data as any) || error,
+        t('onboarding.saveError') || 'Failed to save. Please try again.'
       );
+      showError(t('common.error') || 'Error', apiMessage);
     } finally {
       setIsSubmitting(false);
     }

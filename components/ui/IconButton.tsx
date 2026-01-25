@@ -17,16 +17,19 @@ const iconButtonVariants = cva(
         error: '',
         outline: 'border border-input bg-background',
         ghost: '',
+        rounded: '',
       },
       size: {
         sm: 'h-[40px]',
-        default: 'h-[56px]',
+        md: 'h-[56px]',
         lg: 'h-[80px]',
+        default: 'h-[56px]',
       },
       width: {
         sm: 'w-[40px]',
-        default: 'w-[56px]',
+        md: 'w-[56px]',
         lg: 'w-[80px]',
+        default: 'w-[56px]',
       },
     },
     defaultVariants: {
@@ -43,7 +46,7 @@ export interface IconButtonProps
   iconSize?: number;
   iconColor?: string;
   className?: string;
-  width?: 'sm' | 'default' | 'lg';
+  width?: 'sm' | 'md' | 'lg' | 'default';
   loading?: boolean;
 }
 
@@ -69,7 +72,7 @@ const IconButton = React.forwardRef<
       ) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
-    
+
     // Disable button when loading
     const isDisabled = disabled || loading;
 
@@ -80,33 +83,59 @@ const IconButton = React.forwardRef<
         justifyContent: 'center',
       };
 
-      // Height is always 56px for icon buttons (matches original Button component)
-      // This ensures buttons are rectangular (width ≠ height) to create pill shapes, not circles
-      baseStyle.height = 56;
-      baseStyle.minHeight = 56;
+      // Determine actual size (handle 'default' as 'md')
+      const actualSize = size === 'default' ? 'md' : size;
 
-      // Handle width - can be different from height for rectangular buttons
-      // If width is not specified, it matches the size prop
-      const widthSize = width || size;
+      // For rounded variant, always make it circular (width = height)
+      // For other variants, can be rectangular
+      const isRounded = variant === 'rounded';
+      const widthSize = isRounded ? actualSize : (width || actualSize);
+
+      // Set height based on size
+      switch (actualSize) {
+        case 'sm':
+          baseStyle.height = 40;
+          baseStyle.minHeight = 40;
+          break;
+        case 'md':
+          baseStyle.height = 56;
+          baseStyle.minHeight = 56;
+          break;
+        case 'lg':
+          baseStyle.height = 80;
+          baseStyle.minHeight = 80;
+          break;
+        default:
+          baseStyle.height = 56;
+          baseStyle.minHeight = 56;
+      }
+
+      // Set width
       switch (widthSize) {
         case 'sm':
           baseStyle.width = 40;
           baseStyle.minWidth = 40;
           break;
+        case 'md':
+          baseStyle.width = 56;
+          baseStyle.minWidth = 56;
+          break;
         case 'lg':
           baseStyle.width = 80;
           baseStyle.minWidth = 80;
-          // Add horizontal padding for wider buttons to better center the icon
-          baseStyle.paddingHorizontal = 24;
           break;
         default:
           baseStyle.width = 56;
           baseStyle.minWidth = 56;
       }
 
-      // Use borderRadius: 99 like the original Button component
-      // When width = height, this creates a circle
-      // When width ≠ height, this creates a pill/rounded rectangle shape
+      // Add horizontal padding for wider rectangular buttons (not rounded)
+      if (!isRounded && widthSize === 'lg') {
+        baseStyle.paddingHorizontal = 24;
+      }
+
+      // Use borderRadius: 99 for rounded buttons (perfect circle)
+      // For other variants, also use 99 but it creates pill shape when width ≠ height
       baseStyle.borderRadius = 99;
 
       switch (variant) {
@@ -143,6 +172,12 @@ const IconButton = React.forwardRef<
             baseStyle.opacity = 0.5;
           }
           break;
+        case 'rounded':
+          baseStyle.backgroundColor = colors.primary;
+          if (isDisabled) {
+            baseStyle.opacity = 0.5;
+          }
+          break;
         default:
           baseStyle.backgroundColor = colors.primary;
           if (isDisabled) {
@@ -168,6 +203,8 @@ const IconButton = React.forwardRef<
           return colors.text;
         case 'ghost':
           return colors.text;
+        case 'rounded':
+          return colors.primaryForeground;
         default:
           return colors.primaryForeground;
       }
@@ -177,13 +214,18 @@ const IconButton = React.forwardRef<
     const getIconSize = () => {
       if (iconSize) return iconSize;
 
-      switch (size) {
+      // Handle 'default' as 'md'
+      const actualSize = size === 'default' ? 'md' : size;
+
+      switch (actualSize) {
         case 'sm':
+          return 20;
+        case 'md':
           return 24;
         case 'lg':
           return 32;
         default:
-          return 32;
+          return 24;
       }
     };
 
@@ -206,8 +248,8 @@ const IconButton = React.forwardRef<
         {...props}
       >
         {loading ? (
-          <ActivityIndicator 
-            size="small" 
+          <ActivityIndicator
+            size="small"
             color={iconColorValue}
           />
         ) : (

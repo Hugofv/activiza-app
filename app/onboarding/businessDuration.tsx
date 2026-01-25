@@ -59,7 +59,7 @@ const BusinessDurationScreen = () => {
     setIsSubmitting(true);
     try {
       await updateFormData({ businessDuration: selectedOption }, 'business_duration');
-      router.push('/onboarding/country');
+      router.push('/onboarding/address');
     } catch (error: any) {
       console.error('Failed to save businessDuration step:', error);
       const apiMessage = getTranslatedError(
