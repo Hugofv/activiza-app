@@ -2,12 +2,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { Typography } from '@/components/ui/Typography';
@@ -16,10 +16,6 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import { useNewClientForm } from './_context';
 
-const nameSchema = yup.object().shape({
-  name: yup.string().required('Nome é obrigatório').min(2, 'Nome deve ter pelo menos 2 caracteres'),
-});
-
 interface NameFormData {
   name: string;
 }
@@ -27,8 +23,13 @@ interface NameFormData {
 export default function NameScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { t } = useTranslation();
   const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const nameSchema = yup.object().shape({
+    name: yup.string().required(t('clients.nameRequired')).min(2, t('clients.nameMinLength')),
+  });
 
   const {
     control,
@@ -56,7 +57,7 @@ export default function NameScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={['top', 'bottom']}
+      edges={['bottom']}
     >
       <KeyboardAvoidingView
         style={styles.container}
@@ -65,22 +66,14 @@ export default function NameScreen() {
       >
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
-            {/* Header */}
-            <View style={styles.header}>
-              <BackButton />
-              <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
-                Novo cliente
-              </Typography>
-            </View>
-
             {/* Title */}
             <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
-              Nome
+              {t('clients.name')}
             </Typography>
 
             {/* Question */}
             <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
-              Qual o nome completo do seu cliente?
+              {t('clients.nameQuestion')}
             </Typography>
 
             {/* Input Field */}
@@ -128,19 +121,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: 18,
+    paddingTop: 0,
     paddingHorizontal: 24,
     gap: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-    gap: '23%',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
   },
   title: {
     fontSize: 32,

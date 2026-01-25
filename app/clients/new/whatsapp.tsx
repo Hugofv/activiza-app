@@ -2,12 +2,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { PhoneInput, type PhoneInputValue } from '@/components/ui/PhoneInput';
 import { Typography } from '@/components/ui/Typography';
@@ -16,15 +16,6 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import { useNewClientForm } from './_context';
 
-const whatsappSchema = yup.object().shape({
-  whatsapp: yup
-    .object()
-    .shape({
-      phoneNumber: yup.string().required('WhatsApp é obrigatório'),
-    })
-    .required('WhatsApp é obrigatório'),
-});
-
 interface WhatsAppFormData {
   whatsapp: PhoneInputValue | null;
 }
@@ -32,8 +23,18 @@ interface WhatsAppFormData {
 export default function WhatsAppScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { t } = useTranslation();
   const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const whatsappSchema = yup.object().shape({
+    whatsapp: yup
+      .object()
+      .shape({
+        phoneNumber: yup.string().required(t('clients.whatsappRequired')),
+      })
+      .required(t('clients.whatsappRequired')),
+  });
 
   const {
     control,
@@ -50,10 +51,6 @@ export default function WhatsAppScreen() {
     },
     mode: 'onChange',
   });
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const onSubmit = async (data: WhatsAppFormData) => {
     setIsSubmitting(true);
@@ -74,12 +71,12 @@ export default function WhatsAppScreen() {
     }
   };
 
-  const clientName = formData.name || 'seu cliente';
+  const clientName = formData.name || t('clients.yourClient');
 
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={['top', 'bottom']}
+      edges={['bottom']}
     >
       <KeyboardAvoidingView
         style={styles.container}
@@ -88,22 +85,14 @@ export default function WhatsAppScreen() {
       >
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
-            {/* Header */}
-            <View style={styles.header}>
-              <BackButton />
-              <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
-                Novo cliente
-              </Typography>
-            </View>
-
             {/* Title */}
             <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
-              WhatsApp
+              {t('clients.whatsapp')}
             </Typography>
 
             {/* Question */}
             <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
-              Qual o WhatsApp de {clientName}?
+              {t('clients.whatsappQuestion', { name: clientName })}
             </Typography>
 
             {/* Input Field */}
@@ -139,19 +128,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: 18,
+    paddingTop: 0,
     paddingHorizontal: 24,
     gap: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: '23%',
-    marginBottom: 24,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
   },
   title: {
     fontSize: 32,

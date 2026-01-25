@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
@@ -19,15 +20,16 @@ interface EmailFormData {
   email?: string;
 }
 
-const emailSchema = yup.object<EmailFormData>().shape({
-  email: yup.string().email('E-mail inválido').optional(),
-});
-
 export default function EmailScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { t } = useTranslation();
   const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const emailSchema = yup.object<EmailFormData>().shape({
+    email: yup.string().email(t('clients.emailInvalid')).optional(),
+  });
 
   const {
     control,
@@ -41,10 +43,6 @@ export default function EmailScreen() {
     mode: 'onChange',
   });
 
-  const handleBack = () => {
-    router.back();
-  };
-
   const onSubmit = async (data: EmailFormData) => {
     setIsSubmitting(true);
     try {
@@ -56,12 +54,12 @@ export default function EmailScreen() {
     }
   };
 
-  const clientName = formData.name || 'seu cliente';
+  const clientName = formData.name || t('clients.yourClient');
 
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={['top', 'bottom']}
+      edges={['bottom']}
     >
       <KeyboardAvoidingView
         style={styles.container}
@@ -70,30 +68,14 @@ export default function EmailScreen() {
       >
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
-            {/* Header */}
-            <View style={styles.header}>
-              <IconButton
-                variant='secondary'
-                shape='cylinder'
-                size='md'
-                icon='chevron-back'
-                iconSize={32}
-                iconColor={colors.primaryForeground}
-                onPress={handleBack}
-              />
-              <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
-                Novo cliente
-              </Typography>
-            </View>
-
             {/* Title */}
             <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
-              E-mail
+              {t('clients.email')}
             </Typography>
 
             {/* Question */}
             <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
-              Qual o endereço de e-mail de {clientName}? Opcional
+              {t('clients.emailQuestion', { name: clientName })}
             </Typography>
 
             {/* Input Field */}
@@ -141,19 +123,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: 18,
+    paddingTop: 0,
     paddingHorizontal: 24,
     gap: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-    gap: '23%',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
   },
   title: {
     fontSize: 32,

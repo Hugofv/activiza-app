@@ -34,6 +34,7 @@ export interface CountrySelectorProps {
   title?: string;
   showProgress?: boolean;
   showBackButton?: boolean;
+  customHeader?: React.ReactNode; // Custom header to replace the default one
 }
 
 /**
@@ -47,6 +48,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
   title,
   showProgress = true,
   showBackButton = true,
+  customHeader,
 }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -72,7 +74,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
         </View>
       )}
 
-      {showBackButton && <BackButton onPress={onBack} />}
+      {customHeader ? customHeader : showBackButton && <BackButton onPress={onBack} />}
 
       <Typography variant='h4' style={styles.title}>
         {title || t('onboarding.selectCountry')}

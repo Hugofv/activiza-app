@@ -17,7 +17,7 @@ import { useNewClientForm } from './_context';
 export default function AddressScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const { formData, updateFormData, setCurrentStep, totalSteps } = useNewClientForm();
+  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const countryCode = (formData.address?.countryCode as CountryCode) || null;
 
   const handleBack = () => {
@@ -100,7 +100,7 @@ export default function AddressScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={['top', 'bottom']}
+      edges={['bottom']}
     >
       <KeyboardAvoidingView
         style={styles.container}
@@ -128,8 +128,9 @@ export default function AddressScreen() {
               onAddressSubmit={handleAddressSubmit}
               onComplete={handleComplete}
               onBack={handleBack}
-              progressValue={(4 / totalSteps) * 100}
-              showBackButton={true}
+              showProgress={false}
+              showBackButton={false}
+              customHeader={null}
             />
           </ThemedView>
         </ThemedView>

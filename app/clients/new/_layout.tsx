@@ -1,27 +1,73 @@
 import { Stack } from 'expo-router';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { BackButton } from '@/components/ui/BackButton';
+import { Typography } from '@/components/ui/Typography';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 import { NewClientFormProvider } from './_context';
+import { CancelButton } from './components/CancelButton';
 
 export default function NewClientLayout() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  const { t } = useTranslation();
+
   return (
     <NewClientFormProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          animation: 'slide_from_right',
-          animationDuration: 300,
-        }}
-      >
-        <Stack.Screen name="name" />
-        <Stack.Screen name="whatsapp" />
-        <Stack.Screen name="email" />
-        <Stack.Screen name="address" />
-        <Stack.Screen name="observation" />
-        <Stack.Screen name="guarantor" />
-        <Stack.Screen name="reliability" />
-        <Stack.Screen name="summary" />
-      </Stack>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+        {/* Shared Header */}
+        <View style={[styles.header, { backgroundColor: colors.background }]}>
+          <BackButton />
+          <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
+            {t('clients.newClient')}
+          </Typography>
+          <CancelButton />
+        </View>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_right',
+            animationDuration: 300,
+            contentStyle: {
+              paddingTop: 0, // Remove default padding since we have our own header
+            },
+          }}
+        >
+          <Stack.Screen name="name" />
+          <Stack.Screen name="whatsapp" />
+          <Stack.Screen name="email" />
+          <Stack.Screen name="address" />
+          <Stack.Screen name="observation" />
+          <Stack.Screen name="guarantor" />
+          <Stack.Screen name="reliability" />
+          <Stack.Screen name="summary" />
+        </Stack>
+      </SafeAreaView>
     </NewClientFormProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 0,
+    paddingHorizontal: 24,
+    paddingBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    flex: 1,
+    textAlign: 'center',
+  },
+});

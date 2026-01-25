@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
@@ -19,6 +19,7 @@ import { useNewClientForm } from './_context';
 export default function SummaryScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { t } = useTranslation();
   const { formData, resetFormData } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showSuccess, showError } = useToast();
@@ -55,28 +56,28 @@ export default function SummaryScreen() {
       // Invalidate and refetch clients list
       await queryClient.invalidateQueries({ queryKey: ['clients'] });
 
-      showSuccess('Sucesso', 'Cliente criado com sucesso!');
+      showSuccess(t('clients.successTitle'), t('clients.successMessage'));
       resetFormData();
       router.replace('/(tabs)/clients');
     } catch (error: any) {
       console.error('Error creating client:', error);
-      showError('Erro', 'Não foi possível criar o cliente. Tente novamente.');
+      showError(t('clients.errorTitle'), t('clients.errorMessage'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const formatAddress = () => {
-    if (!formData.address) return 'Não informado';
+    if (!formData.address) return t('clients.summaryNotInformed');
     const addr = formData.address;
     const parts = [
       addr.street,
-      addr.number && `nº ${addr.number}`,
+      addr.number && t('clients.addressNumber', { number: addr.number }),
       addr.neighborhood,
       addr.city,
       addr.state,
-      addr.complement && `Ap ${addr.complement}`,
-      addr.postalCode && `CEP ${addr.postalCode}`,
+      addr.complement && t('clients.addressComplement', { complement: addr.complement }),
+      addr.postalCode && t('clients.addressPostalCode', { code: addr.postalCode }),
     ].filter(Boolean);
     return parts.join(', ');
   };
@@ -84,7 +85,7 @@ export default function SummaryScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={['top', 'bottom']}
+      edges={['bottom']}
     >
       <KeyboardAvoidingView
         style={styles.container}
@@ -93,17 +94,9 @@ export default function SummaryScreen() {
       >
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
-            {/* Header */}
-            <View style={styles.header}>
-              <BackButton />
-              <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
-                Novo cliente
-              </Typography>
-            </View>
-
             {/* Title */}
             <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
-              Resumo
+              {t('clients.summary')}
             </Typography>
 
             {/* Summary Card */}
@@ -112,20 +105,20 @@ export default function SummaryScreen() {
                 {/* Name */}
                 <View style={styles.summaryRow}>
                   <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                    Nome
+                    {t('clients.summaryName')}
                   </Typography>
                   <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                    {formData.name || 'Não informado'}
+                    {formData.name || t('clients.summaryNotInformed')}
                   </Typography>
                 </View>
 
                 {/* WhatsApp */}
                 <View style={styles.summaryRow}>
                   <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                    WhatsApp
+                    {t('clients.summaryWhatsapp')}
                   </Typography>
                   <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                    {formData.whatsapp?.formattedPhoneNumber || formData.whatsapp?.phoneNumber || 'Não informado'}
+                    {formData.whatsapp?.formattedPhoneNumber || formData.whatsapp?.phoneNumber || t('clients.summaryNotInformed')}
                   </Typography>
                 </View>
 
@@ -133,7 +126,7 @@ export default function SummaryScreen() {
                 {formData.email && (
                   <View style={styles.summaryRow}>
                     <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                      Endereço de e-mail
+                      {t('clients.summaryEmail')}
                     </Typography>
                     <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
                       {formData.email}
@@ -144,7 +137,7 @@ export default function SummaryScreen() {
                 {/* Address */}
                 <View style={styles.summaryRow}>
                   <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                    Endereço físico
+                    {t('clients.summaryAddress')}
                   </Typography>
                   <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
                     {formatAddress()}
@@ -155,7 +148,7 @@ export default function SummaryScreen() {
                 {formData.observation && (
                   <View style={styles.summaryRow}>
                     <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                      Observação
+                      {t('clients.summaryObservation')}
                     </Typography>
                     <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
                       {formData.observation}
@@ -167,7 +160,7 @@ export default function SummaryScreen() {
                 {formData.guarantor && (
                   <View style={styles.summaryRow}>
                     <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                      Indicação / Avalista
+                      {t('clients.summaryGuarantor')}
                     </Typography>
                     <View style={styles.guarantorRow}>
                       <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
@@ -189,11 +182,11 @@ export default function SummaryScreen() {
                 {formData.reliability && (
                   <View style={styles.summaryRow}>
                     <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                      Confiabilidade
+                      {t('clients.summaryReliability')}
                     </Typography>
                     <View style={styles.reliabilityRow}>
                       <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                        Nível {formData.reliability}
+                        {t('clients.reliabilityLevel', { level: formData.reliability })}
                       </Typography>
                       <View style={styles.starsRow}>
                         {[1, 2, 3, 4, 5].map((star) => (
@@ -228,7 +221,7 @@ export default function SummaryScreen() {
               />
             )}
             <Typography variant="body1" style={[styles.buttonLabel, { color: colors.text }]}>
-              Confirmar e salvar
+              {t('clients.summaryConfirm')}
             </Typography>
           </View>
         </ThemedView>
@@ -243,19 +236,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: 18,
+    paddingTop: 0,
     paddingHorizontal: 24,
     gap: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: '23%',
-    marginBottom: 24,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
   },
   title: {
     fontSize: 32,

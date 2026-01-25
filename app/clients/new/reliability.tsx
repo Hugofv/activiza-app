@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,19 +11,15 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-import { BackButton } from '@/components/ui/BackButton';
 import { useNewClientForm } from './_context';
 
 export default function ReliabilityScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { t } = useTranslation();
   const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [reliability, setReliability] = useState<number | undefined>(formData.reliability);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const handleStarPress = (rating: number) => {
     setReliability(rating);
@@ -42,7 +39,7 @@ export default function ReliabilityScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={['top', 'bottom']}
+      edges={['bottom']}
     >
       <KeyboardAvoidingView
         style={styles.container}
@@ -51,22 +48,14 @@ export default function ReliabilityScreen() {
       >
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
-            {/* Header */}
-            <View style={styles.header}>
-              <BackButton />
-              <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
-                Novo cliente
-              </Typography>
-            </View>
-
             {/* Title */}
             <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
-              Confiabilidade
+              {t('clients.reliability')}
             </Typography>
 
             {/* Question */}
             <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
-              Confiabilidade Opcional
+              {t('clients.reliabilityQuestion')}
             </Typography>
 
             {/* Star Rating */}
@@ -116,19 +105,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: 18,
+    paddingTop: 0,
     paddingHorizontal: 24,
     gap: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: '23%',
-    marginBottom: 24,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
   },
   title: {
     fontSize: 32,

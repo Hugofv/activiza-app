@@ -47,6 +47,7 @@ export interface AddressFormProps {
   title?: string;
   showProgress?: boolean;
   showBackButton?: boolean;
+  customHeader?: React.ReactNode; // Custom header to replace the default one
   onSubmitReady?: (submitHandler: () => void) => void;
 }
 
@@ -63,6 +64,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
   title,
   showProgress = true,
   showBackButton = true,
+  customHeader,
   onSubmitReady,
 }) => {
   const { t } = useTranslation();
@@ -160,7 +162,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
         </View>
       )}
 
-      {showBackButton && <BackButton onPress={onBack} />}
+      {customHeader ? customHeader : showBackButton && <BackButton onPress={onBack} />}
 
       <ScrollView
         ref={scrollViewRef}

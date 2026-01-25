@@ -51,6 +51,7 @@ export interface PostalCodeInputProps {
   title?: string;
   showProgress?: boolean;
   showBackButton?: boolean;
+  customHeader?: React.ReactNode; // Custom header to replace the default one
   onSubmitReady?: (submitHandler: () => void, isValid: boolean, isLoading: boolean) => void;
 }
 
@@ -70,6 +71,7 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
   title,
   showProgress = true,
   showBackButton = true,
+  customHeader,
   onSubmitReady,
 }) => {
   const colorScheme = useColorScheme();
@@ -170,7 +172,7 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
         </View>
       )}
 
-      {showBackButton && <BackButton onPress={onBack} />}
+      {customHeader ? customHeader : showBackButton && <BackButton onPress={onBack} />}
 
       <Typography variant='h4' style={styles.title}>
         {title || t('onboarding.postalCode')}

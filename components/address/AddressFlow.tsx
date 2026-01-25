@@ -56,6 +56,7 @@ export interface AddressFlowProps {
   progressValue?: number;
   showProgress?: boolean;
   showBackButton?: boolean;
+  customHeader?: React.ReactNode; // Custom header to replace the default one
 }
 
 /**
@@ -79,6 +80,7 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
   progressValue = 90,
   showProgress = true,
   showBackButton = true,
+  customHeader,
 }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -229,7 +231,8 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
           onBack={showBackButton ? handleBack : undefined}
           progressValue={getProgressValue()}
           showProgress={showProgress}
-          showBackButton={showBackButton}
+          showBackButton={customHeader ? false : showBackButton}
+          customHeader={customHeader}
         />
       )}
 
@@ -242,7 +245,8 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
           onBack={showBackButton ? handleBack : undefined}
           progressValue={getProgressValue()}
           showProgress={showProgress}
-          showBackButton={showBackButton}
+          showBackButton={customHeader ? false : showBackButton}
+          customHeader={customHeader}
           onSubmitReady={handlePostalCodeSubmitReady}
         />
       )}
@@ -257,7 +261,8 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
           onBack={showBackButton ? handleBack : undefined}
           progressValue={getProgressValue()}
           showProgress={showProgress}
-          showBackButton={showBackButton}
+          showBackButton={customHeader ? false : showBackButton}
+          customHeader={customHeader}
           onSubmitReady={handleAddressSubmitReady}
         />
       )}
