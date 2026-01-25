@@ -60,6 +60,8 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'hourglass': IconHourglass,
   'checkmark-circle': IconCircleCheck,
   'close-circle': IconCircleX,
+  'x': IconCircleX,
+  'close': IconCircleX,
   'information-circle': IconInfoCircle,
   'info-circle': IconInfoCircle,
   'warning': IconAlertTriangle,

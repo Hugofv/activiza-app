@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 
-import { IconButton } from '@/components/ui/IconButton';
+import { BackButton } from '@/components/ui/BackButton';
 import { Input } from '@/components/ui/Input';
 import { Progress } from '@/components/ui/Progress';
 import { Typography } from '@/components/ui/Typography';
@@ -170,16 +170,7 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
         </View>
       )}
 
-      {showBackButton && onBack && (
-        <IconButton
-          variant='secondary'
-          size='sm'
-          icon='chevron-back'
-          iconSize={32}
-          iconColor={colors.primary}
-          onPress={onBack}
-        />
-      )}
+      {showBackButton && <BackButton onPress={onBack} />}
 
       <Typography variant='h4' style={styles.title}>
         {title || t('onboarding.postalCode')}

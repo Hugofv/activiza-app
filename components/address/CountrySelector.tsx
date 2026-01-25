@@ -6,8 +6,8 @@ import {
   View,
 } from 'react-native';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { Icon } from '@/components/ui/Icon';
-import { IconButton } from '@/components/ui/IconButton';
 import { Progress } from '@/components/ui/Progress';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
@@ -72,16 +72,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
         </View>
       )}
 
-      {showBackButton && onBack && (
-        <IconButton
-          variant='secondary'
-          size='sm'
-          icon='chevron-back'
-          iconSize={32}
-          iconColor={colors.primary}
-          onPress={onBack}
-        />
-      )}
+      {showBackButton && <BackButton onPress={onBack} />}
 
       <Typography variant='h4' style={styles.title}>
         {title || t('onboarding.selectCountry')}

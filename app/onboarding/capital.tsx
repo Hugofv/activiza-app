@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { ListCheck } from '@/components/ui/ListCheck';
 import { Progress } from '@/components/ui/Progress';
@@ -48,10 +49,6 @@ const CapitalScreen = () => {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showError } = useToast();
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const handleContinue = async () => {
     if (selectedOption === null) return;
@@ -93,14 +90,7 @@ const CapitalScreen = () => {
               </View>
 
               {/* Back Button */}
-              <IconButton
-                variant='secondary'
-                size='sm'
-                icon='chevron-back'
-                iconSize={32}
-                iconColor={colors.primary}
-                onPress={handleBack}
-              />
+              <BackButton />
 
               {/* Title */}
               <Typography variant='h4' style={styles.title}>

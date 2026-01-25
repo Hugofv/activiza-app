@@ -14,8 +14,8 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { Button } from '@/components/ui/Button';
-import { IconButton } from '@/components/ui/IconButton';
 import { Progress } from '@/components/ui/Progress';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
@@ -59,10 +59,6 @@ const PlansScreen = () => {
     // staleTime: 1000 * 60 * 60, // 1 hour - plans don't change frequently
   });
 
-  const handleBack = () => {
-    router.back();
-  };
-
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
@@ -85,14 +81,7 @@ const PlansScreen = () => {
               </View>
 
               {/* Back Button */}
-              <IconButton
-                variant='secondary'
-                size='sm'
-                icon='chevron-back'
-                iconSize={32}
-                iconColor={colors.primary}
-                onPress={handleBack}
-              />
+              <BackButton />
 
               {/* Title */}
               <Typography variant='h4' style={styles.title}>

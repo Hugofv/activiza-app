@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
 import { Autocomplete, type AutocompleteOption } from '@/components/ui/Autocomplete';
-import { IconButton } from '@/components/ui/IconButton';
+import { BackButton } from '@/components/ui/BackButton';
 import { Input } from '@/components/ui/Input';
 import { Progress } from '@/components/ui/Progress';
 import { Colors } from '@/constants/theme';
@@ -245,14 +245,7 @@ const DocumentScreen = () => {
               </View>
 
               {/* Back Button */}
-              <IconButton
-                variant='secondary'
-                size='sm'
-                icon='chevron-back'
-                iconSize={32}
-                iconColor={colors.primary}
-                onPress={handleBack}
-              />
+              <BackButton />
 
               <Typography variant='h4'>{t('onboarding.document')}</Typography>
 

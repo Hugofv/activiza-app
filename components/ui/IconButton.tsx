@@ -17,7 +17,6 @@ const iconButtonVariants = cva(
         error: '',
         outline: 'border border-input bg-background',
         ghost: '',
-        rounded: '',
       },
       size: {
         sm: 'h-[40px]',
@@ -47,6 +46,7 @@ export interface IconButtonProps
   iconColor?: string;
   className?: string;
   width?: 'sm' | 'md' | 'lg' | 'default';
+  shape?: 'rounded' | 'cylinder' | 'default';
   loading?: boolean;
 }
 
@@ -60,6 +60,7 @@ const IconButton = React.forwardRef<
           variant = 'primary',
           size = 'default',
           width,
+          shape = 'default',
           icon,
           iconSize,
           iconColor,
@@ -86,10 +87,10 @@ const IconButton = React.forwardRef<
       // Determine actual size (handle 'default' as 'md')
       const actualSize = size === 'default' ? 'md' : size;
 
-      // For rounded variant, always make it circular (width = height)
-      // For other variants, can be rectangular
-      const isRounded = variant === 'rounded';
-      const widthSize = isRounded ? actualSize : (width || actualSize);
+      // Shape determines the form: rounded (circular), cylinder (vertical oval), or default (rectangular)
+      const isRounded = shape === 'rounded';
+      const isCylinder = shape === 'cylinder';
+      const widthSize = (isRounded || isCylinder) ? actualSize : (width || actualSize);
 
       // Set height based on size
       switch (actualSize) {
@@ -110,34 +111,99 @@ const IconButton = React.forwardRef<
           baseStyle.minHeight = 56;
       }
 
-      // Set width
-      switch (widthSize) {
-        case 'sm':
-          baseStyle.width = 40;
-          baseStyle.minWidth = 40;
-          break;
-        case 'md':
-          baseStyle.width = 56;
-          baseStyle.minWidth = 56;
-          break;
-        case 'lg':
-          baseStyle.width = 80;
-          baseStyle.minWidth = 80;
-          break;
-        default:
-          baseStyle.width = 56;
-          baseStyle.minWidth = 56;
+      // Set width based on shape
+      if (isCylinder) {
+        // Cylindrical: width < height (vertical oval)
+        switch (actualSize) {
+          case 'sm':
+            baseStyle.width = 32;
+            baseStyle.minWidth = 32;
+            break;
+          case 'md':
+            baseStyle.width = 44;
+            baseStyle.minWidth = 44;
+            break;
+          case 'lg':
+            baseStyle.width = 64;
+            baseStyle.minWidth = 64;
+            break;
+          default:
+            baseStyle.width = 44;
+            baseStyle.minWidth = 44;
+        }
+      } else if (isRounded) {
+        // Rounded: width = height (perfect circle)
+        switch (actualSize) {
+          case 'sm':
+            baseStyle.width = 40;
+            baseStyle.minWidth = 40;
+            break;
+          case 'md':
+            baseStyle.width = 56;
+            baseStyle.minWidth = 56;
+            break;
+          case 'lg':
+            baseStyle.width = 80;
+            baseStyle.minWidth = 80;
+            break;
+          default:
+            baseStyle.width = 56;
+            baseStyle.minWidth = 56;
+        }
+      } else {
+        // Default: rectangular horizontal (width > height)
+        // If width prop is provided, use it; otherwise make width larger than height
+        if (width) {
+          // Use custom width if provided
+          switch (widthSize) {
+            case 'sm':
+              baseStyle.width = 40;
+              baseStyle.minWidth = 40;
+              break;
+            case 'md':
+              baseStyle.width = 56;
+              baseStyle.minWidth = 56;
+              break;
+            case 'lg':
+              baseStyle.width = 80;
+              baseStyle.minWidth = 80;
+              break;
+            default:
+              baseStyle.width = 56;
+              baseStyle.minWidth = 56;
+          }
+        } else {
+          // Default horizontal: width > height
+          switch (actualSize) {
+            case 'sm':
+              baseStyle.width = 56; // width > height (40)
+              baseStyle.minWidth = 56;
+              break;
+            case 'md':
+              baseStyle.width = 72; // width > height (56)
+              baseStyle.minWidth = 72;
+              break;
+            case 'lg':
+              baseStyle.width = 104; // width > height (80)
+              baseStyle.minWidth = 104;
+              break;
+            default:
+              baseStyle.width = 72;
+              baseStyle.minWidth = 72;
+          }
+        }
       }
 
-      // Add horizontal padding for wider rectangular buttons (not rounded)
-      if (!isRounded && widthSize === 'lg') {
+      // Add horizontal padding for wider rectangular buttons (not rounded/cylinder)
+      if (!isRounded && !isCylinder && widthSize === 'lg') {
         baseStyle.paddingHorizontal = 24;
       }
 
-      // Use borderRadius: 99 for rounded buttons (perfect circle)
+      // Use borderRadius: 99 for rounded/cylinder buttons (perfect circle or vertical oval)
       // For other variants, also use 99 but it creates pill shape when width ≠ height
       baseStyle.borderRadius = 99;
 
+      // Variant defines color/style
       switch (variant) {
         case 'primary':
           baseStyle.backgroundColor = colors.primary;
@@ -172,12 +238,6 @@ const IconButton = React.forwardRef<
             baseStyle.opacity = 0.5;
           }
           break;
-        case 'rounded':
-          baseStyle.backgroundColor = colors.primary;
-          if (isDisabled) {
-            baseStyle.opacity = 0.5;
-          }
-          break;
         default:
           baseStyle.backgroundColor = colors.primary;
           if (isDisabled) {
@@ -203,8 +263,6 @@ const IconButton = React.forwardRef<
           return colors.text;
         case 'ghost':
           return colors.text;
-        case 'rounded':
-          return colors.primaryForeground;
         default:
           return colors.primaryForeground;
       }

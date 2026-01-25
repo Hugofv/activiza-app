@@ -6,7 +6,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { IconButton } from '@/components/ui/IconButton';
+import { BackButton } from '@/components/ui/BackButton';
 import { Input } from '@/components/ui/Input';
 import { PhoneInput } from '@/components/ui/PhoneInput';
 import { Progress } from '@/components/ui/Progress';
@@ -170,14 +170,7 @@ const CustomizationScreen = () => {
               </View>
 
               {/* Back Button */}
-              <IconButton
-                variant='secondary'
-                size='sm'
-                icon='chevron-back'
-                iconSize={32}
-                iconColor={colors.primary}
-                onPress={handleBack}
-              />
+              <BackButton />
 
               {/* Title */}
               <Typography variant='h4' style={styles.title}>

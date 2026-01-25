@@ -16,6 +16,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
 import { getClients, type Client } from '@/lib/services/clientService';
 import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 // Filter options will be translated in the component
@@ -70,9 +71,7 @@ export default function ClientsScreen() {
   };
 
   const handleNewClient = () => {
-    // TODO: Navigate to new client screen
-    console.log('Navigate to new client');
-    // router.push('/clients/new');
+    router.push('/clients/new/name');
   };
 
   const clients = clientsData?.results || [];
@@ -91,16 +90,15 @@ export default function ClientsScreen() {
           </Typography>
 
           <View style={styles.headerActions}>
-
-
-              {/* New Client Button */}
-              <IconButton
-                icon="plus"
-                variant="rounded"
-                size="sm"
-                onPress={handleNewClient}
-                accessibilityLabel={t('tabs.newClient') || 'Novo Cliente'}
-              />
+            {/* New Client Button */}
+            <IconButton
+              icon="plus"
+              variant="primary"
+              shape="rounded"
+              size="sm"
+              onPress={handleNewClient}
+              accessibilityLabel={t('tabs.newClient') || 'Novo Cliente'}
+            />
           </View>
         </View>
 

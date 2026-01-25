@@ -7,11 +7,9 @@ import {
   View,
 } from 'react-native';
 
-import { IconButton } from '@/components/ui/IconButton';
+import { BackButton } from '@/components/ui/BackButton';
 import { Input } from '@/components/ui/Input';
 import { Progress } from '@/components/ui/Progress';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import {
   getPostalCodeFormat,
@@ -67,8 +65,6 @@ export const AddressForm: React.FC<AddressFormProps> = ({
   showBackButton = true,
   onSubmitReady,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { showError } = useToast();
   const postalCodeFormat = getPostalCodeFormat(countryCode);
@@ -164,16 +160,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
         </View>
       )}
 
-      {showBackButton && onBack && (
-        <IconButton
-          variant='secondary'
-          size='sm'
-          icon='chevron-back'
-          iconSize={32}
-          iconColor={colors.primary}
-          onPress={onBack}
-        />
-      )}
+      {showBackButton && <BackButton onPress={onBack} />}
 
       <ScrollView
         ref={scrollViewRef}
