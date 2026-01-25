@@ -24,7 +24,7 @@ export default function ObservationScreen() {
     setIsSubmitting(true);
     try {
       updateFormData({ observation: observation || undefined });
-      setCurrentStep(5);
+      setCurrentStep(6);
       router.push('/clients/new/guarantor');
     } finally {
       setIsSubmitting(false);

@@ -29,7 +29,7 @@ export default function ReliabilityScreen() {
     setIsSubmitting(true);
     try {
       updateFormData({ reliability: reliability || undefined });
-      setCurrentStep(7);
+      setCurrentStep(8);
       router.push('/clients/new/summary');
     } finally {
       setIsSubmitting(false);

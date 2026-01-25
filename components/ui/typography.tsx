@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { Text, type TextProps } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { Colors, type ThemeColorKey } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { cn } from '@/lib/utils';
 
@@ -48,10 +48,11 @@ export interface TypographyProps
   extends TextProps,
     VariantProps<typeof typographyVariants> {
   children?: React.ReactNode;
+  color?: ThemeColorKey;
 }
 
 const Typography = React.forwardRef<React.ElementRef<typeof Text>, TypographyProps>(
-  ({ className, variant, style, children, ...props }, ref) => {
+  ({ className, variant, style, children, color, ...props }, ref) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
 
@@ -145,8 +146,14 @@ const Typography = React.forwardRef<React.ElementRef<typeof Text>, TypographyPro
     const fontSize = variant ? fontSizeMap[variant] : 16;
     const lineHeight = variant ? lineHeightMap[variant] : 24;
 
-    // Get text color based on variant and theme
+    // Get text color based on color prop, variant, and theme
     const getTextColor = () => {
+      // If color prop is provided, use it (highest priority)
+      if (color) {
+        return colors[color];
+      }
+
+      // Otherwise, use variant-based defaults
       switch (variant) {
         case 'caption':
         case 'muted':

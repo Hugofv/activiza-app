@@ -12,9 +12,11 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import { createClient } from '@/lib/services/clientService';
+import { getAllDocumentTypes } from '@/lib/services/documentService';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useNewClientForm } from './_context';
+import SummaryItem from './components/SummaryItem';
 
 export default function SummaryScreen() {
   const colorScheme = useColorScheme();
@@ -33,6 +35,8 @@ export default function SummaryScreen() {
         name: formData.name!,
         phone: formData.whatsapp?.formattedPhoneNumber || formData.whatsapp?.phoneNumber,
         email: formData.email,
+        document: formData.document,
+        documentType: formData.documentType,
         address: formData.address
           ? {
             postalCode: formData.address.postalCode,
@@ -71,20 +75,32 @@ export default function SummaryScreen() {
     if (!formData.address) return t('clients.summaryNotInformed');
     const addr = formData.address;
     const parts = [
-      addr.street,
-      addr.number && t('clients.addressNumber', { number: addr.number }),
+      addr.street + ', ' + t('clients.addressNumber', { number: addr.number }),
       addr.neighborhood,
-      addr.city,
-      addr.state,
+      addr.city + ', ' + addr.state,
       addr.complement && t('clients.addressComplement', { complement: addr.complement }),
       addr.postalCode && t('clients.addressPostalCode', { code: addr.postalCode }),
     ].filter(Boolean);
-    return parts.join(', ');
+
+    return (
+      <View style={styles.addressContainer}>
+        {parts.map((part, index) => (
+          <Typography
+            key={index}
+            variant="body1"
+            color="primaryForeground"
+            style={styles.addressLine}
+          >
+            {part}
+          </Typography>
+        ))}
+      </View>
+    );
   };
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={[styles.container]}
       edges={['bottom']}
     >
       <KeyboardAvoidingView
@@ -103,103 +119,65 @@ export default function SummaryScreen() {
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
               <View style={[styles.summaryCard, { backgroundColor: colors.muted }]}>
                 {/* Name */}
-                <View style={styles.summaryRow}>
-                  <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                    {t('clients.summaryName')}
-                  </Typography>
-                  <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                    {formData.name || t('clients.summaryNotInformed')}
-                  </Typography>
-                </View>
+                <SummaryItem icon='user-circle' label={t('clients.summaryName')} value={formData.name || t('clients.summaryNotInformed')} />
 
                 {/* WhatsApp */}
-                <View style={styles.summaryRow}>
-                  <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                    {t('clients.summaryWhatsapp')}
-                  </Typography>
-                  <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                    {formData.whatsapp?.formattedPhoneNumber || formData.whatsapp?.phoneNumber || t('clients.summaryNotInformed')}
-                  </Typography>
-                </View>
+                <SummaryItem icon='whatsapp' label={t('clients.summaryWhatsapp')} value={formData.whatsapp?.formattedPhoneNumber || formData.whatsapp?.phoneNumber || t('clients.summaryNotInformed')} />
 
                 {/* Email */}
                 {formData.email && (
-                  <View style={styles.summaryRow}>
-                    <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                      {t('clients.summaryEmail')}
-                    </Typography>
-                    <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                      {formData.email}
-                    </Typography>
-                  </View>
+                  <SummaryItem icon='mail' label={t('clients.summaryEmail')} value={formData.email} />
                 )}
 
+                {/* Document */}
+                {formData.document && (() => {
+                  const documentTypeLabel = formData.documentType
+                    ? getAllDocumentTypes().find(dt => dt.value === formData.documentType)?.labelKey
+                    : null;
+                  const displayValue = documentTypeLabel
+                    ? `${t(`onboarding.${documentTypeLabel}`)}: ${formData.document}`
+                    : formData.document;
+                  return (
+                    <SummaryItem
+                      icon='id-card'
+                      label={t('clients.summaryDocument')}
+                      value={displayValue}
+                    />
+                  );
+                })()}
+
                 {/* Address */}
-                <View style={styles.summaryRow}>
-                  <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                    {t('clients.summaryAddress')}
-                  </Typography>
-                  <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                    {formatAddress()}
-                  </Typography>
-                </View>
+                <SummaryItem icon='map-pin' label={t('clients.summaryAddress')} value={formatAddress()} />
 
                 {/* Observation */}
                 {formData.observation && (
-                  <View style={styles.summaryRow}>
-                    <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                      {t('clients.summaryObservation')}
-                    </Typography>
-                    <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                      {formData.observation}
-                    </Typography>
-                  </View>
+                  <SummaryItem icon='note' label={t('clients.summaryObservation')} value={formData.observation} />
                 )}
 
                 {/* Guarantor */}
                 {formData.guarantor && (
-                  <View style={styles.summaryRow}>
-                    <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                      {t('clients.summaryGuarantor')}
+                  <SummaryItem icon='user-share' label={t('clients.summaryGuarantor')} value={<View style={styles.guarantorRow}>
+                    <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
+                      {formData.guarantor.name}
                     </Typography>
-                    <View style={styles.guarantorRow}>
-                      <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                        {formData.guarantor.name}
-                      </Typography>
-                      {formData.guarantor.rating && (
-                        <View style={styles.ratingRow}>
-                          <Icon name="star" size={16} color="#fbbf24" />
-                          <Typography variant="caption" style={{ color: colors.text }}>
-                            {formData.guarantor.rating}
-                          </Typography>
-                        </View>
-                      )}
-                    </View>
-                  </View>
+                    {formData.guarantor.rating && (
+                      <View style={styles.ratingRow}>
+                        <Icon name="star" size={16} color="#fbbf24" />
+                        <Typography variant="caption" style={{ color: colors.text }}>
+                          {formData.guarantor.rating}
+                        </Typography>
+                      </View>
+                    )}
+                  </View>} />
                 )}
 
                 {/* Reliability */}
                 {formData.reliability && (
-                  <View style={styles.summaryRow}>
-                    <Typography variant="body2" style={[styles.label, { color: colors.icon }]}>
-                      {t('clients.summaryReliability')}
+                  <SummaryItem icon='star' label={t('clients.summaryReliability')} value={<View style={styles.reliabilityRow}>
+                    <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
+                      {t('clients.reliabilityLevel', { level: formData.reliability })}
                     </Typography>
-                    <View style={styles.reliabilityRow}>
-                      <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                        {t('clients.reliabilityLevel', { level: formData.reliability })}
-                      </Typography>
-                      <View style={styles.starsRow}>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Icon
-                            key={star}
-                            name="star"
-                            size={16}
-                            color={star <= formData.reliability! ? '#fbbf24' : colors.icon}
-                          />
-                        ))}
-                      </View>
-                    </View>
-                  </View>
+                  </View>} />
                 )}
               </View>
             </ScrollView>
@@ -209,6 +187,7 @@ export default function SummaryScreen() {
           <View style={styles.buttonContainer}>
             <Button
               variant="primary"
+              size='full'
               onPress={handleConfirm}
               disabled={isSubmitting}
               loading={isSubmitting}
@@ -269,6 +248,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: '23%',
+  },
+  addressContainer: {
+    gap: 4,
+  },
+  addressLine: {
+    fontSize: 16,
   },
   starsRow: {
     flexDirection: 'row',

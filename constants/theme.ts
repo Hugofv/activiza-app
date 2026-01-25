@@ -39,7 +39,10 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
-};
+} as const;
+
+// Extract color keys from theme (single source of truth)
+export type ThemeColorKey = keyof typeof Colors.light;
 
 export const Fonts = Platform.select({
   ios: {

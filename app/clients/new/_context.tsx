@@ -8,6 +8,8 @@ export interface NewClientFormData {
     formattedPhoneNumber: string;
   };
   email?: string;
+  document?: string;
+  documentType?: string;
   address?: {
     postalCode: string;
     street: string;
@@ -54,7 +56,7 @@ interface NewClientFormProviderProps {
 export const NewClientFormProvider: React.FC<NewClientFormProviderProps> = ({ children }) => {
   const [formData, setFormData] = useState<NewClientFormData>({});
   const [currentStep, setCurrentStep] = useState(0);
-  const totalSteps = 8; // Nome, WhatsApp, E-mail, Endereço, Observação, Avalista, Confiabilidade, Resumo
+  const totalSteps = 9; // Nome, WhatsApp, E-mail, Documento, Endereço, Observação, Avalista, Confiabilidade, Resumo
 
   const updateFormData = (data: Partial<NewClientFormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
