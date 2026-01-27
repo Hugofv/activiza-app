@@ -61,6 +61,7 @@ export default {
   error: 'Erro',
   warning: 'Aviso',
   success: 'Sucesso',
+  edit: 'Editar',
   // Error messages
   errors: {
     EMAIL_ALREADY_EXISTS: 'Este email já está cadastrado',

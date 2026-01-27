@@ -66,9 +66,7 @@ export default function ClientsScreen() {
   }
 
   const handleClientPress = (client: Client) => {
-    // Navigate to client details
-    // TODO: Create client details screen
-    console.log('Navigate to client:', client.id);
+    router.push(`/clients/${client.id}`);
   };
 
   const handleNewClient = () => {

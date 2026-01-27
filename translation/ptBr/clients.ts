@@ -47,4 +47,9 @@ export default {
   cancelConfirmMessage: 'Tem certeza que deseja cancelar? Todos os dados preenchidos serão perdidos.',
   cancelConfirmButton: 'Sim, cancelar',
   cancelKeepButton: 'Continuar cadastrando',
+  history: 'Histórico',
+  chat: 'Conversar',
+  viewOnMap: 'Ver no mapa',
+  documents: 'Documentos',
+  reference: 'Referência',
 };
