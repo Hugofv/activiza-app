@@ -23,12 +23,14 @@ const iconButtonVariants = cva(
         md: 'h-[56px]',
         lg: 'h-[80px]',
         default: 'h-[56px]',
+        sl: 'h-[48px]',
       },
       width: {
         sm: 'w-[40px]',
         md: 'w-[56px]',
         lg: 'w-[80px]',
         default: 'w-[56px]',
+        sl: 'w-[48px]',
       },
     },
     defaultVariants: {
@@ -45,7 +47,7 @@ export interface IconButtonProps
   iconSize?: number;
   iconColor?: string;
   className?: string;
-  width?: 'sm' | 'md' | 'lg' | 'default';
+  width?: 'sm' | 'md' | 'lg' | 'default' | 'sl';
   shape?: 'rounded' | 'cylinder' | 'default';
   loading?: boolean;
 }
@@ -98,6 +100,10 @@ const IconButton = React.forwardRef<
           baseStyle.height = 40;
           baseStyle.minHeight = 40;
           break;
+        case 'sl':
+          baseStyle.height = 48;
+          baseStyle.minHeight = 48;
+          break;
         case 'md':
           baseStyle.height = 56;
           baseStyle.minHeight = 56;
@@ -119,6 +125,10 @@ const IconButton = React.forwardRef<
             baseStyle.width = 32;
             baseStyle.minWidth = 32;
             break;
+          case 'sl':
+            baseStyle.width = 40;
+            baseStyle.minWidth = 40;
+            break;
           case 'md':
             baseStyle.width = 44;
             baseStyle.minWidth = 44;
@@ -137,6 +147,10 @@ const IconButton = React.forwardRef<
           case 'sm':
             baseStyle.width = 40;
             baseStyle.minWidth = 40;
+            break;
+          case 'sl':
+            baseStyle.width = 48;
+            baseStyle.minWidth = 48;
             break;
           case 'md':
             baseStyle.width = 56;
@@ -160,6 +174,10 @@ const IconButton = React.forwardRef<
               baseStyle.width = 40;
               baseStyle.minWidth = 40;
               break;
+            case 'sl':
+              baseStyle.width = 48;
+              baseStyle.minWidth = 48;
+              break;
             case 'md':
               baseStyle.width = 56;
               baseStyle.minWidth = 56;
@@ -178,6 +196,10 @@ const IconButton = React.forwardRef<
             case 'sm':
               baseStyle.width = 56; // width > height (40)
               baseStyle.minWidth = 56;
+              break;
+            case 'sl':
+              baseStyle.width = 64; // width > height (48)
+              baseStyle.minWidth = 64;
               break;
             case 'md':
               baseStyle.width = 72; // width > height (56)

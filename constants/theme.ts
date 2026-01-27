@@ -17,7 +17,12 @@ export const Colors = {
     primaryForeground: '#064e3b', // Primary foreground (text on primary)
     primaryWhiten: '#9ED600',
     primaryWhitenOpacity: '#9ED60066',
+    tertiary: '#FAF1D1',
+    tertiaryForeground: '#856F00',
+    success: '#DCFCE7',
+    successForeground: '#166534',
     icon: '#687076',
+    border: '#DDE3E0',
     placeholder: '#9BAAA2', // Placeholder text color (lighter than icon for better contrast with label)
     muted: '#f3f7f5', // Muted background for progress bars
     disabledPlaceholder: 'rgba(104, 112, 118, 0.3)', // Lighter placeholder for disabled inputs (30% opacity of icon)
@@ -32,7 +37,12 @@ export const Colors = {
     primaryForeground: '#001a00', // Very dark green/black for better contrast on bright green
     primaryWhiten: '#9ED600',
     primaryWhitenOpacity: '#9ED60066',
+    tertiary: '#FAF1D1',
+    tertiaryForeground: '#856F00',
+    success: '#DCFCE7',
+    successForeground: '#166534',
     icon: '#9BA1A6',
+    border: '#374140',
     placeholder: '#6B7280', // Placeholder text color (lighter than icon for better contrast with label)
     muted: '#1a2a24', // Muted background for progress bars (dark mode)
     disabledPlaceholder: 'rgba(155, 170, 166, 0.3)', // Lighter placeholder for disabled inputs (30% opacity of icon)

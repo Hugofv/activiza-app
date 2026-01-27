@@ -3,6 +3,7 @@ import {
   IconArrowRight,
   IconBrandWhatsapp,
   IconCalendar,
+  IconCalendarDot,
   IconCar,
   IconCheck,
   IconChevronDown,
@@ -27,11 +28,14 @@ import {
   IconReceipt2,
   IconSquareRoundedPlusFilled,
   IconStar,
+  IconStarFilled,
   IconUser,
   IconUserCircle,
   IconUserDollar,
+  IconUserFilled,
+  IconUserPlus,
   IconUsers,
-  IconUserShare,
+  IconUserShare
 } from '@tabler/icons-react-native';
 import * as React from 'react';
 import { type StyleProp, type ViewStyle, View } from 'react-native';
@@ -73,18 +77,23 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'info-circle': IconInfoCircle,
   'warning': IconAlertTriangle,
   'star': IconStar,
+  'star-filled': IconStarFilled,
   'calendar': IconCalendar,
+  'calendar-dots': IconCalendarDot,
   'mail': IconMail,
   'map-pin': IconMapPin,
   'user-share': IconUserShare,
+
   // People
   'person': IconUser,
   'user-dollar': IconUserDollar,
   'receipt-2': IconReceipt2,
   'user': IconUser,
+  'user-filled': IconUserFilled,
   'people': IconUsers,
   'users': IconUsers,
   'user-circle': IconUserCircle,
+  'user-plus': IconUserPlus,
   'whatsapp': IconBrandWhatsapp,
 
   // Places

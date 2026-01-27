@@ -131,6 +131,15 @@ export default function RootLayout() {
                   animationDuration: 300,
                 }}
               />
+              <Stack.Screen
+                name='clients'
+                options={{
+                  headerShown: false,
+                  animation: 'slide_from_right',
+                  animationDuration: 350,
+                  gestureEnabled: true,
+                }}
+              />
             </Stack>
             <StatusBar style='auto' />
             <Toast />

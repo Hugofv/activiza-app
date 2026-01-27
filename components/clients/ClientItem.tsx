@@ -1,11 +1,13 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
+import { Avatar } from '@/components/ui/Avatar';
 import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Client } from '@/lib/services/clientService';
+import { Badge } from '../ui/Badge';
 
 export interface ClientItemProps {
   client: Client;
@@ -34,30 +36,32 @@ export const ClientItem: React.FC<ClientItemProps> = ({
 
   return (
     <TouchableOpacity
-      style={[styles.container, { borderBottomColor: colors.icon }]}
+      style={[styles.container, { borderBottomColor: colors.border }]}
       onPress={handlePress}
       activeOpacity={0.7}
     >
       <View style={styles.content}>
         {/* Avatar */}
-        <View style={[styles.avatar, { backgroundColor: colors.muted }]}>
-          <Icon name="user" size={24} color={colors.icon} />
-        </View>
+        <Avatar
+          image={client.avatar}
+          icon="user-filled"
+          size={48}
+          backgroundColor="muted"
+          iconColor="icon"
+        />
 
         {/* Client Info */}
         <View style={styles.info}>
           <View style={styles.nameRow}>
-            <Typography variant="body1" style={[styles.name, { color: colors.text }]}>
+            <Typography variant="body1Medium" style={styles.name}>
               {client.name}
             </Typography>
-            {client.rating !== undefined && (
-              <View style={styles.rating}>
-                <Icon name="star" size={16} color={colors.icon} />
-                <Typography variant="caption" style={[styles.ratingText, { color: colors.icon }]}>
-                  {client.rating}
-                </Typography>
-              </View>
-            )}
+            <View style={styles.rating}>
+              <Badge icon="star-filled" value={client.rating || 4} backgroundColor='muted' foregroundColor='icon' size="sm" />
+              <Badge icon="calendar-dots" value={client.rating || 3} backgroundColor='tertiary' foregroundColor='tertiaryForeground' size="sm" />
+              <Badge icon="check" value={client.rating || 2} backgroundColor='success' foregroundColor='successForeground' size="sm" />
+              <Badge icon="user-dollar" value='600£' backgroundColor='muted' foregroundColor='primaryForeground' size="sm" />
+            </View>
           </View>
 
           {/* Indicators */}
@@ -101,27 +105,19 @@ export const ClientItem: React.FC<ClientItemProps> = ({
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 1,
-    paddingVertical: 16,
+    paddingVertical: 10,
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   info: {
     flex: 1,
     gap: 8,
   },
   nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
     gap: 8,
   },
   name: {

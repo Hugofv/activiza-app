@@ -34,7 +34,8 @@ export default function NewClientLayout() {
           screenOptions={{
             headerShown: false,
             animation: 'slide_from_right',
-            animationDuration: 300,
+            animationDuration: 350,
+            gestureEnabled: true,
             contentStyle: {
               paddingTop: 0, // Remove default padding since we have our own header
             },

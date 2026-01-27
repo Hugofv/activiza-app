@@ -2,8 +2,9 @@ import { useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Pressable,
   StyleSheet,
-  View,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -85,30 +86,31 @@ export default function ClientsScreen() {
       <View style={[styles.content, { backgroundColor: colors.background }]}>
         {/* Sub-header with title, filter and new client button */}
         <View style={styles.subHeader}>
-          <Typography variant="h4" style={[styles.title, { color: colors.primary }]}>
+          <Typography variant="h4" style={[styles.title]}>
             {t('tabs.customers') || 'Clientes'}
           </Typography>
 
           <View style={styles.headerActions}>
-            {/* New Client Button */}
-            <IconButton
-              icon="plus"
-              variant="primary"
-              shape="rounded"
-              size="sm"
-              onPress={handleNewClient}
-              accessibilityLabel={t('tabs.newClient') || 'Novo Cliente'}
+            <Select
+              options={FILTER_OPTIONS}
+              value={selectedFilter}
+              onValueChange={(value) => setSelectedFilter(value)}
+              style={styles.select}
             />
           </View>
         </View>
 
         <View>
-          <Select
-            options={FILTER_OPTIONS}
-            value={selectedFilter}
-            onValueChange={(value) => setSelectedFilter(value)}
-            style={styles.select}
-          />
+          <Pressable style={styles.newClientButton} onPress={handleNewClient}>
+            <IconButton variant='secondary'
+              size='sl'
+              shape='rounded'
+              icon='user-plus'
+              iconColor={colors.primaryForeground}
+              iconSize={28} />
+
+            <Typography variant={'body2Medium'} color='primaryForeground'>{t('clients.newClient')}</Typography>
+          </Pressable>
         </View>
 
         {/* Clients List */}
@@ -154,6 +156,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 16,
     paddingBottom: 8,
+  },
+  newClientButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderBottomColor: Colors.light.border,
+    borderBottomWidth: 1,
   },
   headerTitle: {
     fontSize: 20,

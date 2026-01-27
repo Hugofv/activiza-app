@@ -44,6 +44,8 @@ const typographyVariants = cva('', {
   },
 });
 
+export type TypographyVariant = VariantProps<typeof typographyVariants>['variant'];
+
 export interface TypographyProps
   extends TextProps,
     VariantProps<typeof typographyVariants> {
@@ -161,7 +163,7 @@ const Typography = React.forwardRef<React.ElementRef<typeof Text>, TypographyPro
         case 'link':
           return colors.primary; // Primary green for links
         default:
-          return colors.text; // Default text color (theme-aware)
+          return colors.primaryForeground; // Default text color (theme-aware)
       }
     };
 
