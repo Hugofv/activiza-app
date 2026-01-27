@@ -18,6 +18,7 @@ import {
   IconEye,
   IconEyeOff,
   IconFileText,
+  IconHistory,
   IconHomeFilled,
   IconHourglass,
   IconInfoCircle,
@@ -35,7 +36,7 @@ import {
   IconUserFilled,
   IconUserPlus,
   IconUsers,
-  IconUserShare
+  IconUserShare,
 } from '@tabler/icons-react-native';
 import * as React from 'react';
 import { type StyleProp, type ViewStyle, View } from 'react-native';
@@ -107,6 +108,7 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'currency-dollar': IconCurrencyDollar,
   'document-text-outline': IconFileText,
   'file-text': IconFileText,
+  'history': IconHistory,
 
   // Shapes
   'ellipse-outline': IconCircle,

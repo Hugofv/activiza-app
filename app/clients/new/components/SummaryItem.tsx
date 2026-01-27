@@ -14,13 +14,13 @@ const SummaryItem = ({ icon, label, value }: { icon?: string, label: string, val
         <Icon name={icon as IconName} size={22} color={colors.icon} />
       )}
       <View>
-        <Typography variant="body2" color='placeholder'>
+        <Typography variant="body1Medium" color='placeholder'>
           {label}
         </Typography>
         <View style={styles.valueRow}>
           {
             typeof value === 'string' ? (
-              <Typography variant="body1" color='primaryForeground'>
+              <Typography variant="h6Medium" color='text'>
                 {value}
               </Typography>
             ) : (

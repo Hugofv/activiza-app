@@ -156,12 +156,13 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   newClientButton: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    paddingVertical: 16,
     borderBottomColor: Colors.light.border,
     borderBottomWidth: 1,
+    backgroundColor: Colors.light.background,
   },
   headerTitle: {
     fontSize: 20,

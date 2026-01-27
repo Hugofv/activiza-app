@@ -1,5 +1,5 @@
 import { Image as ExpoImage } from 'expo-image';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -15,79 +15,20 @@ import { BackButton } from '@/components/ui/BackButton';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
+import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
-import { getClientById, type Client } from '@/lib/services/clientService';
+import { getClientById } from '@/lib/services/clientService';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import SummaryItem from './new/components/SummaryItem';
 
-interface DetailRowProps {
-  icon: string;
-  label: string;
-  value?: string | React.ReactNode;
-  onActionPress?: () => void;
-  actionIcon?: string;
-}
 
-function DetailRow({ icon, label, value, onActionPress, actionIcon }: DetailRowProps) {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
-
-  if (!value) return null;
-
-  return (
-    <View style={[styles.detailRow, { borderBottomColor: colors.border }]}>
-      <View style={styles.detailRowLeft}>
-        <Icon name={icon} size={24} color={colors.icon} />
-        <View style={styles.detailRowContent}>
-          <Typography variant="body2Medium" style={[styles.detailLabel, { color: colors.text }]}>
-            {label}
-          </Typography>
-          {typeof value === 'string' ? (
-            <Typography variant="body1" style={[styles.detailValue, { color: colors.text }]}>
-              {value}
-            </Typography>
-          ) : (
-            value
-          )}
-        </View>
-      </View>
-      {onActionPress && actionIcon && (
-        <TouchableOpacity onPress={onActionPress} style={styles.actionButton}>
-          <Icon name={actionIcon} size={20} color={colors.primary} />
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-}
-
-interface ActionButtonProps {
-  icon: string;
-  label: string;
-  onPress?: () => void;
-}
-
-function ActionButton({ icon, label, onPress }: ActionButtonProps) {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
-
-  return (
-    <TouchableOpacity style={styles.actionButtonContainer} onPress={onPress}>
-      <View style={[styles.actionButtonCircle, { backgroundColor: colors.primaryWhitenOpacity }]}>
-        <Icon name={icon} size={24} color={colors.primaryForeground} />
-      </View>
-      <Typography variant="caption" style={[styles.actionButtonLabel, { color: colors.primaryForeground }]}>
-        {label}
-      </Typography>
-    </TouchableOpacity>
-  );
-}
 
 export default function ClientDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -195,7 +136,7 @@ export default function ClientDetailScreen() {
             iconColor="icon"
           />
           <View style={styles.profileInfo}>
-            <Typography variant="h3" style={[styles.clientName, { color: colors.text }]}>
+            <Typography variant="body1Bold" style={[styles.clientName, { color: colors.text }]}>
               {client.name}
             </Typography>
             {client.rating !== undefined && (
@@ -212,62 +153,90 @@ export default function ClientDetailScreen() {
 
         {/* Action Buttons */}
         <View style={styles.actionButtonsRow}>
-          <ActionButton icon="calendar" label={t('clients.history') || 'Histórico'} onPress={handleHistory} />
-          <ActionButton icon="whatsapp" label={t('clients.chat') || 'Conversar'} onPress={handleChat} />
-          <ActionButton icon="map-pin" label={t('clients.viewOnMap') || 'Ver no mapa'} onPress={handleMap} />
+          <IconButton
+            icon="calendar"
+            label={t('clients.history') || 'Histórico'}
+            onPress={handleHistory}
+            backgroundColor="muted"
+            shape="rounded"
+            size="md"
+            labelStyle={{width: 90, textAlign: 'center'}}
+          />
+          <IconButton
+            icon="whatsapp"
+            label={t('clients.chat') || 'Conversar'}
+            onPress={handleChat}
+            backgroundColor="muted"
+            shape="rounded"
+            size="md"
+            labelStyle={{width: 90, textAlign: 'center'}}
+          />
+          <IconButton
+            icon="map-pin"
+            label={t('clients.viewOnMap') || 'Ver no mapa'}
+            onPress={handleMap}
+            backgroundColor="muted"
+            shape="rounded"
+            size="md"
+            labelStyle={{width: 90, textAlign: 'center'}}
+          />
         </View>
 
         {/* Details Section */}
         <View style={styles.detailsSection}>
           {/* WhatsApp */}
           {client.phone && (
-            <DetailRow
-              icon="whatsapp"
-              label={t('clients.whatsapp') || 'WhatsApp'}
-              value={client.phone}
-            />
+            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
+              <SummaryItem
+                icon="whatsapp"
+                label={t('clients.whatsapp') || 'WhatsApp'}
+                value={client.phone}
+              />
+            </View>
           )}
 
           {/* Observation */}
           {observation && (
-            <DetailRow
-              icon="note"
-              label={t('clients.observation') || 'Observação'}
-              value={observation}
-            />
+            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
+              <SummaryItem
+                icon="note"
+                label={t('clients.observation') || 'Observação'}
+                value={observation}
+              />
+            </View>
           )}
 
           {/* Reference */}
           {reference && (
-            <DetailRow
-              icon="user-share"
-              label={t('clients.reference') || 'Referência'}
-              value={
-                <View style={styles.referenceValue}>
-                  <Typography variant="body1" style={{ color: colors.text }}>
-                    @ {reference.name}
-                  </Typography>
-                  <Badge
-                    icon="star"
-                    value={reference.rating}
-                    backgroundColor="muted"
-                    foregroundColor="icon"
-                    size="sm"
-                  />
-                </View>
-              }
-            />
+            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
+              <SummaryItem
+                icon="user-share"
+                label={t('clients.reference') || 'Referência'}
+                value={
+                  <View style={styles.referenceValue}>
+                    <Typography variant="body1" style={{ color: colors.text }}>
+                      @ {reference.name}
+                    </Typography>
+                    <Badge
+                      icon="star"
+                      value={reference.rating}
+                      backgroundColor="muted"
+                      foregroundColor="icon"
+                      size="sm"
+                    />
+                  </View>
+                }
+              />
+            </View>
           )}
 
           {/* Documents */}
           {documents && documents.length > 0 && (
-            <View style={[styles.detailRow, { borderBottomColor: colors.border }]}>
-              <View style={styles.detailRowLeft}>
-                <Icon name="file-text" size={24} color={colors.icon} />
-                <View style={styles.detailRowContent}>
-                  <Typography variant="body2Medium" style={[styles.detailLabel, { color: colors.text }]}>
-                    {t('clients.documents') || 'Documentos'}
-                  </Typography>
+            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
+              <SummaryItem
+                icon="file-text"
+                label={t('clients.documents') || 'Documentos'}
+                value={
                   <View style={styles.documentsRow}>
                     {documents.map((doc, index) => (
                       <TouchableOpacity key={index} style={styles.documentThumbnail}>
@@ -279,29 +248,36 @@ export default function ClientDetailScreen() {
                       </TouchableOpacity>
                     ))}
                   </View>
-                </View>
-              </View>
+                }
+              />
             </View>
           )}
 
           {/* Email */}
           {client.email && (
-            <DetailRow
-              icon="mail"
-              label={t('clients.email') || 'Endereço de e-mail'}
-              value={client.email}
-              onActionPress={handleEmailAction}
-              actionIcon="mail"
-            />
+            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
+              <View style={styles.emailRow}>
+                <SummaryItem
+                  icon="mail"
+                  label={t('clients.email') || 'Endereço de e-mail'}
+                  value={client.email}
+                />
+                <TouchableOpacity onPress={handleEmailAction} style={styles.actionButtonWrapper}>
+                  <Icon name="mail" size={20} color={colors.primary} />
+                </TouchableOpacity>
+              </View>
+            </View>
           )}
 
           {/* Address */}
           {address && (
-            <DetailRow
-              icon="map-pin"
-              label={t('clients.address') || 'Endereço físico'}
-              value={address}
-            />
+            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
+              <SummaryItem
+                icon="map-pin"
+                label={t('clients.address') || 'Endereço físico'}
+                value={address}
+              />
+            </View>
           )}
         </View>
       </ScrollView>
@@ -358,55 +334,24 @@ const styles = StyleSheet.create({
   },
   actionButtonsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 24,
-    paddingBottom: 32,
-  },
-  actionButtonContainer: {
-    alignItems: 'center',
-    gap: 8,
-  },
-  actionButtonCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionButtonLabel: {
-    fontSize: 12,
-    fontWeight: '500',
+    paddingBottom: 32,
+    gap: 5,
   },
   detailsSection: {
     paddingHorizontal: 24,
   },
-  detailRow: {
+  detailItem: {
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+  },
+  emailRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
     gap: 12,
   },
-  detailRowLeft: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  detailRowContent: {
-    flex: 1,
-    gap: 4,
-  },
-  detailLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 4,
-  },
-  detailValue: {
-    fontSize: 16,
-  },
-  actionButton: {
+  actionButtonWrapper: {
     padding: 8,
   },
   referenceValue: {
