@@ -49,14 +49,14 @@ export default function ReliabilityScreen() {
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Title */}
-            <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
-              {t('clients.reliability')}
-            </Typography>
-
-            {/* Question */}
-            <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
-              {t('clients.reliabilityQuestion')}
-            </Typography>
+            <View style={styles.titleContainer}>
+              <Typography variant="h3" color='text'>
+                {t('clients.reliability')}
+              </Typography>
+              <Typography variant="body2" color='placeholder'>
+                {t('clients.optional')}
+              </Typography>
+            </View>
 
             {/* Star Rating */}
             <View style={styles.starContainer}>
@@ -67,7 +67,7 @@ export default function ReliabilityScreen() {
                   style={styles.starButton}
                 >
                   <Icon
-                    name="star"
+                    name="star-filled"
                     size={48}
                     color={
                       reliability && star <= reliability
@@ -132,5 +132,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
     alignItems: 'flex-end',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
   },
 });

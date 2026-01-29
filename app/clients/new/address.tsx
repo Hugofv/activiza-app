@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -8,15 +9,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AddressFlow } from '@/components/address';
 import { ThemedView } from '@/components/ThemedView';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { CountryCode } from '@/lib/services/postalCodeService';
 
 import { useNewClientForm } from './_context';
+import { CancelButton } from './components/CancelButton';
 
 export default function AddressScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const { t } = useTranslation();
   const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const countryCode = (formData.address?.countryCode as CountryCode) || null;
 
@@ -97,6 +101,12 @@ export default function AddressScreen() {
     router.push('/clients/new/observation');
   };
 
+  const headerTitle = (
+    <Typography variant="h4" style={{ color: colors.text }}>
+      {t('clients.newClient')}
+    </Typography>
+  );
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -129,8 +139,8 @@ export default function AddressScreen() {
               onComplete={handleComplete}
               onBack={handleBack}
               showProgress={false}
-              showBackButton={false}
-              customHeader={null}
+              headerTitle={headerTitle}
+              headerAction={<CancelButton />}
             />
           </ThemedView>
         </ThemedView>

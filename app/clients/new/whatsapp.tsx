@@ -86,12 +86,12 @@ export default function WhatsAppScreen() {
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Title */}
-            <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
+            <Typography variant="h3" color='text'>
               {t('clients.whatsapp')}
             </Typography>
 
             {/* Question */}
-            <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
+            <Typography variant="body1" color='text'>
               {t('clients.whatsappQuestion', { name: clientName })}
             </Typography>
 

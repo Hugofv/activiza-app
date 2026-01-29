@@ -329,7 +329,7 @@ const IconButton = React.forwardRef<
     const iconColorValue = getIconColor();
 
     return (
-      <Pressable style={styles.container} disabled={isDisabled} {...props}>
+      <Pressable style={label ? styles.container : {}} disabled={isDisabled} {...props}>
         <View
           className={cn(
             iconButtonVariants({

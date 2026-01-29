@@ -13,12 +13,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/ui/Avatar';
-import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+import { ThemedView } from '@/components/ThemedView';
+import { IconButton } from '@/components/ui/IconButton';
+import { showError } from '@/lib/utils/toast';
 import { useNewClientForm } from './_context';
 
 export default function AvatarScreen() {
@@ -36,7 +38,7 @@ export default function AvatarScreen() {
         Alert.alert(
           t('clients.permissionRequired') || 'Permissão necessária',
           t('clients.cameraPermissionMessage') ||
-            'Precisamos de permissão para acessar suas fotos!'
+          'Precisamos de permissão para acessar suas fotos!'
         );
         return false;
       }
@@ -50,21 +52,18 @@ export default function AvatarScreen() {
 
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1], // Square aspect ratio for avatar
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets[0]) {
+      if (!result.canceled && result.assets && result.assets[0]) {
         setAvatar(result.assets[0].uri);
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert(
-        t('common.error') || 'Erro',
-        t('clients.imagePickerError') || 'Erro ao selecionar imagem'
-      );
+      showError(t('clients.imagePickerError') || 'Erro ao selecionar imagem');
     }
   };
 
@@ -92,70 +91,70 @@ export default function AvatarScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={['bottom']}
     >
-      <View style={styles.content}>
-        {/* Title */}
-        <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
-          {t('clients.avatar') || 'Foto de perfil'}
-        </Typography>
+      <ThemedView style={styles.container}>
+        <ThemedView style={styles.content}>
+          {/* Title */}
+          <Typography variant="h3" color='text'>
+            {t('clients.avatar')}
+          </Typography>
 
-        {/* Question */}
-        <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
-          {t('clients.avatarQuestion', { name: clientName }) ||
-            `Adicione uma foto de perfil para ${clientName}. Opcional`}
-        </Typography>
+          {/* Question */}
+          <Typography variant="body1" color='text'>
+            {t('clients.avatarQuestion', { name: clientName })}
+          </Typography>
 
-        {/* Avatar Display */}
-        <View style={styles.avatarContainer}>
-          {avatar ? (
-            <View style={styles.avatarWrapper}>
-              <Avatar image={avatar} size={160} />
-              <TouchableOpacity
-                style={[styles.removeButton, { backgroundColor: colors.background }]}
-                onPress={removeAvatar}
-              >
-                <Icon name="close-circle" size={24} color={colors.text} />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <Pressable
-              style={[
-                styles.addAvatarButton,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.background,
-                },
-              ]}
-              onPress={pickImage}
-            >
-              <View style={styles.addAvatarContent}>
-                <Icon name="camera" size={48} color={colors.primary} />
-                <Typography variant="body1Medium" style={{ color: colors.primary }}>
-                  {t('clients.addPhoto') || 'Adicionar foto'}
-                </Typography>
+          {/* Avatar Display */}
+          <View style={styles.avatarContainer}>
+            {avatar ? (
+              <View style={styles.avatarWrapper}>
+                <Avatar image={avatar} size={160} />
+                <TouchableOpacity
+                  style={[styles.removeButton, { backgroundColor: colors.background }]}
+                  onPress={removeAvatar}
+                >
+                  <Icon name="close-circle" size={24} color={colors.text} />
+                </TouchableOpacity>
               </View>
-            </Pressable>
-          )}
-        </View>
+            ) : (
+              <Pressable
+                style={[
+                  styles.addAvatarButton,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.background,
+                  },
+                ]}
+                onPress={pickImage}
+              >
+                <View style={styles.addAvatarContent}>
+                  <Icon name="camera" size={48} color={colors.primaryForeground} />
+                  <Typography variant="body1Medium" color='primaryForeground'>
+                    {t('clients.addPhoto')}
+                  </Typography>
+                </View>
+              </Pressable>
+            )}
+          </View>
 
-        {/* Optional Label */}
-        <Typography variant="body2" style={[styles.optional, { color: colors.icon }]}>
-          {t('clients.optional') || 'Opcional'}
-        </Typography>
-      </View>
+          {/* Optional Label */}
+          <Typography variant="body2" style={[styles.optional, { color: colors.icon }]}>
+            {t('clients.optional')}
+          </Typography>
+        </ThemedView>
+      </ThemedView>
 
       {/* Next Button */}
       <View style={styles.buttonContainer}>
-        <Button
+        <IconButton
           variant="primary"
-          size="full"
+          size="md"
+          icon="arrow-forward"
+          iconSize={32}
+          iconColor={colors.primaryForeground}
           onPress={handleNext}
           disabled={isSubmitting}
           loading={isSubmitting}
-        >
-          <Typography variant="body1Medium" color="primaryForeground">
-            {t('common.next') || 'Próximo'}
-          </Typography>
-        </Button>
+        />
       </View>
     </SafeAreaView>
   );
@@ -166,12 +165,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    flex: 1,
     paddingTop: 0,
     paddingHorizontal: 24,
-    gap: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   title: {
     fontSize: 32,
@@ -227,6 +222,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     paddingHorizontal: 24,
     paddingBottom: 24,
-    paddingTop: 16,
+    alignItems: 'flex-end',
   },
 });

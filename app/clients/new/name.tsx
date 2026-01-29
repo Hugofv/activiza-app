@@ -67,7 +67,7 @@ export default function NameScreen() {
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Title */}
-            <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
+            <Typography variant="h3" color='text'>
               {t('clients.name')}
             </Typography>
 

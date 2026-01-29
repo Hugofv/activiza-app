@@ -20,6 +20,11 @@ export interface AutocompleteProps<T = string> {
   disabled?: boolean;
   error?: string;
   label?: string;
+  /**
+   * Optional callback fired whenever the internal search query changes.
+   * Useful for implementing remote search with debounce in the parent.
+   */
+  onSearchChange?: (query: string) => void;
 }
 
 export function Autocomplete<T = string>({
@@ -31,6 +36,7 @@ export function Autocomplete<T = string>({
   disabled = false,
   error,
   label,
+  onSearchChange,
 }: AutocompleteProps<T>) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -67,6 +73,9 @@ export function Autocomplete<T = string>({
 
   const handleInputChange = (text: string) => {
     setSearchQuery(text);
+    if (onSearchChange) {
+      onSearchChange(text);
+    }
     if (!isOpen) {
       setIsOpen(true);
     }
@@ -128,7 +137,6 @@ export function Autocomplete<T = string>({
             styles.dropdown,
             {
               backgroundColor: colors.background,
-              borderColor: colors.icon,
               shadowColor: colors.text,
             },
           ]}
@@ -155,7 +163,7 @@ export function Autocomplete<T = string>({
                     style={[
                       styles.optionText,
                       {
-                        color: isSelected ? colors.primary : colors.text,
+                        color: isSelected ? colors.primaryForeground : colors.text,
                         fontWeight: isSelected ? '600' : '400',
                       },
                     ]}
@@ -163,7 +171,7 @@ export function Autocomplete<T = string>({
                     {item.label}
                   </Typography>
                   {isSelected && (
-                    <Icon name="check" size={20} color={colors.primary} />
+                    <Icon name="check" size={20} color={colors.primaryForeground} />
                   )}
                 </Pressable>
               );
@@ -216,7 +224,6 @@ const styles = StyleSheet.create({
     right: 0,
     maxHeight: 200,
     borderRadius: 8,
-    borderWidth: 1,
     marginTop: 4,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -233,8 +240,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
   },
   optionText: {
     flex: 1,

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -57,6 +58,10 @@ export interface AddressFlowProps {
   showProgress?: boolean;
   showBackButton?: boolean;
   customHeader?: React.ReactNode; // Custom header to replace the default one
+  /** Optional title element to render in the center of the header */
+  headerTitle?: React.ReactNode;
+  /** Optional action element to render on the right side of the header */
+  headerAction?: React.ReactNode;
 }
 
 /**
@@ -81,6 +86,8 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
   showProgress = true,
   showBackButton = true,
   customHeader,
+  headerTitle,
+  headerAction,
 }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -221,6 +228,27 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
     }
   };
 
+  // Build a shared header when title/action are provided.
+  // This header uses the internal handleBack logic so that the flow can
+  // navigate between stages before leaving the address screen.
+  const renderHeader = () => {
+    if (!headerTitle && !headerAction) return null;
+
+    return (
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          {showBackButton && <BackButton onPress={handleBack} />}
+        </View>
+        <View style={styles.headerCenter}>{headerTitle}</View>
+        <View style={styles.headerRight}>{headerAction}</View>
+      </View>
+    );
+  };
+
+  // Decide which header to pass down to child steps.
+  const effectiveCustomHeader = customHeader ?? renderHeader();
+  const childShowBackButton = effectiveCustomHeader ? false : showBackButton;
+
   return (
     <View style={styles.container}>
       {/* Stage 1: Country Selection */}
@@ -228,11 +256,11 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
         <CountrySelector
           initialValue={selectedCountry}
           onSelect={handleCountrySelect}
-          onBack={showBackButton ? handleBack : undefined}
+          onBack={childShowBackButton ? handleBack : undefined}
           progressValue={getProgressValue()}
           showProgress={showProgress}
-          showBackButton={customHeader ? false : showBackButton}
-          customHeader={customHeader}
+          showBackButton={childShowBackButton}
+          customHeader={effectiveCustomHeader}
         />
       )}
 
@@ -242,11 +270,11 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
           initialValue={initialPostalCode}
           countryCode={countryCode}
           onSubmit={handlePostalCodeSubmit}
-          onBack={showBackButton ? handleBack : undefined}
+          onBack={childShowBackButton ? handleBack : undefined}
           progressValue={getProgressValue()}
           showProgress={showProgress}
-          showBackButton={customHeader ? false : showBackButton}
-          customHeader={customHeader}
+          showBackButton={childShowBackButton}
+          customHeader={effectiveCustomHeader}
           onSubmitReady={handlePostalCodeSubmitReady}
         />
       )}
@@ -258,11 +286,11 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
           countryCode={countryCode}
           apiFilled={initialApiFilled}
           onSubmit={handleAddressSubmit}
-          onBack={showBackButton ? handleBack : undefined}
+          onBack={childShowBackButton ? handleBack : undefined}
           progressValue={getProgressValue()}
           showProgress={showProgress}
-          showBackButton={customHeader ? false : showBackButton}
-          customHeader={customHeader}
+          showBackButton={childShowBackButton}
+          customHeader={effectiveCustomHeader}
           onSubmitReady={handleAddressSubmitReady}
         />
       )}
@@ -314,6 +342,24 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 0,
+    paddingBottom: 26,
+  },
+  headerLeft: {
+    width: 80,
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  headerRight: {
+    minWidth: 80,
+    alignItems: 'flex-end',
   },
   buttonContainer: {
     paddingBottom: 56,

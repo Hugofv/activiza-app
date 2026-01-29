@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -16,20 +16,24 @@ export default function NewClientLayout() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
+  const pathname = usePathname();
+  const isAddressRoute = pathname?.endsWith('/clients/new/address');
 
   return (
     <NewClientFormProvider>
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
         {/* Shared Header */}
-        <View style={[styles.header, { backgroundColor: colors.background }]}>
-          <View style={styles.headerLeft}>
-            <BackButton />
+        {!isAddressRoute && (
+          <View style={[styles.header, { backgroundColor: colors.background }]}>
+            <View style={styles.headerLeft}>
+              <BackButton />
+            </View>
+            <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
+              {t('clients.newClient')}
+            </Typography>
+            <CancelButton />
           </View>
-          <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
-            {t('clients.newClient')}
-          </Typography>
-          <CancelButton />
-        </View>
+        )}
         <Stack
           screenOptions={{
             headerShown: false,

@@ -1,5 +1,5 @@
-import * as ImagePicker from 'expo-image-picker';
 import { Image as ExpoImage } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,13 +15,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
-import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+import { IconButton } from '@/components/ui/IconButton';
 import { useNewClientForm } from './_context';
 
 export default function DocumentsScreen() {
@@ -55,15 +54,15 @@ export default function DocumentsScreen() {
 
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
+        mediaTypes: ['images'],
+        allowsMultipleSelection: true,
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets[0]) {
-        const newImageUri = result.assets[0].uri;
-        setDocumentImages((prev) => [...prev, newImageUri]);
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        // Add all selected images to the list
+        const newImageUris = result.assets.map((asset) => asset.uri);
+        setDocumentImages((prev) => [...prev, ...newImageUris]);
       }
     } catch (error) {
       console.error('Error picking image:', error);
@@ -104,12 +103,12 @@ export default function DocumentsScreen() {
         >
           <ThemedView style={styles.content}>
             {/* Title */}
-            <View style={styles.titleRow}>
-              <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
-                {t('clients.documents') || 'Documentos'}
+            <View style={styles.titleContainer}>
+              <Typography variant="h3" color='text'>
+                {t('clients.documents')}
               </Typography>
-              <Typography variant="body2" style={[styles.optional, { color: colors.icon }]}>
-                {t('clients.optional') || 'Opcional'}
+              <Typography variant="body2" color='placeholder'>
+                {t('clients.optional')}
               </Typography>
             </View>
 
@@ -118,16 +117,16 @@ export default function DocumentsScreen() {
               style={[
                 styles.addPhotoButton,
                 {
-                  borderColor: colors.border,
+                  borderColor: colors.placeholder,
                   backgroundColor: colors.background,
                 },
               ]}
               onPress={pickImage}
             >
               <View style={styles.addPhotoContent}>
-                <Icon name="file-text" size={32} color={colors.primary} />
-                <Typography variant="body1Medium" style={{ color: colors.primary }}>
-                  {t('clients.addPhoto') || 'Adicionar foto'}
+                <Icon name="photo" size={32} color={colors.primaryForeground} />
+                <Typography variant="body1Medium" color='primaryForeground'>
+                  {t('clients.addPhoto')}
                 </Typography>
               </View>
             </Pressable>
@@ -157,17 +156,16 @@ export default function DocumentsScreen() {
 
         {/* Next Button */}
         <View style={styles.buttonContainer}>
-          <Button
+          <IconButton
             variant="primary"
-            size="full"
+            size="md"
+            icon="arrow-forward"
+            iconSize={32}
+            iconColor={colors.primaryForeground}
             onPress={handleNext}
             disabled={isSubmitting}
             loading={isSubmitting}
-          >
-            <Typography variant="body1Medium" color="primaryForeground">
-              {t('common.next') || 'Próximo'}
-            </Typography>
-          </Button>
+          />
         </View>
       </ThemedView>
     </SafeAreaView>
@@ -190,30 +188,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 24,
   },
-  titleRow: {
+  titleContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: 12,
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-  },
-  optional: {
-    fontSize: 16,
-    opacity: 0.7,
+    gap: 8,
   },
   addPhotoButton: {
     borderWidth: 2,
     borderStyle: 'dashed',
     borderRadius: 12,
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 120,
+    padding: 12,
+    minHeight: 30,
   },
   addPhotoContent: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
@@ -246,6 +235,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     paddingHorizontal: 24,
     paddingBottom: 24,
-    paddingTop: 16,
+    alignItems: 'flex-end',
   },
 });

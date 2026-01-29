@@ -4,6 +4,7 @@ import {
   IconBrandWhatsapp,
   IconCalendar,
   IconCalendarDot,
+  IconCamera,
   IconCar,
   IconCheck,
   IconChevronDown,
@@ -21,10 +22,12 @@ import {
   IconHistory,
   IconHomeFilled,
   IconHourglass,
+  IconId,
   IconInfoCircle,
   IconMail,
   IconMapPin,
   IconNote,
+  IconPhoto,
   IconPlus,
   IconReceipt2,
   IconSquareRoundedPlusFilled,
@@ -36,7 +39,7 @@ import {
   IconUserFilled,
   IconUserPlus,
   IconUsers,
-  IconUserShare,
+  IconUserShare
 } from '@tabler/icons-react-native';
 import * as React from 'react';
 import { type StyleProp, type ViewStyle, View } from 'react-native';
@@ -96,6 +99,7 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'user-circle': IconUserCircle,
   'user-plus': IconUserPlus,
   'whatsapp': IconBrandWhatsapp,
+  'id': IconId,
 
   // Places
   'home': IconHomeFilled,
@@ -113,6 +117,10 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   // Shapes
   'ellipse-outline': IconCircle,
   'circle': IconCircle,
+
+  // Devices
+  'camera': IconCamera,
+  'photo': IconPhoto,
 };
 
 export type IconName = keyof typeof ICON_MAP | string;

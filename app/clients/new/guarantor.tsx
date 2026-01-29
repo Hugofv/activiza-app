@@ -1,15 +1,17 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Icon } from '@/components/ui/Icon';
+import { Autocomplete } from '@/components/ui/Autocomplete';
 import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { createOfflineQueryOptions, useQuery } from '@/lib/hooks/useQuery';
+import { Client, getClients } from '@/lib/services/clientService';
 
 import { useNewClientForm } from './_context';
 
@@ -17,13 +19,53 @@ export default function GuarantorScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, setCurrentStep } = useNewClientForm();
+  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [selectedGuarantorId, setSelectedGuarantorId] = useState<string | null>(
+    formData.guarantor?.id || null
+  );
 
-  const handleSelectGuarantor = () => {
-    // TODO: Open contact selector modal
-    // For now, just skip this step
-    handleNext();
+  // Debounce the search query to avoid spamming the API
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearch(searchQuery.trim());
+    }, 400);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const { data: clientsData } = useQuery(
+    createOfflineQueryOptions({
+      queryKey: ['clients', 'guarantor-search', debouncedSearch],
+      // If search is empty, we can either avoid hitting the API or return first page.
+      // Here we just don't search when empty and reuse last data.
+      queryFn: () =>
+        debouncedSearch
+          ? getClients({ search: debouncedSearch })
+          : getClients({}),
+      staleTime: 1000 * 60, // 1 minute
+    })
+  );
+
+  const clients: Client[] = clientsData?.results ?? [];
+  const options = clients.slice(0, 10).map((client) => ({
+    value: client.id,
+    label: client.name,
+  }));
+
+  const handleGuarantorChange = (value: string) => {
+    setSelectedGuarantorId(value);
+    const client = clients.find((c) => c.id === value);
+    if (client) {
+      updateFormData({
+        guarantor: {
+          id: client.id,
+          name: client.name,
+          rating: client.rating,
+        },
+      });
+    }
   };
 
   const handleNext = async () => {
@@ -50,32 +92,25 @@ export default function GuarantorScreen() {
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Title */}
-            <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
-              {t('clients.guarantor')}
-            </Typography>
-
-            {/* Question */}
-            <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
-              {t('clients.guarantorQuestion')}
-            </Typography>
-
-            {/* Select Contact Button */}
-            <Pressable
-              style={[
-                styles.selectButton,
-                {
-                  backgroundColor: colors.muted,
-                  borderColor: colors.icon,
-                },
-              ]}
-              onPress={handleSelectGuarantor}
-            >
-              <Icon name="user" size={24} color={colors.icon} />
-              <Typography variant="body1" style={[styles.selectText, { color: colors.text }]}>
-                {formData.guarantor?.name || t('clients.guarantorSelect')}
+            <View style={styles.titleContainer}>
+              <Typography variant="h3" color='text'>
+                {t('clients.guarantor')}
               </Typography>
-              <Icon name="chevron-right" size={20} color={colors.icon} />
-            </Pressable>
+
+              <Typography variant="body2" color='placeholder'>
+                {t('clients.optional')}
+              </Typography>
+            </View>
+
+            {/* Guarantor Autocomplete */}
+            <Autocomplete
+              options={options}
+              value={selectedGuarantorId}
+              onValueChange={handleGuarantorChange}
+              placeholder={t('clients.guarantorSelect')}
+              label={t('clients.guarantor')}
+              onSearchChange={setSearchQuery}
+            />
           </ThemedView>
 
           {/* Continue Button */}
@@ -133,5 +168,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
     alignItems: 'flex-end',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
   },
 });

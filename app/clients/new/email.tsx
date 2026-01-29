@@ -69,9 +69,14 @@ export default function EmailScreen() {
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Title */}
-            <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
-              {t('clients.email')}
-            </Typography>
+            <View style={styles.titleContainer}>
+              <Typography variant="h3" color='text'>
+                {t('clients.email')}
+              </Typography>
+              <Typography variant="body2" color='placeholder'>
+                {t('clients.optional')}
+              </Typography>
+            </View>
 
             {/* Question */}
             <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
@@ -113,7 +118,7 @@ export default function EmailScreen() {
           </View>
         </ThemedView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 
@@ -141,5 +146,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
     alignItems: 'flex-end',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
   },
 });

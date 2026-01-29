@@ -217,7 +217,7 @@ export default function DocumentScreen() {
           >
             <ThemedView style={styles.content}>
               {/* Title */}
-              <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
+              <Typography variant="h3" color='text'>
                 {t('clients.document')}
               </Typography>
 
