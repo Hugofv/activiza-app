@@ -153,9 +153,18 @@ export async function createClient(clientData: CreateClientData): Promise<Client
       if (clientData.guarantorId) formData.append('guarantorId', clientData.guarantorId);
       if (clientData.reliability) formData.append('reliability', clientData.reliability.toString());
       
-      // Add address as JSON string if present
+      // Add address fields (nested under `address[...]`) if present
       if (clientData.address) {
-        formData.append('address', JSON.stringify(clientData.address));
+        const addr = clientData.address;
+        if (addr.postalCode) formData.append('address[postalCode]', addr.postalCode);
+        if (addr.street) formData.append('address[street]', addr.street);
+        if (addr.neighborhood) formData.append('address[neighborhood]', addr.neighborhood);
+        if (addr.city) formData.append('address[city]', addr.city);
+        if (addr.state) formData.append('address[state]', addr.state);
+        if (addr.country) formData.append('address[country]', addr.country);
+        if (addr.countryCode) formData.append('address[countryCode]', addr.countryCode);
+        if (addr.number) formData.append('address[number]', addr.number);
+        if (addr.complement) formData.append('address[complement]', addr.complement);
       }
       
       // Add avatar if present
@@ -242,9 +251,18 @@ export async function updateClient(id: string, clientData: UpdateClientData): Pr
       if (clientData.guarantorId) formData.append('guarantorId', clientData.guarantorId);
       if (clientData.reliability) formData.append('reliability', clientData.reliability.toString());
       
-      // Add address as JSON string if present
+      // Add address fields (nested under `address[...]`) if present
       if (clientData.address) {
-        formData.append('address', JSON.stringify(clientData.address));
+        const addr = clientData.address;
+        if (addr.postalCode) formData.append('address[postalCode]', addr.postalCode);
+        if (addr.street) formData.append('address[street]', addr.street);
+        if (addr.neighborhood) formData.append('address[neighborhood]', addr.neighborhood);
+        if (addr.city) formData.append('address[city]', addr.city);
+        if (addr.state) formData.append('address[state]', addr.state);
+        if (addr.country) formData.append('address[country]', addr.country);
+        if (addr.countryCode) formData.append('address[countryCode]', addr.countryCode);
+        if (addr.number) formData.append('address[number]', addr.number);
+        if (addr.complement) formData.append('address[complement]', addr.complement);
       }
       
       // Add avatar if present

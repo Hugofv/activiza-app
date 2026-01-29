@@ -132,52 +132,62 @@ export function Autocomplete<T = string>({
       </View>
 
       {isOpen && filteredOptions.length > 0 && (
-        <View
-          style={[
-            styles.dropdown,
-            {
-              backgroundColor: colors.background,
-              shadowColor: colors.text,
-            },
-          ]}
-        >
-          <ScrollView
-            style={styles.list}
-            nestedScrollEnabled
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={true}
+        <>
+          {/* Backdrop to close the list when clicking outside */}
+          <Pressable
+            style={styles.backdrop}
+            onPress={() => {
+              setIsOpen(false);
+              inputRef.current?.blur();
+            }}
+          />
+          <View
+            style={[
+              styles.dropdown,
+              {
+                backgroundColor: colors.background,
+                shadowColor: colors.text,
+              },
+            ]}
           >
-            {filteredOptions.map((item, index) => {
-              const isSelected = item.value === value;
-              return (
-                <Pressable
-                  key={`${item.value}-${index}`}
-                  onPress={() => handleSelect(item)}
-                  style={[
-                    styles.option,
-                    isSelected && { backgroundColor: colors.muted },
-                  ]}
-                >
-                  <Typography
-                    variant="body1"
+            <ScrollView
+              style={styles.list}
+              nestedScrollEnabled
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={true}
+            >
+              {filteredOptions.map((item, index) => {
+                const isSelected = item.value === value;
+                return (
+                  <Pressable
+                    key={`${item.value}-${index}`}
+                    onPress={() => handleSelect(item)}
                     style={[
-                      styles.optionText,
-                      {
-                        color: isSelected ? colors.primaryForeground : colors.text,
-                        fontWeight: isSelected ? '600' : '400',
-                      },
+                      styles.option,
+                      isSelected && { backgroundColor: colors.muted },
                     ]}
                   >
-                    {item.label}
-                  </Typography>
-                  {isSelected && (
-                    <Icon name="check" size={20} color={colors.primaryForeground} />
-                  )}
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
+                    <Typography
+                      variant="body1"
+                      style={[
+                        styles.optionText,
+                        {
+                          color: isSelected ? colors.primaryForeground : colors.text,
+                          fontWeight: isSelected ? '600' : '400',
+                        },
+                      ]}
+                    >
+                      {item.label}
+                    </Typography>
+                    {isSelected && (
+                      <Icon name="check" size={20} color={colors.primaryForeground} />
+                    )}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </>
       )}
 
       {error && (
@@ -229,6 +239,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
+    zIndex: 1001,
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     zIndex: 1000,
   },
   list: {

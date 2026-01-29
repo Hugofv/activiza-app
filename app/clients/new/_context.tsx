@@ -27,7 +27,7 @@ export interface NewClientFormData {
   guarantor?: {
     id: string;
     name: string;
-    rating?: number;
+    reliability?: number;
   };
   reliability?: number; // 1-5 stars
 }

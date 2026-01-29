@@ -1,13 +1,13 @@
+import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
-import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -16,6 +16,8 @@ import { createClient } from '@/lib/services/clientService';
 import { getAllDocumentTypes } from '@/lib/services/documentService';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { Badge } from '@/components/ui/Badge';
+import { Icon } from '@/components/ui/Icon';
 import { useNewClientForm } from './_context';
 import SummaryItem from './components/SummaryItem';
 
@@ -23,10 +25,12 @@ export default function SummaryScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, resetFormData } = useNewClientForm();
+  const { height } = useWindowDimensions();
+  const { _formData, resetFormData } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showSuccess, showError } = useToast();
   const queryClient = useQueryClient();
+  const formData = { "address": { "city": "Nerópolis", "complement": "", "country": "Brasil", "countryCode": "BR", "neighborhood": "Parque das Américas", "number": "343", "postalCode": "75460-110", "state": "GO", "street": "Rua 17" }, "avatar": "file:///Users/hugofv/Library/Developer/CoreSimulator/Devices/2154EE22-B4CA-47FA-A7CE-3D1C4AD81692/data/Containers/Data/Application/1D7CF1AB-FE56-437A-B2CC-4563B844A3FE/Library/Caches/ExponentExperienceData/@anonymous/ativiza-f3472adc-964f-4cdd-bd37-7ef8ba11c318/ImagePicker/2BFF9359-FEF0-4EE5-A716-7A004CFABC31.jpg", "document": "927.827.382-73", "documentImages": ["file:///Users/hugofv/Library/Developer/CoreSimulator/Devices/2154EE22-B4CA-47FA-A7CE-3D1C4AD81692/data/Containers/Data/Application/1D7CF1AB-FE56-437A-B2CC-4563B844A3FE/Library/Caches/ExponentExperienceData/@anonymous/ativiza-f3472adc-964f-4cdd-bd37-7ef8ba11c318/ImagePicker/23DE0244-5204-4DB4-B2C4-69EBD21755B5.jpg", "file:///Users/hugofv/Library/Developer/CoreSimulator/Devices/2154EE22-B4CA-47FA-A7CE-3D1C4AD81692/data/Containers/Data/Application/1D7CF1AB-FE56-437A-B2CC-4563B844A3FE/Library/Caches/ExponentExperienceData/@anonymous/ativiza-f3472adc-964f-4cdd-bd37-7ef8ba11c318/ImagePicker/FD3A2150-1239-4B42-8D21-5C7F5FE26027.jpg"], "documentType": "cpf", "email": "jhbig@jbh.com", "guarantor": { "id": 5, "name": "Jhony", "reliability": undefined }, "name": "Wallysson", "observation": "Sdfsdfsd", "reliability": undefined, "whatsapp": { "countryCode": "+55", "formattedPhoneNumber": "+55 86 76867 6767", "phoneNumber": "86 76867 6767" } };
 
   const handleConfirm = async () => {
     setIsSubmitting(true);
@@ -91,7 +95,7 @@ export default function SummaryScreen() {
           <Typography
             key={index}
             variant="body1"
-            color="primaryForeground"
+            color="text"
             style={styles.addressLine}
           >
             {part}
@@ -101,6 +105,7 @@ export default function SummaryScreen() {
     );
   };
 
+  console.log('formData', formData);
   return (
     <SafeAreaView
       style={[styles.container]}
@@ -118,79 +123,97 @@ export default function SummaryScreen() {
               {t('clients.summary')}
             </Typography>
 
-            {/* Summary Card */}
-            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-              <View style={[styles.summaryCard, { backgroundColor: colors.muted }]}>
-                {/* Avatar */}
-                {formData.avatar && (
-                  <View style={styles.avatarSection}>
-                    <Avatar image={formData.avatar} size={80} />
-                  </View>
-                )}
+            {/* Summary Card - internal scroll only */}
+            <View style={styles.scrollView}>
+              <View style={[styles.summaryCard, { backgroundColor: colors.background }]}>
+                <ScrollView
+                  style={{ maxHeight: height * 0.55 }}
+                  contentContainerStyle={styles.summaryCardContent}
+                  showsVerticalScrollIndicator={false}
+                >
+                  {/* Avatar */}
+                  {formData.avatar && (
+                    <View style={styles.avatarSection}>
+                      <Avatar image={formData.avatar} size={80} />
+                    </View>
+                  )}
 
-                {/* Name */}
-                <SummaryItem icon='user-circle' label={t('clients.summaryName')} value={formData.name || t('clients.summaryNotInformed')} />
+                  {/* Name */}
+                  <SummaryItem icon='user-circle' label={t('clients.summaryName')} value={formData.name || t('clients.summaryNotInformed')} />
 
-                {/* WhatsApp */}
-                <SummaryItem icon='whatsapp' label={t('clients.summaryWhatsapp')} value={formData.whatsapp?.formattedPhoneNumber || formData.whatsapp?.phoneNumber || t('clients.summaryNotInformed')} />
+                  {/* WhatsApp */}
+                  <SummaryItem icon='whatsapp' label={t('clients.summaryWhatsapp')} value={formData.whatsapp?.formattedPhoneNumber || formData.whatsapp?.phoneNumber || t('clients.summaryNotInformed')} />
 
-                {/* Email */}
-                {formData.email && (
-                  <SummaryItem icon='mail' label={t('clients.summaryEmail')} value={formData.email} />
-                )}
+                  {/* Email */}
+                  {formData.email && (
+                    <SummaryItem icon='mail' label={t('clients.summaryEmail')} value={formData.email} />
+                  )}
 
-                {/* Document */}
-                {formData.document && (() => {
-                  const documentTypeLabel = formData.documentType
-                    ? getAllDocumentTypes().find(dt => dt.value === formData.documentType)?.labelKey
-                    : null;
-                  const displayValue = documentTypeLabel
-                    ? `${t(`onboarding.${documentTypeLabel}`)}: ${formData.document}`
-                    : formData.document;
-                  return (
-                    <SummaryItem
-                      icon='id-card'
-                      label={t('clients.summaryDocument')}
-                      value={displayValue}
-                    />
-                  );
-                })()}
+                  {/* Document */}
+                  {formData.document && (() => {
+                    const documentTypeLabel = formData.documentType
+                      ? getAllDocumentTypes().find(dt => dt.value === formData.documentType)?.labelKey
+                      : null;
+                    const displayValue = documentTypeLabel
+                      ? `${t(`onboarding.${documentTypeLabel}`)}: ${formData.document}`
+                      : formData.document;
+                    return (
+                      <SummaryItem
+                        icon='id'
+                        label={t('clients.summaryDocument')}
+                        value={displayValue}
+                      />
+                    );
+                  })()}
 
-                {/* Address */}
-                <SummaryItem icon='map-pin' label={t('clients.summaryAddress')} value={formatAddress()} />
+                  {/* Address */}
+                  <SummaryItem icon='map-pin' label={t('clients.summaryAddress')} value={formatAddress()} />
 
-                {/* Observation */}
-                {formData.observation && (
-                  <SummaryItem icon='note' label={t('clients.summaryObservation')} value={formData.observation} />
-                )}
+                  {/* Observation */}
+                  {formData.observation && (
+                    <SummaryItem icon='note' label={t('clients.summaryObservation')} value={formData.observation} />
+                  )}
 
-                {/* Guarantor */}
-                {formData.guarantor && (
-                  <SummaryItem icon='user-share' label={t('clients.summaryGuarantor')} value={<View style={styles.guarantorRow}>
-                    <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                      {formData.guarantor.name}
-                    </Typography>
-                    {formData.guarantor.rating && (
-                      <View style={styles.ratingRow}>
-                        <Icon name="star" size={16} color="#fbbf24" />
-                        <Typography variant="caption" style={{ color: colors.text }}>
-                          {formData.guarantor.rating}
-                        </Typography>
+                  {/* Guarantor */}
+                  {formData.guarantor && (
+                    <SummaryItem icon='user-share' label={t('clients.summaryGuarantor')} value={
+                      <View style={styles.guarantorRow}>
+                        <Badge icon="user-circle" value={
+                          <View style={styles.guarantorNameRow}>
+                            <Typography variant='body2SemiBold' style={{ fontSize: 13 }}>
+                              {formData.guarantor.name}
+                            </Typography>
+                            <Icon name="star-filled" color={colors.primaryForeground} size={16} style={{ paddingLeft: 4, borderLeftWidth: 2, borderLeftColor: colors.border }} />
+                            <Typography variant="body2Medium" style={{ fontSize: 13 }} color="text">
+                              {formData.guarantor.reliability || 0}
+                            </Typography>
+                          </View>
+                        } backgroundColor="muted" foregroundColor="primaryForeground" size="sm" />
+                      </View>} />
+                  )}
+
+                  {/* Reliability */}
+                  {formData.reliability && (
+                    <SummaryItem icon='star' label={t('clients.summaryReliability')} value={<View style={styles.reliabilityRow}>
+                      <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
+                        {t('clients.reliabilityLevel', { level: formData.reliability })}
+                      </Typography>
+                    </View>} />
+                  )}
+
+                  {/* Document Images */}
+                  {formData.documentImages && (
+                    <SummaryItem icon='photo' label={t('clients.documents')} value={
+                      <View style={styles.documentImagesRow}>
+                        {formData.documentImages.map((image) => (
+                          <ExpoImage key={image} source={{ uri: image }} style={styles.documentImage} contentFit="cover" />
+                        ))}
                       </View>
-                    )}
-                  </View>} />
-                )}
-
-                {/* Reliability */}
-                {formData.reliability && (
-                  <SummaryItem icon='star' label={t('clients.summaryReliability')} value={<View style={styles.reliabilityRow}>
-                    <Typography variant="body1" style={[styles.value, { color: colors.text }]}>
-                      {t('clients.reliabilityLevel', { level: formData.reliability })}
-                    </Typography>
-                  </View>} />
-                )}
+                    } />
+                  )}
+                </ScrollView>
               </View>
-            </ScrollView>
+            </View>
           </ThemedView>
 
           {/* Confirm Button */}
@@ -231,11 +254,14 @@ const styles = StyleSheet.create({
   },
   summaryCard: {
     borderRadius: 12,
+    borderColor: Colors.light.border,
+    borderWidth: 1,
     padding: 20,
+  },
+  summaryCardContent: {
     gap: 20,
   },
   avatarSection: {
-    alignItems: 'center',
     marginBottom: 8,
   },
   summaryRow: {
@@ -252,6 +278,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  guarantorNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   ratingRow: {
     flexDirection: 'row',
@@ -282,5 +313,16 @@ const styles = StyleSheet.create({
   buttonLabel: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  documentImagesRow: {
+    marginTop: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  documentImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
   },
 });

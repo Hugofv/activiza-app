@@ -62,7 +62,7 @@ export default function GuarantorScreen() {
         guarantor: {
           id: client.id,
           name: client.name,
-          rating: client.rating,
+          reliability: client.reliability,
         },
       });
     }

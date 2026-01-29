@@ -25,7 +25,7 @@ export interface BadgeProps extends VariantProps<typeof badgeVariants> {
   /** Icon name to display */
   icon: IconName;
   /** Text or value to display */
-  value?: string | number;
+  value?: string | number | React.ReactNode;
   /** Background color */
   backgroundColor: ThemeColorKey;
   /** Foreground color for icon and text */
