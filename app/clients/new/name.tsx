@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
 
@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/Input';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 
 import { useNewClientForm } from './_context';
 
@@ -26,6 +27,7 @@ export default function NameScreen() {
   const { t } = useTranslation();
   const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const keyboardHeight = useKeyboardHeight();
 
   const nameSchema = yup.object().shape({
     name: yup.string().required(t('clients.nameRequired')).min(2, t('clients.nameMinLength')),
@@ -59,13 +61,8 @@ export default function NameScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={['bottom']}
     >
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
-        <ThemedView style={styles.container}>
-          <ThemedView style={styles.content}>
+      <ThemedView style={styles.container}>
+        <ThemedView style={styles.content}>
             {/* Title */}
             <Typography variant="h3" color='text'>
               {t('clients.name')}
@@ -97,7 +94,7 @@ export default function NameScreen() {
           </ThemedView>
 
           {/* Continue Button */}
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
             <IconButton
               variant="primary"
               size="md"
@@ -109,8 +106,7 @@ export default function NameScreen() {
               loading={isSubmitting}
             />
           </View>
-        </ThemedView>
-      </KeyboardAvoidingView>
+      </ThemedView>
     </SafeAreaView>
   );
 }

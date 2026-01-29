@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -10,6 +10,7 @@ import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { createOfflineQueryOptions, useQuery } from '@/lib/hooks/useQuery';
 import { Client, getClients } from '@/lib/services/clientService';
 
@@ -26,6 +27,7 @@ export default function GuarantorScreen() {
   const [selectedGuarantorId, setSelectedGuarantorId] = useState<string | null>(
     formData.guarantor?.id || null
   );
+  const keyboardHeight = useKeyboardHeight();
 
   // Debounce the search query to avoid spamming the API
   useEffect(() => {
@@ -84,13 +86,8 @@ export default function GuarantorScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={['bottom']}
     >
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
-        <ThemedView style={styles.container}>
-          <ThemedView style={styles.content}>
+      <ThemedView style={styles.container}>
+        <ThemedView style={styles.content}>
             {/* Title */}
             <View style={styles.titleContainer}>
               <Typography variant="h3" color='text'>
@@ -114,7 +111,7 @@ export default function GuarantorScreen() {
           </ThemedView>
 
           {/* Continue Button */}
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
             <IconButton
               variant="primary"
               size="md"
@@ -126,8 +123,7 @@ export default function GuarantorScreen() {
               loading={isSubmitting}
             />
           </View>
-        </ThemedView>
-      </KeyboardAvoidingView>
+      </ThemedView>
     </SafeAreaView>
   );
 }

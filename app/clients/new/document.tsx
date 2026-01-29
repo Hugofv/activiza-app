@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/Input';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import {
   type DocumentType,
   detectDocumentType,
@@ -29,7 +30,7 @@ import { router } from 'expo-router';
 import { useNewClientForm } from './_context';
 
 interface DocumentFormData {
-  document?: string;
+  document: string;
   documentType?: DocumentType;
 }
 
@@ -39,6 +40,7 @@ export default function DocumentScreen() {
   const { t } = useTranslation();
   const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const keyboardHeight = useKeyboardHeight();
 
   // Memoize country detection (only runs once)
   const detectedCountry = useMemo(() => detectCountryFromLocale(), []);
@@ -62,7 +64,7 @@ export default function DocumentScreen() {
 
   // Recreate schema when documentType changes to update validation
   const documentSchema = React.useMemo(
-    () => createDocumentSchema(countryCode, documentType),
+    () => createDocumentSchema(countryCode, documentType, { documentRequired: true }),
     [countryCode, documentType]
   );
 
@@ -203,12 +205,7 @@ export default function DocumentScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={['bottom']}
     >
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
-        <ThemedView style={styles.container}>
+      <ThemedView style={styles.container}>
           <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
@@ -264,7 +261,7 @@ export default function DocumentScreen() {
           </ScrollView>
 
           {/* Continue Button */}
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
             <IconButton
               variant='primary'
               size='md'
@@ -276,8 +273,7 @@ export default function DocumentScreen() {
               loading={isSubmitting}
             />
           </View>
-        </ThemedView>
-      </KeyboardAvoidingView>
+      </ThemedView>
     </SafeAreaView>
   );
 }

@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -9,6 +9,7 @@ import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 
 import { useNewClientForm } from './_context';
 
@@ -19,6 +20,7 @@ export default function ObservationScreen() {
   const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [observation, setObservation] = useState(formData.observation || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const keyboardHeight = useKeyboardHeight();
 
   const handleNext = async () => {
     setIsSubmitting(true);
@@ -36,13 +38,8 @@ export default function ObservationScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={['bottom']}
     >
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
-        <ThemedView style={styles.container}>
-          <ThemedView style={styles.content}>
+      <ThemedView style={styles.container}>
+        <ThemedView style={styles.content}>
             {/* Title */}
             <View style={styles.titleContainer}>
               <Typography variant="h3" color='text'>
@@ -84,7 +81,7 @@ export default function ObservationScreen() {
           </ThemedView>
 
           {/* Continue Button */}
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
             <IconButton
               variant="primary"
               size="md"
@@ -96,8 +93,7 @@ export default function ObservationScreen() {
               loading={isSubmitting}
             />
           </View>
-        </ThemedView>
-      </KeyboardAvoidingView>
+      </ThemedView>
     </SafeAreaView>
   );
 }

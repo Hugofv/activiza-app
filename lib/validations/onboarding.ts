@@ -13,12 +13,17 @@ const VALID_DOCUMENT_TYPES: DocumentType[] = ['cpf', 'cnpj', 'ssn', 'ein', 'ni',
 // Validação de algoritmo (CPF/CNPJ, etc) fica no backend
 // Prioriza o tipo de documento quando fornecido, usa país apenas como fallback
 // IMPORTANTE: O schema sempre usa this.parent?.documentType (valor do formulário) como fonte de verdade
-export const createDocumentSchema = (countryCode?: string, documentType?: string) => {
+export const createDocumentSchema = (
+  countryCode?: string,
+  documentType?: string,
+  options?: { documentRequired?: boolean }
+) => {
+  const documentRequired = options?.documentRequired ?? false;
+  const documentBase = documentRequired
+    ? yup.string().required(t('documentRequired'))
+    : yup.string().optional();
   return yup.object().shape({
-    document: yup
-      .string()
-      .optional() // Documento agora é opcional
-      .test('document-format', function(value) {
+    document: documentBase.test('document-format', function(value) {
         // Se não fornecido, é válido (opcional)
         if (!value) return true;
 

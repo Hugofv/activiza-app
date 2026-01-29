@@ -5,6 +5,36 @@
 import { apiClient } from '../api/client';
 import { ENDPOINTS } from '../api/endpoints';
 
+type FormDataFileValue = Blob | { uri: string; name: string; type: string };
+
+/**
+ * Converts an image URI to a Blob for the API when possible; otherwise returns
+ * the React Native file object { uri, name, type } so the native layer sends the file bytes.
+ */
+async function uriToFormDataFile(
+  uri: string,
+  defaultName: string
+): Promise<{ value: FormDataFileValue; name: string; type: string }> {
+  const name = uri.split('/').pop() || defaultName;
+  const match = /\.(\w+)$/.exec(name);
+  const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+  // Prefer Blob when possible (web blob:/data: URIs, or when fetch(file://) works)
+  try {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    return { value: blob, name, type };
+  } catch {
+    // Fallback: native file:// or when fetch is not supported for this URI
+    const normalizedUri = uri.startsWith('file://') ? uri : uri;
+    return {
+      value: { uri: normalizedUri, name, type },
+      name,
+      type,
+    };
+  }
+}
+
 export interface Client {
   id: string;
   name: string;
@@ -167,49 +197,34 @@ export async function createClient(clientData: CreateClientData): Promise<Client
         if (addr.complement) formData.append('address[complement]', addr.complement);
       }
       
-      // Add avatar if present
+      // Add avatar as blob/file for API
       if (hasAvatar && clientData.avatar) {
-        const avatarUri = clientData.avatar;
-        const filename = avatarUri.split('/').pop() || 'avatar.jpg';
-        const match = /\.(\w+)$/.exec(filename);
-        const type = match ? `image/${match[1]}` : 'image/jpeg';
-        
-        // Format URI for React Native (keep file:// prefix)
-        let imageUri = avatarUri;
-        if (avatarUri.startsWith('file://')) {
-          imageUri = avatarUri;
+        const { value, name: fileName } = await uriToFormDataFile(
+          clientData.avatar,
+          'avatar.jpg'
+        );
+        if (value instanceof Blob) {
+          formData.append('avatar', value, fileName);
+        } else {
+          formData.append('avatar', value as any);
         }
-        
-        formData.append('avatar', {
-          uri: imageUri,
-          name: filename,
-          type,
-        } as any);
       }
-      
-      // Add document images if present
+
+      // Add document images as blobs/files for API
       if (hasDocumentImages && documentImages) {
-        documentImages.forEach((uri, index) => {
-          // For React Native, we need to create a file object
-          // The URI format is different on iOS/Android vs web
-          const filename = uri.split('/').pop() || `document_${index}.jpg`;
-          const match = /\.(\w+)$/.exec(filename);
-          const type = match ? `image/${match[1]}` : 'image/jpeg';
-          
-          // Format URI for React Native (keep file:// prefix)
-          let imageUri = uri;
-          if (uri.startsWith('file://')) {
-            imageUri = uri;
+        for (let i = 0; i < documentImages.length; i++) {
+          const { value, name: fileName } = await uriToFormDataFile(
+            documentImages[i],
+            `document_${i}.jpg`
+          );
+          if (value instanceof Blob) {
+            formData.append('documentImages', value, fileName);
+          } else {
+            formData.append('documentImages', value as any);
           }
-          
-          formData.append('documentImages', {
-            uri: imageUri,
-            name: filename,
-            type,
-          } as any);
-        });
+        }
       }
-      
+
       // Don't set Content-Type header - axios will set it automatically with boundary
       const response = await apiClient.post<Client>(ENDPOINTS.CLIENTS.CREATE, formData);
       return response.data;
@@ -265,48 +280,34 @@ export async function updateClient(id: string, clientData: UpdateClientData): Pr
         if (addr.complement) formData.append('address[complement]', addr.complement);
       }
       
-      // Add avatar if present
+      // Add avatar as blob/file for API
       if (hasAvatar && clientData.avatar) {
-        const avatarUri = clientData.avatar;
-        const filename = avatarUri.split('/').pop() || 'avatar.jpg';
-        const match = /\.(\w+)$/.exec(filename);
-        const type = match ? `image/${match[1]}` : 'image/jpeg';
-        
-        // Format URI for React Native (keep file:// prefix)
-        let imageUri = avatarUri;
-        if (avatarUri.startsWith('file://')) {
-          imageUri = avatarUri;
+        const { value, name: fileName } = await uriToFormDataFile(
+          clientData.avatar,
+          'avatar.jpg'
+        );
+        if (value instanceof Blob) {
+          formData.append('avatar', value, fileName);
+        } else {
+          formData.append('avatar', value as any);
         }
-        
-        formData.append('avatar', {
-          uri: imageUri,
-          name: filename,
-          type,
-        } as any);
       }
-      
-      // Add document images if present
+
+      // Add document images as blobs/files for API
       if (hasDocumentImages && documentImages) {
-        documentImages.forEach((uri, index) => {
-          // For React Native, we need to create a file object
-          const filename = uri.split('/').pop() || `document_${index}.jpg`;
-          const match = /\.(\w+)$/.exec(filename);
-          const type = match ? `image/${match[1]}` : 'image/jpeg';
-          
-          // Format URI for React Native (keep file:// prefix)
-          let imageUri = uri;
-          if (uri.startsWith('file://')) {
-            imageUri = uri;
+        for (let i = 0; i < documentImages.length; i++) {
+          const { value, name: fileName } = await uriToFormDataFile(
+            documentImages[i],
+            `document_${i}.jpg`
+          );
+          if (value instanceof Blob) {
+            formData.append('documentImages', value, fileName);
+          } else {
+            formData.append('documentImages', value as any);
           }
-          
-          formData.append('documentImages', {
-            uri: imageUri,
-            name: filename,
-            type,
-          } as any);
-        });
+        }
       }
-      
+
       // Don't set Content-Type header - axios will set it automatically with boundary
       const response = await apiClient.put<Client>(ENDPOINTS.CLIENTS.UPDATE(id), formData);
       return response.data;

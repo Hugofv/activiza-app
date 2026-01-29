@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { useToast } from '@/lib/hooks/useToast';
 import { createClient } from '@/lib/services/clientService';
 import { getAllDocumentTypes } from '@/lib/services/documentService';
@@ -28,6 +29,7 @@ export default function SummaryScreen() {
   const { height } = useWindowDimensions();
   const { formData, resetFormData } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const keyboardHeight = useKeyboardHeight();
   const { showSuccess, showError } = useToast();
   const queryClient = useQueryClient();
 
@@ -110,12 +112,7 @@ export default function SummaryScreen() {
       style={[styles.container]}
       edges={['bottom']}
     >
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
-        <ThemedView style={styles.container}>
+      <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
             {/* Title */}
             <Typography variant="h3" style={[styles.title, { color: colors.text }]}>
@@ -216,7 +213,7 @@ export default function SummaryScreen() {
           </ThemedView>
 
           {/* Confirm Button */}
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
             <Button
               variant="primary"
               size='full'
@@ -227,8 +224,7 @@ export default function SummaryScreen() {
               {t('clients.summaryConfirm')}
             </Button>
           </View>
-        </ThemedView>
-      </KeyboardAvoidingView>
+      </ThemedView>
     </SafeAreaView>
   );
 }
