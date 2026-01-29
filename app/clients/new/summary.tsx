@@ -1,4 +1,3 @@
-import { Image as ExpoImage } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +17,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { Badge } from '@/components/ui/Badge';
 import { Icon } from '@/components/ui/Icon';
+import { ImageCardView } from '@/components/ui/ImageCardView';
 import { useNewClientForm } from './_context';
 import SummaryItem from './components/SummaryItem';
 
@@ -26,11 +26,10 @@ export default function SummaryScreen() {
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { height } = useWindowDimensions();
-  const { _formData, resetFormData } = useNewClientForm();
+  const { formData, resetFormData } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showSuccess, showError } = useToast();
   const queryClient = useQueryClient();
-  const formData = { "address": { "city": "Nerópolis", "complement": "", "country": "Brasil", "countryCode": "BR", "neighborhood": "Parque das Américas", "number": "343", "postalCode": "75460-110", "state": "GO", "street": "Rua 17" }, "avatar": "file:///Users/hugofv/Library/Developer/CoreSimulator/Devices/2154EE22-B4CA-47FA-A7CE-3D1C4AD81692/data/Containers/Data/Application/1D7CF1AB-FE56-437A-B2CC-4563B844A3FE/Library/Caches/ExponentExperienceData/@anonymous/ativiza-f3472adc-964f-4cdd-bd37-7ef8ba11c318/ImagePicker/2BFF9359-FEF0-4EE5-A716-7A004CFABC31.jpg", "document": "927.827.382-73", "documentImages": ["file:///Users/hugofv/Library/Developer/CoreSimulator/Devices/2154EE22-B4CA-47FA-A7CE-3D1C4AD81692/data/Containers/Data/Application/1D7CF1AB-FE56-437A-B2CC-4563B844A3FE/Library/Caches/ExponentExperienceData/@anonymous/ativiza-f3472adc-964f-4cdd-bd37-7ef8ba11c318/ImagePicker/23DE0244-5204-4DB4-B2C4-69EBD21755B5.jpg", "file:///Users/hugofv/Library/Developer/CoreSimulator/Devices/2154EE22-B4CA-47FA-A7CE-3D1C4AD81692/data/Containers/Data/Application/1D7CF1AB-FE56-437A-B2CC-4563B844A3FE/Library/Caches/ExponentExperienceData/@anonymous/ativiza-f3472adc-964f-4cdd-bd37-7ef8ba11c318/ImagePicker/FD3A2150-1239-4B42-8D21-5C7F5FE26027.jpg"], "documentType": "cpf", "email": "jhbig@jbh.com", "guarantor": { "id": 5, "name": "Jhony", "reliability": undefined }, "name": "Wallysson", "observation": "Sdfsdfsd", "reliability": undefined, "whatsapp": { "countryCode": "+55", "formattedPhoneNumber": "+55 86 76867 6767", "phoneNumber": "86 76867 6767" } };
 
   const handleConfirm = async () => {
     setIsSubmitting(true);
@@ -206,7 +205,7 @@ export default function SummaryScreen() {
                     <SummaryItem icon='photo' label={t('clients.documents')} value={
                       <View style={styles.documentImagesRow}>
                         {formData.documentImages.map((image) => (
-                          <ExpoImage key={image} source={{ uri: image }} style={styles.documentImage} contentFit="cover" />
+                          <ImageCardView key={image} uri={image} />
                         ))}
                       </View>
                     } />

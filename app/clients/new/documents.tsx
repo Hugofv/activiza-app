@@ -1,4 +1,3 @@
-import { Image as ExpoImage } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -9,13 +8,13 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
 import { Icon } from '@/components/ui/Icon';
+import { ImageCardView } from '@/components/ui/ImageCardView';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -135,19 +134,11 @@ export default function DocumentsScreen() {
             {documentImages.length > 0 && (
               <View style={styles.imagesGrid}>
                 {documentImages.map((uri, index) => (
-                  <View key={index} style={styles.imageContainer}>
-                    <TouchableOpacity
-                      style={styles.removeButton}
-                      onPress={() => removeImage(index)}
-                    >
-                      <Icon name="close-circle" size={24} color={colors.text} />
-                    </TouchableOpacity>
-                    <ExpoImage
-                      source={{ uri }}
-                      style={styles.documentImage}
-                      contentFit="cover"
-                    />
-                  </View>
+                  <ImageCardView
+                    key={uri + index}
+                    uri={uri}
+                    onRemove={() => removeImage(index)}
+                  />
                 ))}
               </View>
             )}
@@ -210,27 +201,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
-  },
-  imageContainer: {
-    width: '47%',
-    aspectRatio: 1,
-    borderRadius: 8,
-    overflow: 'hidden',
-    backgroundColor: '#f0f0f0',
-    position: 'relative',
-  },
-  documentImage: {
-    width: '100%',
-    height: '100%',
-  },
-  removeButton: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    zIndex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 12,
-    padding: 4,
   },
   buttonContainer: {
     paddingHorizontal: 24,
