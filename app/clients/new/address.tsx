@@ -93,7 +93,7 @@ export default function AddressScreen() {
         complement: completeAddress.complement,
       },
     });
-    setCurrentStep(5);
+    setCurrentStep(7);
     router.push('/clients/new/observation');
   };
 

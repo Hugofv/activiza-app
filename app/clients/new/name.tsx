@@ -48,7 +48,7 @@ export default function NameScreen() {
     try {
       updateFormData({ name: data.name });
       setCurrentStep(1);
-      router.push('/clients/new/whatsapp');
+      router.push('/clients/new/avatar');
     } finally {
       setIsSubmitting(false);
     }

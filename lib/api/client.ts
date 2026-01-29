@@ -42,6 +42,11 @@ class ApiClientClass {
           return config;
         }
 
+        // Handle FormData - remove Content-Type header to let browser/axios set it with boundary
+        if (config.data instanceof FormData) {
+          delete config.headers['Content-Type'];
+        }
+
         // Add access token if available
         const token = await getAccessToken();
         console.log('token', token);

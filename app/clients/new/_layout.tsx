@@ -42,9 +42,11 @@ export default function NewClientLayout() {
           }}
         >
           <Stack.Screen name="name" />
+          <Stack.Screen name="avatar" />
           <Stack.Screen name="whatsapp" />
           <Stack.Screen name="email" />
           <Stack.Screen name="document" />
+          <Stack.Screen name="documents" />
           <Stack.Screen name="address" />
           <Stack.Screen name="observation" />
           <Stack.Screen name="guarantor" />

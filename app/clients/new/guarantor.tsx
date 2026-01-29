@@ -30,7 +30,7 @@ export default function GuarantorScreen() {
     setIsSubmitting(true);
     try {
       // If no guarantor selected, leave it undefined
-      setCurrentStep(7);
+      setCurrentStep(9);
       router.push('/clients/new/reliability');
     } finally {
       setIsSubmitting(false);

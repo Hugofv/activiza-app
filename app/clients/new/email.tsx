@@ -47,7 +47,7 @@ export default function EmailScreen() {
     setIsSubmitting(true);
     try {
       updateFormData({ email: data.email || undefined });
-      setCurrentStep(3);
+      setCurrentStep(4);
       router.push('/clients/new/document');
     } finally {
       setIsSubmitting(false);

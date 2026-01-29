@@ -2,6 +2,7 @@ import React, { createContext, ReactNode, useContext, useState } from 'react';
 
 export interface NewClientFormData {
   name?: string;
+  avatar?: string; // Avatar image URI
   whatsapp?: {
     countryCode: string;
     phoneNumber: string;
@@ -10,6 +11,7 @@ export interface NewClientFormData {
   email?: string;
   document?: string;
   documentType?: string;
+  documentImages?: string[]; // Array of image URIs
   address?: {
     postalCode: string;
     street: string;
@@ -56,7 +58,7 @@ interface NewClientFormProviderProps {
 export const NewClientFormProvider: React.FC<NewClientFormProviderProps> = ({ children }) => {
   const [formData, setFormData] = useState<NewClientFormData>({});
   const [currentStep, setCurrentStep] = useState(0);
-  const totalSteps = 9; // Nome, WhatsApp, E-mail, Documento, Endereço, Observação, Avalista, Confiabilidade, Resumo
+  const totalSteps = 10; // Nome, Avatar, WhatsApp, E-mail, Documento, Documentos, Endereço, Observação, Avalista, Confiabilidade, Resumo
 
   const updateFormData = (data: Partial<NewClientFormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));

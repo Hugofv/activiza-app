@@ -52,4 +52,12 @@ export default {
   viewOnMap: 'Ver no mapa',
   documents: 'Documentos',
   reference: 'Referência',
+  optional: 'Opcional',
+  addPhoto: 'Adicionar foto',
+  permissionRequired: 'Permissão necessária',
+  cameraPermissionMessage: 'Precisamos de permissão para acessar suas fotos!',
+  imagePickerError: 'Erro ao selecionar imagem',
+  avatar: 'Foto de perfil',
+  avatarQuestion: 'Adicione uma foto de perfil para {{name}}. Opcional',
+  removePhoto: 'Remover foto',
 };

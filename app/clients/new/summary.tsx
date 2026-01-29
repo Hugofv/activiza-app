@@ -5,6 +5,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
@@ -33,10 +34,12 @@ export default function SummaryScreen() {
       // Prepare client data for API
       const clientData = {
         name: formData.name!,
+        avatar: formData.avatar, // Include avatar
         phone: formData.whatsapp?.formattedPhoneNumber || formData.whatsapp?.phoneNumber,
         email: formData.email,
         document: formData.document,
         documentType: formData.documentType,
+        documentImages: formData.documentImages, // Include document images
         address: formData.address
           ? {
             postalCode: formData.address.postalCode,
@@ -118,6 +121,13 @@ export default function SummaryScreen() {
             {/* Summary Card */}
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
               <View style={[styles.summaryCard, { backgroundColor: colors.muted }]}>
+                {/* Avatar */}
+                {formData.avatar && (
+                  <View style={styles.avatarSection}>
+                    <Avatar image={formData.avatar} size={80} />
+                  </View>
+                )}
+
                 {/* Name */}
                 <SummaryItem icon='user-circle' label={t('clients.summaryName')} value={formData.name || t('clients.summaryNotInformed')} />
 
@@ -223,6 +233,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     gap: 20,
+  },
+  avatarSection: {
+    alignItems: 'center',
+    marginBottom: 8,
   },
   summaryRow: {
     gap: 8,

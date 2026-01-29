@@ -179,8 +179,8 @@ export default function DocumentScreen() {
         document: data.document || undefined,
         documentType: data.documentType || undefined,
       });
-      setCurrentStep(3);
-      router.push('/clients/new/address');
+      setCurrentStep(5);
+      router.push('/clients/new/documents');
     } finally {
       setIsSubmitting(false);
     }

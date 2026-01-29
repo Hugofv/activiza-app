@@ -64,7 +64,7 @@ export default function WhatsAppScreen() {
           },
         });
       }
-      setCurrentStep(2);
+      setCurrentStep(3);
       router.push('/clients/new/email');
     } finally {
       setIsSubmitting(false);
