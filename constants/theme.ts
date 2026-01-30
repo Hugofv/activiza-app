@@ -21,6 +21,8 @@ export const Colors = {
     tertiaryForeground: '#856F00',
     success: '#DCFCE7',
     successForeground: '#166534',
+    error: '#ef4444',
+    warning: '#d97706',
     icon: '#687076',
     border: '#DDE3E0',
     placeholder: '#9BAAA2', // Placeholder text color (lighter than icon for better contrast with label)
@@ -28,19 +30,22 @@ export const Colors = {
     disabledPlaceholder: 'rgba(104, 112, 118, 0.3)', // Lighter placeholder for disabled inputs (30% opacity of icon)
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
+    starFilled: '#fbbf24',
   },
   dark: {
     text: '#ECEDEE',
     background: '#151718',
     tint: tintColorDark,
     primary: '#a7e203',
-    primaryForeground: '#001a00', // Very dark green/black for better contrast on bright green
+    primaryForeground: '#ECEDEE', // Very dark green/black for better contrast on bright green
     primaryWhiten: '#9ED600',
     primaryWhitenOpacity: '#9ED60066',
     tertiary: '#FAF1D1',
     tertiaryForeground: '#856F00',
     success: '#DCFCE7',
     successForeground: '#166534',
+    error: '#FEE2E2',
+    warning: '#d97706',
     icon: '#9BA1A6',
     border: '#374140',
     placeholder: '#6B7280', // Placeholder text color (lighter than icon for better contrast with label)
@@ -48,6 +53,7 @@ export const Colors = {
     disabledPlaceholder: 'rgba(155, 170, 166, 0.3)', // Lighter placeholder for disabled inputs (30% opacity of icon)
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
+    starFilled: '#fbbf24',
   },
 } as const;
 

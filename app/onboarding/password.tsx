@@ -240,14 +240,14 @@ const PasswordScreen = () => {
                   <Icon
                     name={rule.isValid ? 'checkmark-circle' : 'close-circle'}
                     size={20}
-                    color={rule.isValid ? '#10b981' : '#ef4444'}
+                    color={rule.isValid ? 'successForeground' : 'error'}
                   />
                   <Typography
                     variant='body2'
                     style={[
                       styles.ruleText,
                       {
-                        color: rule.isValid ? '#10b981' : colors.icon,
+                        color: rule.isValid ? 'successForeground' : 'icon',
                       },
                     ]}
                   >

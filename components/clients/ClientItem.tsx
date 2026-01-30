@@ -68,8 +68,8 @@ export const ClientItem: React.FC<ClientItemProps> = ({
           <View style={styles.indicators}>
             {client.pendingOperations !== undefined && client.pendingOperations > 0 && (
               <View style={[styles.indicator, styles.pendingIndicator, { backgroundColor: '#fef3c7' }]}>
-                <Icon name="calendar" size={14} color="#d97706" />
-                <Typography variant="caption" style={[styles.indicatorText, { color: '#d97706' }]}>
+                <Icon name="calendar" size={14} color="warning" />
+                <Typography variant="caption" style={[styles.indicatorText, { color: 'warning' }]}>
                   {client.pendingOperations}
                 </Typography>
               </View>
@@ -77,8 +77,8 @@ export const ClientItem: React.FC<ClientItemProps> = ({
 
             {client.completedOperations !== undefined && client.completedOperations > 0 && (
               <View style={[styles.indicator, styles.completedIndicator, { backgroundColor: '#d1fae5' }]}>
-                <Icon name="check" size={14} color="#059669" />
-                <Typography variant="caption" style={[styles.indicatorText, { color: '#059669' }]}>
+                <Icon name="check" size={14} color="successForeground" />
+                <Typography variant="caption" color='successForeground' style={[styles.indicatorText]}>
                   {client.completedOperations}
                 </Typography>
               </View>
@@ -86,7 +86,7 @@ export const ClientItem: React.FC<ClientItemProps> = ({
 
             {client.totalAmount !== undefined && client.totalAmount > 0 && (
               <View style={[styles.indicator, styles.amountIndicator, { backgroundColor: colors.muted }]}>
-                <Icon name="users" size={14} color={colors.icon} />
+                <Icon name="users" size={14} color="icon" />
                 <Typography variant="caption" style={[styles.indicatorText, { color: colors.text }]}>
                   {formatCurrency(client.totalAmount, client.currency || 'GBP')}
                 </Typography>
@@ -96,7 +96,7 @@ export const ClientItem: React.FC<ClientItemProps> = ({
         </View>
 
         {/* Chevron */}
-        <Icon name="chevron-right" size={20} color={colors.icon} />
+        <Icon name="chevron-right" size={20} color="icon" />
       </View>
     </TouchableOpacity>
   );

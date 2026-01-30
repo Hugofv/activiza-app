@@ -15,20 +15,20 @@ export function ReportCard({ title, subtitle, description }: ReportCardProps) {
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
-    <View style={[styles.reportCard, { backgroundColor: colors.background }]}>
+    <View style={[styles.reportCard, { backgroundColor: colors.primaryWhiten }]}>
       <View style={styles.titleContainer}>
 
-        <Typography variant="h4" style={{ color: '#064e3b', marginBottom: 4 }}>
+        <Typography variant="h4" color="primaryForeground" style={{ marginBottom: 4 }}>
           {title}
         </Typography>
         {subtitle && (
-          <Typography variant="body2" style={{ color: colors.placeholder, marginBottom: 2 }}>
+          <Typography variant="body2" color="placeholder" style={{ marginBottom: 2 }}>
             {subtitle}
           </Typography>
         )}
       </View>
       {description && (
-        <Typography variant="caption" style={{ color: colors.text }}>
+        <Typography variant="caption" color="text">
           {description}
         </Typography>
       )}

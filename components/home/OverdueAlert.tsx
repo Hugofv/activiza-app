@@ -20,11 +20,11 @@ export function OverdueAlert({ count, onPress }: OverdueAlertProps) {
       activeOpacity={0.7}
       onPress={onPress}
     >
-      <Icon name="information-circle" size={20} color="#F59E0B" />
-      <Typography variant="body2" style={{ color: '#92400E', marginLeft: 8, flex: 1 }}>
+      <Icon name="information-circle" size={20} color="warning" />
+      <Typography variant="body2" color='warning' style={{ marginLeft: 8, flex: 1 }}>
         {count} {t('home.overduePayments')}
       </Typography>
-      <Icon name="chevron-forward" size={20} color="#92400E" />
+      <Icon name="chevron-forward" size={20} color="warning" />
     </TouchableOpacity>
   );
 }

@@ -116,12 +116,12 @@ const OptionsScreen = () => {
           <Icon
             name={iconConfig.icon as any}
             size={24}
-            color={selectedOptions.includes(module.key) ? colors.primary : colors.icon}
+            color={selectedOptions.includes(module.key) ? "primary" : "icon"}
           />
         ),
       };
     });
-  }, [modules, selectedOptions, colors, t]);
+  }, [modules, selectedOptions, t]);
 
   const handleContinue = async () => {
     if (selectedOptions.length === 0) return;

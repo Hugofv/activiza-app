@@ -34,7 +34,7 @@ export function ImageCardView({ uri, style, onRemove }: ImageCardViewProps) {
       <Pressable style={[styles.card, style]} onPress={openViewer}>
         {onRemove && (
           <Pressable style={styles.removeButton} onPress={onRemove}>
-            <Icon name="close-circle" size={20} color={colors.text} />
+            <Icon name="close-circle" size={20} color="text" />
           </Pressable>
         )}
         <ExpoImage
@@ -62,7 +62,7 @@ export function ImageCardView({ uri, style, onRemove }: ImageCardViewProps) {
               contentFit="contain"
             />
             <Pressable style={styles.closeIcon} onPress={closeViewer}>
-              <Icon name="close" size={24} color={colors.primaryForeground} />
+              <Icon name="close" size={24} color="primaryForeground" />
             </Pressable>
           </View>
         </View>

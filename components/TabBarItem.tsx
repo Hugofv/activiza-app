@@ -11,20 +11,20 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Icon, type IconName } from '@/components/ui/Icon';
-import { Colors } from '@/constants/theme';
+import { Colors, ThemeColorKey } from '@/constants/theme';
 
 interface TabBarItemProps extends BottomTabBarButtonProps {
   icon: IconName;
   routeName: string;
-  color: string;
-  focusedColor?: string;
+  color: ThemeColorKey;
+  focusedColor?: ThemeColorKey;
 }
 
 export function TabBarItem({
   icon,
   routeName,
   color,
-  focusedColor = '#064e3b',
+  focusedColor,
   onPressIn,
   style,
   ...props
@@ -100,7 +100,7 @@ export function TabBarItem({
                 <Icon
                   name={icon}
                   size={32}
-                  color={focusedColor}
+                  color={focusedColor ?? 'primaryForeground'}
                 />
               </Animated.View>
             </Animated.View>
@@ -108,7 +108,7 @@ export function TabBarItem({
             <Icon
               name={icon}
               size={24}
-              color={color}
+              color={color ?? 'primaryForeground'}
             />
           )}
         </View>

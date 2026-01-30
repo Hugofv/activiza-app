@@ -128,7 +128,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
                   <Icon
                     name='checkmark'
                     size={24}
-                    color={colors.primary}
+                    color="primary"
                   />
                 )}
               </TouchableOpacity>

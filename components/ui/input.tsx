@@ -26,8 +26,8 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
     const colors = Colors[colorScheme ?? 'light'];
 
     // Use theme-based placeholder color (lighter when disabled, better contrast when enabled)
-    const finalPlaceholderColor = disabled 
-      ? colors.disabledPlaceholder 
+    const finalPlaceholderColor = disabled
+      ? colors.disabledPlaceholder
       : (placeholderTextColor || colors.placeholder);
 
     // If RHF props are provided, use Controller
@@ -61,14 +61,14 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
                     className
                   )}
                   style={[
-                    { 
+                    {
                       color: isDisabled ? colors.icon : colors.text,
                       borderWidth: 0,
                       borderBottomWidth: 1.5,
-                      borderBottomColor: error ? '#ef4444' : (style as any)?.borderBottomColor || colors.icon,
+                      borderBottomColor: error ? colors.error : (style as any)?.borderBottomColor || colors.icon,
                       opacity: isDisabled ? 0.6 : 1,
                     },
-                    error && { borderBottomColor: '#ef4444' },
+                    error && { borderBottomColor: colors.error },
                     style,
                   ]}
                   placeholderTextColor={finalPlaceholderColor}
@@ -79,7 +79,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
                   {...props}
                 />
                 {error && (
-                  <Typography variant="caption" style={{ color: '#ef4444', marginTop: 4 }}>
+                  <Typography variant="caption" style={{ color: colors.error, marginTop: 4 }}>
                     {error}
                   </Typography>
                 )}
@@ -108,7 +108,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
           className
         )}
         style={[
-          { 
+          {
               color: isDisabled ? colors.icon : colors.text,
             borderWidth: 0,
             borderBottomWidth: 1.5,

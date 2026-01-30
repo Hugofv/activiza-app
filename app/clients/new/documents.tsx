@@ -123,7 +123,7 @@ export default function DocumentsScreen() {
               onPress={pickImage}
             >
               <View style={styles.addPhotoContent}>
-                <Icon name="photo" size={32} color={colors.primaryForeground} />
+                <Icon name="photo" size={32} color="primaryForeground" />
                 <Typography variant="body1Medium" color='primaryForeground'>
                   {t('clients.addPhoto')}
                 </Typography>

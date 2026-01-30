@@ -48,7 +48,7 @@ const Checkbox = React.forwardRef<
           <Icon
             name='checkmark'
             size={16}
-            color={checked ? colors.primaryForeground : colors.text}
+            color={checked ? "primaryForeground" : "text"}
           />
         )}
       </Pressable>

@@ -1,4 +1,4 @@
-import { Colors, Fonts } from '@/constants/theme';
+import { Fonts } from '@/constants/theme';
 import React, { useState } from 'react';
 import { Control, Controller, FieldPath } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -27,19 +27,18 @@ interface PhoneInputProps {
   error?: string;
 }
 
-const PhoneInputComponent = ({ 
-  value, 
-  onChangeText, 
-  error 
-}: { 
-  value: PhoneInputValue | null; 
+const PhoneInputComponent = ({
+  value,
+  onChangeText,
+  error
+}: {
+  value: PhoneInputValue | null;
   onChangeText: (value: PhoneInputValue) => void;
   error?: string;
 }) => {
   const [selectedCountry, setSelectedCountry] = useState<null | ICountry>(null);
   const [currentValue, setCurrentValue] = useState('');
   const theme = useColorScheme();
-  const colors = Colors[theme ?? 'light'];
   const { i18n } = useTranslation();
   const languageCode = i18n.language.split('-')[0];
 
@@ -81,7 +80,7 @@ const PhoneInputComponent = ({
         }
         popularCountries={['BR', 'GB', 'US']}
         customCaret={() => (
-          <Icon name='chevron-down' size={24} color={colors.text} />
+          <Icon name='chevron-down' size={24} color="text" />
         )}
         phoneInputStyles={{
           divider: {
@@ -101,14 +100,14 @@ const PhoneInputComponent = ({
           container: {
             borderWidth: 0,
             borderBottomWidth: 1,
-            borderBottomColor: error ? '#ef4444' : colors.icon,
+            borderBottomColor: error ? 'error' : 'icon',
             backgroundColor: 'transparent',
           },
           caret: {},
         }}
       />
       {error && (
-        <Typography variant="caption" style={{ color: '#ef4444', marginTop: 4 }}>
+        <Typography variant="caption" color='error' style={{ marginTop: 4 }}>
           {error}
         </Typography>
       )}

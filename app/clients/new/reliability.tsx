@@ -8,10 +8,10 @@ import { ThemedView } from '@/components/ThemedView';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
-import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 
+import { Colors } from '@/constants/theme';
 import { useNewClientForm } from './_context';
 
 export default function ReliabilityScreen() {
@@ -45,51 +45,51 @@ export default function ReliabilityScreen() {
     >
       <ThemedView style={styles.container}>
         <ThemedView style={styles.content}>
-            {/* Title */}
-            <View style={styles.titleContainer}>
-              <Typography variant="h3" color='text'>
-                {t('clients.reliability')}
-              </Typography>
-              <Typography variant="body2" color='placeholder'>
-                {t('clients.optional')}
-              </Typography>
-            </View>
-
-            {/* Star Rating */}
-            <View style={styles.starContainer}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Pressable
-                  key={star}
-                  onPress={() => handleStarPress(star)}
-                  style={styles.starButton}
-                >
-                  <Icon
-                    name="star-filled"
-                    size={48}
-                    color={
-                      reliability && star <= reliability
-                        ? '#fbbf24'
-                        : colors.icon
-                    }
-                  />
-                </Pressable>
-              ))}
-            </View>
-          </ThemedView>
-
-          {/* Continue Button */}
-          <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
-            <IconButton
-              variant="primary"
-              size="md"
-              icon="arrow-forward"
-              iconSize={32}
-              iconColor={colors.primaryForeground}
-              onPress={handleNext}
-              disabled={isSubmitting}
-              loading={isSubmitting}
-            />
+          {/* Title */}
+          <View style={styles.titleContainer}>
+            <Typography variant="h3" color='text'>
+              {t('clients.reliability')}
+            </Typography>
+            <Typography variant="body2" color='placeholder'>
+              {t('clients.optional')}
+            </Typography>
           </View>
+
+          {/* Star Rating */}
+          <View style={styles.starContainer}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Pressable
+                key={star}
+                onPress={() => handleStarPress(star)}
+                style={styles.starButton}
+              >
+                <Icon
+                  name="star-filled"
+                  size={48}
+                  color={
+                    reliability && star <= reliability
+                      ? 'starFilled'
+                      : 'icon'
+                  }
+                />
+              </Pressable>
+            ))}
+          </View>
+        </ThemedView>
+
+        {/* Continue Button */}
+        <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
+          <IconButton
+            variant="primary"
+            size="md"
+            icon="arrow-forward"
+            iconSize={32}
+            iconColor={colors.primaryForeground}
+            onPress={handleNext}
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          />
+        </View>
       </ThemedView>
     </SafeAreaView>
   );

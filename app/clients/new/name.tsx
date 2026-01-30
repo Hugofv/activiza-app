@@ -82,7 +82,7 @@ export default function NameScreen() {
               style={[
                 {
                   fontSize: 24,
-                  borderBottomColor: errors.name ? '#ef4444' : colors.icon,
+                  borderBottomColor: errors.name ? 'error' : 'icon',
                 },
               ]}
               placeholder="João Silva"
@@ -100,7 +100,7 @@ export default function NameScreen() {
               size="md"
               icon="arrow-forward"
               iconSize={32}
-              iconColor={colors.primaryForeground}
+              iconColor="primaryForeground"
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid || isSubmitting}
               loading={isSubmitting}

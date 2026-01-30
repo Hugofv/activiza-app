@@ -84,7 +84,7 @@ export function Autocomplete<T = string>({
   return (
     <View style={styles.container}>
       {label && (
-        <Typography variant="body2" style={[styles.label, { color: colors.text }]}>
+        <Typography variant="body2" color="text" style={[styles.label]}>
           {label}
         </Typography>
       )}
@@ -95,7 +95,7 @@ export function Autocomplete<T = string>({
             styles.input,
             {
               color: disabled ? colors.icon : colors.text,
-              borderBottomColor: error ? '#ef4444' : colors.icon,
+              borderBottomColor: error ? colors.error : colors.icon,
               opacity: disabled ? 0.6 : 1,
             },
           ]}
@@ -146,7 +146,7 @@ export function Autocomplete<T = string>({
               styles.dropdown,
               {
                 backgroundColor: colors.background,
-                shadowColor: colors.text,
+                shadowColor: colors.icon,
               },
             ]}
           >
@@ -180,7 +180,7 @@ export function Autocomplete<T = string>({
                       {item.label}
                     </Typography>
                     {isSelected && (
-                      <Icon name="check" size={20} color={colors.primaryForeground} />
+                      <Icon name="check" size={20} color="primaryForeground" />
                     )}
                   </Pressable>
                 );
@@ -191,7 +191,7 @@ export function Autocomplete<T = string>({
       )}
 
       {error && (
-        <Typography variant="caption" style={[styles.error, { color: '#ef4444' }]}>
+        <Typography variant="caption" color='error' style={[styles.error]}>
           {error}
         </Typography>
       )}

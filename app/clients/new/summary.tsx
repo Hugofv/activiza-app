@@ -179,7 +179,7 @@ export default function SummaryScreen() {
                             <Typography variant='body2SemiBold' style={{ fontSize: 13 }}>
                               {formData.guarantor.name}
                             </Typography>
-                            <Icon name="star-filled" color={colors.primaryForeground} size={16} style={{ paddingLeft: 4, borderLeftWidth: 2, borderLeftColor: colors.border }} />
+                            <Icon name="star-filled" color="primaryForeground" size={16} style={{ paddingLeft: 4, borderLeftWidth: 2, borderLeftColor: colors.border }} />
                             <Typography variant="body2Medium" style={{ fontSize: 13 }} color="text">
                               {formData.guarantor.reliability || 0}
                             </Typography>

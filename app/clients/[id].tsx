@@ -263,7 +263,7 @@ export default function ClientDetailScreen() {
                   value={client.email}
                 />
                 <TouchableOpacity onPress={handleEmailAction} style={styles.actionButtonWrapper}>
-                  <Icon name="mail" size={20} color={colors.primary} />
+                  <Icon name="mail" size={20} color="primary" />
                 </TouchableOpacity>
               </View>
             </View>

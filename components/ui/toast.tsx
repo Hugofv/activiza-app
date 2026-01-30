@@ -12,7 +12,7 @@ export function Toast() {
   const toastConfig = {
     success: ({ text1, text2 }: any) => (
       <View style={[styles.toast, styles.successToast, { backgroundColor: '#10B981' }]}>
-        <Icon name="checkmark-circle" size={24} color="#FFFFFF" />
+        <Icon name="checkmark-circle" size={24} color="muted" />
         <View style={styles.textContainer}>
           {text1 && (
             <Typography variant="body2" style={styles.text}>
@@ -29,7 +29,7 @@ export function Toast() {
     ),
     error: ({ text1, text2 }: any) => (
       <View style={[styles.toast, styles.errorToast, { backgroundColor: '#EF4444' }]}>
-        <Icon name="close-circle" size={24} color="#FFFFFF" />
+        <Icon name="close-circle" size={24} color="muted" />
         <View style={styles.textContainer}>
           {text1 && (
             <Typography variant="body2" style={styles.text}>
@@ -46,7 +46,7 @@ export function Toast() {
     ),
     info: ({ text1, text2 }: any) => (
       <View style={[styles.toast, styles.infoToast, { backgroundColor: '#3B82F6' }]}>
-        <Icon name="information-circle" size={24} color="#FFFFFF" />
+          <Icon name="information-circle" size={24} color="muted" />
         <View style={styles.textContainer}>
           {text1 && (
             <Typography variant="body2" style={styles.text}>
@@ -63,7 +63,7 @@ export function Toast() {
     ),
     warning: ({ text1, text2 }: any) => (
       <View style={[styles.toast, styles.warningToast, { backgroundColor: '#F59E0B' }]}>
-        <Icon name="warning" size={24} color="#FFFFFF" />
+        <Icon name="warning" size={24} color="muted" />
         <View style={styles.textContainer}>
           {text1 && (
             <Typography variant="body2" style={styles.text}>
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   text: {
-    color: '#FFFFFF',
+    color: 'text',
     fontFamily: 'Inter_500Medium',
   },
   subText: {

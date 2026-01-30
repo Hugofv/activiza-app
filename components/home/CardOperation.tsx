@@ -17,10 +17,10 @@ const CardOperation: React.FC<CardOperationProps> = ({ icon, count, label, index
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
-    <View key={index} style={[styles.summaryCard]}>
+    <View key={index} style={[styles.summaryCard, { backgroundColor: colors.muted }]}>
       <View style={styles.headerCard}>
-        <Icon name={icon} size={24} color={colors.primaryForeground} />
-        <Typography variant="body1" style={{ color: colors.placeholder }}>
+        <Icon name={icon} size={24} color="primaryForeground" />
+        <Typography variant="body1" color="placeholder">
           {count}
         </Typography>
       </View>
@@ -34,7 +34,6 @@ const CardOperation: React.FC<CardOperationProps> = ({ icon, count, label, index
 const styles = StyleSheet.create({
   summaryCard: {
     borderRadius: 12,
-    backgroundColor: Colors.light.muted,
     padding: 10,
     height: 120,
     marginLeft: 3,

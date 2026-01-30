@@ -88,7 +88,7 @@ export function Select<T = string>({
           <Icon
             name={isOpen ? 'chevron-up' : 'chevron-down'}
             size={16}
-            color={colors.icon}
+            color="icon"
           />
         </Pressable>
 
@@ -134,7 +134,7 @@ export function Select<T = string>({
                       {option.label}
                     </Typography>
                     {isSelected && (
-                      <Icon name="check" size={20} color={colors.primary} />
+                      <Icon name="check" size={20} color="primary" />
                     )}
                   </Pressable>
                 );

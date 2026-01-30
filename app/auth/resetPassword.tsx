@@ -156,7 +156,7 @@ const ResetPasswordScreen = () => {
             {!token && (
               <Typography
                 variant='body2'
-                style={[styles.errorText, { color: '#ef4444' }]}
+                style={[styles.errorText, { color: colors.error }]}
               >
                 {t('auth.invalidToken') ||
                   'Invalid or missing reset token. Please use the link from your email.'}
@@ -232,7 +232,7 @@ const ResetPasswordScreen = () => {
                   <Icon
                     name={rule.isValid ? 'checkmark-circle' : 'close-circle'}
                     size={20}
-                    color={rule.isValid ? '#10b981' : '#ef4444'}
+                    color={rule.isValid ? 'successForeground' : 'error'}
                   />
                   <Typography
                     variant='body2'

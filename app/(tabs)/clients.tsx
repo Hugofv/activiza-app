@@ -55,7 +55,7 @@ export default function ClientsScreen() {
         edges={['top']}
       >
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator size="large" color="primary" />
         </View>
       </SafeAreaView>
     );
@@ -99,12 +99,12 @@ export default function ClientsScreen() {
         </View>
 
         <View>
-          <Pressable style={styles.newClientButton} onPress={handleNewClient}>
+          <Pressable style={[styles.newClientButton, { borderBottomColor: colors.border, backgroundColor: colors.background }]} onPress={handleNewClient}>
             <IconButton variant='secondary'
               size='sl'
               shape='rounded'
               icon='user-plus'
-              iconColor={colors.primaryForeground}
+              iconColor="primaryForeground"
               iconSize={28} />
 
             <Typography variant={'body2Medium'} color='primaryForeground'>{t('clients.newClient')}</Typography>
@@ -160,9 +160,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     paddingVertical: 16,
-    borderBottomColor: Colors.light.border,
     borderBottomWidth: 1,
-    backgroundColor: Colors.light.background,
   },
   headerTitle: {
     fontSize: 20,

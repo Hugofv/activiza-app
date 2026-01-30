@@ -27,8 +27,6 @@ const OPERATION_OPTIONS = [
 ] as const;
 
 function CreateTabButton(props: BottomTabBarButtonProps) {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
   const { open } = useBottomSheet();
   const scale = useSharedValue(1);
 
@@ -70,7 +68,7 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
       accessibilityLabel={props.accessibilityLabel}
     >
       <Animated.View style={animatedStyle}>
-        <Icon name="square-rounded-plus" size={34} color={colors.primaryForeground} />
+        <Icon name="square-rounded-plus" size={34} color="text" />
       </Animated.View>
     </TouchableOpacity>
   );
@@ -78,7 +76,6 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
 
 function TabLayoutContent() {
   const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
   const { isOpen, close } = useBottomSheet();
 
@@ -97,7 +94,7 @@ function TabLayoutContent() {
 
   const tabBarStyle = {
     backgroundColor: colorScheme === 'dark'
-      ? 'rgba(0, 0, 0, 0.7)'
+      ? 'rgba(0, 0, 0, 0.9)'
       : 'rgba(255, 255, 255, 0.8)',
     borderTopWidth: 0,
     borderRadius: 40,
@@ -127,8 +124,8 @@ function TabLayoutContent() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.icon,
+          tabBarActiveTintColor: "primary",
+          tabBarInactiveTintColor: "icon",
           tabBarStyle,
           tabBarItemStyle,
         }}
@@ -142,7 +139,7 @@ function TabLayoutContent() {
                 {...props}
                 icon="home"
                 routeName="home"
-                color={colors.icon}
+                color="text"
               />
             ),
           }}
@@ -163,7 +160,7 @@ function TabLayoutContent() {
                 {...props}
                 icon="people"
                 routeName="clients"
-                color={colors.icon}
+                color="text"
               />
             ),
           }}
@@ -183,14 +180,14 @@ function TabLayoutContent() {
                 styles.optionItem,
                 index < OPERATION_OPTIONS.length - 1 && [
                   styles.optionItemBorder,
-                  { borderBottomColor: colors.icon + '20' },
+                  { borderBottomColor: Colors[colorScheme ?? 'light'].icon + '20' },
                 ],
               ]}
               onPress={() => handleOptionPress(option.route)}
-              android_ripple={{ color: colors.icon + '10' }}
+              android_ripple={{ color: Colors[colorScheme ?? 'light'].icon + '10' }}
             >
-              <Icon name={option.icon} size={28} color={colors.text} />
-              <Typography variant="body1" style={[styles.optionText, { color: colors.text }]}>
+              <Icon name={option.icon} size={28} color="text" />
+              <Typography variant="body1" style={[styles.optionText, { color: "text" }]}>
                 {t(`tabs.${option.labelKey}`)}
               </Typography>
             </Pressable>

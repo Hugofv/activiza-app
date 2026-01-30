@@ -112,7 +112,7 @@ export default function AvatarScreen() {
                   style={[styles.removeButton, { backgroundColor: colors.background }]}
                   onPress={removeAvatar}
                 >
-                  <Icon name="close-circle" size={24} color={colors.text} />
+                  <Icon name="close-circle" size={24} color='text' />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -127,7 +127,7 @@ export default function AvatarScreen() {
                 onPress={pickImage}
               >
                 <View style={styles.addAvatarContent}>
-                  <Icon name="camera" size={48} color={colors.primaryForeground} />
+                  <Icon name="camera" size={48} color="primaryForeground" />
                   <Typography variant="body1Medium" color='primaryForeground'>
                     {t('clients.addPhoto')}
                   </Typography>

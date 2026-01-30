@@ -43,15 +43,14 @@ const ConfirmEmailScreen = () => {
               style={[
                 styles.checkmarkContainer,
                 {
-                  backgroundColor:
-                    colorScheme === 'dark' ? '#1a2a24' : '#effad1',
+                  backgroundColor: colors.muted,
                 },
               ]}
             >
               <Icon
                 name='checkmark'
                 size={56}
-                color={colorScheme === 'dark' ? '#a7e203' : '#618500'}
+                color="primary"
               />
             </View>
             <Typography

@@ -1,3 +1,4 @@
+import { Colors, ThemeColorKey } from '@/constants/theme';
 import {
   IconAlertTriangle,
   IconArrowRight,
@@ -42,7 +43,7 @@ import {
   IconUserShare
 } from '@tabler/icons-react-native';
 import * as React from 'react';
-import { type StyleProp, type ViewStyle, View } from 'react-native';
+import { type StyleProp, type ViewStyle, useColorScheme, View } from 'react-native';
 
 // Map old icon names to Tabler icon components
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
@@ -125,16 +126,34 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
 
 export type IconName = keyof typeof ICON_MAP | string;
 
+/** Theme key (e.g. 'primaryForeground') or raw color (e.g. '#fff', 'rgb(...)') */
+export type IconColor = ThemeColorKey | string;
+
 export interface IconProps {
   name: IconName;
   library?: never; // Deprecated - no longer needed with Tabler icons
   size?: number;
-  color?: string;
+  /** Theme color key or raw hex/rgb string */
+  color?: IconColor;
   style?: StyleProp<ViewStyle>;
 }
 
+function resolveIconColor(
+  color: IconColor | undefined,
+  colors: Record<ThemeColorKey, string>
+): string {
+  if (!color) return colors.primaryForeground;
+  if (color.startsWith('#') || color.startsWith('rgb')) return color;
+  const key = color as ThemeColorKey;
+  return key in colors ? colors[key] : color;
+}
+
 const Icon = React.forwardRef<any, IconProps>(
-  ({ name, library, size = 24, color, style, ...props }, ref) => {
+  ({ name, size = 24, color, style, ...props }, ref) => {
+    const colorScheme = useColorScheme();
+    const colors = Colors[colorScheme ?? 'light'];
+    const resolvedColor = resolveIconColor(color, colors);
+
     // Get the Tabler icon component from the map
     const IconComponent = ICON_MAP[name as string];
 
@@ -143,15 +162,14 @@ const Icon = React.forwardRef<any, IconProps>(
       console.warn(`Icon "${name}" not found in icon map. Using Circle as fallback.`);
       return (
         <View ref={ref} style={[{ width: size, height: size }, style]}>
-          <IconCircle size={size} color={color || '#000000'} strokeWidth={2} {...props} />
+          <IconCircle size={size} color={resolvedColor} strokeWidth={2} {...props} />
         </View>
       );
     }
 
-    // Render the Tabler icon
     return (
       <View ref={ref} style={style}>
-        <IconComponent size={size} color={color || '#000000'} strokeWidth={2} {...props} />
+        <IconComponent size={size} color={resolvedColor} strokeWidth={2} {...props} />
       </View>
     );
   }

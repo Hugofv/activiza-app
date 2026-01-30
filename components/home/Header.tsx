@@ -38,7 +38,7 @@ export function Header({
         <Typography variant="body2" style={{ color: colors.text }}>
           {t('home.thisMonth')}
         </Typography>
-        <Icon name="chevron-down" size={16} color={colors.text} />
+        <Icon name="chevron-down" size={16} color="text" />
       </TouchableOpacity>
     </View>
   );

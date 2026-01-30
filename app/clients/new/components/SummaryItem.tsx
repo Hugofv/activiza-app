@@ -1,17 +1,14 @@
 import { Icon, IconName } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
-import { Colors } from '@/constants/theme';
 import React from 'react';
-import { StyleSheet, useColorScheme, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 const SummaryItem = ({ icon, label, value }: { icon?: string, label: string, value: any }) => {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
 
   return (
     <View style={styles.container}>
       {icon && (
-        <Icon name={icon as IconName} size={22} color={colors.icon} />
+        <Icon name={icon as IconName} size={22} color="icon" />
       )}
       <View>
         <Typography variant="body1Medium" color='placeholder'>

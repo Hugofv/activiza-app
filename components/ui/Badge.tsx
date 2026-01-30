@@ -1,8 +1,8 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { StyleSheet, useColorScheme, View, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
 
-import { Colors, type ThemeColorKey } from '@/constants/theme';
+import { type ThemeColorKey } from '@/constants/theme';
 import { cn } from '@/lib/utils';
 
 import { Icon, type IconName } from './Icon';
@@ -72,8 +72,6 @@ export const Badge = React.forwardRef<View, BadgeProps>(
     },
     ref
   ) => {
-    const colorScheme = useColorScheme();
-    const colors = Colors[colorScheme ?? 'light'];
     // Determine icon size based on badge size if not provided
     const getIconSize = (): number => {
       if (iconSize) return iconSize;
@@ -109,7 +107,7 @@ export const Badge = React.forwardRef<View, BadgeProps>(
         style={[
           styles.badge,
           {
-            backgroundColor: colors[backgroundColor],
+            backgroundColor: backgroundColor,
             paddingHorizontal: size === 'sm' ? 8 : size === 'md' ? 12 : 16,
             paddingVertical: size === 'sm' ? 4 : size === 'md' ? 8 : 12,
             gap: size === 'sm' ? 4 : size === 'md' ? 6 : 8,
@@ -119,12 +117,12 @@ export const Badge = React.forwardRef<View, BadgeProps>(
         className={cn(badgeVariants({ size }), className)}
         {...props}
       >
-        <Icon name={icon} size={getIconSize()} color={colors[foregroundColor]} />
+        <Icon name={icon} size={getIconSize()} color={foregroundColor} />
         <Typography
           variant={getTextVariant()}
           style={[
             {
-              color: colors[foregroundColor],
+              color: foregroundColor,
               fontSize: size === 'sm' ? 13 : size === 'md' ? 14 : 15,
               fontWeight: '600',
             },

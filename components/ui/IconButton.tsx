@@ -5,7 +5,7 @@ import { ActivityIndicator, Pressable, StyleProp, StyleSheet, TextStyle, View, t
 import { Colors, type ThemeColorKey } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { cn } from '@/lib/utils';
-import { Icon, type IconName } from './Icon';
+import { Icon, IconColor, type IconName } from './Icon';
 import { Typography } from './Typography';
 
 const iconButtonVariants = cva(
@@ -46,7 +46,7 @@ export interface IconButtonProps
   VariantProps<typeof iconButtonVariants> {
   icon: IconName;
   iconSize?: number;
-  iconColor?: string;
+  iconColor?: IconColor;
   className?: string;
   width?: 'sm' | 'md' | 'lg' | 'default' | 'sl';
   shape?: 'rounded' | 'cylinder' | 'default';
@@ -54,7 +54,7 @@ export interface IconButtonProps
   label?: string;
   labelStyle?: StyleProp<TextStyle>;
   /** Background color from theme color scheme */
-  backgroundColor?: ThemeColorKey;
+  backgroundColor?: IconColor;
 }
 
 const IconButton = React.forwardRef<
@@ -236,7 +236,7 @@ const IconButton = React.forwardRef<
       // Variant defines color/style
       // If backgroundColor prop is provided, it overrides variant background
       if (backgroundColor) {
-        baseStyle.backgroundColor = colors[backgroundColor];
+        baseStyle.backgroundColor = colors[backgroundColor as ThemeColorKey];
         if (isDisabled) {
           baseStyle.opacity = 0.5;
         }
@@ -250,13 +250,13 @@ const IconButton = React.forwardRef<
             break;
           case 'secondary':
             baseStyle.backgroundColor =
-              colorScheme === 'dark' ? '#1a2a24' : '#f1f9f5';
+              colorScheme === 'dark' ? colors.muted : colors.muted;
             if (isDisabled) {
               baseStyle.opacity = 0.5;
             }
             break;
           case 'error':
-            baseStyle.backgroundColor = '#ef4444';
+            baseStyle.backgroundColor = colors.error;
             if (isDisabled) {
               baseStyle.opacity = 0.5;
             }
@@ -287,22 +287,22 @@ const IconButton = React.forwardRef<
     };
 
     // Get icon color based on variant
-    const getIconColor = () => {
-      if (iconColor) return iconColor;
+    const getIconColor = (): ThemeColorKey => {
+      if (iconColor) return iconColor as ThemeColorKey;
 
       switch (variant) {
         case 'primary':
-          return colors.primaryForeground;
+          return "primaryForeground";
         case 'secondary':
-          return colors.primary;
+          return "primary";
         case 'error':
-          return '#ffffff';
+          return "text";
         case 'outline':
-          return colors.text;
+          return "text";
         case 'ghost':
-          return colors.text;
+          return "text";
         default:
-          return colors.primaryForeground;
+          return "primaryForeground";
       }
     };
 
@@ -326,7 +326,7 @@ const IconButton = React.forwardRef<
     };
 
     const variantStyle = getVariantStyle();
-    const iconColorValue = getIconColor();
+    const iconColorValue = colors[getIconColor()];
 
     return (
       <Pressable style={label ? styles.container : {}} disabled={isDisabled} {...props}>
@@ -346,13 +346,13 @@ const IconButton = React.forwardRef<
           {loading ? (
             <ActivityIndicator
               size="small"
-              color={iconColorValue}
+              color={iconColorValue as ThemeColorKey}
             />
           ) : (
             <Icon
               name={icon}
               size={getIconSize()}
-              color={iconColorValue}
+              color={iconColorValue as ThemeColorKey}
             />
           )}
         </View >

@@ -127,7 +127,7 @@ export function ListCheck<T = string>({
                 name='checkmark'
                 size={16}
                 color={
-                  isSelected ? colors.primaryForeground : colors.icon
+                  isSelected ? "primaryForeground" : "icon"
                 }
               />
             </View>
