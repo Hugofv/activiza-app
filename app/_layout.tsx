@@ -2,7 +2,7 @@ import '@/translation';
 import {
   DarkTheme,
   DefaultTheme,
-  ThemeProvider,
+  ThemeProvider as NavThemeProvider,
 } from '@react-navigation/native';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
@@ -17,6 +17,7 @@ import 'react-native-reanimated';
 import '../global.css';
 
 import { Toast } from '@/components/ui/Toast';
+import { ThemeProvider } from '@/contexts/themeContext';
 import { ToastProvider } from '@/contexts/toastContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { persistOptions, queryClient } from '@/lib/api/queryClient';
@@ -35,8 +36,74 @@ export const unstable_settings = {
   initialRouteName: 'index', // Home screen is now the initial route
 };
 
-export default function RootLayout() {
+function AppContent() {
   const colorScheme = useColorScheme();
+  return (
+    <NavThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ToastProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_right',
+            animationDuration: 300,
+          }}
+        >
+          <Stack.Screen
+            name='index'
+            options={{
+              headerShown: false,
+              animation: 'default',
+            }}
+          />
+          <Stack.Screen
+            name='onboarding'
+            options={{
+              headerShown: false,
+              animation: 'default',
+            }}
+          />
+          <Stack.Screen
+            name='auth'
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+              animationDuration: 300,
+            }}
+          />
+          <Stack.Screen
+            name='(tabs)'
+            options={{
+              headerShown: false,
+              animation: 'fade',
+              animationDuration: 300,
+            }}
+          />
+          <Stack.Screen
+            name='profile'
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+              animationDuration: 300,
+            }}
+          />
+          <Stack.Screen
+            name='clients'
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+              animationDuration: 350,
+              gestureEnabled: true,
+            }}
+          />
+        </Stack>
+        <StatusBar style='auto' />
+        <Toast />
+      </ToastProvider>
+    </NavThemeProvider>
+  );
+}
+
+export default function RootLayout() {
   const [isSplashHidden, setIsSplashHidden] = React.useState(false);
 
   const [fontsLoaded, fontError] = useFonts({
@@ -82,69 +149,9 @@ export default function RootLayout() {
           client={queryClient}
           persistOptions={persistOptions}
         >
-          <ThemeProvider
-            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-          >
-            <ToastProvider>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              >
-              <Stack.Screen
-                name='index'
-                options={{
-                  headerShown: false,
-                  animation: 'default',
-                }}
-              />
-              <Stack.Screen
-                name='onboarding'
-                options={{
-                  headerShown: false,
-                  animation: 'default',
-                }}
-              />
-              <Stack.Screen
-                name='auth'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='(tabs)'
-                options={{
-                  headerShown: false,
-                  animation: 'fade',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='profile'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 300,
-                }}
-              />
-              <Stack.Screen
-                name='clients'
-                options={{
-                  headerShown: false,
-                  animation: 'slide_from_right',
-                  animationDuration: 350,
-                  gestureEnabled: true,
-                }}
-              />
-            </Stack>
-            <StatusBar style='auto' />
-            <Toast />
-          </ToastProvider>
-        </ThemeProvider>
+          <ThemeProvider>
+            <AppContent />
+          </ThemeProvider>
       </PersistQueryClientProvider>
     </QueryClientProvider>
     </GestureHandlerRootView>

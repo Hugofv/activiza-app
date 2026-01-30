@@ -1,8 +1,10 @@
-import { Fonts } from '@/constants/theme';
+import { Colors, Fonts } from '@/constants/theme';
 import React, { useState } from 'react';
 import { Control, Controller, FieldPath } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useColorScheme, View } from 'react-native';
+import { View } from 'react-native';
+
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import InternationalPhoneInput, {
   ICountry,
   ICountrySelectLanguages,
@@ -36,9 +38,10 @@ const PhoneInputComponent = ({
   onChangeText: (value: PhoneInputValue) => void;
   error?: string;
 }) => {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
   const [selectedCountry, setSelectedCountry] = useState<null | ICountry>(null);
   const [currentValue, setCurrentValue] = useState('');
-  const theme = useColorScheme();
   const { i18n } = useTranslation();
   const languageCode = i18n.language.split('-')[0];
 
@@ -67,7 +70,7 @@ const PhoneInputComponent = ({
     <View>
       <InternationalPhoneInput
         value={currentValue}
-        theme={theme === 'dark' ? 'dark' : ('light' as ITheme)}
+        theme={colorScheme === 'dark' ? 'dark' : ('light' as ITheme)}
         defaultCountry='BR'
         defaultValue={value?.formattedPhoneNumber ?? ''}
         onChangePhoneNumber={handleInputValue}
@@ -82,6 +85,7 @@ const PhoneInputComponent = ({
         customCaret={() => (
           <Icon name='chevron-down' size={24} color="text" />
         )}
+        placeholderTextColor={colors.text}
         phoneInputStyles={{
           divider: {
             display: 'none',
@@ -90,9 +94,11 @@ const PhoneInputComponent = ({
             borderWidth: 0,
             fontSize: 18,
             fontFamily: Fonts.sans,
+            color: colors.text,
           },
           callingCode: {
             fontSize: 18,
+            color: colors.text,
           },
           flagContainer: {
             backgroundColor: 'transparent',
@@ -100,7 +106,7 @@ const PhoneInputComponent = ({
           container: {
             borderWidth: 0,
             borderBottomWidth: 1,
-            borderBottomColor: error ? 'error' : 'icon',
+            borderBottomColor: error ? colors.error : colors.icon,
             backgroundColor: 'transparent',
           },
           caret: {},

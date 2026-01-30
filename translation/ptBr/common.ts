@@ -11,6 +11,10 @@ export default {
   login: 'Login',
   logout: 'Logout',
   profile: 'Perfil',
+  theme: 'Tema',
+  themeLight: 'Claro',
+  themeDark: 'Escuro',
+  themeSystem: 'Sistema',
   settings: 'Configurações',
   help: 'Ajuda',
   // Validation errors

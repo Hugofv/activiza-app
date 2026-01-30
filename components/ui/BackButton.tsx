@@ -2,14 +2,13 @@ import { router } from 'expo-router';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
 
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { IconColor } from './Icon';
 import { IconButton } from './IconButton';
 
 export interface BackButtonProps extends Omit<PressableProps, 'children' | 'onPress'> {
   onPress?: () => void;
   variant?: 'primary' | 'secondary' | 'error' | 'outline' | 'ghost';
-  iconColor?: string;
+  iconColor?: IconColor;
 }
 
 /**
@@ -20,9 +19,7 @@ export interface BackButtonProps extends Omit<PressableProps, 'children' | 'onPr
 export const BackButton = React.forwardRef<
   React.ElementRef<typeof IconButton>,
   BackButtonProps
->(({ onPress, variant = 'secondary', iconColor, ...props }, ref) => {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+>(({ onPress, variant = 'secondary', iconColor = 'primaryForeground', ...props }, ref) => {
 
   const handlePress = () => {
     if (onPress) {
@@ -40,7 +37,7 @@ export const BackButton = React.forwardRef<
       size="md"
       icon="chevron-back"
       iconSize={32}
-      iconColor={iconColor || colors.primaryForeground}
+      iconColor={iconColor}
       onPress={handlePress}
       {...props}
     />

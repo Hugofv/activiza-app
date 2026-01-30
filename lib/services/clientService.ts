@@ -8,8 +8,9 @@ import { ENDPOINTS } from '../api/endpoints';
 type FormDataFileValue = Blob | { uri: string; name: string; type: string };
 
 /**
- * Converts an image URI to a Blob for the API when possible; otherwise returns
- * the React Native file object { uri, name, type } so the native layer sends the file bytes.
+ * Prepares a file for FormData. In React Native, use { uri, type, name } so the
+ * HTTP client reads the file from the URI and sends the bytes (multipart).
+ * For blob:/data: URIs (e.g. web), try fetch+blob; otherwise use the object.
  */
 async function uriToFormDataFile(
   uri: string,
@@ -19,52 +20,100 @@ async function uriToFormDataFile(
   const match = /\.(\w+)$/.exec(name);
   const type = match ? `image/${match[1]}` : 'image/jpeg';
 
-  // Prefer Blob when possible (web blob:/data: URIs, or when fetch(file://) works)
+  // file:// and content://: always use { uri, type, name }; client reads URI and sends bytes
+  if (uri.startsWith('file://') || uri.startsWith('content://')) {
+    return { value: { uri, name, type }, name, type };
+  }
+
+  // blob:/data: (e.g. web): try Blob so multipart sends the content
   try {
     const response = await fetch(uri);
     const blob = await response.blob();
     return { value: blob, name, type };
   } catch {
-    // Fallback: native file:// or when fetch is not supported for this URI
-    const normalizedUri = uri.startsWith('file://') ? uri : uri;
-    return {
-      value: { uri: normalizedUri, name, type },
-      name,
-      type,
-    };
+    return { value: { uri, name, type }, name, type };
   }
 }
 
+/** Account nested in client (business data) */
+export interface ClientAccount {
+  id: number;
+  accountId?: number;
+  businessDocument?: string;
+  businessEmail?: string;
+  businessName?: string;
+  businessPhone?: string;
+  createdAt?: Record<string, unknown>;
+  createdBy?: string | null;
+  currency?: string;
+  deletedAt?: string | null;
+  meta?: Record<string, unknown>;
+  ownerId?: number;
+  planId?: number;
+  status?: string;
+  updatedAt?: Record<string, unknown>;
+  updatedBy?: string | null;
+}
+
+/** Address nested in client */
+export interface ClientAddress {
+  id?: number;
+  street?: string;
+  number?: string;
+  complement?: string | null;
+  neighborhood?: string;
+  postalCode?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  countryCode?: string;
+}
+
+/** Document item in documents array */
+export interface ClientDocumentItem {
+  id?: number;
+  key?: string;
+  url?: string;
+  [key: string]: unknown;
+}
+
+/** Meta (name, phone, observation, profile picture, etc.) */
+export interface ClientMeta {
+  name?: string;
+  phone?: string;
+  observation?: string;
+  profilePictureKey?: string;
+  profilePictureUrl?: string;
+  profilePictureUrlExpiresIn?: number;
+  reliability?: string;
+  documents?: ClientDocumentItem[];
+}
+
 export interface Client {
-  id: string;
-  name: string;
+  id: number;
+  accountId?: number;
+  account?: ClientAccount | null;
+  address?: ClientAddress | null;
+  createdAt?: Record<string, unknown>;
+  createdBy?: string | null;
+  deletedAt?: string | null;
+  document?: string;
+  documentCountryCode?: string | null;
+  documentType?: string;
+  documents?: ClientDocumentItem[];
+  email?: string;
+  meta?: ClientMeta | null;
+  updatedAt?: Record<string, unknown>;
+  updatedBy?: string | null;
+  // Convenience fields (populated from meta / account for UI)
+  name?: string;
+  phone?: string;
+  profilePictureUrl?: string;
   rating?: number;
   pendingOperations?: number;
   completedOperations?: number;
   totalAmount?: number;
   currency?: string;
-  avatar?: string;
-  email?: string;
-  phone?: string;
-  document?: string;
-  documentType?: string;
-  documentImages?: string[];
-  address?: {
-    postalCode: string;
-    street: string;
-    neighborhood: string;
-    city: string;
-    state: string;
-    country: string;
-    countryCode?: string;
-    number: string;
-    complement?: string;
-  };
-  observation?: string;
-  guarantorId?: string;
-  reliability?: number;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 export interface ClientsResponse {
@@ -168,11 +217,11 @@ export async function createClient(clientData: CreateClientData): Promise<Client
     const hasAvatar = !!clientData.avatar;
     const needsFormData = hasDocumentImages || hasAvatar;
     const documentImages = clientData.documentImages;
-    
+
     if (needsFormData) {
       // Create FormData for multipart/form-data
       const formData = new FormData();
-      
+
       // Add text fields
       if (clientData.name) formData.append('name', clientData.name);
       if (clientData.phone) formData.append('phone', clientData.phone);
@@ -182,7 +231,7 @@ export async function createClient(clientData: CreateClientData): Promise<Client
       if (clientData.observation) formData.append('observation', clientData.observation);
       if (clientData.guarantorId) formData.append('guarantorId', clientData.guarantorId);
       if (clientData.reliability) formData.append('reliability', clientData.reliability.toString());
-      
+
       // Add address fields (nested under `address[...]`) if present
       if (clientData.address) {
         const addr = clientData.address;
@@ -196,7 +245,7 @@ export async function createClient(clientData: CreateClientData): Promise<Client
         if (addr.number) formData.append('address[number]', addr.number);
         if (addr.complement) formData.append('address[complement]', addr.complement);
       }
-      
+
       // Add avatar as blob/file for API
       if (hasAvatar && clientData.avatar) {
         const { value, name: fileName } = await uriToFormDataFile(
@@ -251,11 +300,11 @@ export async function updateClient(id: string, clientData: UpdateClientData): Pr
     const hasAvatar = !!clientData.avatar;
     const needsFormData = hasDocumentImages || hasAvatar;
     const documentImages = clientData.documentImages;
-    
+
     if (needsFormData) {
       // Create FormData for multipart/form-data
       const formData = new FormData();
-      
+
       // Add text fields
       if (clientData.name) formData.append('name', clientData.name);
       if (clientData.phone) formData.append('phone', clientData.phone);
@@ -265,7 +314,7 @@ export async function updateClient(id: string, clientData: UpdateClientData): Pr
       if (clientData.observation) formData.append('observation', clientData.observation);
       if (clientData.guarantorId) formData.append('guarantorId', clientData.guarantorId);
       if (clientData.reliability) formData.append('reliability', clientData.reliability.toString());
-      
+
       // Add address fields (nested under `address[...]`) if present
       if (clientData.address) {
         const addr = clientData.address;
@@ -279,7 +328,7 @@ export async function updateClient(id: string, clientData: UpdateClientData): Pr
         if (addr.number) formData.append('address[number]', addr.number);
         if (addr.complement) formData.append('address[complement]', addr.complement);
       }
-      
+
       // Add avatar as blob/file for API
       if (hasAvatar && clientData.avatar) {
         const { value, name: fileName } = await uriToFormDataFile(

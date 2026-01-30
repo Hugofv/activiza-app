@@ -9,6 +9,10 @@ export default {
   login: 'Login',
   logout: 'Logout',
   profile: 'Profile',
+  theme: 'Theme',
+  themeLight: 'Light',
+  themeDark: 'Dark',
+  themeSystem: 'System',
   settings: 'Settings',
   help: 'Help',
   // Validation errors

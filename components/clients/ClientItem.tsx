@@ -43,7 +43,7 @@ export const ClientItem: React.FC<ClientItemProps> = ({
       <View style={styles.content}>
         {/* Avatar */}
         <Avatar
-          image={client.avatar}
+          image={client.profilePictureUrl}
           icon="user-filled"
           size={48}
           backgroundColor="muted"

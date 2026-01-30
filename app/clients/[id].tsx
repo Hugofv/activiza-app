@@ -95,14 +95,21 @@ export default function ClientDetailScreen() {
     console.log('Send email');
   };
 
-  // Mock data for fields not in Client interface yet
-  const observation = 'Tem boa reputação'; // client.observation
-  const reference = { name: 'Hugo', rating: 4 }; // client.reference
-  const documents = [
-    'https://via.placeholder.com/150',
-    'https://via.placeholder.com/150',
-  ]; // client.documents
-  const address = 'Rua Marajó, 10\nParque Amazônia, Goiânia, GO\nAp 201 Torre A'; // client.address
+  const displayName = client.name ?? client.meta?.name;
+  const displayPhone = client.phone ?? client.meta?.phone;
+  const displayProfileUrl = client.profilePictureUrl ?? client.meta?.profilePictureUrl;
+  const displayRating = client.rating ?? (client.meta?.reliability != null ? Number(client.meta.reliability) : undefined);
+  const observation = client.meta?.observation;
+  const guarantor = client.meta?.gu;
+  const documentUrls = (client.documents ?? client.meta?.documents ?? [])
+    .map((d) => (typeof d === 'object' && d && 'url' in d ? (d as { url?: string }).url : undefined))
+    .filter((u): u is string => !!u);
+  const addr = client.address;
+  const address = addr
+    ? [addr.street, addr.number, addr.neighborhood, addr.city, addr.state, addr.postalCode, addr.complement]
+        .filter(Boolean)
+        .join(', ')
+    : undefined;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -129,7 +136,7 @@ export default function ClientDetailScreen() {
         {/* Profile Section */}
         <View style={styles.profileSection}>
           <Avatar
-            image={client.avatar}
+            image={displayProfileUrl}
             icon="user-filled"
             size={64}
             backgroundColor="muted"
@@ -137,12 +144,12 @@ export default function ClientDetailScreen() {
           />
           <View style={styles.profileInfo}>
             <Typography variant="body1Bold" style={[styles.clientName, { color: colors.text }]}>
-              {client.name}
+              {displayName}
             </Typography>
-            {client.rating !== undefined && (
+            {displayRating !== undefined && (
               <Badge
                 icon="star"
-                value={client.rating}
+                value={displayRating}
                 backgroundColor="muted"
                 foregroundColor="icon"
                 size="sm"
@@ -185,12 +192,12 @@ export default function ClientDetailScreen() {
         {/* Details Section */}
         <View style={styles.detailsSection}>
           {/* WhatsApp */}
-          {client.phone && (
+          {displayPhone && (
             <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
               <SummaryItem
                 icon="whatsapp"
                 label={t('clients.whatsapp') || 'WhatsApp'}
-                value={client.phone}
+                value={displayPhone}
               />
             </View>
           )}
@@ -207,7 +214,7 @@ export default function ClientDetailScreen() {
           )}
 
           {/* Reference */}
-          {reference && (
+          {reference != null ? (
             <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
               <SummaryItem
                 icon="user-share"
@@ -215,11 +222,11 @@ export default function ClientDetailScreen() {
                 value={
                   <View style={styles.referenceValue}>
                     <Typography variant="body1" style={{ color: colors.text }}>
-                      @ {reference.name}
+                      @ {(reference as { name: string; rating: number }).name}
                     </Typography>
                     <Badge
                       icon="star"
-                      value={reference.rating}
+                      value={(reference as { name: string; rating: number }).rating}
                       backgroundColor="muted"
                       foregroundColor="icon"
                       size="sm"
@@ -228,20 +235,20 @@ export default function ClientDetailScreen() {
                 }
               />
             </View>
-          )}
+          ) : null}
 
           {/* Documents */}
-          {documents && documents.length > 0 && (
+          {documentUrls.length > 0 && (
             <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
               <SummaryItem
                 icon="file-text"
                 label={t('clients.documents') || 'Documentos'}
                 value={
                   <View style={styles.documentsRow}>
-                    {documents.map((doc, index) => (
+                    {documentUrls.map((uri, index) => (
                       <TouchableOpacity key={index} style={styles.documentThumbnail}>
                         <ExpoImage
-                          source={{ uri: doc }}
+                          source={{ uri }}
                           style={styles.documentImage}
                           contentFit="cover"
                         />

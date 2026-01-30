@@ -43,7 +43,9 @@ import {
   IconUserShare
 } from '@tabler/icons-react-native';
 import * as React from 'react';
-import { type StyleProp, type ViewStyle, useColorScheme, View } from 'react-native';
+import { type StyleProp, type ViewStyle, View } from 'react-native';
+
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 // Map old icon names to Tabler icon components
 const ICON_MAP: Record<string, React.ComponentType<any>> = {

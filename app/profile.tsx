@@ -1,12 +1,14 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
+import { useTheme } from '@/contexts/themeContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
@@ -18,6 +20,7 @@ export default function ProfileScreen() {
 
   const { isAuthenticated, isChecking, redirectToLogin } = useAuthGuard();
   const { user, logoutAsync, isLoggingOut } = useAuth();
+  const theme = useTheme();
 
   useEffect(() => {
     if (!isChecking && !isAuthenticated) {
@@ -102,6 +105,35 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        <View style={[styles.themeSection, { backgroundColor: colors.muted }]}>
+          <Typography variant="body1SemiBold" style={[styles.themeTitle, { color: colors.text }]}>
+            {t('common.theme')}
+          </Typography>
+          {(['light', 'dark', 'system'] as const).map((option) => (
+            <Pressable
+              key={option}
+              style={[
+                styles.themeOption,
+                option === theme?.preference && { backgroundColor: colors.primaryWhitenOpacity },
+              ]}
+              onPress={() => theme?.setPreference(option)}
+            >
+              <Typography variant="body1" style={{ color: colors.text }}>
+                {t(
+                  option === 'light'
+                    ? 'common.themeLight'
+                    : option === 'dark'
+                      ? 'common.themeDark'
+                      : 'common.themeSystem'
+                )}
+              </Typography>
+              {theme?.preference === option && (
+                <Icon name="checkmark-circle" size={22} color={colors.primary} />
+              )}
+            </Pressable>
+          ))}
+        </View>
+
         <View style={styles.footer}>
           <Button
             variant="secondary"
@@ -151,6 +183,23 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   email: {},
+  themeSection: {
+    borderRadius: 16,
+    padding: 16,
+    gap: 8,
+    marginTop: 16,
+  },
+  themeTitle: {
+    marginBottom: 4,
+  },
+  themeOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+  },
   footer: {
     marginTop: 'auto',
     marginBottom: 16,

@@ -52,19 +52,19 @@ export default function GuarantorScreen() {
 
   const clients: Client[] = clientsData?.results ?? [];
   const options = clients.slice(0, 10).map((client) => ({
-    value: client.id,
-    label: client.name,
+    value: String(client.id),
+    label: client.name ?? client.meta?.name ?? '',
   }));
 
   const handleGuarantorChange = (value: string) => {
     setSelectedGuarantorId(value);
-    const client = clients.find((c) => c.id === value);
+    const client = clients.find((c) => String(c.id) === value);
     if (client) {
       updateFormData({
         guarantor: {
-          id: client.id,
-          name: client.name,
-          reliability: client.reliability,
+          id: value,
+          name: client.name ?? client.meta?.name ?? '',
+          reliability: client.meta?.reliability != null ? Number(client.meta?.reliability) : undefined,
         },
       });
     }

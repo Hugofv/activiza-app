@@ -75,6 +75,7 @@ export default function ClientsScreen() {
 
   const clients = clientsData?.results || [];
 
+  console.log(clients)
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -131,7 +132,7 @@ export default function ClientsScreen() {
         ) : (
           <FlatList
             data={clients}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => String(item.id)}
             renderItem={({ item }) => (
               <ClientItem client={item} onPress={handleClientPress} />
             )}
