@@ -91,7 +91,7 @@ export default function GuarantorScreen() {
             {/* Title */}
             <View style={styles.titleContainer}>
               <Typography variant="h3" color='text'>
-                {t('clients.guarantor')}
+                {t('clients.reference')}
               </Typography>
 
               <Typography variant="body2" color='placeholder'>

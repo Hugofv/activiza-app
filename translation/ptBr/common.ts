@@ -17,6 +17,8 @@ export default {
   themeSystem: 'Sistema',
   settings: 'Configurações',
   help: 'Ajuda',
+  save: 'Salvar',
+  edit: 'Editar',
   // Validation errors
   validation: {
     required: 'Este campo é obrigatório',
@@ -65,8 +67,8 @@ export default {
   error: 'Erro',
   warning: 'Aviso',
   success: 'Sucesso',
-  edit: 'Editar',
   next: 'Próximo',
+  cancel: 'Cancelar',
   // Error messages
   errors: {
     EMAIL_ALREADY_EXISTS: 'Este email já está cadastrado',

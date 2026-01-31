@@ -69,12 +69,13 @@ export interface ClientAddress {
   countryCode?: string;
 }
 
-/** Document item in documents array */
+/** Document item in documents array (API return) */
 export interface ClientDocumentItem {
-  id?: number;
+  downloadUrl?: string;
+  downloadUrlExpiresIn?: number;
   key?: string;
-  url?: string;
-  [key: string]: unknown;
+  name?: string;
+  uploadedAt?: string;
 }
 
 /** Meta (name, phone, observation, profile picture, etc.) */
@@ -105,6 +106,7 @@ export interface Client {
   meta?: ClientMeta | null;
   updatedAt?: Record<string, unknown>;
   updatedBy?: string | null;
+  guarantor?: Client | null;
   // Convenience fields (populated from meta / account for UI)
   name?: string;
   phone?: string;
@@ -199,7 +201,9 @@ export async function getClients(filters?: ClientFilters): Promise<ClientsRespon
 export async function getClientById(id: string): Promise<Client> {
   try {
     const response = await apiClient.get<Client>(ENDPOINTS.CLIENTS.GET_BY_ID(id));
+    console.log('Get client by ID response:', response.data);
     return response.data;
+
   } catch (error: any) {
     console.error('Get client by ID error:', error);
     throw error;

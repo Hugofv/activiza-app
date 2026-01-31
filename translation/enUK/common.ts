@@ -15,6 +15,9 @@ export default {
   themeSystem: 'System',
   settings: 'Settings',
   help: 'Help',
+  save: 'Save',
+  edit: 'Edit',
+  cancel: 'Cancel',
   // Validation errors
   validation: {
     required: 'This field is required',

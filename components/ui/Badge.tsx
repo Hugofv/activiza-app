@@ -2,9 +2,10 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 
-import { type ThemeColorKey } from '@/constants/theme';
+import { Colors, type ThemeColorKey } from '@/constants/theme';
 import { cn } from '@/lib/utils';
 
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Icon, type IconName } from './Icon';
 import { Typography, type TypographyVariant } from './Typography';
 
@@ -72,6 +73,8 @@ export const Badge = React.forwardRef<View, BadgeProps>(
     },
     ref
   ) => {
+    const colorScheme = useColorScheme();
+    const colors = Colors[colorScheme ?? 'light'];
     // Determine icon size based on badge size if not provided
     const getIconSize = (): number => {
       if (iconSize) return iconSize;
@@ -107,7 +110,7 @@ export const Badge = React.forwardRef<View, BadgeProps>(
         style={[
           styles.badge,
           {
-            backgroundColor: backgroundColor,
+            backgroundColor: colors[backgroundColor],
             paddingHorizontal: size === 'sm' ? 8 : size === 'md' ? 12 : 16,
             paddingVertical: size === 'sm' ? 4 : size === 'md' ? 8 : 12,
             gap: size === 'sm' ? 4 : size === 'md' ? 6 : 8,

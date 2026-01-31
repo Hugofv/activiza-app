@@ -1,12 +1,10 @@
-import { Image as ExpoImage } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -16,6 +14,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
+import { ImageCardView } from '@/components/ui/ImageCardView';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -31,6 +30,7 @@ export default function ClientDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
+  const [isEditing, setIsEditing] = useState(false);
   const colors = Colors[colorScheme ?? 'light'];
   const { isAuthenticated, isChecking } = useAuthGuard();
 
@@ -41,8 +41,14 @@ export default function ClientDetailScreen() {
   } = useQuery({
     queryKey: ['client', id],
     queryFn: () => getClientById(id!),
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
     enabled: !!id && isAuthenticated,
   });
+  console.log('Client:', client);
 
   if (isChecking || isLoading) {
     return (
@@ -71,8 +77,7 @@ export default function ClientDetailScreen() {
   }
 
   const handleEdit = () => {
-    // TODO: Navigate to edit screen
-    console.log('Edit client:', client.id);
+    setIsEditing(true);
   };
 
   const handleHistory = () => {
@@ -100,15 +105,15 @@ export default function ClientDetailScreen() {
   const displayProfileUrl = client.profilePictureUrl ?? client.meta?.profilePictureUrl;
   const displayRating = client.rating ?? (client.meta?.reliability != null ? Number(client.meta.reliability) : undefined);
   const observation = client.meta?.observation;
-  const guarantor = client.meta?.gu;
-  const documentUrls = (client.documents ?? client.meta?.documents ?? [])
-    .map((d) => (typeof d === 'object' && d && 'url' in d ? (d as { url?: string }).url : undefined))
+  const guarantor = client.guarantor;
+  const documentUrls = (client?.documents ?? [])
+    .map((d) => (typeof d === 'object' && d && 'downloadUrl' in d ? (d as { downloadUrl?: string }).downloadUrl : undefined))
     .filter((u): u is string => !!u);
   const addr = client.address;
   const address = addr
     ? [addr.street, addr.number, addr.neighborhood, addr.city, addr.state, addr.postalCode, addr.complement]
-        .filter(Boolean)
-        .join(', ')
+      .filter(Boolean)
+      .join(', ')
     : undefined;
 
   return (
@@ -116,16 +121,45 @@ export default function ClientDetailScreen() {
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.background }]}>
         <BackButton />
-        <Button
-          variant="secondary"
-          size="sm"
-          onPress={handleEdit}
-          style={styles.editButton}
-        >
-          <Typography variant="body2Medium" color="primaryForeground">
-            {t('common.edit') || 'Editar'}
-          </Typography>
-        </Button>
+
+        {
+          isEditing ? (
+            <View style={styles.editButtonsRow}>
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={handleEdit}
+                style={styles.editButton}
+              >
+                <Typography variant="body2Medium" color="primaryForeground">
+                  {t('common.cancel')}
+                </Typography>
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onPress={handleEdit}
+                style={styles.editButton}
+              >
+                <Typography variant="body2Medium" color="primaryForeground">
+                  {t('common.save')}
+                </Typography>
+              </Button>
+            </View>
+          ) : (
+            <Button
+              variant="secondary"
+              size="sm"
+              onPress={handleEdit}
+              style={styles.editButton}
+            >
+              <Typography variant="body2Medium" color="primaryForeground">
+                {t('common.edit')}
+              </Typography>
+            </Button>
+          )
+        }
+
       </View>
 
       <ScrollView
@@ -166,8 +200,8 @@ export default function ClientDetailScreen() {
             onPress={handleHistory}
             backgroundColor="muted"
             shape="rounded"
-            size="md"
-            labelStyle={{width: 90, textAlign: 'center'}}
+            size="lg"
+            labelStyle={{ width: 90, textAlign: 'center' }}
           />
           <IconButton
             icon="whatsapp"
@@ -175,8 +209,8 @@ export default function ClientDetailScreen() {
             onPress={handleChat}
             backgroundColor="muted"
             shape="rounded"
-            size="md"
-            labelStyle={{width: 90, textAlign: 'center'}}
+            size="lg"
+            labelStyle={{ width: 90, textAlign: 'center' }}
           />
           <IconButton
             icon="map-pin"
@@ -184,8 +218,8 @@ export default function ClientDetailScreen() {
             onPress={handleMap}
             backgroundColor="muted"
             shape="rounded"
-            size="md"
-            labelStyle={{width: 90, textAlign: 'center'}}
+            size="lg"
+            labelStyle={{ width: 90, textAlign: 'center' }}
           />
         </View>
 
@@ -193,87 +227,69 @@ export default function ClientDetailScreen() {
         <View style={styles.detailsSection}>
           {/* WhatsApp */}
           {displayPhone && (
-            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
-              <SummaryItem
-                icon="whatsapp"
-                label={t('clients.whatsapp') || 'WhatsApp'}
-                value={displayPhone}
-              />
-            </View>
+            <SummaryItem
+              icon="whatsapp"
+              isEditing={isEditing}
+              label={t('clients.whatsapp') || 'WhatsApp'}
+              value={displayPhone}
+            />
           )}
 
           {/* Observation */}
           {observation && (
-            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
-              <SummaryItem
-                icon="note"
-                label={t('clients.observation') || 'Observação'}
-                value={observation}
-              />
-            </View>
+            <SummaryItem
+              icon="note"
+              isEditing={isEditing}
+              label={t('clients.observation') || 'Observação'}
+              value={observation}
+            />
           )}
 
           {/* Reference */}
-          {reference != null ? (
-            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
-              <SummaryItem
-                icon="user-share"
-                label={t('clients.reference') || 'Referência'}
-                value={
-                  <View style={styles.referenceValue}>
-                    <Typography variant="body1" style={{ color: colors.text }}>
-                      @ {(reference as { name: string; rating: number }).name}
+          {guarantor != null ? (
+            <SummaryItem icon='user-share' isEditing={isEditing} label={t('clients.summaryGuarantor')} value={
+              <View style={styles.guarantorRow}>
+                <Badge icon="user-circle" value={
+                  <View style={styles.guarantorNameRow}>
+                    <Typography variant='body2SemiBold' style={{ fontSize: 13 }}>
+                      {guarantor.name}
                     </Typography>
-                    <Badge
-                      icon="star"
-                      value={(reference as { name: string; rating: number }).rating}
-                      backgroundColor="muted"
-                      foregroundColor="icon"
-                      size="sm"
-                    />
+                    <Icon name="star-filled" color="primaryForeground" size={16} style={{ paddingLeft: 4, borderLeftWidth: 2, borderLeftColor: colors.border }} />
+                    <Typography variant="body2Medium" style={{ fontSize: 13 }} color="text">
+                      {guarantor.meta?.reliability || 0}
+                    </Typography>
                   </View>
-                }
-              />
-            </View>
+                } backgroundColor="muted" foregroundColor="primaryForeground" size="sm" />
+              </View>} />
+
           ) : null}
 
-          {/* Documents */}
+          {/* Document Images */}
           {documentUrls.length > 0 && (
-            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
-              <SummaryItem
-                icon="file-text"
-                label={t('clients.documents') || 'Documentos'}
-                value={
-                  <View style={styles.documentsRow}>
-                    {documentUrls.map((uri, index) => (
-                      <TouchableOpacity key={index} style={styles.documentThumbnail}>
-                        <ExpoImage
-                          source={{ uri }}
-                          style={styles.documentImage}
-                          contentFit="cover"
-                        />
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                }
-              />
-            </View>
+            <SummaryItem icon='photo' isEditing={isEditing} label={t('clients.documents')} value={
+              <View style={styles.documentImagesRow}>
+                {documentUrls.map((uri, index) => (
+                  <ImageCardView key={uri ?? index} uri={uri} />
+                ))}
+              </View>
+            } />
           )}
 
           {/* Email */}
           {client.email && (
-            <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
-              <View style={styles.emailRow}>
-                <SummaryItem
-                  icon="mail"
-                  label={t('clients.email') || 'Endereço de e-mail'}
-                  value={client.email}
-                />
-                <TouchableOpacity onPress={handleEmailAction} style={styles.actionButtonWrapper}>
-                  <Icon name="mail" size={20} color="primary" />
-                </TouchableOpacity>
-              </View>
-            </View>
+            <SummaryItem
+              icon="mail"
+              isEditing={isEditing}
+              label={t('clients.email') || 'Endereço de e-mail'}
+              value={
+                <View style={styles.emailRow}>
+                  <Typography variant="h6Medium" color='text'>
+                    {client.email}
+                  </Typography>
+                  {!isEditing && <IconButton variant="secondary" icon="mail" size="sm" shape="rounded" iconColor="primaryForeground" onPress={handleEmailAction} />}
+                </View>
+              }
+            />
           )}
 
           {/* Address */}
@@ -281,14 +297,15 @@ export default function ClientDetailScreen() {
             <View style={[styles.detailItem, { borderBottomColor: colors.border }]}>
               <SummaryItem
                 icon="map-pin"
+                isEditing={isEditing}
                 label={t('clients.address') || 'Endereço físico'}
                 value={address}
               />
             </View>
           )}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </ScrollView >
+    </SafeAreaView >
   );
 }
 
@@ -333,6 +350,7 @@ const styles = StyleSheet.create({
   },
   profileInfo: {
     flex: 1,
+    alignItems: 'flex-start',
     gap: 8,
   },
   clientName: {
@@ -345,8 +363,14 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     gap: 5,
   },
+  editButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 5,
+  },
   detailsSection: {
     paddingHorizontal: 24,
+    gap: 16,
   },
   detailItem: {
     paddingVertical: 16,
@@ -354,22 +378,29 @@ const styles = StyleSheet.create({
   },
   emailRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    width: '95%',
     justifyContent: 'space-between',
     gap: 12,
   },
   actionButtonWrapper: {
     padding: 8,
   },
-  referenceValue: {
+  guarantorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 4,
   },
-  documentsRow: {
+  guarantorNameRow: {
     flexDirection: 'row',
-    gap: 12,
+    alignItems: 'center',
+    gap: 4,
+  },
+  documentImagesRow: {
     marginTop: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   documentThumbnail: {
     width: 80,
