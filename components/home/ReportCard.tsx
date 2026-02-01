@@ -10,25 +10,39 @@ interface ReportCardProps {
   description?: string;
 }
 
-export function ReportCard({ title, subtitle, description }: ReportCardProps) {
+export function ReportCard({
+ title, subtitle, description 
+}: ReportCardProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
-    <View style={[styles.reportCard, { backgroundColor: colors.primaryWhiten }]}>
+    <View
+      style={[styles.reportCard, { backgroundColor: colors.primaryWhiten }]}
+    >
       <View style={styles.titleContainer}>
-
-        <Typography variant="h4" color="primaryForeground" style={{ marginBottom: 4 }}>
+        <Typography
+          variant="h4"
+          color="primaryForeground"
+          style={{ marginBottom: 4 }}
+        >
           {title}
         </Typography>
         {subtitle && (
-          <Typography variant="body2" color="placeholder" style={{ marginBottom: 2 }}>
+          <Typography
+            variant="body2"
+            color="placeholder"
+            style={{ marginBottom: 2 }}
+          >
             {subtitle}
           </Typography>
         )}
       </View>
       {description && (
-        <Typography variant="caption" color="text">
+        <Typography
+          variant="caption"
+          color="text"
+        >
           {description}
         </Typography>
       )}
@@ -43,7 +57,10 @@ const styles = StyleSheet.create({
     padding: 20,
     height: 130,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+ width: 0,
+height: 2 
+},
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,

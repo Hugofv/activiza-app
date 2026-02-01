@@ -1,7 +1,10 @@
+import * as React from 'react';
+
+import { Pressable, StyleSheet } from 'react-native';
+
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import * as React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+
 import { Icon } from './Icon';
 
 export interface CheckboxProps {
@@ -16,7 +19,9 @@ const Checkbox = React.forwardRef<
   CheckboxProps
 >(
   (
-    { checked = false, onCheckedChange, disabled = false, style, ...props },
+    {
+ checked = false, onCheckedChange, disabled = false, style, ...props 
+},
     ref
   ) => {
     const colorScheme = useColorScheme();
@@ -46,9 +51,9 @@ const Checkbox = React.forwardRef<
       >
         {checked && (
           <Icon
-            name='checkmark'
+            name="checkmark"
             size={16}
-            color={checked ? "primaryForeground" : "text"}
+            color={checked ? 'primaryForeground' : 'text'}
           />
         )}
       </Pressable>

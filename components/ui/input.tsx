@@ -1,13 +1,19 @@
 import * as React from 'react';
-import { Control, Controller, FieldPath } from 'react-hook-form';
+
 import { TextInput, type TextInputProps, View } from 'react-native';
+
+import { Control, Controller, FieldPath } from 'react-hook-form';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { cn } from '@/lib/utils';
+
 import { Typography } from './Typography';
 
-export interface InputProps extends Omit<TextInputProps, 'value' | 'onChangeText' | 'editable'> {
+export interface InputProps extends Omit<
+  TextInputProps,
+  'value' | 'onChangeText' | 'editable'
+> {
   className?: string;
   // RHF props (optional)
   name?: FieldPath<any>;
@@ -21,14 +27,30 @@ export interface InputProps extends Omit<TextInputProps, 'value' | 'onChangeText
 }
 
 const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
-  ({ className, placeholderTextColor, style, name, control, error, onFormat, value, onChangeText, label, disabled, ...props }, ref) => {
+  (
+    {
+      className,
+      placeholderTextColor,
+      style,
+      name,
+      control,
+      error,
+      onFormat,
+      value,
+      onChangeText,
+      label,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
 
     // Use theme-based placeholder color (lighter when disabled, better contrast when enabled)
     const finalPlaceholderColor = disabled
       ? colors.disabledPlaceholder
-      : (placeholderTextColor || colors.placeholder);
+      : placeholderTextColor || colors.placeholder;
 
     // If RHF props are provided, use Controller
     if (name && control) {
@@ -36,7 +58,11 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
         <Controller
           control={control}
           name={name}
-          render={({ field: { onChange, onBlur, value: fieldValue } }) => {
+          render={({
+ field: {
+ onChange, onBlur, value: fieldValue 
+} 
+}) => {
             const handleChange = (text: string) => {
               if (disabled) return;
               const formatted = onFormat ? onFormat(text) : text;
@@ -48,7 +74,15 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
             return (
               <View style={{ gap: 4 }}>
                 {label && (
-                  <Typography variant='body1' style={{ fontSize: 20, fontWeight: '500', fontFamily: 'Inter_500Medium', color: colors.text }}>
+                  <Typography
+                    variant="body1"
+                    style={{
+                      fontSize: 20,
+                      fontWeight: '500',
+                      fontFamily: 'Inter_500Medium',
+                      color: colors.text,
+                    }}
+                  >
                     {label}
                   </Typography>
                 )}
@@ -65,7 +99,9 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
                       color: isDisabled ? colors.icon : colors.text,
                       borderWidth: 0,
                       borderBottomWidth: 1.5,
-                      borderBottomColor: error ? colors.error : (style as any)?.borderBottomColor || colors.icon,
+                      borderBottomColor: error
+                        ? colors.error
+                        : (style as any)?.borderBottomColor || colors.icon,
                       opacity: isDisabled ? 0.6 : 1,
                     },
                     error && { borderBottomColor: colors.error },
@@ -79,7 +115,13 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
                   {...props}
                 />
                 {error && (
-                  <Typography variant="caption" style={{ color: colors.error, marginTop: 4 }}>
+                  <Typography
+                    variant="caption"
+                    style={{
+ color: colors.error,
+marginTop: 4 
+}}
+                  >
                     {error}
                   </Typography>
                 )}
@@ -95,34 +137,43 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
     return (
       <View style={{ gap: 4 }}>
         {label && (
-          <Typography variant='body1' style={{ fontSize: 20, fontWeight: '500', fontFamily: 'Inter_500Medium', color: colors.text }}>
+          <Typography
+            variant="body1"
+            style={{
+              fontSize: 20,
+              fontWeight: '500',
+              fontFamily: 'Inter_500Medium',
+              color: colors.text,
+            }}
+          >
             {label}
           </Typography>
         )}
-      <TextInput
-        ref={ref}
-        className={cn(
-          'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-lg',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-          'disabled:cursor-not-allowed disabled:opacity-50',
-          className
-        )}
-        style={[
-          {
+        <TextInput
+          ref={ref}
+          className={cn(
+            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-lg',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+            'disabled:cursor-not-allowed disabled:opacity-50',
+            className
+          )}
+          style={[
+            {
               color: isDisabled ? colors.icon : colors.text,
-            borderWidth: 0,
-            borderBottomWidth: 1.5,
-            borderBottomColor: (style as any)?.borderBottomColor || colors.icon,
+              borderWidth: 0,
+              borderBottomWidth: 1.5,
+              borderBottomColor:
+                (style as any)?.borderBottomColor || colors.icon,
               opacity: isDisabled ? 0.6 : 1,
-          },
-          style,
-        ]}
+            },
+            style,
+          ]}
           placeholderTextColor={finalPlaceholderColor}
-        value={value}
-        onChangeText={onChangeText}
+          value={value}
+          onChangeText={onChangeText}
           editable={!isDisabled}
-        {...props}
-      />
+          {...props}
+        />
       </View>
     );
   }
@@ -130,4 +181,3 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
 Input.displayName = 'Input';
 
 export { Input };
-

@@ -22,9 +22,15 @@ export async function getStorageItem<T>(key: string): Promise<T | null> {
 /**
  * Set value in AsyncStorage with automatic JSON stringification
  */
-export async function setStorageItem<T>(key: string, value: T): Promise<boolean> {
+export async function setStorageItem<T>(
+  key: string,
+  value: T
+): Promise<boolean> {
   try {
-    await AsyncStorage.setItem(`${STORAGE_PREFIX}${key}`, JSON.stringify(value));
+    await AsyncStorage.setItem(
+      `${STORAGE_PREFIX}${key}`,
+      JSON.stringify(value)
+    );
     return true;
   } catch (error) {
     console.error(`Error setting storage item ${key}:`, error);
@@ -63,17 +69,19 @@ export async function clearStorage(): Promise<boolean> {
 /**
  * Get multiple storage items at once
  */
-export async function getMultipleStorageItems<T>(keys: string[]): Promise<Record<string, T | null>> {
+export async function getMultipleStorageItems<T>(
+  keys: string[]
+): Promise<Record<string, T | null>> {
   try {
     const prefixedKeys = keys.map((key) => `${STORAGE_PREFIX}${key}`);
     const items = await AsyncStorage.multiGet(prefixedKeys);
     const result: Record<string, T | null> = {};
-    
+
     items.forEach(([key, value]) => {
       const originalKey = key.replace(STORAGE_PREFIX, '');
       result[originalKey] = value ? (JSON.parse(value) as T) : null;
     });
-    
+
     return result;
   } catch (error) {
     console.error('Error getting multiple storage items:', error);

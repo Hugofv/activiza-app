@@ -18,12 +18,12 @@ export const ENDPOINTS = {
     LOGIN: `/auth/login`,
     LOGOUT: `/auth/logout`,
     REFRESH_TOKEN: `/auth/refresh`,
-    VERIFY_SEND: `/auth/verify/send`,      // Send verification code
-    VERIFY: `/auth/verify`,                // Verify code
-    VERIFY_RESEND: `/auth/verify/resend`,  // Resend verification code
+    VERIFY_SEND: `/auth/verify/send`, // Send verification code
+    VERIFY: `/auth/verify`, // Verify code
+    VERIFY_RESEND: `/auth/verify/resend`, // Resend verification code
     CHECK_EMAIL: `/auth/check-email`,
-    FORGOT_PASSWORD: `/auth/forgot-password`,        // Request password reset (sends link with token)
-    RESET_PASSWORD: `/auth/reset-password`,          // Reset password with token from email link
+    FORGOT_PASSWORD: `/auth/forgot-password`, // Request password reset (sends link with token)
+    RESET_PASSWORD: `/auth/reset-password`, // Reset password with token from email link
   },
 
   // Onboarding endpoints (protected routes - require authentication)
@@ -41,9 +41,7 @@ export const ENDPOINTS = {
   },
 
   // Modules endpoints
-  MODULES: {
-    GET: `${PREFIX}/modules`,
-  },
+  MODULES: {GET: `${PREFIX}/modules`,},
 
   // Clients endpoints
   CLIENTS: {

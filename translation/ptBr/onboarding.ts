@@ -1,8 +1,10 @@
 export default {
   title: 'Tudo para você gerenciar seus empréstimos e aluguéis.',
   document: 'Qual seu documento?',
-  documentDescription: 'Informe seu CPF ou CNPJ para fazer seu cadastro ou acessar sua conta',
-  documentDescriptionOptional: 'Informe seu documento de identificação (opcional)',
+  documentDescription:
+    'Informe seu CPF ou CNPJ para fazer seu cadastro ou acessar sua conta',
+  documentDescriptionOptional:
+    'Informe seu documento de identificação (opcional)',
   documentType: 'Tipo de documento',
   documentTypeCPF: 'CPF',
   documentTypeCNPJ: 'CNPJ',
@@ -19,7 +21,8 @@ export default {
   register: 'Registrar',
   forgotPassword: 'Esqueceu sua senha?',
   enterPassword: 'Digite sua senha',
-  enterPasswordDescription: 'Digite sua senha para entrar na sua conta {{email}}',
+  enterPasswordDescription:
+    'Digite sua senha para entrar na sua conta {{email}}',
   createAccount: 'Criar conta',
   alreadyHaveAccount: 'Já tem uma conta?',
   loginWithEmail: 'Entrar com email',
@@ -53,7 +56,8 @@ export default {
   password: 'Crie uma senha',
   passwordPlaceholder: 'Digite sua senha',
   confirmPasswordPlaceholder: 'Digite sua senha novamente',
-  passwordDescription: 'Sua senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais',
+  passwordDescription:
+    'Sua senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais',
   passwordRuleMinLength: 'Pelo menos 8 caracteres',
   passwordRuleUppercase: 'Pelo menos uma letra maiúscula',
   passwordRuleLowercase: 'Pelo menos uma letra minúscula',
@@ -61,7 +65,8 @@ export default {
   passwordRuleSpecial: 'Pelo menos um caractere especial',
   passwordRuleMatch: 'As senhas devem coincidir',
   termsTitle: 'Termos e Condições',
-  termsDescription: 'Por favor, leia e aceite os termos de uso e política de privacidade para continuar',
+  termsDescription:
+    'Por favor, leia e aceite os termos de uso e política de privacidade para continuar',
   termsAccept: 'Eu aceito os',
   termsOfUse: 'Termos de Uso',
   termsLastUpdated: 'Última atualização: Janeiro 2024',
@@ -121,7 +126,8 @@ Mantemos suas informações pessoais apenas pelo tempo necessário para cumprir 
 7. ALTERAÇÕES NESTA POLÍTICA
 Podemos atualizar esta política de privacidade periodicamente. Notificaremos você sobre quaisquer alterações publicando a nova política nesta página.`,
   registerFinished: 'Cadastro Concluído!',
-  registerFinishedDescription: 'Parabéns! Seu cadastro foi realizado com sucesso. Agora você pode acessar sua conta.',
+  registerFinishedDescription:
+    'Parabéns! Seu cadastro foi realizado com sucesso. Agora você pode acessar sua conta.',
   goToLogin: 'Ir para Login',
   activeCustomers: 'Quantos clientes ativos você tem?',
   activeCustomersDescription: 'Clientes com serviços ativos ou pendentes.',
@@ -153,7 +159,8 @@ Podemos atualizar esta política de privacidade periodicamente. Notificaremos vo
   businessDurationMoreThan3Years: 'Mais de 3 anos',
   options: 'Opções',
   whatDoYouWantToDo: 'O que você quer fazer?',
-  optionsDescription: 'Você pode alterar estas opções depois nas configurações.',
+  optionsDescription:
+    'Você pode alterar estas opções depois nas configurações.',
   optionLendMoney: 'Emprestar dinheiro com juros',
   optionPromissoryNotes: 'Notas promissórias',
   optionRentProperties: 'Alugar imóveis',
@@ -173,9 +180,11 @@ Podemos atualizar esta política de privacidade periodicamente. Notificaremos vo
   noPlans: 'Nenhum plano disponível no momento.',
   wantThisPlan: 'Quero este',
   customizationTitle: 'Revise as informações do seu negócio',
-  customizationDescription: 'Confira e atualize as principais informações do seu negócio antes de continuar',
+  customizationDescription:
+    'Confira e atualize as principais informações do seu negócio antes de continuar',
   namePlaceholder: 'Digite seu nome completo',
   saveError: 'Falha ao salvar. Por favor, tente novamente.',
-  codeSendError: 'Falha ao enviar código de verificação. Você pode reenviá-lo na próxima tela.',
+  codeSendError:
+    'Falha ao enviar código de verificação. Você pode reenviá-lo na próxima tela.',
   submitError: 'Falha ao completar o cadastro. Por favor, tente novamente.',
 };

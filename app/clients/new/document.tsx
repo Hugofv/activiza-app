@@ -1,12 +1,21 @@
+import React, {
+ useCallback, useEffect, useMemo, useState 
+} from 'react';
+
+import { ScrollView, StyleSheet, View } from 'react-native';
+
+import { router, useLocalSearchParams } from 'expo-router';
+
 import { yupResolver } from '@hookform/resolvers/yup';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Autocomplete, type AutocompleteOption } from '@/components/ui/Autocomplete';
+import {
+  Autocomplete,
+  type AutocompleteOption,
+} from '@/components/ui/Autocomplete';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { Typography } from '@/components/ui/Typography';
@@ -23,9 +32,9 @@ import {
   normalizeDocument,
 } from '@/lib/services/documentService';
 import type { CountryCode } from '@/lib/services/postalCodeService';
+import { useEditClientStore } from '@/lib/stores/editClientStore';
 import { detectCountryFromLocale } from '@/lib/utils/geolocation';
 import { createDocumentSchema } from '@/lib/validations/onboarding';
-import { router } from 'expo-router';
 
 import { useNewClientForm } from './_context';
 
@@ -38,19 +47,36 @@ export default function DocumentScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
+  const searchParams = useLocalSearchParams<{
+    clientId?: string;
+    edit?: string;
+  }>();
+  const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
+  const { draft, updateDraft } = useEditClientStore();
+  const {
+ formData, updateFormData, setCurrentStep 
+} = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const keyboardHeight = useKeyboardHeight();
+
+  // Get initial values based on mode
+  const initialDocument = isEditMode ? draft.document : formData.document;
+  const initialDocumentType = isEditMode
+    ? draft.documentType
+    : formData.documentType;
+  const initialCountryCode = isEditMode
+    ? draft.address?.countryCode
+    : formData.address?.countryCode;
 
   // Memoize country detection (only runs once)
   const detectedCountry = useMemo(() => detectCountryFromLocale(), []);
   const countryCode: CountryCode = useMemo(
-    () => (formData.address?.countryCode as CountryCode) || detectedCountry,
-    [formData.address?.countryCode, detectedCountry]
+    () => (initialCountryCode as CountryCode) || detectedCountry,
+    [initialCountryCode, detectedCountry]
   );
 
   const [documentType, setDocumentType] = useState<DocumentType | undefined>(
-    (formData.documentType as DocumentType) || undefined
+    (initialDocumentType as DocumentType) || undefined
   );
 
   // Memoize document types (static array, but prevents recreation)
@@ -64,7 +90,8 @@ export default function DocumentScreen() {
 
   // Recreate schema when documentType changes to update validation
   const documentSchema = React.useMemo(
-    () => createDocumentSchema(countryCode, documentType, { documentRequired: true }),
+    () =>
+      createDocumentSchema(countryCode, documentType, {documentRequired: true,}),
     [countryCode, documentType]
   );
 
@@ -84,8 +111,8 @@ export default function DocumentScreen() {
   } = useForm<DocumentFormData>({
     resolver,
     defaultValues: {
-      document: formData.document || '',
-      documentType: formData.documentType as DocumentType | undefined,
+      document: initialDocument || '',
+      documentType: initialDocumentType as DocumentType | undefined,
     },
     mode: 'onChange',
   });
@@ -137,7 +164,10 @@ export default function DocumentScreen() {
         // Only detect when we have enough characters (at least 8 for most document types)
         if (normalized.length >= 8 || cleaned.length >= 8) {
           const detectedType = detectDocumentType(value, countryCode);
-          if (detectedType && documentTypes.some(dt => dt.value === detectedType)) {
+          if (
+            detectedType &&
+            documentTypes.some((dt) => dt.value === detectedType)
+          ) {
             setDocumentType(detectedType);
             setValue('documentType', detectedType, { shouldValidate: false });
           }
@@ -145,7 +175,8 @@ export default function DocumentScreen() {
       }
 
       // Format using current type or detected type
-      const typeToUse = documentType || (value ? detectDocumentType(value, countryCode) : null);
+      const typeToUse =
+        documentType || (value ? detectDocumentType(value, countryCode) : null);
       return formatDocumentValue(value, countryCode, typeToUse || undefined);
     },
     [documentType, countryCode, documentTypes, setValue]
@@ -159,7 +190,11 @@ export default function DocumentScreen() {
 
       // Reformat document value when type changes
       if (watchedDocument) {
-        const normalized = normalizeDocument(watchedDocument, countryCode, documentType || undefined);
+        const normalized = normalizeDocument(
+          watchedDocument,
+          countryCode,
+          documentType || undefined
+        );
         const formatted = formatDocumentValue(normalized, countryCode, type);
         setValue('document', formatted, { shouldValidate: false });
       }
@@ -177,6 +212,14 @@ export default function DocumentScreen() {
   const onSubmit = async (data: DocumentFormData) => {
     setIsSubmitting(true);
     try {
+      if (isEditMode) {
+        updateDraft({
+          document: data.document || undefined,
+          documentType: data.documentType || undefined,
+        });
+        router.back();
+        return;
+      }
       updateFormData({
         document: data.document || undefined,
         documentType: data.documentType || undefined,
@@ -198,7 +241,8 @@ export default function DocumentScreen() {
     [documentTypes, t]
   );
 
-  const clientName = formData.name || t('clients.yourClient');
+  const clientName =
+    (isEditMode ? draft.name : formData.name) || t('clients.yourClient');
 
   return (
     <SafeAreaView
@@ -206,88 +250,105 @@ export default function DocumentScreen() {
       edges={['bottom']}
     >
       <ThemedView style={styles.container}>
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps='handled'
-          >
-            <ThemedView style={styles.content}>
-              {/* Title */}
-              <Typography variant="h3" color='text'>
-                {t('clients.document')}
-              </Typography>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <ThemedView style={styles.content}>
+            {/* Title */}
+            <Typography
+              variant="h3"
+              color="text"
+            >
+              {t('clients.document')}
+            </Typography>
 
-              {/* Question */}
-              <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
-                {t('clients.documentQuestion', { name: clientName })}
-              </Typography>
+            {/* Question */}
+            <Typography
+              variant="body1"
+              style={[styles.question, { color: colors.text }]}
+            >
+              {t('clients.documentQuestion', { name: clientName })}
+            </Typography>
 
-              <View style={styles.documentContainer}>
-                {/* Document Type Selector */}
-                <View style={styles.typeSelector}>
-                  <Autocomplete<DocumentType>
-                    options={documentTypeOptions}
-                    value={documentType || null}
-                    onValueChange={handleDocumentTypeChange}
-                    placeholder={t('onboarding.documentType') || 'Tipo de documento'}
-                    searchable={true}
-                    label={t('onboarding.documentType')}
-                  />
-                </View>
-
-                {/* Input Field */}
-                <Input
-                  name='document'
-                  control={control}
-                  error={errors.document?.message}
-                  onFormat={handleDocumentFormat}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
-                  style={[
-                    {
-                      fontSize: 22,
-                      borderBottomColor: errors.document ? '#ef4444' : colors.icon,
-                    },
-                  ]}
-                  placeholder={formatConfig.placeholder}
-                  placeholderTextColor={colors.icon}
-                  keyboardType={documentType === 'ni' || documentType === 'crn' ? 'default' : 'numeric'}
-                  autoCapitalize={documentType === 'ni' || documentType === 'crn' ? 'characters' : 'none'}
-                  maxLength={formatConfig.maxLength}
-                  autoFocus={false}
+            <View style={styles.documentContainer}>
+              {/* Document Type Selector */}
+              <View style={styles.typeSelector}>
+                <Autocomplete<DocumentType>
+                  options={documentTypeOptions}
+                  value={documentType || null}
+                  onValueChange={handleDocumentTypeChange}
+                  placeholder={
+                    t('onboarding.documentType') || 'Tipo de documento'
+                  }
+                  searchable={true}
+                  label={t('onboarding.documentType')}
                 />
               </View>
-            </ThemedView>
-          </ScrollView>
 
-          {/* Continue Button */}
-          <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
-            <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
-              iconSize={32}
-              iconColor={colors.primaryForeground}
-              onPress={handleSubmit(onSubmit)}
-              disabled={isSubmitting}
-              loading={isSubmitting}
-            />
-          </View>
+              {/* Input Field */}
+              <Input
+                name="document"
+                control={control}
+                error={errors.document?.message}
+                onFormat={handleDocumentFormat}
+                className="border-0 rounded-none px-0 py-4 font-medium"
+                style={[
+                  {
+                    fontSize: 22,
+                    borderBottomColor: errors.document
+                      ? '#ef4444'
+                      : colors.icon,
+                  },
+                ]}
+                placeholder={formatConfig.placeholder}
+                placeholderTextColor={colors.icon}
+                keyboardType={
+                  documentType === 'ni' || documentType === 'crn'
+                    ? 'default'
+                    : 'numeric'
+                }
+                autoCapitalize={
+                  documentType === 'ni' || documentType === 'crn'
+                    ? 'characters'
+                    : 'none'
+                }
+                maxLength={formatConfig.maxLength}
+                autoFocus={false}
+              />
+            </View>
+          </ThemedView>
+        </ScrollView>
+
+        {/* Continue Button */}
+        <View
+          style={[
+            styles.buttonContainer,
+            keyboardHeight > 0 && { marginBottom: keyboardHeight },
+          ]}
+        >
+          <IconButton
+            variant="primary"
+            size="md"
+            icon="arrow-forward"
+            iconSize={32}
+            iconColor={colors.primaryForeground}
+            onPress={handleSubmit(onSubmit)}
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          />
+        </View>
       </ThemedView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
+  container: {flex: 1,},
+  scrollView: {flex: 1,},
+  scrollContent: {flexGrow: 1,},
   content: {
     flex: 1,
     paddingTop: 0,

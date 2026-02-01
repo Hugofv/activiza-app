@@ -18,6 +18,8 @@ export default {
   settings: 'Configurações',
   help: 'Ajuda',
   save: 'Salvar',
+  saving: 'Salvando...',
+  loading: 'Carregando...',
   edit: 'Editar',
   // Validation errors
   validation: {
@@ -77,7 +79,8 @@ export default {
     INVALID_STRING: 'Formato inválido',
     INVALID_EMAIL: 'Formato de email inválido',
     EMAIL_NOT_VERIFIED: 'Por favor, verifique seu email antes de continuar',
-    WEAK_PASSWORD: 'A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais',
+    WEAK_PASSWORD:
+      'A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais',
     MISSING_REQUIRED_FIELDS: 'Campos obrigatórios faltando: {{missingFields}}',
     CLIENT_NOT_FOUND: 'Cliente não encontrado',
     NOT_FOUND: 'Recurso não encontrado',

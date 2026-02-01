@@ -1,8 +1,16 @@
 import * as React from 'react';
-import { Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+
 import { Icon } from './Icon';
 import { Typography } from './Typography';
 
@@ -84,7 +92,11 @@ export function Autocomplete<T = string>({
   return (
     <View style={styles.container}>
       {label && (
-        <Typography variant="body2" color="text" style={[styles.label]}>
+        <Typography
+          variant="body2"
+          color="text"
+          style={[styles.label]}
+        >
           {label}
         </Typography>
       )}
@@ -101,7 +113,9 @@ export function Autocomplete<T = string>({
           ]}
           placeholder={selectedOption?.label || placeholder}
           placeholderTextColor={colors.placeholder}
-          value={isOpen && searchable ? searchQuery : selectedOption?.label || ''}
+          value={
+            isOpen && searchable ? searchQuery : selectedOption?.label || ''
+          }
           onChangeText={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
@@ -172,7 +186,9 @@ export function Autocomplete<T = string>({
                       style={[
                         styles.optionText,
                         {
-                          color: isSelected ? colors.primaryForeground : colors.text,
+                          color: isSelected
+                            ? colors.primaryForeground
+                            : colors.text,
                           fontWeight: isSelected ? '600' : '400',
                         },
                       ]}
@@ -180,7 +196,11 @@ export function Autocomplete<T = string>({
                       {item.label}
                     </Typography>
                     {isSelected && (
-                      <Icon name="check" size={20} color="primaryForeground" />
+                      <Icon
+                        name="check"
+                        size={20}
+                        color="primaryForeground"
+                      />
                     )}
                   </Pressable>
                 );
@@ -191,7 +211,11 @@ export function Autocomplete<T = string>({
       )}
 
       {error && (
-        <Typography variant="caption" color='error' style={[styles.error]}>
+        <Typography
+          variant="caption"
+          color="error"
+          style={[styles.error]}
+        >
           {error}
         </Typography>
       )}
@@ -235,7 +259,10 @@ const styles = StyleSheet.create({
     maxHeight: 200,
     borderRadius: 8,
     marginTop: 4,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+ width: 0,
+height: 2 
+},
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
@@ -249,9 +276,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 1000,
   },
-  list: {
-    maxHeight: 200,
-  },
+  list: {maxHeight: 200,},
   option: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -1,9 +1,20 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
+
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
+import { router, useLocalSearchParams } from 'expo-router';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as yup from 'yup';
 
 import { ThemedView } from '@/components/ThemedView';
 import { BackButton } from '@/components/ui/BackButton';
@@ -15,16 +26,12 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
 import { useToast } from '@/lib/hooks/useToast';
 import { login } from '@/lib/services/authService';
-import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
 
 interface PasswordFormData {
   password: string;
 }
 
-const passwordSchema = yup.object({
-  password: yup.string().required('Password is required'),
-});
+const passwordSchema = yup.object({password: yup.string().required('Password is required'),});
 
 /**
  * Password authentication screen for existing users
@@ -33,7 +40,10 @@ const AuthPasswordScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const params = useLocalSearchParams<{ email?: string; onboardingStep?: string }>();
+  const params = useLocalSearchParams<{
+    email?: string;
+    onboardingStep?: string;
+  }>();
   const email = params.email || '';
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,9 +56,7 @@ const AuthPasswordScreen = () => {
     formState: { errors, isValid },
   } = useForm<PasswordFormData>({
     resolver: yupResolver(passwordSchema),
-    defaultValues: {
-      password: '',
-    },
+    defaultValues: {password: '',},
     mode: 'onChange',
   });
 
@@ -75,7 +83,9 @@ const AuthPasswordScreen = () => {
       console.error('Login error:', error);
       showError(
         t('common.errors.INVALID_CREDENTIALS') || 'Authentication Failed',
-        error?.message || t('common.errors.INVALID_CREDENTIALS') || 'Invalid email or password. Please try again.'
+        error?.message ||
+          t('common.errors.INVALID_CREDENTIALS') ||
+          'Invalid email or password. Please try again.'
       );
     } finally {
       setIsLoading(false);
@@ -98,11 +108,13 @@ const AuthPasswordScreen = () => {
             <BackButton />
 
             {/* Title */}
-            <Typography variant='h4'>{t('onboarding.enterPassword')}</Typography>
+            <Typography variant="h4">
+              {t('onboarding.enterPassword')}
+            </Typography>
 
             {/* Description */}
             <Typography
-              variant='body2'
+              variant="body2"
               style={[styles.description, { color: colors.icon }]}
             >
               {t('onboarding.enterPasswordDescription', { email })}
@@ -111,25 +123,28 @@ const AuthPasswordScreen = () => {
             {/* Password Input Field */}
             <View style={styles.inputContainer}>
               <Input
-                name='password'
+                name="password"
                 control={control}
                 error={errors.password?.message}
                 label={t('common.password')}
-                className='border-0 rounded-none px-0 py-4 font-medium'
-                style={{ fontSize: 20, paddingRight: 50 }}
+                className="border-0 rounded-none px-0 py-4 font-medium"
+                style={{
+ fontSize: 20,
+paddingRight: 50 
+}}
                 placeholder={t('onboarding.passwordPlaceholder')}
                 secureTextEntry={!showPassword}
-                autoCapitalize='none'
-                autoComplete='password'
+                autoCapitalize="none"
+                autoComplete="password"
                 autoCorrect={false}
-                textContentType='password'
+                textContentType="password"
                 disabled={isLoading}
               />
 
               {/* Show/Hide Password Button */}
               <IconButton
-                variant='ghost'
-                size='sm'
+                variant="ghost"
+                size="sm"
                 icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
                 iconSize={24}
                 iconColor={colors.icon}
@@ -152,7 +167,7 @@ const AuthPasswordScreen = () => {
                 activeOpacity={0.7}
               >
                 <Typography
-                  variant='body2'
+                  variant="body2"
                   style={[styles.forgotPasswordText, { color: colors.primary }]}
                 >
                   {t('auth.forgotPassword') || t('onboarding.forgotPassword')}
@@ -173,8 +188,14 @@ const AuthPasswordScreen = () => {
                   style={{ marginTop: 10 }}
                 >
                   <Typography
-                    variant='body2'
-                    style={[styles.forgotPasswordText, { color: colors.placeholder, fontSize: 12 }]}
+                    variant="body2"
+                    style={[
+                      styles.forgotPasswordText,
+                      {
+ color: colors.placeholder,
+fontSize: 12 
+},
+                    ]}
                   >
                     [DEV] Test Reset Password
                   </Typography>
@@ -186,9 +207,9 @@ const AuthPasswordScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
@@ -205,9 +226,7 @@ const AuthPasswordScreen = () => {
 export default AuthPasswordScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,

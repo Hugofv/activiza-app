@@ -1,10 +1,10 @@
 /**
  * React Query Client configuration with persistence
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { DefaultOptions, QueryClient } from '@tanstack/react-query';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Query client options
 const queryClientOptions: DefaultOptions = {
@@ -38,9 +38,7 @@ const queryClientOptions: DefaultOptions = {
 };
 
 // Create query client
-export const queryClient = new QueryClient({
-  defaultOptions: queryClientOptions,
-});
+export const queryClient = new QueryClient({defaultOptions: queryClientOptions,});
 
 // Create persister for AsyncStorage
 export const asyncStoragePersister = createAsyncStoragePersister({
@@ -82,4 +80,3 @@ export async function getQueryCacheSize(): Promise<number> {
     return 0;
   }
 }
-

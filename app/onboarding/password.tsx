@@ -1,27 +1,31 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
+
+import {
+ KeyboardAvoidingView, Platform, StyleSheet, View 
+} from 'react-native';
+
+import { useLocalSearchParams } from 'expo-router';
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
+import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { Progress } from '@/components/ui/Progress';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { register } from '@/lib/services/authService';
-import { passwordSchema } from '@/lib/validations/onboarding';
-
-import { BackButton } from '@/components/ui/BackButton';
-import { Icon } from '@/components/ui/Icon';
-import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
+import { register } from '@/lib/services/authService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
+import { passwordSchema } from '@/lib/validations/onboarding';
 
 interface PasswordFormData {
   password: string;
@@ -40,7 +44,8 @@ const PasswordScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const params = useLocalSearchParams<{ email?: string }>();
-  const emailFromParams = typeof params.email === 'string' ? params.email : undefined;
+  const emailFromParams =
+    typeof params.email === 'string' ? params.email : undefined;
 
   const {
     control,
@@ -133,12 +138,10 @@ const PasswordScreen = () => {
       console.error('Registration error:', error);
       const apiMessage = getTranslatedError(
         (error?.response?.data as any) || error,
-        t('onboarding.saveError') || 'Failed to create account. Please try again.'
+        t('onboarding.saveError') ||
+          'Failed to create account. Please try again.'
       );
-      showError(
-        t('common.error') || 'Error',
-        apiMessage
-      );
+      showError(t('common.error') || 'Error', apiMessage);
     } finally {
       setIsRegistering(false);
     }
@@ -165,11 +168,11 @@ const PasswordScreen = () => {
             <BackButton />
 
             {/* Title */}
-            <Typography variant='h4'>{t('onboarding.password')}</Typography>
+            <Typography variant="h4">{t('onboarding.password')}</Typography>
 
             {/* Description */}
             <Typography
-              variant='body2'
+              variant="body2"
               style={[styles.description, { color: colors.icon }]}
             >
               {t('onboarding.passwordDescription')}
@@ -178,24 +181,27 @@ const PasswordScreen = () => {
             {/* Password Input Field */}
             <View style={styles.inputContainer}>
               <Input
-                name='password'
+                name="password"
                 control={control}
                 error={errors.password?.message}
                 label={t('common.password')}
-                className='border-0 rounded-none px-0 py-4 font-medium'
-                style={{ fontSize: 20, paddingRight: 50 }}
+                className="border-0 rounded-none px-0 py-4 font-medium"
+                style={{
+ fontSize: 20,
+paddingRight: 50 
+}}
                 placeholder={t('onboarding.passwordPlaceholder')}
                 secureTextEntry={!showPassword}
-                autoCapitalize='none'
-                autoComplete='password-new'
+                autoCapitalize="none"
+                autoComplete="password-new"
                 autoCorrect={false}
-                textContentType='newPassword'
+                textContentType="newPassword"
               />
 
               {/* Show/Hide Password Button */}
               <IconButton
-                variant='ghost'
-                size='sm'
+                variant="ghost"
+                size="sm"
                 icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
                 iconSize={24}
                 iconColor={colors.icon}
@@ -207,24 +213,27 @@ const PasswordScreen = () => {
             {/* Confirm Password Input Field */}
             <View style={styles.inputContainer}>
               <Input
-                name='confirmPassword'
+                name="confirmPassword"
                 control={control}
                 error={errors.confirmPassword?.message}
                 label={t('common.confirmPassword')}
-                className='border-0 rounded-none px-0 py-4 font-medium'
-                style={{ fontSize: 20, paddingRight: 50 }}
+                className="border-0 rounded-none px-0 py-4 font-medium"
+                style={{
+ fontSize: 20,
+paddingRight: 50 
+}}
                 placeholder={t('onboarding.confirmPasswordPlaceholder')}
                 secureTextEntry={!showPassword}
-                autoCapitalize='none'
-                autoComplete='password-new'
+                autoCapitalize="none"
+                autoComplete="password-new"
                 autoCorrect={false}
-                textContentType='newPassword'
+                textContentType="newPassword"
               />
 
               {/* Show/Hide Password Button */}
               <IconButton
-                variant='ghost'
-                size='sm'
+                variant="ghost"
+                size="sm"
                 icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
                 iconSize={24}
                 iconColor={colors.icon}
@@ -236,19 +245,20 @@ const PasswordScreen = () => {
             {/* Password Rules List */}
             <View style={styles.rulesContainer}>
               {passwordRules.map((rule) => (
-                <View key={rule.key} style={styles.ruleItem}>
+                <View
+                  key={rule.key}
+                  style={styles.ruleItem}
+                >
                   <Icon
                     name={rule.isValid ? 'checkmark-circle' : 'close-circle'}
                     size={20}
                     color={rule.isValid ? 'successForeground' : 'error'}
                   />
                   <Typography
-                    variant='body2'
+                    variant="body2"
                     style={[
                       styles.ruleText,
-                      {
-                        color: rule.isValid ? 'successForeground' : 'icon',
-                      },
+                      {color: rule.isValid ? 'successForeground' : 'icon',},
                     ]}
                   >
                     {rule.label}
@@ -261,9 +271,9 @@ const PasswordScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
@@ -280,18 +290,14 @@ const PasswordScreen = () => {
 export default PasswordScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
+  progressContainer: {marginBottom: 8,},
   inputContainer: {
     position: 'relative',
     marginTop: 8,

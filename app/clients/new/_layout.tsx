@@ -1,7 +1,10 @@
-import { Stack, usePathname } from 'expo-router';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { StyleSheet, View } from 'react-native';
+
+import { Stack, usePathname } from 'expo-router';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BackButton } from '@/components/ui/BackButton';
@@ -21,14 +24,20 @@ export default function NewClientLayout() {
 
   return (
     <NewClientFormProvider>
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        edges={['top']}
+      >
         {/* Shared Header */}
         {!isAddressRoute && (
           <View style={[styles.header, { backgroundColor: colors.background }]}>
             <View style={styles.headerLeft}>
               <BackButton />
             </View>
-            <Typography variant="h4" style={[styles.headerTitle, { color: colors.text }]}>
+            <Typography
+              variant="h4"
+              style={[styles.headerTitle, { color: colors.text }]}
+            >
               {t('clients.newClient')}
             </Typography>
             <CancelButton />
@@ -40,8 +49,7 @@ export default function NewClientLayout() {
             animation: 'slide_from_right',
             animationDuration: 350,
             gestureEnabled: true,
-            contentStyle: {
-              paddingTop: 0, // Remove default padding since we have our own header
+            contentStyle: {paddingTop: 0, // Remove default padding since we have our own header
             },
           }}
         >
@@ -63,12 +71,8 @@ export default function NewClientLayout() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  headerLeft: {
-    width: 80,
-  },
+  container: {flex: 1,},
+  headerLeft: {width: 80,},
   header: {
     flexDirection: 'row',
     alignItems: 'center',

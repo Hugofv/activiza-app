@@ -16,6 +16,8 @@ export default {
   settings: 'Settings',
   help: 'Help',
   save: 'Save',
+  saving: 'Saving...',
+  loading: 'Loading...',
   edit: 'Edit',
   cancel: 'Cancel',
   // Validation errors
@@ -74,7 +76,8 @@ export default {
     INVALID_STRING: 'Invalid format',
     INVALID_EMAIL: 'Invalid email format',
     EMAIL_NOT_VERIFIED: 'Please verify your email before continuing',
-    WEAK_PASSWORD: 'Password must be at least 8 characters long, including uppercase, lowercase, numbers and special characters',
+    WEAK_PASSWORD:
+      'Password must be at least 8 characters long, including uppercase, lowercase, numbers and special characters',
     MISSING_REQUIRED_FIELDS: 'Missing required fields: {{missingFields}}',
     CLIENT_NOT_FOUND: 'Client not found',
     NOT_FOUND: 'Resource not found',

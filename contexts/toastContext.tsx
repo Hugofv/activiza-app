@@ -2,8 +2,10 @@
  * Toast Context and Hook
  * Provides toast notification functionality throughout the app
  */
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useCallback, useContext } from 'react';
+
 import Toast from 'react-native-toast-message';
+
 import { ApiError } from '@/lib/types/apiTypes';
 import { getUserErrorMessage } from '@/lib/utils/errorTranslator';
 
@@ -19,12 +21,37 @@ interface ToastOptions {
 }
 
 interface ToastContextType {
-  showSuccess: (message: string, subtitle?: string, options?: ToastOptions) => void;
-  showError: (message: string, subtitle?: string, options?: ToastOptions) => void;
-  showInfo: (message: string, subtitle?: string, options?: ToastOptions) => void;
-  showWarning: (message: string, subtitle?: string, options?: ToastOptions) => void;
-  showApiError: (error: ApiError | Error, subtitle?: string, options?: ToastOptions) => void;
-  showToast: (type: ToastType, message: string, subtitle?: string, options?: ToastOptions) => void;
+  showSuccess: (
+    message: string,
+    subtitle?: string,
+    options?: ToastOptions
+  ) => void;
+  showError: (
+    message: string,
+    subtitle?: string,
+    options?: ToastOptions
+  ) => void;
+  showInfo: (
+    message: string,
+    subtitle?: string,
+    options?: ToastOptions
+  ) => void;
+  showWarning: (
+    message: string,
+    subtitle?: string,
+    options?: ToastOptions
+  ) => void;
+  showApiError: (
+    error: ApiError | Error,
+    subtitle?: string,
+    options?: ToastOptions
+  ) => void;
+  showToast: (
+    type: ToastType,
+    message: string,
+    subtitle?: string,
+    options?: ToastOptions
+  ) => void;
   hideToast: () => void;
 }
 
@@ -35,83 +62,101 @@ interface ToastProviderProps {
 }
 
 export function ToastProvider({ children }: ToastProviderProps) {
-  const showSuccess = useCallback((message: string, subtitle?: string, options?: ToastOptions) => {
-    Toast.show({
-      type: 'success',
-      text1: message,
-      text2: subtitle,
-      visibilityTime: options?.visibilityTime ?? 3000,
-      autoHide: options?.autoHide ?? true,
-      topOffset: options?.topOffset ?? 60,
-      bottomOffset: options?.bottomOffset ?? 40,
-    });
-  }, []);
+  const showSuccess = useCallback(
+    (message: string, subtitle?: string, options?: ToastOptions) => {
+      Toast.show({
+        type: 'success',
+        text1: message,
+        text2: subtitle,
+        visibilityTime: options?.visibilityTime ?? 3000,
+        autoHide: options?.autoHide ?? true,
+        topOffset: options?.topOffset ?? 60,
+        bottomOffset: options?.bottomOffset ?? 40,
+      });
+    },
+    []
+  );
 
-  const showError = useCallback((message: string, subtitle?: string, options?: ToastOptions) => {
-    Toast.show({
-      type: 'error',
-      text1: message,
-      text2: subtitle,
-      visibilityTime: options?.visibilityTime ?? 4000,
-      autoHide: options?.autoHide ?? true,
-      topOffset: options?.topOffset ?? 60,
-      bottomOffset: options?.bottomOffset ?? 40,
-    });
-  }, []);
+  const showError = useCallback(
+    (message: string, subtitle?: string, options?: ToastOptions) => {
+      Toast.show({
+        type: 'error',
+        text1: message,
+        text2: subtitle,
+        visibilityTime: options?.visibilityTime ?? 4000,
+        autoHide: options?.autoHide ?? true,
+        topOffset: options?.topOffset ?? 60,
+        bottomOffset: options?.bottomOffset ?? 40,
+      });
+    },
+    []
+  );
 
-  const showInfo = useCallback((message: string, subtitle?: string, options?: ToastOptions) => {
-    Toast.show({
-      type: 'info',
-      text1: message,
-      text2: subtitle,
-      visibilityTime: options?.visibilityTime ?? 3000,
-      autoHide: options?.autoHide ?? true,
-      topOffset: options?.topOffset ?? 60,
-      bottomOffset: options?.bottomOffset ?? 40,
-    });
-  }, []);
+  const showInfo = useCallback(
+    (message: string, subtitle?: string, options?: ToastOptions) => {
+      Toast.show({
+        type: 'info',
+        text1: message,
+        text2: subtitle,
+        visibilityTime: options?.visibilityTime ?? 3000,
+        autoHide: options?.autoHide ?? true,
+        topOffset: options?.topOffset ?? 60,
+        bottomOffset: options?.bottomOffset ?? 40,
+      });
+    },
+    []
+  );
 
-  const showWarning = useCallback((message: string, subtitle?: string, options?: ToastOptions) => {
-    Toast.show({
-      type: 'warning',
-      text1: message,
-      text2: subtitle,
-      visibilityTime: options?.visibilityTime ?? 3500,
-      autoHide: options?.autoHide ?? true,
-      topOffset: options?.topOffset ?? 60,
-      bottomOffset: options?.bottomOffset ?? 40,
-    });
-  }, []);
+  const showWarning = useCallback(
+    (message: string, subtitle?: string, options?: ToastOptions) => {
+      Toast.show({
+        type: 'warning',
+        text1: message,
+        text2: subtitle,
+        visibilityTime: options?.visibilityTime ?? 3500,
+        autoHide: options?.autoHide ?? true,
+        topOffset: options?.topOffset ?? 60,
+        bottomOffset: options?.bottomOffset ?? 40,
+      });
+    },
+    []
+  );
 
-  const showApiError = useCallback((error: ApiError | Error, subtitle?: string, options?: ToastOptions) => {
-    const userMessage = getUserErrorMessage(error);
-    Toast.show({
-      type: 'error',
-      text1: userMessage,
-      text2: subtitle,
-      visibilityTime: options?.visibilityTime ?? 4000,
-      autoHide: options?.autoHide ?? true,
-      topOffset: options?.topOffset ?? 60,
-      bottomOffset: options?.bottomOffset ?? 40,
-    });
-  }, []);
+  const showApiError = useCallback(
+    (error: ApiError | Error, subtitle?: string, options?: ToastOptions) => {
+      const userMessage = getUserErrorMessage(error);
+      Toast.show({
+        type: 'error',
+        text1: userMessage,
+        text2: subtitle,
+        visibilityTime: options?.visibilityTime ?? 4000,
+        autoHide: options?.autoHide ?? true,
+        topOffset: options?.topOffset ?? 60,
+        bottomOffset: options?.bottomOffset ?? 40,
+      });
+    },
+    []
+  );
 
-  const showToast = useCallback((
-    type: ToastType,
-    message: string,
-    subtitle?: string,
-    options?: ToastOptions
-  ) => {
-    Toast.show({
-      type,
-      text1: message,
-      text2: subtitle,
-      visibilityTime: options?.visibilityTime ?? 3000,
-      autoHide: options?.autoHide ?? true,
-      topOffset: options?.topOffset ?? 60,
-      bottomOffset: options?.bottomOffset ?? 40,
-    });
-  }, []);
+  const showToast = useCallback(
+    (
+      type: ToastType,
+      message: string,
+      subtitle?: string,
+      options?: ToastOptions
+    ) => {
+      Toast.show({
+        type,
+        text1: message,
+        text2: subtitle,
+        visibilityTime: options?.visibilityTime ?? 3000,
+        autoHide: options?.autoHide ?? true,
+        topOffset: options?.topOffset ?? 60,
+        bottomOffset: options?.bottomOffset ?? 40,
+      });
+    },
+    []
+  );
 
   const hideToast = useCallback(() => {
     Toast.hide();
@@ -128,9 +173,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
   };
 
   return (
-    <ToastContext.Provider value={value}>
-      {children}
-    </ToastContext.Provider>
+    <ToastContext.Provider value={value}>{children}</ToastContext.Provider>
   );
 }
 
@@ -140,10 +183,10 @@ export function ToastProvider({ children }: ToastProviderProps) {
  */
 export function useToast(): ToastContextType {
   const context = useContext(ToastContext);
-  
+
   if (context === undefined) {
     throw new Error('useToast must be used within a ToastProvider');
   }
-  
+
   return context;
 }

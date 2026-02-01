@@ -2,6 +2,7 @@
  * Onboarding service
  */
 import { OnboardingFormData } from '@/contexts/onboardingFormContext';
+
 import { apiClient } from '../api/client';
 import { ENDPOINTS } from '../api/endpoints';
 import { OnboardingStepKey } from '../config/onboardingSteps';
@@ -98,7 +99,9 @@ export interface SuggestedPlansResponse {
  */
 export async function getModules(): Promise<Module[]> {
   try {
-    const response = await apiClient.get<ModulesResponse>(ENDPOINTS.MODULES.GET);
+    const response = await apiClient.get<ModulesResponse>(
+      ENDPOINTS.MODULES.GET
+    );
     console.log(response.data);
     return response.data.results || [];
   } catch (error: any) {
@@ -113,7 +116,9 @@ export async function getModules(): Promise<Module[]> {
  */
 export async function getSuggestedPlans(): Promise<SuggestedPlan[]> {
   try {
-    const response = await apiClient.get<SuggestedPlansResponse>(ENDPOINTS.ONBOARDING.SUGGESTED_PLANS);
+    const response = await apiClient.get<SuggestedPlansResponse>(
+      ENDPOINTS.ONBOARDING.SUGGESTED_PLANS
+    );
     console.log('Suggested plans response:', response.data);
 
     return response.data?.data || [];
@@ -127,11 +132,20 @@ export async function getSuggestedPlans(): Promise<SuggestedPlan[]> {
  * Get complete onboarding data for authenticated user
  * Returns all onboarding data to populate the form
  */
-export async function getOnboardingData(): Promise<Partial<OnboardingFormData> & { onboardingStep?: string; clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' } | undefined> {
+export async function getOnboardingData(): Promise<
+  | (Partial<OnboardingFormData> & {
+      onboardingStep?: string;
+      clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING';
+    })
+  | undefined
+> {
   try {
-    const response = await apiClient.get<Partial<OnboardingFormData> & { onboardingStep?: string; clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' }>(
-      ENDPOINTS.ONBOARDING.GET
-    );
+    const response = await apiClient.get<
+      Partial<OnboardingFormData> & {
+        onboardingStep?: string;
+        clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING';
+      }
+    >(ENDPOINTS.ONBOARDING.GET);
 
     return response.data;
   } catch (error: any) {
@@ -172,7 +186,10 @@ export async function saveOnboardingData(
   } catch (error: any) {
     console.error('Save onboarding data error:', error);
     if (error?.response) {
-      console.error('Error response:', JSON.stringify(error.response.data, null, 2));
+      console.error(
+        'Error response:',
+        JSON.stringify(error.response.data, null, 2)
+      );
       console.error('Error status:', error.response.status);
     }
     throw error;
@@ -236,7 +253,10 @@ export async function submitOnboarding(
   } catch (error: any) {
     console.error('Submit onboarding error:', error);
     if (error?.response) {
-      console.error('Error response:', JSON.stringify(error.response.data, null, 2));
+      console.error(
+        'Error response:',
+        JSON.stringify(error.response.data, null, 2)
+      );
       console.error('Error status:', error.response.status);
     }
     throw error;

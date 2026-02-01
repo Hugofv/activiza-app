@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
+
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -9,6 +8,12 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+
+import { router } from 'expo-router';
+
+import { useQuery } from '@tanstack/react-query';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -22,9 +27,8 @@ import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
-import { getModules, Module } from '@/lib/services/onboardingService';
+import { Module, getModules } from '@/lib/services/onboardingService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
-import { useTranslation } from 'react-i18next';
 
 type BusinessOption = string;
 
@@ -32,10 +36,7 @@ type BusinessOption = string;
  * Map module keys to icon configuration
  * This maps the 'key' field from the API (UPPER_SNAKE_CASE) to the appropriate icon and library
  */
-const MODULE_ICON_MAP: Record<
-  string,
-  { icon: string }
-> = {
+const MODULE_ICON_MAP: Record<string, { icon: string }> = {
   LOAN: { icon: 'cash-outline' },
   PROMISSORY_NOTE: { icon: 'document-text-outline' },
   RENT_HOUSE: { icon: 'home' },
@@ -95,7 +96,9 @@ const OptionsScreen = () => {
   // Initialize selected options from formData
   const [selectedOptions, setSelectedOptions] = useState<BusinessOption[]>(
     Array.isArray(formData.businessOptions)
-      ? formData.businessOptions.filter((opt): opt is BusinessOption => typeof opt === 'string')
+      ? formData.businessOptions.filter(
+          (opt): opt is BusinessOption => typeof opt === 'string'
+        )
       : formData.businessOptions
         ? [formData.businessOptions as BusinessOption]
         : []
@@ -116,7 +119,7 @@ const OptionsScreen = () => {
           <Icon
             name={iconConfig.icon as any}
             size={24}
-            color={selectedOptions.includes(module.key) ? "primary" : "icon"}
+            color={selectedOptions.includes(module.key) ? 'primary' : 'icon'}
           />
         ),
       };
@@ -144,7 +147,10 @@ const OptionsScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -166,12 +172,18 @@ const OptionsScreen = () => {
               <BackButton />
 
               {/* Title */}
-              <Typography variant='h4' style={styles.title}>
+              <Typography
+                variant="h4"
+                style={styles.title}
+              >
                 {t('onboarding.whatDoYouWantToDo')}
               </Typography>
 
               {/* Description */}
-              <Typography variant='body2' style={styles.description}>
+              <Typography
+                variant="body2"
+                style={styles.description}
+              >
                 {t('onboarding.optionsDescription')}
               </Typography>
 
@@ -179,14 +191,23 @@ const OptionsScreen = () => {
               <View style={styles.optionsList}>
                 {isLoadingModules ? (
                   <View style={styles.loadingContainer}>
-                    <ActivityIndicator size='large' color={colors.primary} />
-                    <Typography variant='body2' style={[styles.loadingText, { color: colors.icon }]}>
+                    <ActivityIndicator
+                      size="large"
+                      color={colors.primary}
+                    />
+                    <Typography
+                      variant="body2"
+                      style={[styles.loadingText, { color: colors.icon }]}
+                    >
                       {t('common.loading') || 'Carregando...'}
                     </Typography>
                   </View>
                 ) : modulesError ? (
                   <View style={styles.errorContainer}>
-                    <Typography variant='body2' style={[styles.errorText, { color: colors.text }]}>
+                    <Typography
+                      variant="body2"
+                      style={[styles.errorText, { color: colors.text }]}
+                    >
                       {t('common.error') || 'Erro ao carregar módulos'}
                     </Typography>
                   </View>
@@ -195,11 +216,16 @@ const OptionsScreen = () => {
                     multiple
                     options={moduleOptions}
                     selectedValue={selectedOptions}
-                    onValueChange={(value) => setSelectedOptions(value as BusinessOption[])}
+                    onValueChange={(value) =>
+                      setSelectedOptions(value as BusinessOption[])
+                    }
                   />
                 ) : (
                   <View style={styles.emptyContainer}>
-                    <Typography variant='body2' style={[styles.emptyText, { color: colors.icon }]}>
+                    <Typography
+                      variant="body2"
+                      style={[styles.emptyText, { color: colors.icon }]}
+                    >
                       {t('common.noData') || 'Nenhum módulo disponível'}
                     </Typography>
                   </View>
@@ -211,9 +237,9 @@ const OptionsScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
@@ -230,34 +256,22 @@ const OptionsScreen = () => {
 export default OptionsScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
+  container: {flex: 1,},
+  scrollView: {flex: 1,},
+  scrollContent: {flexGrow: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  title: {
-    marginTop: 8,
-  },
+  progressContainer: {marginBottom: 8,},
+  title: {marginTop: 8,},
   description: {
     marginTop: -8,
     opacity: 0.7,
   },
-  optionsList: {
-    marginTop: 8,
-  },
+  optionsList: {marginTop: 8,},
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,
@@ -268,21 +282,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 16,
   },
-  loadingText: {
-    marginTop: 8,
-  },
+  loadingText: {marginTop: 8,},
   errorContainer: {
     paddingVertical: 40,
     alignItems: 'center',
   },
-  errorText: {
-    textAlign: 'center',
-  },
+  errorText: {textAlign: 'center',},
   emptyContainer: {
     paddingVertical: 40,
     alignItems: 'center',
   },
-  emptyText: {
-    textAlign: 'center',
-  },
+  emptyText: {textAlign: 'center',},
 });

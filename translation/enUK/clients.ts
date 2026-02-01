@@ -16,7 +16,8 @@ export default {
   observation: 'Observation',
   observationQuestion: 'Any observations?',
   observationPlaceholder: 'Write something',
-  observationDescription: 'You can describe any characteristic or important data for identification or location',
+  observationDescription:
+    'You can describe any characteristic or important data for identification or location',
   guarantor: 'Guarantor',
   guarantorQuestion: 'Guarantor',
   guarantorSelect: 'Select a contact',
@@ -44,7 +45,8 @@ export default {
   addressPostalCode: 'ZIP {{code}}',
   cancel: 'Cancel',
   cancelConfirmTitle: 'Cancel registration?',
-  cancelConfirmMessage: 'Are you sure you want to cancel? All entered data will be lost.',
+  cancelConfirmMessage:
+    'Are you sure you want to cancel? All entered data will be lost.',
   cancelConfirmButton: 'Yes, cancel',
   cancelKeepButton: 'Continue registering',
 };

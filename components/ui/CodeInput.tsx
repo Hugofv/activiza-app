@@ -1,9 +1,12 @@
 import * as React from 'react';
-import { Control, Controller, FieldPath } from 'react-hook-form';
+
 import { StyleSheet, TextInput, View } from 'react-native';
+
+import { Control, Controller, FieldPath } from 'react-hook-form';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+
 import { Typography } from './Typography';
 
 export interface CodeInputProps {
@@ -35,30 +38,39 @@ const CodeInputComponent = ({
   autoFocus = false,
   disabled = false,
   keyboardType = 'numeric',
-}: Omit<CodeInputProps, 'name' | 'control'> & { value: string; onChangeText: (value: string) => void }) => {
+}: Omit<CodeInputProps, 'name' | 'control'> & {
+  value: string;
+  onChangeText: (value: string) => void;
+}) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const inputRefs = React.useRef<(TextInput | null)[]>([]);
   const [values, setValues] = React.useState<string[]>(
-    value.split('').slice(0, length).concat(Array(length - value.length).fill(''))
+    value
+      .split('')
+      .slice(0, length)
+      .concat(Array(length - value.length).fill(''))
   );
 
   React.useEffect(() => {
-    const newValues = value.split('').slice(0, length).concat(Array(Math.max(0, length - value.length)).fill(''));
+    const newValues = value
+      .split('')
+      .slice(0, length)
+      .concat(Array(Math.max(0, length - value.length)).fill(''));
     setValues(newValues);
   }, [value, length]);
 
   const handleChange = (index: number, text: string) => {
     // Only allow single character
     const char = text.slice(-1).replace(/[^0-9]/g, '');
-    
+
     if (!char && text === '') {
       // Handle backspace
       const newValues = [...values];
       newValues[index] = '';
       setValues(newValues);
       onChangeText(newValues.join(''));
-      
+
       // Focus previous input
       if (index > 0) {
         inputRefs.current[index - 1]?.focus();
@@ -120,7 +132,9 @@ const CodeInputComponent = ({
             ]}
             value={values[index]}
             onChangeText={(text) => handleChange(index, text)}
-            onKeyPress={({ nativeEvent }) => handleKeyPress(index, nativeEvent.key)}
+            onKeyPress={({ nativeEvent }) =>
+              handleKeyPress(index, nativeEvent.key)
+            }
             keyboardType={keyboardType}
             maxLength={1}
             selectTextOnFocus
@@ -132,7 +146,14 @@ const CodeInputComponent = ({
         ))}
       </View>
       {error && (
-        <Typography variant="caption" style={{ color: '#ef4444', marginTop: 8, textAlign: 'center' }}>
+        <Typography
+          variant="caption"
+          style={{
+ color: '#ef4444',
+marginTop: 8,
+textAlign: 'center' 
+}}
+        >
           {error}
         </Typography>
       )}
@@ -195,9 +216,7 @@ export const CodeInput = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
+  container: {width: '100%',},
   inputsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -209,4 +228,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-

@@ -1,16 +1,17 @@
 import { StyleSheet, View } from 'react-native';
+
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Illustration from '@/assets/images/registrationComplete.svg';
 import { ThemedView } from '@/components/ThemedView';
 import { IconButton } from '@/components/ui/IconButton';
 import { Progress } from '@/components/ui/Progress';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-
-import Illustration from '@/assets/images/registrationComplete.svg';
-import { Typography } from '@/components/ui/Typography';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
 
 /**
  * Registration finished screen - shown after completing onboarding
@@ -26,7 +27,10 @@ const RegisterFinishedScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <ThemedView style={styles.container}>
         <ThemedView style={styles.content}>
           {/* Progress Bar */}
@@ -45,7 +49,7 @@ const RegisterFinishedScreen = () => {
 
           {/* Confirmation Text */}
           <Typography
-            variant='h4'
+            variant="h4"
             style={[styles.confirmationText, { color: colors.text }]}
           >
             {t('onboarding.registerFinished')}
@@ -54,9 +58,9 @@ const RegisterFinishedScreen = () => {
           {/* Go to Home Button - Circular */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleGoToHome}
@@ -71,9 +75,7 @@ const RegisterFinishedScreen = () => {
 export default RegisterFinishedScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
@@ -87,7 +89,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   progressContainer: {
-   marginTop: 40,
+    marginTop: 40,
     marginBottom: 40,
   },
   illustrationContainer: {
@@ -116,5 +118,3 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
 });
-
-

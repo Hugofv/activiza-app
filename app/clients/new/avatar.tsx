@@ -1,7 +1,5 @@
-import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import {
   Alert,
   Platform,
@@ -10,35 +8,53 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
+import * as ImagePicker from 'expo-image-picker';
+import { router, useLocalSearchParams } from 'expo-router';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ThemedView } from '@/components/ThemedView';
 import { Avatar } from '@/components/ui/Avatar';
 import { Icon } from '@/components/ui/Icon';
+import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-
-import { ThemedView } from '@/components/ThemedView';
-import { IconButton } from '@/components/ui/IconButton';
+import { useEditClientStore } from '@/lib/stores/editClientStore';
 import { showError } from '@/lib/utils/toast';
+
 import { useNewClientForm } from './_context';
 
 export default function AvatarScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
-  const [avatar, setAvatar] = useState<string | undefined>(formData.avatar);
+  const searchParams = useLocalSearchParams<{
+    clientId?: string;
+    edit?: string;
+  }>();
+  const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
+  const { draft, updateDraft } = useEditClientStore();
+  const {
+ formData, updateFormData, setCurrentStep 
+} = useNewClientForm();
+  const initialAvatar = isEditMode
+    ? (draft.avatar ?? undefined)
+    : (formData.avatar ?? undefined);
+  const [avatar, setAvatar] = useState<string | undefined>(initialAvatar);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const requestPermissions = async () => {
     if (Platform.OS !== 'web') {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
           t('clients.permissionRequired') || 'Permissão necessária',
           t('clients.cameraPermissionMessage') ||
-          'Precisamos de permissão para acessar suas fotos!'
+            'Precisamos de permissão para acessar suas fotos!'
         );
         return false;
       }
@@ -74,9 +90,12 @@ export default function AvatarScreen() {
   const handleNext = async () => {
     setIsSubmitting(true);
     try {
-      updateFormData({
-        avatar: avatar || undefined,
-      });
+      if (isEditMode) {
+        updateDraft({ avatar: avatar || undefined });
+        router.back();
+        return;
+      }
+      updateFormData({avatar: avatar || undefined,});
       setCurrentStep(2);
       router.push('/clients/new/whatsapp');
     } finally {
@@ -84,7 +103,9 @@ export default function AvatarScreen() {
     }
   };
 
-  const clientName = formData.name || t('clients.yourClient');
+  const clientName = isEditMode
+    ? draft.name || t('clients.yourClient')
+    : formData.name || t('clients.yourClient');
 
   return (
     <SafeAreaView
@@ -94,12 +115,18 @@ export default function AvatarScreen() {
       <ThemedView style={styles.container}>
         <ThemedView style={styles.content}>
           {/* Title */}
-          <Typography variant="h3" color='text'>
+          <Typography
+            variant="h3"
+            color="text"
+          >
             {t('clients.avatar')}
           </Typography>
 
           {/* Question */}
-          <Typography variant="body1" color='text'>
+          <Typography
+            variant="body1"
+            color="text"
+          >
             {t('clients.avatarQuestion', { name: clientName })}
           </Typography>
 
@@ -107,12 +134,22 @@ export default function AvatarScreen() {
           <View style={styles.avatarContainer}>
             {avatar ? (
               <View style={styles.avatarWrapper}>
-                <Avatar image={avatar} size={160} />
+                <Avatar
+                  image={avatar}
+                  size={160}
+                />
                 <TouchableOpacity
-                  style={[styles.removeButton, { backgroundColor: colors.background }]}
+                  style={[
+                    styles.removeButton,
+                    { backgroundColor: colors.background },
+                  ]}
                   onPress={removeAvatar}
                 >
-                  <Icon name="close-circle" size={24} color='text' />
+                  <Icon
+                    name="close-circle"
+                    size={24}
+                    color="text"
+                  />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -127,8 +164,15 @@ export default function AvatarScreen() {
                 onPress={pickImage}
               >
                 <View style={styles.addAvatarContent}>
-                  <Icon name="camera" size={48} color="primaryForeground" />
-                  <Typography variant="body1Medium" color='primaryForeground'>
+                  <Icon
+                    name="camera"
+                    size={48}
+                    color="primaryForeground"
+                  />
+                  <Typography
+                    variant="body1Medium"
+                    color="primaryForeground"
+                  >
                     {t('clients.addPhoto')}
                   </Typography>
                 </View>
@@ -137,7 +181,10 @@ export default function AvatarScreen() {
           </View>
 
           {/* Optional Label */}
-          <Typography variant="body2" style={[styles.optional, { color: colors.icon }]}>
+          <Typography
+            variant="body2"
+            style={[styles.optional, { color: colors.icon }]}
+          >
             {t('clients.optional')}
           </Typography>
         </ThemedView>
@@ -161,9 +208,7 @@ export default function AvatarScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     paddingTop: 0,
     paddingHorizontal: 24,
@@ -185,9 +230,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 32,
   },
-  avatarWrapper: {
-    position: 'relative',
-  },
+  avatarWrapper: {position: 'relative',},
   addAvatarButton: {
     borderWidth: 2,
     borderStyle: 'dashed',
@@ -209,7 +252,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+ width: 0,
+height: 2 
+},
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,

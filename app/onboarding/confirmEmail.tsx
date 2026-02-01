@@ -1,16 +1,17 @@
 import { StyleSheet, View } from 'react-native';
+
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { IconButton } from '@/components/ui/IconButton';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
 import { BackButton } from '@/components/ui/BackButton';
 import { Icon } from '@/components/ui/Icon';
+import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 /**
  * Email verification confirmation screen for onboarding
@@ -42,19 +43,17 @@ const ConfirmEmailScreen = () => {
             <View
               style={[
                 styles.checkmarkContainer,
-                {
-                  backgroundColor: colors.muted,
-                },
+                {backgroundColor: colors.muted,},
               ]}
             >
               <Icon
-                name='checkmark'
+                name="checkmark"
                 size={56}
                 color="primary"
               />
             </View>
             <Typography
-              variant='large'
+              variant="large"
               style={[styles.verifiedText, { color: colors.text }]}
             >
               {t('onboarding.emailVerified')}
@@ -64,9 +63,9 @@ const ConfirmEmailScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='checkmark'
+              variant="primary"
+              size="md"
+              icon="checkmark"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
@@ -81,9 +80,7 @@ const ConfirmEmailScreen = () => {
 export default ConfirmEmailScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,

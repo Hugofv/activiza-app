@@ -1,7 +1,10 @@
 /**
  * Network monitoring and connection state management
  */
-import NetInfo, { NetInfoState, NetInfoStateType } from '@react-native-community/netinfo';
+import NetInfo, {
+  NetInfoState,
+  NetInfoStateType,
+} from '@react-native-community/netinfo';
 import { create } from 'zustand';
 
 export interface NetworkState {
@@ -61,9 +64,9 @@ export function initializeNetworkMonitor() {
       type: state.type,
       isInternetReachable: state.isInternetReachable ?? null,
     };
-    
+
     useNetworkStore.getState().setNetworkState(networkState);
-    
+
     // Log connection changes
     if (networkState.isConnected) {
       console.log('Network connected:', networkState.type);
@@ -79,8 +82,10 @@ export function initializeNetworkMonitor() {
  * Check if device is currently online
  */
 export function isOnline(): boolean {
-  return useNetworkStore.getState().isConnected && 
-         (useNetworkStore.getState().isInternetReachable !== false);
+  return (
+    useNetworkStore.getState().isConnected &&
+    useNetworkStore.getState().isInternetReachable !== false
+  );
 }
 
 /**

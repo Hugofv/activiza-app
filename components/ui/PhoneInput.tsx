@@ -1,15 +1,18 @@
-import { Colors, Fonts } from '@/constants/theme';
 import React, { useState } from 'react';
-import { Control, Controller, FieldPath } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+
 import { View } from 'react-native';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Control, Controller, FieldPath } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import InternationalPhoneInput, {
   ICountry,
   ICountrySelectLanguages,
   ITheme,
 } from 'react-native-international-phone-number';
+
+import { Colors, Fonts } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+
 import { Icon } from './Icon';
 import { Typography } from './Typography';
 
@@ -32,7 +35,7 @@ interface PhoneInputProps {
 const PhoneInputComponent = ({
   value,
   onChangeText,
-  error
+  error,
 }: {
   value: PhoneInputValue | null;
   onChangeText: (value: PhoneInputValue) => void;
@@ -71,7 +74,7 @@ const PhoneInputComponent = ({
       <InternationalPhoneInput
         value={currentValue}
         theme={colorScheme === 'dark' ? 'dark' : ('light' as ITheme)}
-        defaultCountry='BR'
+        defaultCountry="BR"
         defaultValue={value?.formattedPhoneNumber ?? ''}
         onChangePhoneNumber={handleInputValue}
         selectedCountry={selectedCountry}
@@ -83,13 +86,15 @@ const PhoneInputComponent = ({
         }
         popularCountries={['BR', 'GB', 'US']}
         customCaret={() => (
-          <Icon name='chevron-down' size={24} color="text" />
+          <Icon
+            name="chevron-down"
+            size={24}
+            color="text"
+          />
         )}
         placeholderTextColor={colors.text}
         phoneInputStyles={{
-          divider: {
-            display: 'none',
-          },
+          divider: {display: 'none',},
           input: {
             borderWidth: 0,
             fontSize: 18,
@@ -100,9 +105,7 @@ const PhoneInputComponent = ({
             fontSize: 18,
             color: colors.text,
           },
-          flagContainer: {
-            backgroundColor: 'transparent',
-          },
+          flagContainer: {backgroundColor: 'transparent',},
           container: {
             borderWidth: 0,
             borderBottomWidth: 1,
@@ -113,7 +116,11 @@ const PhoneInputComponent = ({
         }}
       />
       {error && (
-        <Typography variant="caption" color='error' style={{ marginTop: 4 }}>
+        <Typography
+          variant="caption"
+          color="error"
+          style={{ marginTop: 4 }}
+        >
           {error}
         </Typography>
       )}
@@ -121,7 +128,13 @@ const PhoneInputComponent = ({
   );
 };
 
-const PhoneInput = ({ name, control, error, value, onChangeText }: PhoneInputProps) => {
+const PhoneInput = ({
+  name,
+  control,
+  error,
+  value,
+  onChangeText,
+}: PhoneInputProps) => {
   // If RHF props are provided, use Controller
   if (name && control) {
     return (

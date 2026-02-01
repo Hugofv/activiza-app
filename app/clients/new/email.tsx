@@ -1,9 +1,12 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
 import { useState } from 'react';
+
+import { StyleSheet, View } from 'react-native';
+
+import { router, useLocalSearchParams } from 'expo-router';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
 
@@ -14,6 +17,7 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
+import { useEditClientStore } from '@/lib/stores/editClientStore';
 
 import { useNewClientForm } from './_context';
 
@@ -25,13 +29,21 @@ export default function EmailScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
+  const searchParams = useLocalSearchParams<{
+    clientId?: string;
+    edit?: string;
+  }>();
+  const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
+  const { draft, updateDraft } = useEditClientStore();
+  const {
+ formData, updateFormData, setCurrentStep 
+} = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const keyboardHeight = useKeyboardHeight();
 
-  const emailSchema = yup.object<EmailFormData>().shape({
-    email: yup.string().email(t('clients.emailInvalid')).optional(),
-  });
+  const initialEmail = isEditMode ? (draft.email ?? '') : formData.email || '';
+
+  const emailSchema = yup.object<EmailFormData>().shape({email: yup.string().email(t('clients.emailInvalid')).optional(),});
 
   const {
     control,
@@ -39,15 +51,18 @@ export default function EmailScreen() {
     formState: { errors },
   } = useForm<EmailFormData>({
     resolver: yupResolver(emailSchema) as any,
-    defaultValues: {
-      email: formData.email || '',
-    },
+    defaultValues: { email: initialEmail },
     mode: 'onChange',
   });
 
   const onSubmit = async (data: EmailFormData) => {
     setIsSubmitting(true);
     try {
+      if (isEditMode) {
+        updateDraft({ email: data.email || undefined });
+        router.back();
+        return;
+      }
       updateFormData({ email: data.email || undefined });
       setCurrentStep(4);
       router.push('/clients/new/document');
@@ -56,7 +71,9 @@ export default function EmailScreen() {
     }
   };
 
-  const clientName = formData.name || t('clients.yourClient');
+  const clientName = isEditMode
+    ? draft.name || t('clients.yourClient')
+    : formData.name || t('clients.yourClient');
 
   return (
     <SafeAreaView
@@ -65,63 +82,75 @@ export default function EmailScreen() {
     >
       <ThemedView style={styles.container}>
         <ThemedView style={styles.content}>
-            {/* Title */}
-            <View style={styles.titleContainer}>
-              <Typography variant="h3" color='text'>
-                {t('clients.email')}
-              </Typography>
-              <Typography variant="body2" color='placeholder'>
-                {t('clients.optional')}
-              </Typography>
-            </View>
-
-            {/* Question */}
-            <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
-              {t('clients.emailQuestion', { name: clientName })}
+          {/* Title */}
+          <View style={styles.titleContainer}>
+            <Typography
+              variant="h3"
+              color="text"
+            >
+              {t('clients.email')}
             </Typography>
-
-            {/* Input Field */}
-            <Input
-              name="email"
-              control={control}
-              error={errors.email?.message}
-              className="border-0 rounded-none px-0 py-4 font-medium"
-              style={[
-                {
-                  fontSize: 24,
-                  borderBottomColor: errors.email ? '#ef4444' : colors.icon,
-                },
-              ]}
-              placeholder="joao@email.com"
-              placeholderTextColor={colors.icon}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoFocus
-            />
-          </ThemedView>
-
-          {/* Continue Button */}
-          <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
-            <IconButton
-              variant="primary"
-              size="md"
-              icon="arrow-forward"
-              iconSize={32}
-              iconColor={colors.primaryForeground}
-              onPress={handleSubmit(onSubmit)}
-              disabled={isSubmitting}
-              loading={isSubmitting}
-            />
+            <Typography
+              variant="body2"
+              color="placeholder"
+            >
+              {t('clients.optional')}
+            </Typography>
           </View>
+
+          {/* Question */}
+          <Typography
+            variant="body1"
+            style={[styles.question, { color: colors.text }]}
+          >
+            {t('clients.emailQuestion', { name: clientName })}
+          </Typography>
+
+          {/* Input Field */}
+          <Input
+            name="email"
+            control={control}
+            error={errors.email?.message}
+            className="border-0 rounded-none px-0 py-4 font-medium"
+            style={[
+              {
+                fontSize: 24,
+                borderBottomColor: errors.email ? '#ef4444' : colors.icon,
+              },
+            ]}
+            placeholder="joao@email.com"
+            placeholderTextColor={colors.icon}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoFocus
+          />
+        </ThemedView>
+
+        {/* Continue Button */}
+        <View
+          style={[
+            styles.buttonContainer,
+            keyboardHeight > 0 && { marginBottom: keyboardHeight },
+          ]}
+        >
+          <IconButton
+            variant="primary"
+            size="md"
+            icon="arrow-forward"
+            iconSize={32}
+            iconColor={colors.primaryForeground}
+            onPress={handleSubmit(onSubmit)}
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          />
+        </View>
       </ThemedView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 0,

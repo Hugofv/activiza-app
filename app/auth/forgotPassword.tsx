@@ -1,8 +1,15 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
+
+import {
+ KeyboardAvoidingView, Platform, StyleSheet, View 
+} from 'react-native';
+
+import { useLocalSearchParams } from 'expo-router';
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -16,8 +23,6 @@ import { useToast } from '@/lib/hooks/useToast';
 import { requestPasswordReset } from '@/lib/services/authService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { emailSchema } from '@/lib/validations/onboarding';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
 
 interface ForgotPasswordFormData {
   email: string;
@@ -41,9 +46,7 @@ const ForgotPasswordScreen = () => {
     formState: { errors, isValid },
   } = useForm<ForgotPasswordFormData>({
     resolver: yupResolver(emailSchema),
-    defaultValues: {
-      email: emailFromParams,
-    },
+    defaultValues: {email: emailFromParams,},
     mode: 'onChange',
   });
 
@@ -54,7 +57,7 @@ const ForgotPasswordScreen = () => {
       showSuccess(
         t('auth.forgotPasswordSuccess') || 'Success',
         t('auth.forgotPasswordSuccessMessage', { email: data.email }) ||
-        `A password reset link has been sent to ${data.email}. Please check your email and click on the link to reset your password.`
+          `A password reset link has been sent to ${data.email}. Please check your email and click on the link to reset your password.`
       );
       // Navigate back to login - user will click the link in email
       navigate('/auth/email');
@@ -62,7 +65,8 @@ const ForgotPasswordScreen = () => {
       console.error('Request password reset error:', error);
       const apiMessage = getTranslatedError(
         (error?.response?.data as any) || error,
-        t('auth.forgotPasswordError') || 'Failed to send reset link. Please try again.'
+        t('auth.forgotPasswordError') ||
+          'Failed to send reset link. Please try again.'
       );
       showError(t('common.error') || 'Error', apiMessage);
     } finally {
@@ -86,11 +90,13 @@ const ForgotPasswordScreen = () => {
             <BackButton />
 
             {/* Title */}
-            <Typography variant='h4'>{t('auth.forgotPassword') || 'Forgot Password'}</Typography>
+            <Typography variant="h4">
+              {t('auth.forgotPassword') || 'Forgot Password'}
+            </Typography>
 
             {/* Description */}
             <Typography
-              variant='body2'
+              variant="body2"
               style={[styles.description, { color: colors.icon }]}
             >
               {t('auth.forgotPasswordDescription') ||
@@ -100,18 +106,18 @@ const ForgotPasswordScreen = () => {
             {/* Email Input Field */}
             <View style={styles.inputContainer}>
               <Input
-                name='email'
+                name="email"
                 control={control}
                 error={errors.email?.message}
                 label={t('common.email')}
-                className='border-0 rounded-none px-0 py-4 font-medium'
+                className="border-0 rounded-none px-0 py-4 font-medium"
                 style={{ fontSize: 20 }}
                 placeholder={t('auth.emailPlaceholder') || 'Enter your email'}
-                keyboardType='email-address'
-                autoCapitalize='none'
-                autoComplete='email'
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
                 autoCorrect={false}
-                textContentType='emailAddress'
+                textContentType="emailAddress"
                 disabled={isLoading}
               />
             </View>
@@ -120,9 +126,9 @@ const ForgotPasswordScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
@@ -139,18 +145,14 @@ const ForgotPasswordScreen = () => {
 export default ForgotPasswordScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  inputContainer: {
-    marginTop: 8,
-  },
+  inputContainer: {marginTop: 8,},
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

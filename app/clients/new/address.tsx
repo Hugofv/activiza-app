@@ -1,18 +1,17 @@
-import { router } from 'expo-router';
+import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+
+import { router, useLocalSearchParams } from 'expo-router';
+
 import { useTranslation } from 'react-i18next';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AddressFlow } from '@/components/address';
 import { ThemedView } from '@/components/ThemedView';
+import { AddressFlow } from '@/components/address';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { CountryCode } from '@/lib/services/postalCodeService';
+import { useEditClientStore } from '@/lib/stores/editClientStore';
 
 import { useNewClientForm } from './_context';
 import { CancelButton } from './components/CancelButton';
@@ -21,8 +20,17 @@ export default function AddressScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
-  const countryCode = (formData.address?.countryCode as CountryCode) || null;
+  const searchParams = useLocalSearchParams<{
+    clientId?: string;
+    edit?: string;
+  }>();
+  const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
+  const { draft, updateDraft } = useEditClientStore();
+  const {
+ formData, updateFormData, setCurrentStep 
+} = useNewClientForm();
+  const addressSource = isEditMode ? draft.address : formData.address;
+  const countryCode = (addressSource?.countryCode as CountryCode) || null;
 
   const handleBack = () => {
     router.back();
@@ -31,78 +39,120 @@ export default function AddressScreen() {
   // Handle country selection (stage 1)
   const handleCountrySelect = async (country: CountryCode) => {
     const COUNTRIES = [
-      { code: 'BR' as CountryCode, name: 'Brasil' },
-      { code: 'UK' as CountryCode, name: 'Reino Unido' },
-      { code: 'US' as CountryCode, name: 'Estados Unidos' },
+      {
+ code: 'BR' as CountryCode,
+name: 'Brasil' 
+},
+      {
+ code: 'UK' as CountryCode,
+name: 'Reino Unido' 
+},
+      {
+ code: 'US' as CountryCode,
+name: 'Estados Unidos' 
+},
     ];
     const countryData = COUNTRIES.find((c) => c.code === country);
-
-    updateFormData({
-      address: {
-        ...formData.address,
-        postalCode: '',
-        street: '',
-        neighborhood: '',
-        city: '',
-        state: '',
-        number: '',
-        complement: '',
-        country: countryData?.name || country,
-        countryCode: country,
-      },
-    });
+    const next = {
+      postalCode: '',
+      street: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+      number: '',
+      complement: '',
+      country: countryData?.name || country,
+      countryCode: country,
+    };
+    if (isEditMode) updateDraft({
+ address: {
+ ...addressSource,
+...next 
+} 
+});
+    else updateFormData({
+ address: {
+ ...formData.address,
+...next 
+} 
+});
   };
 
   // Handle postal code submission (stage 2)
   const handlePostalCodeSubmit = async (addressData: any) => {
-    updateFormData({
-      address: {
-        ...formData.address,
-        ...addressData,
-        number: formData.address?.number || '',
-        complement: formData.address?.complement || '',
-      },
-    });
+    const next = {
+      ...addressData,
+      number: addressSource?.number || '',
+      complement: addressSource?.complement || '',
+    };
+    if (isEditMode) updateDraft({
+ address: {
+ ...addressSource,
+...next 
+} 
+});
+    else updateFormData({
+ address: {
+ ...formData.address,
+...next 
+} 
+});
   };
 
   // Handle address form submission (stage 3)
   const handleAddressSubmit = async (addressData: any) => {
-    updateFormData({
-      address: {
-        ...formData.address,
-        postalCode: addressData.postalCode,
-        street: addressData.street,
-        neighborhood: addressData.neighborhood,
-        city: addressData.city,
-        state: addressData.state,
-        country: addressData.country,
-        number: addressData.number,
-        complement: addressData.complement,
-      },
-    });
+    const next = {
+      postalCode: addressData.postalCode,
+      street: addressData.street,
+      neighborhood: addressData.neighborhood,
+      city: addressData.city,
+      state: addressData.state,
+      country: addressData.country,
+      number: addressData.number,
+      complement: addressData.complement,
+    };
+    if (isEditMode) updateDraft({
+ address: {
+ ...addressSource,
+...next 
+} 
+});
+    else updateFormData({
+ address: {
+ ...formData.address,
+...next 
+} 
+});
   };
 
   // Handle complete address (all stages done)
   const handleComplete = async (completeAddress: any) => {
-    updateFormData({
-      address: {
-        postalCode: completeAddress.postalCode,
-        street: completeAddress.street,
-        neighborhood: completeAddress.neighborhood,
-        city: completeAddress.city,
-        state: completeAddress.state,
-        country: completeAddress.country,
-        countryCode: completeAddress.countryCode,
-        number: completeAddress.number,
-        complement: completeAddress.complement,
-      },
-    });
+    const full = {
+      postalCode: completeAddress.postalCode,
+      street: completeAddress.street,
+      neighborhood: completeAddress.neighborhood,
+      city: completeAddress.city,
+      state: completeAddress.state,
+      country: completeAddress.country,
+      countryCode: completeAddress.countryCode,
+      number: completeAddress.number,
+      complement: completeAddress.complement,
+    };
+    if (isEditMode) {
+      updateDraft({ address: full });
+      router.back();
+      return;
+    }
+    updateFormData({ address: full });
     setCurrentStep(7);
     router.push('/clients/new/observation');
   };
 
   const headerTitle = (
-    <Typography variant="h4" style={{ color: colors.text }}>
+    <Typography
+      variant="h4"
+      style={{ color: colors.text }}
+    >
       {t('clients.newClient')}
     </Typography>
   );
@@ -121,16 +171,16 @@ export default function AddressScreen() {
           <ThemedView style={styles.content}>
             <AddressFlow
               initialCountry={countryCode}
-              initialPostalCode={formData.address?.postalCode || ''}
+              initialPostalCode={addressSource?.postalCode || ''}
               initialAddress={{
-                postalCode: formData.address?.postalCode || '',
-                street: formData.address?.street || '',
-                neighborhood: formData.address?.neighborhood || '',
-                city: formData.address?.city || '',
-                state: formData.address?.state || '',
-                country: formData.address?.country || 'Brasil',
-                number: formData.address?.number || '',
-                complement: formData.address?.complement || '',
+                postalCode: addressSource?.postalCode || '',
+                street: addressSource?.street || '',
+                neighborhood: addressSource?.neighborhood || '',
+                city: addressSource?.city || '',
+                state: addressSource?.state || '',
+                country: addressSource?.country || 'Brasil',
+                number: addressSource?.number || '',
+                complement: addressSource?.complement || '',
               }}
               initialApiFilled={{}}
               onCountrySelect={handleCountrySelect}
@@ -150,10 +200,6 @@ export default function AddressScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
+  container: {flex: 1,},
+  content: {flex: 1,},
 });

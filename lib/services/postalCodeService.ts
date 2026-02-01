@@ -18,17 +18,19 @@ export type CountryCode = 'BR' | 'US' | 'UK';
 /**
  * Lookup address by postal code for Brazil (ViaCEP)
  */
-async function lookupBrazilPostalCode(postalCode: string): Promise<AddressData | null> {
+async function lookupBrazilPostalCode(
+  postalCode: string
+): Promise<AddressData | null> {
   try {
     // Remove formatting
     const cleanCode = postalCode.replace(/\D/g, '');
-    
+
     if (cleanCode.length !== 8) {
       return null;
     }
 
     const response = await fetch(`https://viacep.com.br/ws/${cleanCode}/json/`);
-    
+
     if (!response.ok) {
       return null;
     }
@@ -57,17 +59,22 @@ async function lookupBrazilPostalCode(postalCode: string): Promise<AddressData |
 /**
  * Lookup address by postal code for USA (Zippopotam.us - free, no API key)
  */
-async function lookupUSPostalCode(postalCode: string): Promise<AddressData | null> {
+async function lookupUSPostalCode(
+  postalCode: string
+): Promise<AddressData | null> {
   try {
     const cleanCode = postalCode.replace(/\D/g, '');
-    
+
     if (cleanCode.length !== 5 && cleanCode.length !== 9) {
       return null;
     }
 
-    const code = cleanCode.length === 9 ? `${cleanCode.slice(0, 5)}-${cleanCode.slice(5)}` : cleanCode;
+    const code =
+      cleanCode.length === 9
+        ? `${cleanCode.slice(0, 5)}-${cleanCode.slice(5)}`
+        : cleanCode;
     const response = await fetch(`https://api.zippopotam.us/us/${code}`);
-    
+
     if (!response.ok) {
       return null;
     }
@@ -97,17 +104,21 @@ async function lookupUSPostalCode(postalCode: string): Promise<AddressData | nul
 /**
  * Lookup address by postal code for UK (postcodes.io - free, no API key)
  */
-async function lookupUKPostalCode(postalCode: string): Promise<AddressData | null> {
+async function lookupUKPostalCode(
+  postalCode: string
+): Promise<AddressData | null> {
   try {
     // Remove spaces and convert to uppercase
     const cleanCode = postalCode.replace(/\s/g, '').toUpperCase();
-    
+
     if (cleanCode.length < 5 || cleanCode.length > 8) {
       return null;
     }
 
-    const response = await fetch(`https://api.postcodes.io/postcodes/${cleanCode}`);
-    
+    const response = await fetch(
+      `https://api.postcodes.io/postcodes/${cleanCode}`
+    );
+
     if (!response.ok) {
       return null;
     }
@@ -147,7 +158,7 @@ async function lookupGenericPostalCode(
   // Examples:
   // - Canada: https://geocoder.ca/?geoit=XML&postal={code}
   // - etc.
-  
+
   return null;
 }
 
@@ -217,7 +228,7 @@ export function getPostalCodeFormat(countryCode: CountryCode): {
           const cleaned = value.replace(/[^A-Za-z0-9\s]/g, '').toUpperCase();
           // Remove extra spaces
           const noSpaces = cleaned.replace(/\s/g, '');
-          
+
           // Format: first part (2-4 chars) + space + last part (3 chars)
           if (noSpaces.length <= 3) {
             return noSpaces;

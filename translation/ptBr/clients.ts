@@ -16,7 +16,8 @@ export default {
   observation: 'Observação',
   observationQuestion: 'Alguma observação?',
   observationPlaceholder: 'Escreva algo',
-  observationDescription: 'Você pode descrever alguma característica ou dado importante para a identificação ou localização',
+  observationDescription:
+    'Você pode descrever alguma característica ou dado importante para a identificação ou localização',
   guarantor: 'Avalista',
   guarantorQuestion: 'Avalista',
   guarantorSelect: 'Selecione um contato',
@@ -44,7 +45,8 @@ export default {
   addressPostalCode: 'CEP {{code}}',
   cancel: 'Cancelar',
   cancelConfirmTitle: 'Cancelar cadastro?',
-  cancelConfirmMessage: 'Tem certeza que deseja cancelar? Todos os dados preenchidos serão perdidos.',
+  cancelConfirmMessage:
+    'Tem certeza que deseja cancelar? Todos os dados preenchidos serão perdidos.',
   cancelConfirmButton: 'Sim, cancelar',
   cancelKeepButton: 'Continuar cadastrando',
   history: 'Histórico',

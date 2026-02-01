@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
@@ -7,6 +8,7 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Client } from '@/lib/services/clientService';
+
 import { Badge } from '../ui/Badge';
 
 export interface ClientItemProps {
@@ -17,10 +19,7 @@ export interface ClientItemProps {
 /**
  * Client list item component
  */
-export const ClientItem: React.FC<ClientItemProps> = ({
-  client,
-  onPress,
-}) => {
+export const ClientItem: React.FC<ClientItemProps> = ({ client, onPress }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -30,7 +29,14 @@ export const ClientItem: React.FC<ClientItemProps> = ({
 
   const formatCurrency = (amount?: number, currency?: string) => {
     if (!amount) return '0';
-    const currencySymbol = currency === 'GBP' ? '£' : currency === 'USD' ? '$' : currency === 'BRL' ? 'R$' : '';
+    const currencySymbol =
+      currency === 'GBP'
+        ? '£'
+        : currency === 'USD'
+          ? '$'
+          : currency === 'BRL'
+            ? 'R$'
+            : '';
     return `${currencySymbol}${amount.toLocaleString()}`;
   };
 
@@ -53,41 +59,110 @@ export const ClientItem: React.FC<ClientItemProps> = ({
         {/* Client Info */}
         <View style={styles.info}>
           <View style={styles.nameRow}>
-            <Typography variant="body1Medium" style={styles.name}>
+            <Typography
+              variant="body1Medium"
+              style={styles.name}
+            >
               {client.name}
             </Typography>
             <View style={styles.rating}>
-              <Badge icon="star-filled" value={client.rating || 4} backgroundColor='muted' foregroundColor='icon' size="sm" />
-              <Badge icon="calendar-dots" value={client.rating || 3} backgroundColor='tertiary' foregroundColor='tertiaryForeground' size="sm" />
-              <Badge icon="check" value={client.rating || 2} backgroundColor='success' foregroundColor='successForeground' size="sm" />
-              <Badge icon="user-dollar" value='600£' backgroundColor='muted' foregroundColor='primaryForeground' size="sm" />
+              <Badge
+                icon="star-filled"
+                value={client.rating || 4}
+                backgroundColor="muted"
+                foregroundColor="icon"
+                size="sm"
+              />
+              <Badge
+                icon="calendar-dots"
+                value={client.rating || 3}
+                backgroundColor="tertiary"
+                foregroundColor="tertiaryForeground"
+                size="sm"
+              />
+              <Badge
+                icon="check"
+                value={client.rating || 2}
+                backgroundColor="success"
+                foregroundColor="successForeground"
+                size="sm"
+              />
+              <Badge
+                icon="user-dollar"
+                value="600£"
+                backgroundColor="muted"
+                foregroundColor="primaryForeground"
+                size="sm"
+              />
             </View>
           </View>
 
           {/* Indicators */}
           <View style={styles.indicators}>
-            {client.pendingOperations !== undefined && client.pendingOperations > 0 && (
-              <View style={[styles.indicator, styles.pendingIndicator, { backgroundColor: '#fef3c7' }]}>
-                <Icon name="calendar" size={14} color="warning" />
-                <Typography variant="caption" style={[styles.indicatorText, { color: 'warning' }]}>
-                  {client.pendingOperations}
-                </Typography>
-              </View>
-            )}
+            {client.pendingOperations !== undefined &&
+              client.pendingOperations > 0 && (
+                <View
+                  style={[
+                    styles.indicator,
+                    styles.pendingIndicator,
+                    { backgroundColor: '#fef3c7' },
+                  ]}
+                >
+                  <Icon
+                    name="calendar"
+                    size={14}
+                    color="warning"
+                  />
+                  <Typography
+                    variant="caption"
+                    style={[styles.indicatorText, { color: 'warning' }]}
+                  >
+                    {client.pendingOperations}
+                  </Typography>
+                </View>
+              )}
 
-            {client.completedOperations !== undefined && client.completedOperations > 0 && (
-              <View style={[styles.indicator, styles.completedIndicator, { backgroundColor: '#d1fae5' }]}>
-                <Icon name="check" size={14} color="successForeground" />
-                <Typography variant="caption" color='successForeground' style={[styles.indicatorText]}>
-                  {client.completedOperations}
-                </Typography>
-              </View>
-            )}
+            {client.completedOperations !== undefined &&
+              client.completedOperations > 0 && (
+                <View
+                  style={[
+                    styles.indicator,
+                    styles.completedIndicator,
+                    { backgroundColor: '#d1fae5' },
+                  ]}
+                >
+                  <Icon
+                    name="check"
+                    size={14}
+                    color="successForeground"
+                  />
+                  <Typography
+                    variant="caption"
+                    color="successForeground"
+                    style={[styles.indicatorText]}
+                  >
+                    {client.completedOperations}
+                  </Typography>
+                </View>
+              )}
 
             {client.totalAmount !== undefined && client.totalAmount > 0 && (
-              <View style={[styles.indicator, styles.amountIndicator, { backgroundColor: colors.muted }]}>
-                <Icon name="users" size={14} color="icon" />
-                <Typography variant="caption" style={[styles.indicatorText, { color: colors.text }]}>
+              <View
+                style={[
+                  styles.indicator,
+                  styles.amountIndicator,
+                  { backgroundColor: colors.muted },
+                ]}
+              >
+                <Icon
+                  name="users"
+                  size={14}
+                  color="icon"
+                />
+                <Typography
+                  variant="caption"
+                  style={[styles.indicatorText, { color: colors.text }]}
+                >
                   {formatCurrency(client.totalAmount, client.currency || 'GBP')}
                 </Typography>
               </View>
@@ -96,7 +171,11 @@ export const ClientItem: React.FC<ClientItemProps> = ({
         </View>
 
         {/* Chevron */}
-        <Icon name="chevron-right" size={20} color="icon" />
+        <Icon
+          name="chevron-right"
+          size={20}
+          color="icon"
+        />
       </View>
     </TouchableOpacity>
   );
@@ -129,9 +208,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  ratingText: {
-    fontSize: 12,
-  },
+  ratingText: {fontSize: 12,},
   indicators: {
     flexDirection: 'row',
     gap: 8,

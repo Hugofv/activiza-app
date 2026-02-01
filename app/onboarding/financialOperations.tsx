@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import {
   KeyboardAvoidingView,
   Platform,
@@ -6,6 +7,10 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -19,8 +24,6 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
 
 // Numeric values represent the maximum operations per month
 // 0 = unlimited/more than the highest range
@@ -86,7 +89,10 @@ const FinancialOperationsScreen = () => {
     // Update form data and save to API with step tracking (unified)
     setIsSubmitting(true);
     try {
-      await updateFormData({ financialOperations: selectedOption }, 'financial_operations');
+      await updateFormData(
+        { financialOperations: selectedOption },
+        'financial_operations'
+      );
       navigate('/onboarding/capital');
     } catch (error: any) {
       console.error('Failed to save financialOperations step:', error);
@@ -126,12 +132,18 @@ const FinancialOperationsScreen = () => {
               <BackButton />
 
               {/* Title */}
-              <Typography variant='h4' style={styles.title}>
+              <Typography
+                variant="h4"
+                style={styles.title}
+              >
                 {t('onboarding.financialOperations')}
               </Typography>
 
               {/* Description */}
-              <Typography variant='body2' style={styles.description}>
+              <Typography
+                variant="body2"
+                style={styles.description}
+              >
                 {t('onboarding.financialOperationsDescription')}
               </Typography>
 
@@ -152,9 +164,9 @@ const FinancialOperationsScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
@@ -171,34 +183,22 @@ const FinancialOperationsScreen = () => {
 export default FinancialOperationsScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
+  container: {flex: 1,},
+  scrollView: {flex: 1,},
+  scrollContent: {flexGrow: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  title: {
-    marginTop: 8,
-  },
+  progressContainer: {marginBottom: 8,},
+  title: {marginTop: 8,},
   description: {
     marginTop: -8,
     opacity: 0.7,
   },
-  optionsList: {
-    marginTop: 8,
-  },
+  optionsList: {marginTop: 8,},
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

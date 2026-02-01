@@ -1,9 +1,13 @@
+import { useEffect } from 'react';
+
+import { StyleSheet, View } from 'react-native';
+
+import * as Haptics from 'expo-haptics';
+
 import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import { PlatformPressable } from '@react-navigation/elements';
 import { useNavigationState } from '@react-navigation/native';
-import * as Haptics from 'expo-haptics';
-import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -91,12 +95,11 @@ export function TabBarItem({
         <View style={styles.iconWrapper}>
           {focused ? (
             <Animated.View
-              style={[
-                styles.tabIconContainerFocused,
-                animatedContainerStyle,
-              ]}
+              style={[styles.tabIconContainerFocused, animatedContainerStyle]}
             >
-              <Animated.View style={[styles.tabIconCircle, animatedCircleStyle]}>
+              <Animated.View
+                style={[styles.tabIconCircle, animatedCircleStyle]}
+              >
                 <Icon
                   name={icon}
                   size={32}

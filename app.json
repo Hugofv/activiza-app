@@ -44,11 +44,7 @@
         "expo-localization",
         {
           "fallbackLocale": "pt-BR",
-          "availableLocales": [
-            "pt-BR",
-            "en-UK",
-            "en-BR"
-          ]
+          "availableLocales": ["pt-BR", "en-UK", "en-BR"]
         }
       ]
     ],

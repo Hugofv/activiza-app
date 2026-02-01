@@ -1,11 +1,13 @@
-import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
+
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 
+import { type VariantProps, cva } from 'class-variance-authority';
+
 import { Colors, type ThemeColorKey } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { cn } from '@/lib/utils';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Icon, type IconName } from './Icon';
 import { Typography, type TypographyVariant } from './Typography';
 
@@ -17,9 +19,7 @@ const badgeVariants = cva('', {
       lg: '',
     },
   },
-  defaultVariants: {
-    size: 'md',
-  },
+  defaultVariants: {size: 'md',},
 });
 
 export interface BadgeProps extends VariantProps<typeof badgeVariants> {
@@ -120,7 +120,11 @@ export const Badge = React.forwardRef<View, BadgeProps>(
         className={cn(badgeVariants({ size }), className)}
         {...props}
       >
-        <Icon name={icon} size={getIconSize()} color={foregroundColor} />
+        <Icon
+          name={icon}
+          size={getIconSize()}
+          color={foregroundColor}
+        />
         <Typography
           variant={getTextVariant()}
           style={[

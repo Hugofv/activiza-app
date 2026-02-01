@@ -1,26 +1,30 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
+
+import {
+ KeyboardAvoidingView, Platform, StyleSheet, View 
+} from 'react-native';
+
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { InferType } from 'yup';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { PhoneInput } from '@/components/ui/PhoneInput';
 import { Progress } from '@/components/ui/Progress';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { phoneSchema } from '@/lib/validations/onboarding';
-import type { InferType } from 'yup';
-
-import { BackButton } from '@/components/ui/BackButton';
-import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { sendVerificationCode } from '@/lib/services/authService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
+import { phoneSchema } from '@/lib/validations/onboarding';
 
 type ContactFormData = InferType<typeof phoneSchema>;
 
@@ -41,9 +45,7 @@ const ContactScreen = () => {
     formState: { errors, isValid },
   } = useForm<ContactFormData>({
     resolver: yupResolver(phoneSchema) as any,
-    defaultValues: {
-      phone: (formData.phone as any) || null,
-    },
+    defaultValues: {phone: (formData.phone as any) || null,},
     mode: 'onChange',
   });
 
@@ -54,12 +56,12 @@ const ContactScreen = () => {
     try {
       const phoneData = data.phone
         ? {
-          ...data.phone,
-          meta: {
-            country: data.phone.country,
-            countryCode: data.phone.countryCode,
-          },
-        }
+            ...data.phone,
+            meta: {
+              country: data.phone.country,
+              countryCode: data.phone.countryCode,
+            },
+          }
         : null;
 
       await updateFormData({ phone: phoneData as any }, 'contact');
@@ -77,7 +79,7 @@ const ContactScreen = () => {
           showWarning(
             t('common.warning') || 'Warning',
             t('onboarding.codeSendError') ||
-            'Failed to send verification code. You can resend it on the next screen.'
+              'Failed to send verification code. You can resend it on the next screen.'
           );
         }
       }
@@ -113,15 +115,14 @@ const ContactScreen = () => {
             </View>
 
             {/* Back Button */}
-            <BackButton
-            />
+            <BackButton />
 
             {/* Title */}
-            <Typography variant='h4'>{t('onboarding.contact')}</Typography>
+            <Typography variant="h4">{t('onboarding.contact')}</Typography>
 
             {/* Input Field */}
             <PhoneInput
-              name='phone'
+              name="phone"
               control={control}
               error={errors.phone?.message}
             />
@@ -130,9 +131,9 @@ const ContactScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
@@ -149,25 +150,20 @@ const ContactScreen = () => {
 export default ContactScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
+  progressContainer: {marginBottom: 8,},
   inputContainer: {
     width: '100%',
     marginTop: 8,
     borderBottomWidth: 1.5,
   },
-  inputBorder: {
-    borderBottomWidth: 0, // Remove any border from Input component
+  inputBorder: {borderBottomWidth: 0, // Remove any border from Input component
   },
   buttonContainer: {
     paddingBottom: 56,

@@ -1,5 +1,6 @@
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity } from 'react-native';
+
+import { useTranslation } from 'react-i18next';
 
 import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
@@ -20,11 +21,26 @@ export function OverdueAlert({ count, onPress }: OverdueAlertProps) {
       activeOpacity={0.7}
       onPress={onPress}
     >
-      <Icon name="information-circle" size={20} color="warning" />
-      <Typography variant="body2" color='warning' style={{ marginLeft: 8, flex: 1 }}>
+      <Icon
+        name="information-circle"
+        size={20}
+        color="warning"
+      />
+      <Typography
+        variant="body2"
+        color="warning"
+        style={{
+ marginLeft: 8,
+flex: 1 
+}}
+      >
         {count} {t('home.overduePayments')}
       </Typography>
-      <Icon name="chevron-forward" size={20} color="warning" />
+      <Icon
+        name="chevron-forward"
+        size={20}
+        color="warning"
+      />
     </TouchableOpacity>
   );
 }

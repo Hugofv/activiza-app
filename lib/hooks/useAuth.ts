@@ -2,7 +2,13 @@
  * Hook for authentication operations
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ensureValidToken, getCurrentUser, login, logout } from '../services/authService';
+
+import {
+  ensureValidToken,
+  getCurrentUser,
+  login,
+  logout,
+} from '../services/authService';
 import { LoginCredentials, User } from '../types/authTypes';
 
 /**

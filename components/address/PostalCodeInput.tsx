@@ -1,11 +1,10 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
+
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { BackButton } from '@/components/ui/BackButton';
 import { Input } from '@/components/ui/Input';
@@ -15,12 +14,11 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import {
+  type CountryCode,
   getPostalCodeFormat,
   lookupPostalCode,
-  type CountryCode,
 } from '@/lib/services/postalCodeService';
 import { createPostalCodeSchema } from '@/lib/validations/onboarding';
-import { useTranslation } from 'react-i18next';
 
 export interface AddressData {
   postalCode: string;
@@ -52,7 +50,11 @@ export interface PostalCodeInputProps {
   showProgress?: boolean;
   showBackButton?: boolean;
   customHeader?: React.ReactNode; // Custom header to replace the default one
-  onSubmitReady?: (submitHandler: () => void, isValid: boolean, isLoading: boolean) => void;
+  onSubmitReady?: (
+    submitHandler: () => void,
+    isValid: boolean,
+    isLoading: boolean
+  ) => void;
 }
 
 interface PostalCodeFormData {
@@ -89,20 +91,14 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
     formState: { errors, isValid },
   } = useForm<PostalCodeFormData>({
     resolver: yupResolver(schema),
-    defaultValues: {
-      postalCode: initialValue,
-    },
+    defaultValues: {postalCode: initialValue,},
     mode: 'onChange',
   });
 
   // Expose submit handler to parent if needed
   useEffect(() => {
     if (onSubmitReady) {
-      onSubmitReady(
-        () => handleSubmit(handleFormSubmit)(),
-        isValid,
-        loading
-      );
+      onSubmitReady(() => handleSubmit(handleFormSubmit)(), isValid, loading);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isValid, loading, onSubmitReady]);
@@ -172,9 +168,14 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
         </View>
       )}
 
-      {customHeader ? customHeader : showBackButton && <BackButton onPress={onBack} />}
+      {customHeader
+        ? customHeader
+        : showBackButton && <BackButton onPress={onBack} />}
 
-      <Typography variant='h4' style={styles.title}>
+      <Typography
+        variant="h4"
+        style={styles.title}
+      >
         {title || t('onboarding.postalCode')}
       </Typography>
 
@@ -183,7 +184,7 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
         control={control}
         error={errors.postalCode?.message}
         onFormat={formatConfig.format}
-        className='border-0 rounded-none px-0 py-4 font-medium'
+        className="border-0 rounded-none px-0 py-4 font-medium"
         style={[
           {
             fontSize: 24,
@@ -201,8 +202,17 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
 
       {loading && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={colors.primary} />
-          <Typography variant='body2' style={{ color: colors.icon, marginLeft: 8 }}>
+          <ActivityIndicator
+            size="small"
+            color={colors.primary}
+          />
+          <Typography
+            variant="body2"
+            style={{
+ color: colors.icon,
+marginLeft: 8 
+}}
+          >
             {t('onboarding.loadingAddress')}
           </Typography>
         </View>
@@ -221,12 +231,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  title: {
-    marginTop: 8,
-  },
+  progressContainer: {marginBottom: 8,},
+  title: {marginTop: 8,},
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',

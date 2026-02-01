@@ -1,9 +1,11 @@
-import enUK from '@/translation/enUK';
-import ptBr from '@/translation/ptBr';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+
+import enUK from '@/translation/enUK';
+import ptBr from '@/translation/ptBr';
 
 const resources = {
   'pt-BR': { translation: ptBr },
@@ -22,9 +24,7 @@ const initI18n = async () => {
     resources,
     lng: savedLanguage ?? 'pt-BR',
     fallbackLng: 'pt-BR',
-    interpolation: {
-      escapeValue: false,
-    },
+    interpolation: {escapeValue: false,},
   });
 };
 

@@ -1,6 +1,8 @@
-import { Image as ExpoImage } from 'expo-image';
 import * as React from 'react';
+
 import { StyleSheet, View, type ViewStyle } from 'react-native';
+
+import { Image as ExpoImage } from 'expo-image';
 
 import { type ThemeColorKey } from '@/constants/theme';
 
@@ -49,7 +51,6 @@ export const Avatar = React.forwardRef<View, AvatarProps>(
     },
     ref
   ) => {
-
     const borderRadius = size / 2;
 
     if (image) {
@@ -97,7 +98,11 @@ export const Avatar = React.forwardRef<View, AvatarProps>(
         ]}
         {...props}
       >
-        <Icon name={icon} size={size * 0.5} color={iconColor} />
+        <Icon
+          name={icon}
+          size={size * 0.5}
+          color={iconColor}
+        />
       </View>
     );
   }
@@ -105,8 +110,4 @@ export const Avatar = React.forwardRef<View, AvatarProps>(
 
 Avatar.displayName = 'Avatar';
 
-const styles = StyleSheet.create({
-  container: {
-    overflow: 'hidden',
-  },
-});
+const styles = StyleSheet.create({container: {overflow: 'hidden',},});

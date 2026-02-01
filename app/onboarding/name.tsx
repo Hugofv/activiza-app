@@ -1,24 +1,28 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
+
+import {
+ KeyboardAvoidingView, Platform, StyleSheet, View 
+} from 'react-native';
+
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
+import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { Progress } from '@/components/ui/Progress';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { nameSchema } from '@/lib/validations/onboarding';
-
-import { BackButton } from '@/components/ui/BackButton';
-import { IconButton } from '@/components/ui/IconButton';
-import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
+import { nameSchema } from '@/lib/validations/onboarding';
 
 interface NameFormData {
   name: string;
@@ -41,9 +45,7 @@ const NameScreen = () => {
     formState: { errors, isValid },
   } = useForm<NameFormData>({
     resolver: yupResolver(nameSchema),
-    defaultValues: {
-      name: formData.name || '',
-    },
+    defaultValues: {name: formData.name || '',},
     mode: 'onChange',
   });
 
@@ -86,14 +88,14 @@ const NameScreen = () => {
             <BackButton />
 
             {/* Title */}
-            <Typography variant='h4'>{t('onboarding.name')}</Typography>
+            <Typography variant="h4">{t('onboarding.name')}</Typography>
 
             {/* Input Field */}
             <Input
-              name='name'
+              name="name"
               control={control}
               error={errors.name?.message}
-              className='border-0 rounded-none px-0 py-4 font-medium'
+              className="border-0 rounded-none px-0 py-4 font-medium"
               style={[
                 {
                   fontSize: 24,
@@ -102,7 +104,7 @@ const NameScreen = () => {
               ]}
               placeholder={t('onboarding.namePlaceholder')}
               placeholderTextColor={colors.icon}
-              keyboardType='default'
+              keyboardType="default"
               maxLength={100}
               autoFocus
             />
@@ -111,9 +113,9 @@ const NameScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
@@ -130,18 +132,14 @@ const NameScreen = () => {
 export default NameScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
+  progressContainer: {marginBottom: 8,},
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

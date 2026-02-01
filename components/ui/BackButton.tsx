@@ -1,11 +1,16 @@
-import { router } from 'expo-router';
 import * as React from 'react';
+
 import { PressableProps } from 'react-native';
+
+import { router } from 'expo-router';
 
 import { IconColor } from './Icon';
 import { IconButton } from './IconButton';
 
-export interface BackButtonProps extends Omit<PressableProps, 'children' | 'onPress'> {
+export interface BackButtonProps extends Omit<
+  PressableProps,
+  'children' | 'onPress'
+> {
   onPress?: () => void;
   variant?: 'primary' | 'secondary' | 'error' | 'outline' | 'ghost';
   iconColor?: IconColor;
@@ -19,29 +24,38 @@ export interface BackButtonProps extends Omit<PressableProps, 'children' | 'onPr
 export const BackButton = React.forwardRef<
   React.ElementRef<typeof IconButton>,
   BackButtonProps
->(({ onPress, variant = 'secondary', iconColor = 'primaryForeground', ...props }, ref) => {
+>(
+  (
+    {
+      onPress,
+      variant = 'secondary',
+      iconColor = 'primaryForeground',
+      ...props
+    },
+    ref
+  ) => {
+    const handlePress = () => {
+      if (onPress) {
+        onPress();
+      } else {
+        router.back();
+      }
+    };
 
-  const handlePress = () => {
-    if (onPress) {
-      onPress();
-    } else {
-      router.back();
-    }
-  };
-
-  return (
-    <IconButton
-      ref={ref}
-      variant={variant}
-      shape="cylinder"
-      size="md"
-      icon="chevron-back"
-      iconSize={32}
-      iconColor={iconColor}
-      onPress={handlePress}
-      {...props}
-    />
-  );
-});
+    return (
+      <IconButton
+        ref={ref}
+        variant={variant}
+        shape="cylinder"
+        size="md"
+        icon="chevron-back"
+        iconSize={32}
+        iconColor={iconColor}
+        onPress={handlePress}
+        {...props}
+      />
+    );
+  }
+);
 
 BackButton.displayName = 'BackButton';

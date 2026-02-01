@@ -1,7 +1,10 @@
-import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { StyleSheet, View } from 'react-native';
+
+import { router, useLocalSearchParams } from 'expo-router';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -13,6 +16,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { createOfflineQueryOptions, useQuery } from '@/lib/hooks/useQuery';
 import { Client, getClients } from '@/lib/services/clientService';
+import { useEditClientStore } from '@/lib/stores/editClientStore';
 
 import { useNewClientForm } from './_context';
 
@@ -20,12 +24,23 @@ export default function GuarantorScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
+  const searchParams = useLocalSearchParams<{
+    clientId?: string;
+    edit?: string;
+  }>();
+  const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
+  const { draft, updateDraft } = useEditClientStore();
+  const {
+ formData, updateFormData, setCurrentStep 
+} = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const initialGuarantorId = isEditMode
+    ? (draft.guarantorId ?? null)
+    : formData.guarantor?.id || null;
   const [selectedGuarantorId, setSelectedGuarantorId] = useState<string | null>(
-    formData.guarantor?.id || null
+    initialGuarantorId
   );
   const keyboardHeight = useKeyboardHeight();
 
@@ -59,12 +74,22 @@ export default function GuarantorScreen() {
   const handleGuarantorChange = (value: string) => {
     setSelectedGuarantorId(value);
     const client = clients.find((c) => String(c.id) === value);
+    if (isEditMode) {
+      updateDraft({
+        guarantorId: value || undefined,
+        _guarantor: client || undefined,
+      });
+      return;
+    }
     if (client) {
       updateFormData({
         guarantor: {
           id: value,
           name: client.name ?? client.meta?.name ?? '',
-          reliability: client.meta?.reliability != null ? Number(client.meta?.reliability) : undefined,
+          reliability:
+            client.meta?.reliability != null
+              ? Number(client.meta?.reliability)
+              : undefined,
         },
       });
     }
@@ -73,7 +98,11 @@ export default function GuarantorScreen() {
   const handleNext = async () => {
     setIsSubmitting(true);
     try {
-      // If no guarantor selected, leave it undefined
+      if (isEditMode) {
+        // Already updated in handleGuarantorChange
+        router.back();
+        return;
+      }
       setCurrentStep(9);
       router.push('/clients/new/reliability');
     } finally {
@@ -88,50 +117,59 @@ export default function GuarantorScreen() {
     >
       <ThemedView style={styles.container}>
         <ThemedView style={styles.content}>
-            {/* Title */}
-            <View style={styles.titleContainer}>
-              <Typography variant="h3" color='text'>
-                {t('clients.reference')}
-              </Typography>
+          {/* Title */}
+          <View style={styles.titleContainer}>
+            <Typography
+              variant="h3"
+              color="text"
+            >
+              {t('clients.reference')}
+            </Typography>
 
-              <Typography variant="body2" color='placeholder'>
-                {t('clients.optional')}
-              </Typography>
-            </View>
-
-            {/* Guarantor Autocomplete */}
-            <Autocomplete
-              options={options}
-              value={selectedGuarantorId}
-              onValueChange={handleGuarantorChange}
-              placeholder={t('clients.guarantorSelect')}
-              label={t('clients.guarantor')}
-              onSearchChange={setSearchQuery}
-            />
-          </ThemedView>
-
-          {/* Continue Button */}
-          <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
-            <IconButton
-              variant="primary"
-              size="md"
-              icon="arrow-forward"
-              iconSize={32}
-              iconColor={colors.primaryForeground}
-              onPress={handleNext}
-              disabled={isSubmitting}
-              loading={isSubmitting}
-            />
+            <Typography
+              variant="body2"
+              color="placeholder"
+            >
+              {t('clients.optional')}
+            </Typography>
           </View>
+
+          {/* Guarantor Autocomplete */}
+          <Autocomplete
+            options={options}
+            value={selectedGuarantorId}
+            onValueChange={handleGuarantorChange}
+            placeholder={t('clients.guarantorSelect')}
+            label={t('clients.guarantor')}
+            onSearchChange={setSearchQuery}
+          />
+        </ThemedView>
+
+        {/* Continue Button */}
+        <View
+          style={[
+            styles.buttonContainer,
+            keyboardHeight > 0 && { marginBottom: keyboardHeight },
+          ]}
+        >
+          <IconButton
+            variant="primary"
+            size="md"
+            icon="arrow-forward"
+            iconSize={32}
+            iconColor={colors.primaryForeground}
+            onPress={handleNext}
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          />
+        </View>
       </ThemedView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 0,

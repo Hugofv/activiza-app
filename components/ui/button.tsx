@@ -1,10 +1,19 @@
-import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { ActivityIndicator, Pressable, type PressableProps, type TextProps, type ViewStyle } from 'react-native';
+
+import {
+  ActivityIndicator,
+  Pressable,
+  type PressableProps,
+  type TextProps,
+  type ViewStyle,
+} from 'react-native';
+
+import { type VariantProps, cva } from 'class-variance-authority';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { cn } from '@/lib/utils';
+
 import { Typography } from './Typography';
 
 const buttonVariants = cva(
@@ -34,15 +43,32 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends Omit<PressableProps, 'children'>,
+  extends
+    Omit<PressableProps, 'children'>,
     VariantProps<typeof buttonVariants> {
   children?: React.ReactNode;
   textProps?: TextProps;
   loading?: boolean;
 }
 
-const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
-  ({ className, variant = 'primary', size, children, textProps, style, disabled, loading, ...props }, ref) => {
+const Button = React.forwardRef<
+  React.ElementRef<typeof Pressable>,
+  ButtonProps
+>(
+  (
+    {
+      className,
+      variant = 'primary',
+      size,
+      children,
+      textProps,
+      style,
+      disabled,
+      loading,
+      ...props
+    },
+    ref
+  ) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
 
@@ -79,7 +105,8 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           break;
         case 'secondary':
           // Secondary button: light muted background (like back button in Figma)
-          baseStyle.backgroundColor = colorScheme === 'dark' ? '#1a2a24' : '#f1f9f5'; // Light green tint from Figma
+          baseStyle.backgroundColor =
+            colorScheme === 'dark' ? '#1a2a24' : '#f1f9f5'; // Light green tint from Figma
           // No border for secondary - just muted background
           if (isDisabled) {
             baseStyle.opacity = 0.5;
@@ -129,7 +156,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           // In dark mode: #001a00 (very dark), in light mode: #064e3b (dark green)
           return colors.primaryForeground;
         case 'secondary':
-          return colors.primary; // Green text on light background
+          return colors.primaryForeground; // Green text on light background
         case 'error':
           return '#ffffff';
         case 'outline':
@@ -148,11 +175,16 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
 
     return (
       <Pressable
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({
+ variant,
+size,
+className 
+}))}
         style={[variantStyle, style] as any}
         ref={ref}
         disabled={isDisabled}
-        {...props}>
+        {...props}
+      >
         {loading ? (
           <ActivityIndicator
             size="small"
@@ -160,8 +192,12 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           />
         ) : typeof children === 'string' ? (
           <Typography
-            variant='body1Medium'
-            style={{ color: textColor, fontSize: size === 'sm' ? 14 : 16 }}>
+            variant="body1Medium"
+            style={{
+ color: textColor,
+fontSize: size === 'sm' ? 14 : 16 
+}}
+          >
             {children}
           </Typography>
         ) : (
@@ -173,5 +209,6 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
 );
 Button.displayName = 'Button';
 
-export { Button, buttonVariants };
-
+export {
+ Button, buttonVariants 
+};

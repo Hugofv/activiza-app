@@ -1,5 +1,5 @@
-import { router } from 'expo-router';
 import { useState } from 'react';
+
 import {
   KeyboardAvoidingView,
   Platform,
@@ -7,6 +7,10 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+
+import { router } from 'expo-router';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -20,7 +24,6 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
-import { useTranslation } from 'react-i18next';
 
 // Numeric values represent working capital in actual currency units
 // 0 = unlimited/more than the highest range
@@ -29,11 +32,31 @@ const WORKING_CAPITAL_OPTIONS: {
   keyPt: string;
   keyEn: string;
 }[] = [
-  { value: 5000, keyPt: 'workingCapitalUpTo5k', keyEn: 'workingCapitalUpTo5k' },
-  { value: 20000, keyPt: 'workingCapital5kTo20k', keyEn: 'workingCapital5kTo20k' },
-  { value: 50000, keyPt: 'workingCapital20kTo50k', keyEn: 'workingCapital20kTo50k' },
-  { value: 100000, keyPt: 'workingCapital50kTo100k', keyEn: 'workingCapital50kTo100k' },
-  { value: 0, keyPt: 'workingCapitalMoreThan100k', keyEn: 'workingCapitalMoreThan100k' }, // Represents "more than 100k"
+  {
+ value: 5000,
+keyPt: 'workingCapitalUpTo5k',
+keyEn: 'workingCapitalUpTo5k' 
+},
+  {
+    value: 20000,
+    keyPt: 'workingCapital5kTo20k',
+    keyEn: 'workingCapital5kTo20k',
+  },
+  {
+    value: 50000,
+    keyPt: 'workingCapital20kTo50k',
+    keyEn: 'workingCapital20kTo50k',
+  },
+  {
+    value: 100000,
+    keyPt: 'workingCapital50kTo100k',
+    keyEn: 'workingCapital50kTo100k',
+  },
+  {
+    value: 0,
+    keyPt: 'workingCapitalMoreThan100k',
+    keyEn: 'workingCapitalMoreThan100k',
+  }, // Represents "more than 100k"
 ];
 
 /**
@@ -56,7 +79,10 @@ const CapitalScreen = () => {
     // Update form data and save to API with step tracking (unified)
     setIsSubmitting(true);
     try {
-      await updateFormData({ workingCapital: selectedOption }, 'working_capital');
+      await updateFormData(
+        { workingCapital: selectedOption },
+        'working_capital'
+      );
       router.push('/onboarding/businessDuration');
     } catch (error: any) {
       console.error('Failed to save capital step:', error);
@@ -71,7 +97,10 @@ const CapitalScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -93,7 +122,10 @@ const CapitalScreen = () => {
               <BackButton />
 
               {/* Title */}
-              <Typography variant='h4' style={styles.title}>
+              <Typography
+                variant="h4"
+                style={styles.title}
+              >
                 {t('onboarding.workingCapital')}
               </Typography>
 
@@ -114,9 +146,9 @@ const CapitalScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
@@ -133,30 +165,18 @@ const CapitalScreen = () => {
 export default CapitalScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
+  container: {flex: 1,},
+  scrollView: {flex: 1,},
+  scrollContent: {flexGrow: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  title: {
-    marginTop: 8,
-  },
-  optionsList: {
-    marginTop: 8,
-  },
+  progressContainer: {marginBottom: 8,},
+  title: {marginTop: 8,},
+  optionsList: {marginTop: 8,},
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

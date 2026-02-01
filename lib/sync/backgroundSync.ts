@@ -2,7 +2,12 @@
  * Background synchronization utilities
  */
 import { AppState, AppStateStatus } from 'react-native';
-import { initializeNetworkMonitor, isOnline, useNetworkStore } from './networkMonitor';
+
+import {
+  initializeNetworkMonitor,
+  isOnline,
+  useNetworkStore,
+} from './networkMonitor';
 import { syncQueueWithRetry } from './syncManager';
 
 let networkUnsubscribe: (() => void) | null = null;
@@ -26,7 +31,10 @@ export function initializeBackgroundSync() {
   });
 
   // Subscribe to app state changes to sync when app comes to foreground
-  appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
+  appStateSubscription = AppState.addEventListener(
+    'change',
+    handleAppStateChange
+  );
 
   // Initial sync if online
   if (isOnline()) {

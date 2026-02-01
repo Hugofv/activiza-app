@@ -1,10 +1,22 @@
-import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { ActivityIndicator, Pressable, StyleProp, StyleSheet, TextStyle, View, type PressableProps, type ViewStyle } from 'react-native';
+
+import {
+  ActivityIndicator,
+  Pressable,
+  type PressableProps,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  View,
+  type ViewStyle,
+} from 'react-native';
+
+import { type VariantProps, cva } from 'class-variance-authority';
 
 import { Colors, type ThemeColorKey } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { cn } from '@/lib/utils';
+
 import { Icon, IconColor, type IconName } from './Icon';
 import { Typography } from './Typography';
 
@@ -42,8 +54,9 @@ const iconButtonVariants = cva(
 );
 
 export interface IconButtonProps
-  extends Omit<PressableProps, 'children'>,
-  VariantProps<typeof iconButtonVariants> {
+  extends
+    Omit<PressableProps, 'children'>,
+    VariantProps<typeof iconButtonVariants> {
   icon: IconName;
   iconSize?: number;
   iconColor?: IconColor;
@@ -100,7 +113,8 @@ const IconButton = React.forwardRef<
       // Shape determines the form: rounded (circular), cylinder (vertical oval), or default (rectangular)
       const isRounded = shape === 'rounded';
       const isCylinder = shape === 'cylinder';
-      const widthSize = (isRounded || isCylinder) ? actualSize : (width || actualSize);
+      const widthSize =
+        isRounded || isCylinder ? actualSize : width || actualSize;
 
       // Set height based on size
       switch (actualSize) {
@@ -292,17 +306,17 @@ const IconButton = React.forwardRef<
 
       switch (variant) {
         case 'primary':
-          return "primaryForeground";
+          return 'primaryForeground';
         case 'secondary':
-          return "primary";
+          return 'primary';
         case 'error':
-          return "text";
+          return 'text';
         case 'outline':
-          return "text";
+          return 'text';
         case 'ghost':
-          return "text";
+          return 'text';
         default:
-          return "primaryForeground";
+          return 'primaryForeground';
       }
     };
 
@@ -329,7 +343,11 @@ const IconButton = React.forwardRef<
     const iconColorValue = colors[getIconColor()];
 
     return (
-      <Pressable style={label ? styles.container : {}} disabled={isDisabled} {...props}>
+      <Pressable
+        style={label ? styles.container : {}}
+        disabled={isDisabled}
+        {...props}
+      >
         <View
           className={cn(
             iconButtonVariants({
@@ -355,9 +373,13 @@ const IconButton = React.forwardRef<
               color={iconColorValue as ThemeColorKey}
             />
           )}
-        </View >
+        </View>
         {label && (
-          <Typography variant="body2Medium" color="primaryForeground" style={labelStyle}>
+          <Typography
+            variant="body2Medium"
+            color="primaryForeground"
+            style={labelStyle}
+          >
             {label}
           </Typography>
         )}
@@ -375,5 +397,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export { IconButton, iconButtonVariants };
-
+export {
+ IconButton, iconButtonVariants 
+};

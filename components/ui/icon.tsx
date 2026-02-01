@@ -1,4 +1,7 @@
-import { Colors, ThemeColorKey } from '@/constants/theme';
+import * as React from 'react';
+
+import { type StyleProp, View, type ViewStyle } from 'react-native';
+
 import {
   IconAlertTriangle,
   IconArrowRight,
@@ -39,12 +42,11 @@ import {
   IconUserDollar,
   IconUserFilled,
   IconUserPlus,
+  IconUserShare,
   IconUsers,
-  IconUserShare
 } from '@tabler/icons-react-native';
-import * as React from 'react';
-import { type StyleProp, type ViewStyle, View } from 'react-native';
 
+import { Colors, ThemeColorKey } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 // Map old icon names to Tabler icon components
@@ -60,70 +62,70 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'arrow-right': IconArrowRight,
 
   // Actions
-  'checkmark': IconCheck,
-  'check': IconCheck,
-  'add': IconPlus,
-  'plus': IconPlus,
+  checkmark: IconCheck,
+  check: IconCheck,
+  add: IconPlus,
+  plus: IconPlus,
   'square-rounded-plus': IconSquareRoundedPlusFilled,
-  'note': IconNote,
+  note: IconNote,
 
   // Visibility
   'eye-outline': IconEye,
-  'eye': IconEye,
+  eye: IconEye,
   'eye-off-outline': IconEyeOff,
   'eye-off': IconEyeOff,
 
   // Status
   'hourglass-outline': IconHourglass,
-  'hourglass': IconHourglass,
+  hourglass: IconHourglass,
   'checkmark-circle': IconCircleCheck,
   'close-circle': IconCircleX,
-  'x': IconCircleX,
-  'close': IconCircleX,
+  x: IconCircleX,
+  close: IconCircleX,
   'information-circle': IconInfoCircle,
   'info-circle': IconInfoCircle,
-  'warning': IconAlertTriangle,
-  'star': IconStar,
+  warning: IconAlertTriangle,
+  star: IconStar,
   'star-filled': IconStarFilled,
-  'calendar': IconCalendar,
+  calendar: IconCalendar,
   'calendar-dots': IconCalendarDot,
-  'mail': IconMail,
+  mail: IconMail,
   'map-pin': IconMapPin,
   'user-share': IconUserShare,
 
   // People
-  'person': IconUser,
+  person: IconUser,
   'user-dollar': IconUserDollar,
   'receipt-2': IconReceipt2,
-  'user': IconUser,
+  user: IconUser,
   'user-filled': IconUserFilled,
-  'people': IconUsers,
-  'users': IconUsers,
+  people: IconUsers,
+  users: IconUsers,
   'user-circle': IconUserCircle,
   'user-plus': IconUserPlus,
-  'whatsapp': IconBrandWhatsapp,
-  'id': IconId,
+  whatsapp: IconBrandWhatsapp,
+  id: IconId,
 
   // Places
-  'home': IconHomeFilled,
-  'car': IconCar,
+  home: IconHomeFilled,
+  car: IconCar,
   'door-outline': IconDoor,
-  'door': IconDoor,
+  door: IconDoor,
 
   // Business
   'cash-outline': IconCurrencyDollar,
   'currency-dollar': IconCurrencyDollar,
   'document-text-outline': IconFileText,
   'file-text': IconFileText,
-  'history': IconHistory,
+  history: IconHistory,
 
   // Shapes
   'ellipse-outline': IconCircle,
-  'circle': IconCircle,
+  circle: IconCircle,
 
   // Devices
-  'camera': IconCamera,
-  'photo': IconPhoto,
+  camera: IconCamera,
+  photo: IconPhoto,
 };
 
 export type IconName = keyof typeof ICON_MAP | string;
@@ -151,7 +153,9 @@ function resolveIconColor(
 }
 
 const Icon = React.forwardRef<any, IconProps>(
-  ({ name, size = 24, color, style, ...props }, ref) => {
+  ({
+ name, size = 24, color, style, ...props 
+}, ref) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
     const resolvedColor = resolveIconColor(color, colors);
@@ -161,17 +165,38 @@ const Icon = React.forwardRef<any, IconProps>(
 
     // If icon not found, use a default or show warning
     if (!IconComponent) {
-      console.warn(`Icon "${name}" not found in icon map. Using Circle as fallback.`);
+      console.warn(
+        `Icon "${name}" not found in icon map. Using Circle as fallback.`
+      );
       return (
-        <View ref={ref} style={[{ width: size, height: size }, style]}>
-          <IconCircle size={size} color={resolvedColor} strokeWidth={2} {...props} />
+        <View
+          ref={ref}
+          style={[{
+ width: size,
+height: size 
+}, style]}
+        >
+          <IconCircle
+            size={size}
+            color={resolvedColor}
+            strokeWidth={2}
+            {...props}
+          />
         </View>
       );
     }
 
     return (
-      <View ref={ref} style={style}>
-        <IconComponent size={size} color={resolvedColor} strokeWidth={2} {...props} />
+      <View
+        ref={ref}
+        style={style}
+      >
+        <IconComponent
+          size={size}
+          color={resolvedColor}
+          strokeWidth={2}
+          {...props}
+        />
       </View>
     );
   }

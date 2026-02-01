@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { StyleSheet, View } from 'react-native';
 
 import { Icon, type IconName } from '@/components/ui/Icon';
@@ -13,24 +14,45 @@ interface CardOperationProps {
   index: number;
 }
 
-const CardOperation: React.FC<CardOperationProps> = ({ icon, count, label, index }) => {
+const CardOperation: React.FC<CardOperationProps> = ({
+  icon,
+  count,
+  label,
+  index,
+}) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
-    <View key={index} style={[styles.summaryCard, { backgroundColor: colors.muted }]}>
+    <View
+      key={index}
+      style={[styles.summaryCard, { backgroundColor: colors.muted }]}
+    >
       <View style={styles.headerCard}>
-        <Icon name={icon} size={24} color="primaryForeground" />
-        <Typography variant="body1" color="placeholder">
+        <Icon
+          name={icon}
+          size={24}
+          color="primaryForeground"
+        />
+        <Typography
+          variant="body1"
+          color="placeholder"
+        >
           {count}
         </Typography>
       </View>
-      <Typography variant="body2SemiBold" style={{ color: colors.primaryForeground, textAlign: 'center' }}>
+      <Typography
+        variant="body2SemiBold"
+        style={{
+ color: colors.primaryForeground,
+textAlign: 'center' 
+}}
+      >
         {label}
       </Typography>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   summaryCard: {

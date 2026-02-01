@@ -2,8 +2,9 @@
  * Hook for sync operations
  */
 import { useMutation, useQuery } from '@tanstack/react-query';
+
 import { getQueueSize } from '../storage/queue';
-import { syncQueueWithRetry, SyncResult } from '../sync/syncManager';
+import { SyncResult, syncQueueWithRetry } from '../sync/syncManager';
 
 /**
  * Hook to get queue size and sync status

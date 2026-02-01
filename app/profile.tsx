@@ -1,7 +1,12 @@
-import { router } from 'expo-router';
 import { useEffect, useMemo } from 'react';
+
+import {
+ ActivityIndicator, Pressable, StyleSheet, View 
+} from 'react-native';
+
+import { router } from 'expo-router';
+
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/Button';
@@ -18,13 +23,19 @@ export default function ProfileScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
-  const { isAuthenticated, isChecking, redirectToLogin } = useAuthGuard();
-  const { user, logoutAsync, isLoggingOut } = useAuth();
+  const {
+ isAuthenticated, isChecking, redirectToLogin 
+} = useAuthGuard();
+  const {
+ user, logoutAsync, isLoggingOut 
+} = useAuth();
   const theme = useTheme();
 
   useEffect(() => {
     if (!isChecking && !isAuthenticated) {
-      console.log('[ProfileScreen] User not authenticated, calling redirectToLogin("profile")');
+      console.log(
+        '[ProfileScreen] User not authenticated, calling redirectToLogin("profile")'
+      );
       redirectToLogin('profile');
     }
   }, [isAuthenticated, isChecking, redirectToLogin]);
@@ -57,7 +68,10 @@ export default function ProfileScreen() {
         edges={['top']}
       >
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator
+            size="large"
+            color={colors.primary}
+          />
         </View>
       </SafeAreaView>
     );
@@ -84,7 +98,10 @@ export default function ProfileScreen() {
               { backgroundColor: colors.primaryWhitenOpacity },
             ]}
           >
-            <Typography variant="h4" style={{ color: colors.primaryForeground }}>
+            <Typography
+              variant="h4"
+              style={{ color: colors.primaryForeground }}
+            >
               {initials}
             </Typography>
           </View>
@@ -106,7 +123,10 @@ export default function ProfileScreen() {
         </View>
 
         <View style={[styles.themeSection, { backgroundColor: colors.muted }]}>
-          <Typography variant="body1SemiBold" style={[styles.themeTitle, { color: colors.text }]}>
+          <Typography
+            variant="body1SemiBold"
+            style={[styles.themeTitle, { color: colors.text }]}
+          >
             {t('common.theme')}
           </Typography>
           {(['light', 'dark', 'system'] as const).map((option) => (
@@ -114,11 +134,14 @@ export default function ProfileScreen() {
               key={option}
               style={[
                 styles.themeOption,
-                option === theme?.preference && { backgroundColor: colors.primaryWhitenOpacity },
+                option === theme?.preference && {backgroundColor: colors.primaryWhitenOpacity,},
               ]}
               onPress={() => theme?.setPreference(option)}
             >
-              <Typography variant="body1" style={{ color: colors.text }}>
+              <Typography
+                variant="body1"
+                style={{ color: colors.text }}
+              >
                 {t(
                   option === 'light'
                     ? 'common.themeLight'
@@ -128,7 +151,11 @@ export default function ProfileScreen() {
                 )}
               </Typography>
               {theme?.preference === option && (
-                <Icon name="checkmark-circle" size={22} color={colors.primary} />
+                <Icon
+                  name="checkmark-circle"
+                  size={22}
+                  color={colors.primary}
+                />
               )}
             </Pressable>
           ))}
@@ -150,18 +177,14 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 32,
   },
-  header: {
-    marginBottom: 24,
-  },
+  header: {marginBottom: 24,},
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -176,12 +199,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  info: {
-    flex: 1,
-  },
-  name: {
-    marginBottom: 4,
-  },
+  info: {flex: 1,},
+  name: {marginBottom: 4,},
   email: {},
   themeSection: {
     borderRadius: 16,
@@ -189,9 +208,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 16,
   },
-  themeTitle: {
-    marginBottom: 4,
-  },
+  themeTitle: {marginBottom: 4,},
   themeOption: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -210,4 +227,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-

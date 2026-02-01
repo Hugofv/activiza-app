@@ -1,25 +1,40 @@
-import { router } from 'expo-router';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { Pressable, StyleSheet, View } from 'react-native';
+
+import { router, useLocalSearchParams } from 'expo-router';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
+import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
+import { useEditClientStore } from '@/lib/stores/editClientStore';
 
-import { Colors } from '@/constants/theme';
 import { useNewClientForm } from './_context';
 
 export default function ReliabilityScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
-  const [reliability, setReliability] = useState<number | undefined>(formData.reliability);
+  const searchParams = useLocalSearchParams<{
+    clientId?: string;
+    edit?: string;
+  }>();
+  const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
+  const { draft, updateDraft } = useEditClientStore();
+  const {
+ formData, updateFormData, setCurrentStep 
+} = useNewClientForm();
+  const initialValue = isEditMode ? draft.reliability : formData.reliability;
+  const [reliability, setReliability] = useState<number | undefined>(
+    initialValue
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const keyboardHeight = useKeyboardHeight();
 
@@ -30,6 +45,11 @@ export default function ReliabilityScreen() {
   const handleNext = async () => {
     setIsSubmitting(true);
     try {
+      if (isEditMode) {
+        updateDraft({ reliability: reliability || undefined });
+        router.back();
+        return;
+      }
       updateFormData({ reliability: reliability || undefined });
       setCurrentStep(10);
       router.push('/clients/new/summary');
@@ -47,10 +67,16 @@ export default function ReliabilityScreen() {
         <ThemedView style={styles.content}>
           {/* Title */}
           <View style={styles.titleContainer}>
-            <Typography variant="h3" color='text'>
+            <Typography
+              variant="h3"
+              color="text"
+            >
               {t('clients.reliability')}
             </Typography>
-            <Typography variant="body2" color='placeholder'>
+            <Typography
+              variant="body2"
+              color="placeholder"
+            >
               {t('clients.optional')}
             </Typography>
           </View>
@@ -67,9 +93,7 @@ export default function ReliabilityScreen() {
                   name="star-filled"
                   size={48}
                   color={
-                    reliability && star <= reliability
-                      ? 'starFilled'
-                      : 'icon'
+                    reliability && star <= reliability ? 'starFilled' : 'icon'
                   }
                 />
               </Pressable>
@@ -78,7 +102,12 @@ export default function ReliabilityScreen() {
         </ThemedView>
 
         {/* Continue Button */}
-        <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
+        <View
+          style={[
+            styles.buttonContainer,
+            keyboardHeight > 0 && { marginBottom: keyboardHeight },
+          ]}
+        >
           <IconButton
             variant="primary"
             size="md"
@@ -96,9 +125,7 @@ export default function ReliabilityScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 0,
@@ -121,9 +148,7 @@ const styles = StyleSheet.create({
     gap: 16,
     marginTop: 24,
   },
-  starButton: {
-    padding: 8,
-  },
+  starButton: {padding: 8,},
   buttonContainer: {
     paddingHorizontal: 24,
     paddingBottom: 24,

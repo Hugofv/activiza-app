@@ -1,10 +1,13 @@
+import React, { useEffect, useMemo } from 'react';
+
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+
+import { Stack, usePathname, useSegments } from 'expo-router';
+
 import { Colors } from '@/constants/theme';
 import { OnboardingFormProvider } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
-import { Stack, usePathname, useSegments } from 'expo-router';
-import React, { useEffect, useMemo } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 /**
  * Layout for all onboarding screens
@@ -14,13 +17,20 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 export default function OnboardingLayout() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const { isAuthenticated, isChecking, redirectToLogin } = useAuthGuard();
+  const {
+ isAuthenticated, isChecking, redirectToLogin 
+} = useAuthGuard();
   const segments = useSegments();
   const pathname = usePathname();
 
   // Routes that don't require authentication (pre-auth creation + immediate email verification after register)
   const publicRoutes = useMemo(
-    () => ['/onboarding/email', '/onboarding/password', '/onboarding/codeEmail', '/authPassword'],
+    () => [
+      '/onboarding/email',
+      '/onboarding/password',
+      '/onboarding/codeEmail',
+      '/authPassword',
+    ],
     []
   );
 
@@ -31,7 +41,9 @@ export default function OnboardingLayout() {
     const currentRoute = pathname || `/${segments.join('/')}`;
 
     // Check if current route is public (email or password)
-    const isPublicRoute = publicRoutes.some((route: string) => currentRoute.includes(route));
+    const isPublicRoute = publicRoutes.some((route: string) =>
+      currentRoute.includes(route)
+    );
 
     // If route is not public and user is not authenticated, redirect to email
     if (!isPublicRoute && !isAuthenticated) {
@@ -41,26 +53,51 @@ export default function OnboardingLayout() {
       );
       redirectToLogin('onboarding_layout');
     }
-  }, [isAuthenticated, isChecking, pathname, segments, redirectToLogin, publicRoutes]);
+  }, [
+    isAuthenticated,
+    isChecking,
+    pathname,
+    segments,
+    redirectToLogin,
+    publicRoutes,
+  ]);
 
   // Show loading while checking authentication
   if (isChecking) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
-        <ActivityIndicator size="large" color={colors.primary} />
+      <View
+        style={[
+          styles.loadingContainer,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator
+          size="large"
+          color={colors.primary}
+        />
       </View>
     );
   }
 
   // Check if current route requires auth and user is not authenticated
   const currentRoute = pathname || `/${segments.join('/')}`;
-  const isCurrentRoutePublic = publicRoutes.some((route: string) => currentRoute.includes(route));
+  const isCurrentRoutePublic = publicRoutes.some((route: string) =>
+    currentRoute.includes(route)
+  );
 
   if (!isCurrentRoutePublic && !isAuthenticated) {
     // Don't render protected routes if not authenticated
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
-        <ActivityIndicator size="large" color={colors.primary} />
+      <View
+        style={[
+          styles.loadingContainer,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator
+          size="large"
+          color={colors.primary}
+        />
       </View>
     );
   }
@@ -75,7 +112,7 @@ export default function OnboardingLayout() {
         }}
       >
         <Stack.Screen
-          name='document'
+          name="document"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -83,7 +120,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='name'
+          name="name"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -91,7 +128,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='contact'
+          name="contact"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -99,7 +136,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='codeContact'
+          name="codeContact"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -107,7 +144,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='confirmContact'
+          name="confirmContact"
           options={{
             headerShown: false,
             animation: 'fade',
@@ -115,7 +152,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='email'
+          name="email"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -123,7 +160,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='codeEmail'
+          name="codeEmail"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -131,7 +168,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='confirmEmail'
+          name="confirmEmail"
           options={{
             headerShown: false,
             animation: 'fade',
@@ -139,7 +176,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='password'
+          name="password"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -147,7 +184,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='activeCustomers'
+          name="activeCustomers"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -155,7 +192,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='financialOperations'
+          name="financialOperations"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -163,7 +200,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='capital'
+          name="capital"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -171,7 +208,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='businessDuration'
+          name="businessDuration"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -179,7 +216,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='options'
+          name="options"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -187,7 +224,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='address'
+          name="address"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -195,7 +232,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='terms'
+          name="terms"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -203,7 +240,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='customization'
+          name="customization"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -211,7 +248,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='plans'
+          name="plans"
           options={{
             headerShown: false,
             animation: 'slide_from_right',
@@ -219,7 +256,7 @@ export default function OnboardingLayout() {
           }}
         />
         <Stack.Screen
-          name='registerFinished'
+          name="registerFinished"
           options={{
             headerShown: false,
             animation: 'fade',

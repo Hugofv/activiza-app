@@ -9,7 +9,11 @@ export { useMutation } from '@tanstack/react-query';
  * Helper to check if an error is a network/offline error
  */
 export function isOfflineError(error: any): boolean {
-  return error?.isNetworkError === true || error?.code === 'NETWORK_ERROR' || error?.code === 'OFFLINE_QUEUED';
+  return (
+    error?.isNetworkError === true ||
+    error?.code === 'NETWORK_ERROR' ||
+    error?.code === 'OFFLINE_QUEUED'
+  );
 }
 
 /**

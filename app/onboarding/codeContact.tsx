@@ -1,24 +1,35 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
+
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { CodeInput } from '@/components/ui/CodeInput';
 import { IconButton } from '@/components/ui/IconButton';
 import { Progress } from '@/components/ui/Progress';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { resendVerificationCode, verifyPhone } from '@/lib/services/authService';
-import { codeSchema } from '@/lib/validations/onboarding';
-
-import { BackButton } from '@/components/ui/BackButton';
-import { Typography } from '@/components/ui/Typography';
 import { useToast } from '@/lib/hooks/useToast';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
+import {
+  resendVerificationCode,
+  verifyPhone,
+} from '@/lib/services/authService';
+import { codeSchema } from '@/lib/validations/onboarding';
 
 interface CodeFormData {
   code: string;
@@ -31,7 +42,9 @@ const CodeContactScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, updateStep } = useOnboardingForm();
+  const {
+ formData, updateFormData, updateStep 
+} = useOnboardingForm();
   const [resendTimer, setResendTimer] = useState(60);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -43,9 +56,7 @@ const CodeContactScreen = () => {
     formState: { errors, isValid },
   } = useForm<CodeFormData>({
     resolver: yupResolver(codeSchema),
-    defaultValues: {
-      code: '',
-    },
+    defaultValues: {code: '',},
     mode: 'onChange',
   });
 
@@ -62,7 +73,8 @@ const CodeContactScreen = () => {
   const onSubmit = async (data: CodeFormData) => {
     if (!formData.phone?.phoneNumber) {
       showError(
-        t('common.errors.MISSING_REQUIRED_FIELDS') || 'Phone number is required.',
+        t('common.errors.MISSING_REQUIRED_FIELDS') ||
+          'Phone number is required.',
         t('onboarding.contact') || 'Contact'
       );
       return;
@@ -71,7 +83,8 @@ const CodeContactScreen = () => {
     setIsVerifying(true);
     try {
       // Verify phone code with API
-      const phoneNumber = formData.phone.formattedPhoneNumber || formData.phone.phoneNumber;
+      const phoneNumber =
+        formData.phone.formattedPhoneNumber || formData.phone.phoneNumber;
       await verifyPhone(phoneNumber, data.code);
 
       // Code verified successfully
@@ -86,7 +99,10 @@ const CodeContactScreen = () => {
         console.log('✅ Phone verification step marked as completed');
         console.log('📊 Response from updateStep:', response);
       } catch (stepError: any) {
-        console.error('❌ Failed to update phone verification step:', stepError);
+        console.error(
+          '❌ Failed to update phone verification step:',
+          stepError
+        );
         showError(
           t('common.error') || 'Error',
           stepError?.response?.data?.message ||
@@ -116,7 +132,8 @@ const CodeContactScreen = () => {
   const handleResendCode = async () => {
     if (!formData.phone?.phoneNumber) {
       showError(
-        t('common.errors.MISSING_REQUIRED_FIELDS') || 'Phone number is required.',
+        t('common.errors.MISSING_REQUIRED_FIELDS') ||
+          'Phone number is required.',
         t('onboarding.contact') || 'Contact'
       );
       return;
@@ -132,7 +149,8 @@ const CodeContactScreen = () => {
 
       showSuccess(
         t('common.toast.success') || 'Success',
-        t('onboarding.codeDescription') || 'Verification code sent to your phone.'
+        t('onboarding.codeDescription') ||
+          'Verification code sent to your phone.'
       );
     } catch (error: any) {
       console.error('Resend code error:', error);
@@ -149,7 +167,10 @@ const CodeContactScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -166,12 +187,18 @@ const CodeContactScreen = () => {
             <BackButton />
 
             {/* Title */}
-            <Typography variant='h4' style={styles.title}>
+            <Typography
+              variant="h4"
+              style={styles.title}
+            >
               {t('onboarding.codeTitle')}
             </Typography>
 
             {/* Description */}
-            <Typography variant='body1' style={[styles.description, { color: colors.icon }]}>
+            <Typography
+              variant="body1"
+              style={[styles.description, { color: colors.icon }]}
+            >
               {t('onboarding.codeDescription')}
             </Typography>
 
@@ -189,7 +216,10 @@ const CodeContactScreen = () => {
             {/* Resend Code */}
             <View style={styles.resendContainer}>
               {resendTimer > 0 ? (
-                <Typography variant='body2' style={{ color: colors.icon }}>
+                <Typography
+                  variant="body2"
+                  style={{ color: colors.icon }}
+                >
                   {t('onboarding.codeResendTimer', { seconds: resendTimer })}
                 </Typography>
               ) : (
@@ -198,7 +228,10 @@ const CodeContactScreen = () => {
                   activeOpacity={0.7}
                   disabled={isResending}
                 >
-                  <Typography variant='body2' style={{ color: colors.primary }}>
+                  <Typography
+                    variant="body2"
+                    style={{ color: colors.primary }}
+                  >
                     {t('onboarding.codeResend')}
                   </Typography>
                 </TouchableOpacity>
@@ -209,9 +242,9 @@ const CodeContactScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
@@ -228,21 +261,15 @@ const CodeContactScreen = () => {
 export default CodeContactScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  title: {
-    marginTop: 8,
-  },
+  progressContainer: {marginBottom: 8,},
+  title: {marginTop: 8,},
   description: {
     marginTop: -8,
     marginBottom: 8,
@@ -261,4 +288,3 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
 });
-

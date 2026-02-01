@@ -1,13 +1,11 @@
+import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+
 import { router } from 'expo-router';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-} from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AddressFlow } from '@/components/address';
 import { ThemedView } from '@/components/ThemedView';
+import { AddressFlow } from '@/components/address';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -32,9 +30,18 @@ const AddressScreen = () => {
   // Save locally only, no API call until complete
   const handleCountrySelect = async (country: CountryCode) => {
     const COUNTRIES = [
-      { code: 'BR' as CountryCode, name: 'Brasil' },
-      { code: 'UK' as CountryCode, name: 'Reino Unido' },
-      { code: 'US' as CountryCode, name: 'Estados Unidos' },
+      {
+ code: 'BR' as CountryCode,
+name: 'Brasil' 
+},
+      {
+ code: 'UK' as CountryCode,
+name: 'Reino Unido' 
+},
+      {
+ code: 'US' as CountryCode,
+name: 'Estados Unidos' 
+},
     ];
     const countryData = COUNTRIES.find((c) => c.code === country);
 
@@ -100,9 +107,7 @@ const AddressScreen = () => {
   const handleComplete = async (completeAddress: any) => {
     // Final save with complete address
     await updateFormData(
-      {
-        address: completeAddress,
-      },
+      {address: completeAddress,},
       'address'
     );
     // Navigate to next screen
@@ -152,10 +157,6 @@ const AddressScreen = () => {
 export default AddressScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
+  container: {flex: 1,},
+  content: {flex: 1,},
 });

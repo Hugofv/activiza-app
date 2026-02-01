@@ -1,7 +1,10 @@
-import { router } from 'expo-router';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { StyleSheet } from 'react-native';
+
+import { router } from 'expo-router';
+
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/Button';
 import {
@@ -33,9 +36,15 @@ export function CancelButton() {
   };
 
   return (
-    <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+    <Dialog
+      open={cancelDialogOpen}
+      onOpenChange={setCancelDialogOpen}
+    >
       <DialogTrigger asChild>
-        <Button variant="ghost" onPress={() => setCancelDialogOpen(true)}>
+        <Button
+          variant="ghost"
+          onPress={() => setCancelDialogOpen(true)}
+        >
           <Typography
             variant="body1Medium"
             style={[styles.cancelButton, { color: colors.primaryForeground }]}
@@ -53,11 +62,19 @@ export function CancelButton() {
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" size='sm' onPress={() => setCancelDialogOpen(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onPress={() => setCancelDialogOpen(false)}
+            >
               {t('clients.cancelKeepButton')}
             </Button>
           </DialogClose>
-          <Button variant="error" size='sm' onPress={handleCancel}>
+          <Button
+            variant="error"
+            size="sm"
+            onPress={handleCancel}
+          >
             {t('clients.cancelConfirmButton')}
           </Button>
         </DialogFooter>

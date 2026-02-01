@@ -3,8 +3,10 @@
  * A generic wrapper component that uses the bottom sheet context
  * Use this component to easily create bottom sheets anywhere in your app
  */
-import { useBottomSheet } from '@/contexts/bottomSheetContext';
 import React from 'react';
+
+import { useBottomSheet } from '@/contexts/bottomSheetContext';
+
 import { BottomSheet } from './BottomSheet';
 
 interface BottomSheetWrapperProps {
@@ -15,18 +17,18 @@ interface BottomSheetWrapperProps {
 
 /**
  * Generic Bottom Sheet Wrapper Component
- * 
+ *
  * This component automatically uses the bottom sheet context to manage visibility.
  * Wrap your content with this component and use the useBottomSheet hook to control it.
- * 
+ *
  * @example
  * ```tsx
  * import { BottomSheetWrapper } from '@/components/ui/BottomSheetWrapper';
  * import { useBottomSheet } from '@/contexts/bottomSheetContext';
- * 
+ *
  * function MyComponent() {
  *   const { open, close } = useBottomSheet();
- *   
+ *
  *   return (
  *     <>
  *       <Button onPress={open}>Open Bottom Sheet</Button>
@@ -38,10 +40,10 @@ interface BottomSheetWrapperProps {
  * }
  * ```
  */
-export function BottomSheetWrapper({ 
-  children, 
+export function BottomSheetWrapper({
+  children,
   title,
-  onClose 
+  onClose,
 }: BottomSheetWrapperProps) {
   const { isOpen, close } = useBottomSheet();
 

@@ -1,6 +1,8 @@
-import { Image as ExpoImage } from 'expo-image';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+
+import { Image as ExpoImage } from 'expo-image';
+
+import { useTranslation } from 'react-i18next';
 
 import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
@@ -16,7 +18,7 @@ interface HeaderProps {
 export function Header({
   profileImageUri = 'https://i.pravatar.cc/150?img=12',
   onProfilePress,
-  onMonthPress
+  onMonthPress,
 }: HeaderProps) {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
@@ -24,7 +26,10 @@ export function Header({
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity style={styles.profileButton} onPress={onProfilePress}>
+      <TouchableOpacity
+        style={styles.profileButton}
+        onPress={onProfilePress}
+      >
         <ExpoImage
           source={{ uri: profileImageUri }}
           style={styles.profileImage}
@@ -35,10 +40,17 @@ export function Header({
         style={[styles.monthSelector, { backgroundColor: '#F3F7F5' }]}
         onPress={onMonthPress}
       >
-        <Typography variant="body2" style={{ color: colors.text }}>
+        <Typography
+          variant="body2"
+          style={{ color: colors.text }}
+        >
           {t('home.thisMonth')}
         </Typography>
-        <Icon name="chevron-down" size={16} color="text" />
+        <Icon
+          name="chevron-down"
+          size={16}
+          color="text"
+        />
       </TouchableOpacity>
     </View>
   );

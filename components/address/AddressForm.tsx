@@ -1,23 +1,21 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useRef } from 'react';
+
+import { ScrollView, StyleSheet, View } from 'react-native';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { BackButton } from '@/components/ui/BackButton';
 import { Input } from '@/components/ui/Input';
 import { Progress } from '@/components/ui/Progress';
 import { useToast } from '@/lib/hooks/useToast';
 import {
-  getPostalCodeFormat,
   type CountryCode,
+  getPostalCodeFormat,
 } from '@/lib/services/postalCodeService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { addressSchema } from '@/lib/validations/onboarding';
-import { useTranslation } from 'react-i18next';
 
 export interface AddressFormData {
   postalCode: string;
@@ -162,7 +160,9 @@ export const AddressForm: React.FC<AddressFormProps> = ({
         </View>
       )}
 
-      {customHeader ? customHeader : showBackButton && <BackButton onPress={onBack} />}
+      {customHeader
+        ? customHeader
+        : showBackButton && <BackButton onPress={onBack} />}
 
       <ScrollView
         ref={scrollViewRef}
@@ -170,9 +170,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View
-          style={styles.fieldsContainer}
-        >
+        <View style={styles.fieldsContainer}>
           {/* Postal Code */}
           <View
             onLayout={(event) => {
@@ -181,13 +179,13 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             }}
           >
             <Input
-              name='postalCode'
+              name="postalCode"
               control={control}
               error={errors.postalCode?.message}
               label={t('onboarding.postalCode')}
               disabled={isFieldDisabled('postalCode')}
               onFormat={postalCodeFormat.format}
-              className='border-0 rounded-none px-0 py-4 font-medium'
+              className="border-0 rounded-none px-0 py-4 font-medium"
               style={{ fontSize: 20 }}
               placeholder={postalCodeFormat.placeholder}
               keyboardType={countryCode === 'UK' ? 'default' : 'numeric'}
@@ -203,15 +201,15 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             }}
           >
             <Input
-              name='street'
+              name="street"
               control={control}
               error={errors.street?.message}
               label={t('onboarding.street')}
               disabled={isFieldDisabled('street')}
-              className='border-0 rounded-none px-0 py-4 font-medium'
+              className="border-0 rounded-none px-0 py-4 font-medium"
               style={{ fontSize: 20 }}
               placeholder={t('onboarding.streetPlaceholder')}
-              autoCapitalize='words'
+              autoCapitalize="words"
             />
           </View>
 
@@ -223,15 +221,15 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             }}
           >
             <Input
-              name='neighborhood'
+              name="neighborhood"
               control={control}
               error={errors.neighborhood?.message}
               label={t('onboarding.neighborhood')}
               disabled={isFieldDisabled('neighborhood')}
-              className='border-0 rounded-none px-0 py-4 font-medium'
+              className="border-0 rounded-none px-0 py-4 font-medium"
               style={{ fontSize: 20 }}
               placeholder={t('onboarding.neighborhoodPlaceholder')}
-              autoCapitalize='words'
+              autoCapitalize="words"
             />
           </View>
 
@@ -243,15 +241,15 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             }}
           >
             <Input
-              name='city'
+              name="city"
               control={control}
               error={errors.city?.message}
               label={t('onboarding.city')}
               disabled={isFieldDisabled('city')}
-              className='border-0 rounded-none px-0 py-4 font-medium'
+              className="border-0 rounded-none px-0 py-4 font-medium"
               style={{ fontSize: 20 }}
               placeholder={t('onboarding.cityPlaceholder')}
-              autoCapitalize='words'
+              autoCapitalize="words"
             />
           </View>
 
@@ -263,15 +261,15 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             }}
           >
             <Input
-              name='state'
+              name="state"
               control={control}
               error={errors.state?.message}
               label={t('onboarding.state')}
               disabled={isFieldDisabled('state')}
-              className='border-0 rounded-none px-0 py-4 font-medium'
+              className="border-0 rounded-none px-0 py-4 font-medium"
               style={{ fontSize: 20 }}
               placeholder={t('onboarding.statePlaceholder')}
-              autoCapitalize='words'
+              autoCapitalize="words"
             />
           </View>
 
@@ -283,15 +281,15 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             }}
           >
             <Input
-              name='country'
+              name="country"
               control={control}
               error={errors.country?.message}
               label={t('onboarding.country')}
               disabled={isFieldDisabled('country')}
-              className='border-0 rounded-none px-0 py-4 font-medium'
+              className="border-0 rounded-none px-0 py-4 font-medium"
               style={{ fontSize: 20 }}
               placeholder={t('onboarding.countryPlaceholder')}
-              autoCapitalize='words'
+              autoCapitalize="words"
             />
           </View>
 
@@ -303,14 +301,14 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             }}
           >
             <Input
-              name='number'
+              name="number"
               control={control}
               error={errors.number?.message}
               label={t('onboarding.number')}
-              className='border-0 rounded-none px-0 py-4 font-medium'
+              className="border-0 rounded-none px-0 py-4 font-medium"
               style={{ fontSize: 20 }}
               placeholder={t('onboarding.numberPlaceholder')}
-              keyboardType='numeric'
+              keyboardType="numeric"
             />
           </View>
 
@@ -322,14 +320,14 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             }}
           >
             <Input
-              name='complement'
+              name="complement"
               control={control}
               error={errors.complement?.message}
               label={t('onboarding.complement')}
-              className='border-0 rounded-none px-0 py-4 font-medium'
+              className="border-0 rounded-none px-0 py-4 font-medium"
               style={{ fontSize: 20 }}
               placeholder={t('onboarding.complementPlaceholder')}
-              autoCapitalize='words'
+              autoCapitalize="words"
             />
           </View>
         </View>
@@ -348,12 +346,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  scrollView: {
-    flex: 1,
-  },
+  progressContainer: {marginBottom: 8,},
+  scrollView: {flex: 1,},
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 80,

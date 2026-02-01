@@ -1,16 +1,17 @@
-import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
+
+import { router } from 'expo-router';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { IconButton } from '@/components/ui/IconButton';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
 import { BackButton } from '@/components/ui/BackButton';
 import { Icon } from '@/components/ui/Icon';
+import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
-import { useTranslation } from 'react-i18next';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 /**
  * WhatsApp verification confirmation screen for onboarding
@@ -42,19 +43,17 @@ const ConfirmContactScreen = () => {
             <View
               style={[
                 styles.checkmarkContainer,
-                {
-                  backgroundColor: colors.muted,
-                },
+                {backgroundColor: colors.muted,},
               ]}
             >
               <Icon
-                name='checkmark'
+                name="checkmark"
                 size={56}
                 color="primary"
               />
             </View>
             <Typography
-              variant='large'
+              variant="large"
               style={[styles.verifiedText, { color: colors.text }]}
             >
               {t('onboarding.whatsappVerified')}
@@ -64,10 +63,10 @@ const ConfirmContactScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='default'
-              width='md'
-              icon='checkmark'
+              variant="primary"
+              size="default"
+              width="md"
+              icon="checkmark"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
@@ -82,9 +81,7 @@ const ConfirmContactScreen = () => {
 export default ConfirmContactScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,

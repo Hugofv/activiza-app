@@ -1,7 +1,12 @@
-import { router } from 'expo-router';
 import { useEffect } from 'react';
+
+import {
+ ActivityIndicator, ScrollView, StyleSheet, View 
+} from 'react-native';
+
+import { router } from 'expo-router';
+
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { FinancialSummary } from '@/components/home/FinancialSummary';
@@ -17,11 +22,15 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const { isAuthenticated, isChecking, redirectToLogin } = useAuthGuard();
+  const {
+ isAuthenticated, isChecking, redirectToLogin 
+} = useAuthGuard();
 
   useEffect(() => {
     if (!isChecking && !isAuthenticated) {
-      console.log('[HomeScreen] User not authenticated, calling redirectToLogin("home")');
+      console.log(
+        '[HomeScreen] User not authenticated, calling redirectToLogin("home")'
+      );
       redirectToLogin('home');
     }
   }, [isAuthenticated, isChecking, redirectToLogin]);
@@ -33,7 +42,10 @@ export default function HomeScreen() {
         edges={['top']}
       >
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator
+            size="large"
+            color={colors.primary}
+          />
         </View>
       </SafeAreaView>
     );
@@ -50,8 +62,8 @@ export default function HomeScreen() {
   const roomRentalsCount = 2;
   const vehicleRentalsCount = 1;
   const overduePaymentsCount = 6;
-  const loansTotal = 21200.10;
-  const rentalsTotal = 5108.00;
+  const loansTotal = 21200.1;
+  const rentalsTotal = 5108.0;
   const operationsCount = 16;
 
   const formatCurrency = (value: number) => {
@@ -62,9 +74,21 @@ export default function HomeScreen() {
   };
 
   const operations = [
-    { icon: 'person' as const, count: loansCount, label: t('home.loans') },
-    { icon: 'home' as const, count: roomRentalsCount, label: t('home.roomRentals') },
-    { icon: 'car' as const, count: vehicleRentalsCount, label: t('home.vehicleRentals') },
+    {
+ icon: 'person' as const,
+count: loansCount,
+label: t('home.loans') 
+},
+    {
+      icon: 'home' as const,
+      count: roomRentalsCount,
+      label: t('home.roomRentals'),
+    },
+    {
+      icon: 'car' as const,
+      count: vehicleRentalsCount,
+      label: t('home.vehicleRentals'),
+    },
   ];
 
   return (
@@ -91,12 +115,20 @@ export default function HomeScreen() {
 
         <OverdueAlert
           count={overduePaymentsCount}
-          onPress={() => {/* Navigate to overdue screen */}}
+          onPress={() => {
+            /* Navigate to overdue screen */
+          }}
         />
 
         {/* Reports Section */}
         <View style={styles.reportsSection}>
-          <Typography variant="h5" style={{ color: colors.icon, marginBottom: 16 }}>
+          <Typography
+            variant="h5"
+            style={{
+ color: colors.icon,
+marginBottom: 16 
+}}
+          >
             {t('home.reports')}
           </Typography>
 
@@ -130,20 +162,14 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
+  container: {flex: 1,},
+  scrollView: {flex: 1,},
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 100,
   },
-  reportsSection: {
-    marginBottom: 24,
-  },
+  reportsSection: {marginBottom: 24,},
   primaryReportsRow: {
     flexDirection: 'row',
     gap: 12,

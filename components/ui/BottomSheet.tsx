@@ -1,22 +1,25 @@
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import * as React from 'react';
+
 import {
-   Dimensions,
-   Modal,
-   StyleSheet,
-   TouchableWithoutFeedback,
-   View,
+  Dimensions,
+  Modal,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
+
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-   Extrapolate,
-   interpolate,
-   runOnJS,
-   useAnimatedStyle,
-   useSharedValue,
-   withSpring,
+  Extrapolate,
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from 'react-native-reanimated';
+
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 interface BottomSheetProps {
   visible: boolean;
@@ -60,7 +63,7 @@ export function BottomSheet({
     })
     .onUpdate((event) => {
       const newTranslateY = context.value.y + event.translationY;
-      
+
       // Se tentar arrastar para cima (valores negativos), aplica resistência
       if (newTranslateY < 0) {
         // Efeito rubber band: quanto mais arrasta, menor o movimento
@@ -93,9 +96,7 @@ export function BottomSheet({
     });
 
   const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: translateY.value }],
-    };
+    return {transform: [{ translateY: translateY.value }],};
   });
 
   const containerAnimatedStyle = useAnimatedStyle(() => {
@@ -113,9 +114,7 @@ export function BottomSheet({
       Extrapolate.CLAMP
     );
 
-    return {
-      opacity,
-    };
+    return {opacity,};
   });
 
   return (
@@ -127,24 +126,25 @@ export function BottomSheet({
       statusBarTranslucent
     >
       <Animated.View style={[styles.overlay, overlayAnimatedStyle]}>
-        <TouchableWithoutFeedback onPress={onClose} style={{ flex: 1 }}>
+        <TouchableWithoutFeedback
+          onPress={onClose}
+          style={{ flex: 1 }}
+        >
           <View style={{ flex: 1 }} />
         </TouchableWithoutFeedback>
         <GestureDetector gesture={gesture}>
           <Animated.View
-            style={[
-              styles.container,
-              containerAnimatedStyle,
-              animatedStyle,
-            ]}
+            style={[styles.container, containerAnimatedStyle, animatedStyle]}
           >
             {/* Handle */}
             <View style={[styles.handle, { backgroundColor: colors.icon }]} />
-            
+
             {/* Title */}
             {title && (
               <View style={styles.titleContainer}>
-                <View style={[styles.titleLine, { backgroundColor: colors.icon }]} />
+                <View
+                  style={[styles.titleLine, { backgroundColor: colors.icon }]}
+                />
               </View>
             )}
 
@@ -202,7 +202,5 @@ const styles = StyleSheet.create({
     height: 1,
     opacity: 0.1,
   },
-  content: {
-    paddingHorizontal: 24,
-  },
+  content: {paddingHorizontal: 24,},
 });

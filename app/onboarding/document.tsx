@@ -1,17 +1,36 @@
+import React, {
+ useCallback, useEffect, useMemo, useState 
+} from 'react';
+
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+
+import { navigate } from 'expo-router/build/global-state/routing';
+
 import { yupResolver } from '@hookform/resolvers/yup';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Autocomplete, type AutocompleteOption } from '@/components/ui/Autocomplete';
+import {
+  Autocomplete,
+  type AutocompleteOption,
+} from '@/components/ui/Autocomplete';
 import { BackButton } from '@/components/ui/BackButton';
+import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { Progress } from '@/components/ui/Progress';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useToast } from '@/lib/hooks/useToast';
 import {
   type DocumentType,
   detectDocumentType,
@@ -24,12 +43,6 @@ import {
 import type { CountryCode } from '@/lib/services/postalCodeService';
 import { detectCountryFromLocale } from '@/lib/utils/geolocation';
 import { createDocumentSchema } from '@/lib/validations/onboarding';
-
-import { IconButton } from '@/components/ui/IconButton';
-import { Typography } from '@/components/ui/Typography';
-import { useToast } from '@/lib/hooks/useToast';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
 
 interface DocumentFormData {
   document?: string;
@@ -143,7 +156,10 @@ const DocumentScreen = () => {
         // Only detect when we have enough characters (at least 8 for most document types)
         if (normalized.length >= 8 || cleaned.length >= 8) {
           const detectedType = detectDocumentType(value, countryCode);
-          if (detectedType && documentTypes.some(dt => dt.value === detectedType)) {
+          if (
+            detectedType &&
+            documentTypes.some((dt) => dt.value === detectedType)
+          ) {
             setDocumentType(detectedType);
             setValue('documentType', detectedType, { shouldValidate: false });
           }
@@ -151,7 +167,8 @@ const DocumentScreen = () => {
       }
 
       // Format using current type or detected type
-      const typeToUse = documentType || (value ? detectDocumentType(value, countryCode) : null);
+      const typeToUse =
+        documentType || (value ? detectDocumentType(value, countryCode) : null);
       return formatDocumentValue(value, countryCode, typeToUse || undefined);
     },
     [documentType, countryCode, documentTypes, setValue]
@@ -165,7 +182,11 @@ const DocumentScreen = () => {
 
       // Reformat document value when type changes
       if (watchedDocument) {
-        const normalized = normalizeDocument(watchedDocument, countryCode, documentType || undefined);
+        const normalized = normalizeDocument(
+          watchedDocument,
+          countryCode,
+          documentType || undefined
+        );
         const formatted = formatDocumentValue(normalized, countryCode, type);
         setValue('document', formatted, { shouldValidate: false });
       }
@@ -197,9 +218,9 @@ const DocumentScreen = () => {
         showError(
           t('common.error') || 'Error',
           error?.response?.data?.message ||
-          error?.message ||
-          t('onboarding.saveError') ||
-          'Failed to save. Please try again.'
+            error?.message ||
+            t('onboarding.saveError') ||
+            'Failed to save. Please try again.'
         );
       } finally {
         setIsSubmitting(false);
@@ -233,7 +254,7 @@ const DocumentScreen = () => {
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps='handled'
+            keyboardShouldPersistTaps="handled"
           >
             <ThemedView style={styles.content}>
               {/* Progress Bar */}
@@ -244,10 +265,11 @@ const DocumentScreen = () => {
               {/* Back Button */}
               <BackButton />
 
-              <Typography variant='h4'>{t('onboarding.document')}</Typography>
+              <Typography variant="h4">{t('onboarding.document')}</Typography>
 
-              <Typography variant='body1'>
-                {t('onboarding.documentDescriptionOptional') || t('onboarding.documentDescription')}
+              <Typography variant="body1">
+                {t('onboarding.documentDescriptionOptional') ||
+                  t('onboarding.documentDescription')}
               </Typography>
 
               <View style={styles.documentContainer}>
@@ -257,7 +279,9 @@ const DocumentScreen = () => {
                     options={documentTypeOptions}
                     value={documentType || null}
                     onValueChange={handleDocumentTypeChange}
-                    placeholder={t('onboarding.documentType') || 'Tipo de documento'}
+                    placeholder={
+                      t('onboarding.documentType') || 'Tipo de documento'
+                    }
                     searchable={true}
                     label={t('onboarding.documentType')}
                   />
@@ -265,21 +289,31 @@ const DocumentScreen = () => {
 
                 {/* Input Field */}
                 <Input
-                  name='document'
+                  name="document"
                   control={control}
                   error={errors.document?.message}
                   onFormat={handleDocumentFormat}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
+                  className="border-0 rounded-none px-0 py-4 font-medium"
                   style={[
                     {
                       fontSize: 22,
-                      borderBottomColor: errors.document ? '#ef4444' : colors.icon,
+                      borderBottomColor: errors.document
+                        ? '#ef4444'
+                        : colors.icon,
                     },
                   ]}
                   placeholder={formatConfig.placeholder}
                   placeholderTextColor={colors.icon}
-                  keyboardType={documentType === 'ni' || documentType === 'crn' ? 'default' : 'numeric'}
-                  autoCapitalize={documentType === 'ni' || documentType === 'crn' ? 'characters' : 'none'}
+                  keyboardType={
+                    documentType === 'ni' || documentType === 'crn'
+                      ? 'default'
+                      : 'numeric'
+                  }
+                  autoCapitalize={
+                    documentType === 'ni' || documentType === 'crn'
+                      ? 'characters'
+                      : 'none'
+                  }
                   maxLength={formatConfig.maxLength}
                   autoFocus={false}
                 />
@@ -290,9 +324,9 @@ const DocumentScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
@@ -309,15 +343,9 @@ const DocumentScreen = () => {
 export default DocumentScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
+  container: {flex: 1,},
+  scrollView: {flex: 1,},
+  scrollContent: {flexGrow: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
@@ -325,9 +353,7 @@ const styles = StyleSheet.create({
     gap: 20,
     paddingBottom: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
+  progressContainer: {marginBottom: 8,},
   typeSelector: {
     marginTop: 8,
     gap: 12,

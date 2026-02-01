@@ -1,9 +1,12 @@
 /**
  * Hook to check authentication status and guard routes
  */
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
 import { useMemo } from 'react';
+
+import { router } from 'expo-router';
+
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
 import {
   createStepToRouteMap,
   getNextStep,
@@ -50,22 +53,23 @@ export function useAuthGuard() {
   });
 
   // Check if we have a valid token (separate from user check)
-  const { data: hasValidToken = false, isLoading: isTokenLoading } = useQuery<boolean>({
-    queryKey: ['auth', 'token-valid'],
-    queryFn: async () => {
-      try {
-        const token = await getAccessToken();
-        if (!token) return false;
-        const validToken = await ensureValidToken();
-        return !!validToken;
-      } catch {
-        return false;
-      }
-    },
-    staleTime: 0, // Always check token validity fresh
-    gcTime: 0,
-    refetchOnMount: true,
-  });
+  const { data: hasValidToken = false, isLoading: isTokenLoading } =
+    useQuery<boolean>({
+      queryKey: ['auth', 'token-valid'],
+      queryFn: async () => {
+        try {
+          const token = await getAccessToken();
+          if (!token) return false;
+          const validToken = await ensureValidToken();
+          return !!validToken;
+        } catch {
+          return false;
+        }
+      },
+      staleTime: 0, // Always check token validity fresh
+      gcTime: 0,
+      refetchOnMount: true,
+    });
 
   const isAuthenticated = useMemo(() => {
     return !!(user && hasValidToken);
@@ -74,7 +78,9 @@ export function useAuthGuard() {
   const isChecking = isUserLoading || isTokenLoading;
 
   const redirectToLogin = (source?: string) => {
-    const context = source ? `[redirectToLogin:${source}]` : '[redirectToLogin]';
+    const context = source
+      ? `[redirectToLogin:${source}]`
+      : '[redirectToLogin]';
     console.log(
       `${context} Redirecting to /auth/email (isAuthenticated=${isAuthenticated})`
     );
@@ -87,7 +93,9 @@ export function useAuthGuard() {
    */
   const resolvePostAuthRoute = async (): Promise<string> => {
     try {
-      console.log('[AuthGuard] Resolving post-auth route based on onboarding status...');
+      console.log(
+        '[AuthGuard] Resolving post-auth route based on onboarding status...'
+      );
       const data = await getOnboardingData();
       const { clientStatus, onboardingStep } = data ?? {};
 
@@ -130,10 +138,13 @@ export function useAuthGuard() {
 
       const route = stepToRouteMap[targetStep] || '/onboarding/document';
 
-      console.log('[AuthGuard] Redirecting authenticated user to onboarding route:', {
-        route,
-        targetStep,
-      });
+      console.log(
+        '[AuthGuard] Redirecting authenticated user to onboarding route:',
+        {
+          route,
+          targetStep,
+        }
+      );
 
       return route as string;
     } catch (error) {

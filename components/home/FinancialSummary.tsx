@@ -1,10 +1,14 @@
+import {
+  Dimensions, ScrollView, StyleSheet, View
+} from 'react-native';
+
 import { useTranslation } from 'react-i18next';
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 
 import { IconName } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+
 import CardOperation from './CardOperation';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -41,13 +45,28 @@ export function FinancialSummary({
     <View style={styles.summarySection}>
       {/* Received This Month Card */}
       <View style={styles.receivedCard}>
-        <Typography variant="caption" style={{ color: colors.icon, marginBottom: 4 }}>
+        <Typography
+          variant="caption"
+          style={{
+            color: colors.icon,
+            marginBottom: 4
+          }}
+        >
           {t('home.receivedThisMonth')}
         </Typography>
-        <Typography variant="h3" style={{ color: '#064e3b', marginBottom: 4 }}>
+        <Typography
+          variant="h3"
+          style={{
+            color: '#064e3b',
+            marginBottom: 4
+          }}
+        >
           {formatCurrency(receivedAmount)}
         </Typography>
-        <Typography variant="h2Medium" style={{ color: colors.icon }}>
+        <Typography
+          variant="h2Medium"
+          style={{ color: colors.icon }}
+        >
           {t('home.of')} {formatCurrency(totalExpected)}
         </Typography>
       </View>
@@ -62,7 +81,10 @@ export function FinancialSummary({
         scrollEventThrottle={16}
       >
         {operations.map((operation, index) => (
-          <View key={index} style={styles.itemWrapper}>
+          <View
+            key={index}
+            style={styles.itemWrapper}
+          >
             <CardOperation
               icon={operation.icon}
               count={operation.count}
@@ -83,15 +105,12 @@ const styles = StyleSheet.create({
     padding: 5,
     marginBottom: 10,
   },
-  receivedCard: {
-    marginBottom: 15,
-  },
+  receivedCard: { marginBottom: 15, },
   carouselContainer: {
     marginBottom: 5,
     marginLeft: -5,
   },
-  carouselContent: {
-    paddingRight: 20, // Padding no final do scroll
+  carouselContent: {paddingRight: 20, // Padding no final do scroll
   },
   itemWrapper: {
     width: screenWidth * 0.3,

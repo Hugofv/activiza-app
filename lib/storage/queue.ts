@@ -1,7 +1,11 @@
 /**
  * Offline queue management for failed/offline requests
  */
-import { getStorageItem, removeStorageItem, setStorageItem } from './asyncStorage';
+import {
+  getStorageItem,
+  removeStorageItem,
+  setStorageItem,
+} from './asyncStorage';
 
 export interface QueuedRequest {
   id: string;
@@ -20,26 +24,29 @@ const MAX_QUEUE_SIZE = 100;
 /**
  * Add a request to the offline queue
  */
-export async function enqueueRequest(request: Omit<QueuedRequest, 'id' | 'timestamp' | 'retryCount'>): Promise<string> {
+export async function enqueueRequest(
+  request: Omit<QueuedRequest, 'id' | 'timestamp' | 'retryCount'>
+): Promise<string> {
   try {
-    const queue = await getStorageItem<QueuedRequest[]>(QUEUE_STORAGE_KEY) || [];
-    
+    const queue =
+      (await getStorageItem<QueuedRequest[]>(QUEUE_STORAGE_KEY)) || [];
+
     // Prevent queue from growing too large
     if (queue.length >= MAX_QUEUE_SIZE) {
       console.warn('Offline queue is full, removing oldest items');
       queue.splice(0, queue.length - MAX_QUEUE_SIZE + 1);
     }
-    
+
     const queuedRequest: QueuedRequest = {
       ...request,
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: Date.now(),
       retryCount: 0,
     };
-    
+
     queue.push(queuedRequest);
     await setStorageItem(QUEUE_STORAGE_KEY, queue);
-    
+
     return queuedRequest.id;
   } catch (error) {
     console.error('Error enqueueing request:', error);
@@ -52,7 +59,7 @@ export async function enqueueRequest(request: Omit<QueuedRequest, 'id' | 'timest
  */
 export async function getQueuedRequests(): Promise<QueuedRequest[]> {
   try {
-    return await getStorageItem<QueuedRequest[]>(QUEUE_STORAGE_KEY) || [];
+    return (await getStorageItem<QueuedRequest[]>(QUEUE_STORAGE_KEY)) || [];
   } catch (error) {
     console.error('Error getting queued requests:', error);
     return [];
@@ -64,7 +71,8 @@ export async function getQueuedRequests(): Promise<QueuedRequest[]> {
  */
 export async function dequeueRequest(requestId: string): Promise<boolean> {
   try {
-    const queue = await getStorageItem<QueuedRequest[]>(QUEUE_STORAGE_KEY) || [];
+    const queue =
+      (await getStorageItem<QueuedRequest[]>(QUEUE_STORAGE_KEY)) || [];
     const filteredQueue = queue.filter((req) => req.id !== requestId);
     await setStorageItem(QUEUE_STORAGE_KEY, filteredQueue);
     return true;
@@ -79,23 +87,26 @@ export async function dequeueRequest(requestId: string): Promise<boolean> {
  */
 export async function incrementRetryCount(requestId: string): Promise<boolean> {
   try {
-    const queue = await getStorageItem<QueuedRequest[]>(QUEUE_STORAGE_KEY) || [];
+    const queue =
+      (await getStorageItem<QueuedRequest[]>(QUEUE_STORAGE_KEY)) || [];
     const request = queue.find((req) => req.id === requestId);
-    
+
     if (!request) {
       return false;
     }
-    
+
     request.retryCount += 1;
-    
+
     // Remove if max retries exceeded
     if (request.retryCount >= MAX_RETRIES) {
       const filteredQueue = queue.filter((req) => req.id !== requestId);
       await setStorageItem(QUEUE_STORAGE_KEY, filteredQueue);
-      console.warn(`Request ${requestId} exceeded max retries, removing from queue`);
+      console.warn(
+        `Request ${requestId} exceeded max retries, removing from queue`
+      );
       return false;
     }
-    
+
     await setStorageItem(QUEUE_STORAGE_KEY, queue);
     return true;
   } catch (error) {
@@ -122,7 +133,8 @@ export async function clearQueue(): Promise<boolean> {
  */
 export async function getQueueSize(): Promise<number> {
   try {
-    const queue = await getStorageItem<QueuedRequest[]>(QUEUE_STORAGE_KEY) || [];
+    const queue =
+      (await getStorageItem<QueuedRequest[]>(QUEUE_STORAGE_KEY)) || [];
     return queue.length;
   } catch (error) {
     console.error('Error getting queue size:', error);

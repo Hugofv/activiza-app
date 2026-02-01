@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
+
 import {
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+ ScrollView, StyleSheet, TouchableOpacity, View 
 } from 'react-native';
+
+import { useTranslation } from 'react-i18next';
 
 import { BackButton } from '@/components/ui/BackButton';
 import { Icon } from '@/components/ui/Icon';
@@ -13,7 +13,6 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { CountryCode } from '@/lib/services/postalCodeService';
-import { useTranslation } from 'react-i18next';
 
 const COUNTRIES: {
   code: CountryCode;
@@ -21,9 +20,24 @@ const COUNTRIES: {
   nameEn: string;
   flag: string;
 }[] = [
-  { code: 'BR', name: 'Brasil', nameEn: 'Brazil', flag: '🇧🇷' },
-  { code: 'UK', name: 'Reino Unido', nameEn: 'United Kingdom', flag: '🇬🇧' },
-  { code: 'US', name: 'Estados Unidos', nameEn: 'United States', flag: '🇺🇸' },
+  {
+ code: 'BR',
+name: 'Brasil',
+nameEn: 'Brazil',
+flag: '🇧🇷' 
+},
+  {
+ code: 'UK',
+name: 'Reino Unido',
+nameEn: 'United Kingdom',
+flag: '🇬🇧' 
+},
+  {
+ code: 'US',
+name: 'Estados Unidos',
+nameEn: 'United States',
+flag: '🇺🇸' 
+},
 ];
 
 export interface CountrySelectorProps {
@@ -74,9 +88,14 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
         </View>
       )}
 
-      {customHeader ? customHeader : showBackButton && <BackButton onPress={onBack} />}
+      {customHeader
+        ? customHeader
+        : showBackButton && <BackButton onPress={onBack} />}
 
-      <Typography variant='h4' style={styles.title}>
+      <Typography
+        variant="h4"
+        style={styles.title}
+      >
         {title || t('onboarding.selectCountry')}
       </Typography>
 
@@ -99,20 +118,16 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
                         ? '#1a2a24'
                         : '#effad1'
                       : 'transparent',
-                    borderColor: isSelected
-                      ? colors.primary
-                      : colors.icon,
+                    borderColor: isSelected ? colors.primary : colors.icon,
                   },
                 ]}
                 onPress={() => handleSelect(country.code)}
                 activeOpacity={0.7}
               >
                 <View style={styles.countryContent}>
-                  <Typography style={styles.flag}>
-                    {country.flag}
-                  </Typography>
+                  <Typography style={styles.flag}>{country.flag}</Typography>
                   <Typography
-                    variant='body1'
+                    variant="body1"
                     style={[
                       styles.countryName,
                       {
@@ -126,7 +141,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
                 </View>
                 {isSelected && (
                   <Icon
-                    name='checkmark'
+                    name="checkmark"
                     size={24}
                     color="primary"
                   />
@@ -147,18 +162,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  title: {
-    marginTop: 8,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
+  progressContainer: {marginBottom: 8,},
+  title: {marginTop: 8,},
+  scrollView: {flex: 1,},
+  scrollContent: {flexGrow: 1,},
   countryList: {
     marginTop: 8,
     gap: 12,
@@ -182,7 +189,5 @@ const styles = StyleSheet.create({
     fontSize: 28,
     lineHeight: 0,
   },
-  countryName: {
-    fontSize: 18,
-  },
+  countryName: {fontSize: 18,},
 });

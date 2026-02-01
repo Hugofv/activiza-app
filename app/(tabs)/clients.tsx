@@ -1,11 +1,18 @@
 import { useState } from 'react';
+
 import {
   ActivityIndicator,
   FlatList,
   Pressable,
   StyleSheet,
-  View
+  View,
 } from 'react-native';
+
+import { router } from 'expo-router';
+
+import { useQuery } from '@tanstack/react-query';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ClientItem } from '@/components/clients';
@@ -15,10 +22,7 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
-import { getClients, type Client } from '@/lib/services/clientService';
-import { useQuery } from '@tanstack/react-query';
-import { router } from 'expo-router';
-import { useTranslation } from 'react-i18next';
+import { type Client, getClients } from '@/lib/services/clientService';
 
 // Filter options will be translated in the component
 
@@ -27,12 +31,23 @@ export default function ClientsScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { isAuthenticated, isChecking } = useAuthGuard();
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [selectedFilter, setSelectedFilter] = useState<
+    'all' | 'active' | 'inactive'
+  >('all');
 
   const FILTER_OPTIONS = [
-    { value: 'all' as const, label: t('tabs.filterAll') || 'Todos' },
-    { value: 'active' as const, label: t('tabs.filterActive') || 'Ativos' },
-    { value: 'inactive' as const, label: t('tabs.filterInactive') || 'Inativos' },
+    {
+ value: 'all' as const,
+label: t('tabs.filterAll') || 'Todos' 
+},
+    {
+ value: 'active' as const,
+label: t('tabs.filterActive') || 'Ativos' 
+},
+    {
+      value: 'inactive' as const,
+      label: t('tabs.filterInactive') || 'Inativos',
+    },
   ];
 
   // Fetch clients
@@ -42,8 +57,20 @@ export default function ClientsScreen() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['clients', selectedFilter],
-    queryFn: () => getClients({ status: selectedFilter === 'all' ? undefined : selectedFilter }),
+    queryKey: [
+      'clients',
+      {
+        status: selectedFilter === 'all' ? undefined : selectedFilter,
+        sortBy: 'name',
+        sortOrder: 'asc',
+      },
+    ],
+    queryFn: () =>
+      getClients({
+        status: selectedFilter === 'all' ? undefined : selectedFilter,
+        sortBy: 'name',
+        sortOrder: 'asc',
+      }),
     enabled: isAuthenticated,
   });
 
@@ -55,7 +82,10 @@ export default function ClientsScreen() {
         edges={['top']}
       >
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="primary" />
+          <ActivityIndicator
+            size="large"
+            color="primary"
+          />
         </View>
       </SafeAreaView>
     );
@@ -75,17 +105,19 @@ export default function ClientsScreen() {
 
   const clients = clientsData?.results || [];
 
-  console.log(clients)
+  console.log(clients);
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={['top']}
     >
-
       <View style={[styles.content, { backgroundColor: colors.background }]}>
         {/* Sub-header with title, filter and new client button */}
         <View style={styles.subHeader}>
-          <Typography variant="h4" style={[styles.title]}>
+          <Typography
+            variant="h4"
+            style={[styles.title]}
+          >
             {t('tabs.customers') || 'Clientes'}
           </Typography>
 
@@ -100,32 +132,57 @@ export default function ClientsScreen() {
         </View>
 
         <View>
-          <Pressable style={[styles.newClientButton, { borderBottomColor: colors.border, backgroundColor: colors.background }]} onPress={handleNewClient}>
-            <IconButton variant='secondary'
-              size='sl'
-              shape='rounded'
-              icon='user-plus'
+          <Pressable
+            style={[
+              styles.newClientButton,
+              {
+                borderBottomColor: colors.border,
+                backgroundColor: colors.background,
+              },
+            ]}
+            onPress={handleNewClient}
+          >
+            <IconButton
+              variant="secondary"
+              size="sl"
+              shape="rounded"
+              icon="user-plus"
               iconColor="primaryForeground"
-              iconSize={28} />
+              iconSize={28}
+            />
 
-            <Typography variant={'body2Medium'} color='primaryForeground'>{t('clients.newClient')}</Typography>
+            <Typography
+              variant={'body2Medium'}
+              color="primaryForeground"
+            >
+              {t('clients.newClient')}
+            </Typography>
           </Pressable>
         </View>
 
         {/* Clients List */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary} />
+            <ActivityIndicator
+              size="large"
+              color={colors.primary}
+            />
           </View>
         ) : error ? (
           <View style={styles.errorContainer}>
-            <Typography variant="body1" style={{ color: colors.text }}>
+            <Typography
+              variant="body1"
+              style={{ color: colors.text }}
+            >
               {t('common.error') || 'Erro ao carregar clientes'}
             </Typography>
           </View>
         ) : clients.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Typography variant="body1" style={{ color: colors.icon }}>
+            <Typography
+              variant="body1"
+              style={{ color: colors.icon }}
+            >
               {t('tabs.noClients') || 'Nenhum cliente encontrado'}
             </Typography>
           </View>
@@ -134,7 +191,10 @@ export default function ClientsScreen() {
             data={clients}
             keyExtractor={(item) => String(item.id)}
             renderItem={({ item }) => (
-              <ClientItem client={item} onPress={handleClientPress} />
+              <ClientItem
+                client={item}
+                onPress={handleClientPress}
+              />
             )}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
@@ -148,9 +208,7 @@ export default function ClientsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   header: {
     paddingHorizontal: 24,
     paddingTop: 16,
@@ -188,12 +246,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  select: {
-    minWidth: 115,
-  },
-  listContent: {
-    paddingBottom: 16,
-  },
+  select: {minWidth: 115,},
+  listContent: {paddingBottom: 16,},
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

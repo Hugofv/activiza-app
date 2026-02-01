@@ -1,4 +1,6 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, {
+ ReactNode, createContext, useContext, useState 
+} from 'react';
 
 export interface NewClientFormData {
   name?: string;
@@ -41,12 +43,16 @@ interface NewClientFormContextType {
   totalSteps: number;
 }
 
-const NewClientFormContext = createContext<NewClientFormContextType | undefined>(undefined);
+const NewClientFormContext = createContext<
+  NewClientFormContextType | undefined
+>(undefined);
 
 export const useNewClientForm = () => {
   const context = useContext(NewClientFormContext);
   if (!context) {
-    throw new Error('useNewClientForm must be used within NewClientFormProvider');
+    throw new Error(
+      'useNewClientForm must be used within NewClientFormProvider'
+    );
   }
   return context;
 };
@@ -55,13 +61,16 @@ interface NewClientFormProviderProps {
   children: ReactNode;
 }
 
-export const NewClientFormProvider: React.FC<NewClientFormProviderProps> = ({ children }) => {
+export const NewClientFormProvider: React.FC<NewClientFormProviderProps> = ({children,}) => {
   const [formData, setFormData] = useState<NewClientFormData>({});
   const [currentStep, setCurrentStep] = useState(0);
   const totalSteps = 10; // Nome, Avatar, WhatsApp, E-mail, Documento, Documentos, Endereço, Observação, Avalista, Confiabilidade, Resumo
 
   const updateFormData = (data: Partial<NewClientFormData>) => {
-    setFormData((prev) => ({ ...prev, ...data }));
+    setFormData((prev) => ({
+ ...prev,
+...data 
+}));
   };
 
   const resetFormData = () => {

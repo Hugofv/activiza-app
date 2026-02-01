@@ -1,8 +1,15 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
+
+import {
+ KeyboardAvoidingView, Platform, StyleSheet, View 
+} from 'react-native';
+
+import { useLocalSearchParams } from 'expo-router';
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -17,8 +24,6 @@ import { useToast } from '@/lib/hooks/useToast';
 import { resetPassword } from '@/lib/services/authService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { passwordSchema } from '@/lib/validations/onboarding';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
 
 interface ResetPasswordFormData {
   password: string;
@@ -96,7 +101,8 @@ const ResetPasswordScreen = () => {
     if (!token) {
       showError(
         t('common.error') || 'Error',
-        t('auth.invalidToken') || 'Invalid or missing reset token. Please use the link from your email.'
+        t('auth.invalidToken') ||
+          'Invalid or missing reset token. Please use the link from your email.'
       );
       return;
     }
@@ -107,7 +113,7 @@ const ResetPasswordScreen = () => {
       showSuccess(
         t('auth.passwordResetSuccess') || 'Success',
         t('auth.passwordResetSuccessMessage') ||
-        'Your password has been reset successfully. You can now login with your new password.'
+          'Your password has been reset successfully. You can now login with your new password.'
       );
       // Navigate to login
       navigate('/auth/email');
@@ -115,7 +121,8 @@ const ResetPasswordScreen = () => {
       console.error('Reset password error:', error);
       const apiMessage = getTranslatedError(
         (error?.response?.data as any) || error,
-        t('auth.passwordResetError') || 'Failed to reset password. Please try again.'
+        t('auth.passwordResetError') ||
+          'Failed to reset password. Please try again.'
       );
       showError(t('common.error') || 'Error', apiMessage);
     } finally {
@@ -139,13 +146,13 @@ const ResetPasswordScreen = () => {
             <BackButton />
 
             {/* Title */}
-            <Typography variant='h4'>
+            <Typography variant="h4">
               {t('auth.resetPassword') || 'Reset Password'}
             </Typography>
 
             {/* Description */}
             <Typography
-              variant='body2'
+              variant="body2"
               style={[styles.description, { color: colors.icon }]}
             >
               {t('auth.resetPasswordDescription') ||
@@ -155,7 +162,7 @@ const ResetPasswordScreen = () => {
             {/* Token validation message */}
             {!token && (
               <Typography
-                variant='body2'
+                variant="body2"
                 style={[styles.errorText, { color: colors.error }]}
               >
                 {t('auth.invalidToken') ||
@@ -166,25 +173,28 @@ const ResetPasswordScreen = () => {
             {/* Password Input Field */}
             <View style={styles.inputContainer}>
               <Input
-                name='password'
+                name="password"
                 control={control}
                 error={errors.password?.message}
                 label={t('common.password')}
-                className='border-0 rounded-none px-0 py-4 font-medium'
-                style={{ fontSize: 20, paddingRight: 50 }}
+                className="border-0 rounded-none px-0 py-4 font-medium"
+                style={{
+ fontSize: 20,
+paddingRight: 50 
+}}
                 placeholder={t('onboarding.passwordPlaceholder')}
                 secureTextEntry={!showPassword}
-                autoCapitalize='none'
-                autoComplete='password-new'
+                autoCapitalize="none"
+                autoComplete="password-new"
                 autoCorrect={false}
-                textContentType='newPassword'
+                textContentType="newPassword"
                 disabled={isResetting}
               />
 
               {/* Show/Hide Password Button */}
               <IconButton
-                variant='ghost'
-                size='sm'
+                variant="ghost"
+                size="sm"
                 icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
                 iconSize={24}
                 iconColor={colors.icon}
@@ -197,25 +207,28 @@ const ResetPasswordScreen = () => {
             {/* Confirm Password Input Field */}
             <View style={styles.inputContainer}>
               <Input
-                name='confirmPassword'
+                name="confirmPassword"
                 control={control}
                 error={errors.confirmPassword?.message}
                 label={t('common.confirmPassword')}
-                className='border-0 rounded-none px-0 py-4 font-medium'
-                style={{ fontSize: 20, paddingRight: 50 }}
+                className="border-0 rounded-none px-0 py-4 font-medium"
+                style={{
+ fontSize: 20,
+paddingRight: 50 
+}}
                 placeholder={t('onboarding.confirmPasswordPlaceholder')}
                 secureTextEntry={!showPassword}
-                autoCapitalize='none'
-                autoComplete='password-new'
+                autoCapitalize="none"
+                autoComplete="password-new"
                 autoCorrect={false}
-                textContentType='newPassword'
+                textContentType="newPassword"
                 disabled={isResetting}
               />
 
               {/* Show/Hide Password Button */}
               <IconButton
-                variant='ghost'
-                size='sm'
+                variant="ghost"
+                size="sm"
                 icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
                 iconSize={24}
                 iconColor={colors.icon}
@@ -228,19 +241,20 @@ const ResetPasswordScreen = () => {
             {/* Password Rules List */}
             <View style={styles.rulesContainer}>
               {passwordRules.map((rule) => (
-                <View key={rule.key} style={styles.ruleItem}>
+                <View
+                  key={rule.key}
+                  style={styles.ruleItem}
+                >
                   <Icon
                     name={rule.isValid ? 'checkmark-circle' : 'close-circle'}
                     size={20}
                     color={rule.isValid ? 'successForeground' : 'error'}
                   />
                   <Typography
-                    variant='body2'
+                    variant="body2"
                     style={[
                       styles.ruleText,
-                      {
-                        color: rule.isValid ? '#10b981' : colors.icon,
-                      },
+                      {color: rule.isValid ? '#10b981' : colors.icon,},
                     ]}
                   >
                     {rule.label}
@@ -253,9 +267,9 @@ const ResetPasswordScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
@@ -272,9 +286,7 @@ const ResetPasswordScreen = () => {
 export default ResetPasswordScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,

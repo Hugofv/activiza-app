@@ -1,6 +1,8 @@
-import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
+
 import { Text, type TextProps } from 'react-native';
+
+import { type VariantProps, cva } from 'class-variance-authority';
 
 import { Colors, type ThemeColorKey } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -40,159 +42,166 @@ const typographyVariants = cva('', {
       link: 'text-base text-primary underline-offset-4 underline leading-6',
     },
   },
-  defaultVariants: {
-    variant: 'p',
-  },
+  defaultVariants: {variant: 'p',},
 });
 
-export type TypographyVariant = VariantProps<typeof typographyVariants>['variant'];
+export type TypographyVariant = VariantProps<
+  typeof typographyVariants
+>['variant'];
 
 export interface TypographyProps
-  extends TextProps,
-    VariantProps<typeof typographyVariants> {
+  extends TextProps, VariantProps<typeof typographyVariants> {
   children?: React.ReactNode;
   color?: ThemeColorKey;
 }
 
-const Typography = React.forwardRef<React.ElementRef<typeof Text>, TypographyProps>(
-  ({ className, variant, style, children, color, ...props }, ref) => {
-    const colorScheme = useColorScheme();
-    const colors = Colors[colorScheme ?? 'light'];
+const Typography = React.forwardRef<
+  React.ElementRef<typeof Text>,
+  TypographyProps
+>(({
+ className, variant, style, children, color, ...props 
+}, ref) => {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
 
-    // Map variants to font families
-    const fontFamilyMap: Record<string, string> = {
-      h1: 'Inter_700Bold',
-      h2: 'Inter_700Bold',
-      h2Medium: 'Inter_500Medium',
-      h3: 'Inter_600SemiBold',
-      h3Medium: 'Inter_500Medium',
-      h4: 'Inter_600SemiBold',
-      h4Medium: 'Inter_500Medium',
-      h5: 'Inter_600SemiBold',
-      h5Medium: 'Inter_500Medium',
-      h6: 'Inter_600SemiBold',
-      h6Medium: 'Inter_500Medium',
-      subtitle: 'Inter_600SemiBold',
-      body1: 'Inter_400Regular',
-      body1Medium: 'Inter_500Medium',
-      body1SemiBold: 'Inter_600SemiBold',
-      body1Bold: 'Inter_700Bold',
-      body2: 'Inter_400Regular',
-      body2Medium: 'Inter_500Medium',
-      body2SemiBold: 'Inter_600SemiBold',
-      caption: 'Inter_400Regular',
-      p: 'Inter_400Regular',
-      lead: 'Inter_400Regular',
-      large: 'Inter_500Medium',
-      small: 'Inter_500Medium',
-      muted: 'Inter_400Regular',
-      blockquote: 'Inter_400Regular',
-      list: 'Inter_400Regular',
-      code: 'Inter_400Regular',
-      link: 'Inter_400Regular',
-    };
+  // Map variants to font families
+  const fontFamilyMap: Record<string, string> = {
+    h1: 'Inter_700Bold',
+    h2: 'Inter_700Bold',
+    h2Medium: 'Inter_500Medium',
+    h3: 'Inter_600SemiBold',
+    h3Medium: 'Inter_500Medium',
+    h4: 'Inter_600SemiBold',
+    h4Medium: 'Inter_500Medium',
+    h5: 'Inter_600SemiBold',
+    h5Medium: 'Inter_500Medium',
+    h6: 'Inter_600SemiBold',
+    h6Medium: 'Inter_500Medium',
+    subtitle: 'Inter_600SemiBold',
+    body1: 'Inter_400Regular',
+    body1Medium: 'Inter_500Medium',
+    body1SemiBold: 'Inter_600SemiBold',
+    body1Bold: 'Inter_700Bold',
+    body2: 'Inter_400Regular',
+    body2Medium: 'Inter_500Medium',
+    body2SemiBold: 'Inter_600SemiBold',
+    caption: 'Inter_400Regular',
+    p: 'Inter_400Regular',
+    lead: 'Inter_400Regular',
+    large: 'Inter_500Medium',
+    small: 'Inter_500Medium',
+    muted: 'Inter_400Regular',
+    blockquote: 'Inter_400Regular',
+    list: 'Inter_400Regular',
+    code: 'Inter_400Regular',
+    link: 'Inter_400Regular',
+  };
 
-    // Map variants to font sizes (for explicit style prop)
-    const fontSizeMap: Record<string, number> = {
-      h1: 36,
-      h2: 30,
-      h3: 24,
-      h4: 20,
-      h5: 18,
-      h6: 16,
-      h2Medium: 30,
-      h3Medium: 24,
-      h4Medium: 20,
-      h5Medium: 18,
-      h6Medium: 16,
-      subtitle: 20,
-      body1: 18,
-      body1Medium: 18,
-      body1SemiBold: 18,
-      body1Bold: 18,
-      body2: 16,
-      body2Medium: 16,
-      body2SemiBold: 16,
-      caption: 14,
-      p: 18,
-      lead: 20,
-      large: 18,
-    };
+  // Map variants to font sizes (for explicit style prop)
+  const fontSizeMap: Record<string, number> = {
+    h1: 36,
+    h2: 30,
+    h3: 24,
+    h4: 20,
+    h5: 18,
+    h6: 16,
+    h2Medium: 30,
+    h3Medium: 24,
+    h4Medium: 20,
+    h5Medium: 18,
+    h6Medium: 16,
+    subtitle: 20,
+    body1: 18,
+    body1Medium: 18,
+    body1SemiBold: 18,
+    body1Bold: 18,
+    body2: 16,
+    body2Medium: 16,
+    body2SemiBold: 16,
+    caption: 14,
+    p: 18,
+    lead: 20,
+    large: 18,
+  };
 
-    // Map variants to line heights
-    const lineHeightMap: Record<string, number> = {
-      h1: 40,
-      h2: 36,
-      h3: 32,
-      h4: 28,
-      h5: 26,
-      h6: 24,
-      h2Medium: 36,
-      h3Medium: 32,
-      h4Medium: 28,
-      h5Medium: 26,
-      h6Medium: 24,
-      subtitle: 28,
-      body1: 24,
-      body2: 20,
-      body2Medium: 20,
-      body2SemiBold: 20,
-      body1Bold: 24,
-      caption: 16,
-      p: 24,
-      lead: 28,
-      large: 26,
-      small: 20,
-      muted: 20,
-      blockquote: 24,
-      list: 24,
-      code: 20,
-      link: 24,
-    };
+  // Map variants to line heights
+  const lineHeightMap: Record<string, number> = {
+    h1: 40,
+    h2: 36,
+    h3: 32,
+    h4: 28,
+    h5: 26,
+    h6: 24,
+    h2Medium: 36,
+    h3Medium: 32,
+    h4Medium: 28,
+    h5Medium: 26,
+    h6Medium: 24,
+    subtitle: 28,
+    body1: 24,
+    body2: 20,
+    body2Medium: 20,
+    body2SemiBold: 20,
+    body1Bold: 24,
+    caption: 16,
+    p: 24,
+    lead: 28,
+    large: 26,
+    small: 20,
+    muted: 20,
+    blockquote: 24,
+    list: 24,
+    code: 20,
+    link: 24,
+  };
 
-    const fontFamily = variant ? fontFamilyMap[variant] : 'Inter_400Regular';
-    const fontSize = variant ? fontSizeMap[variant] : 16;
-    const lineHeight = variant ? lineHeightMap[variant] : 24;
+  const fontFamily = variant ? fontFamilyMap[variant] : 'Inter_400Regular';
+  const fontSize = variant ? fontSizeMap[variant] : 16;
+  const lineHeight = variant ? lineHeightMap[variant] : 24;
 
-    // Get text color based on color prop, variant, and theme
-    const getTextColor = () => {
-      // If color prop is provided, use it (highest priority)
-      if (color) {
-        return colors[color];
-      }
+  // Get text color based on color prop, variant, and theme
+  const getTextColor = () => {
+    // If color prop is provided, use it (highest priority)
+    if (color) {
+      return colors[color];
+    }
 
-      // Otherwise, use variant-based defaults
-      switch (variant) {
-        case 'caption':
-        case 'muted':
-          return colors.icon; // Muted color for helper text
-        case 'link':
-          return colors.primary; // Primary green for links
-        default:
-          return colors.primaryForeground; // Default text color (theme-aware)
-      }
-    };
+    // Otherwise, use variant-based defaults
+    switch (variant) {
+      case 'caption':
+      case 'muted':
+        return colors.icon; // Muted color for helper text
+      case 'link':
+        return colors.primary; // Primary green for links
+      default:
+        return colors.primaryForeground; // Default text color (theme-aware)
+    }
+  };
 
-    return (
-      <Text
-        ref={ref}
-        className={cn(typographyVariants({ variant, className }))}
-        style={[
-          {
-            color: getTextColor(),
-            fontFamily,
-            fontSize,
-            lineHeight,
-          },
-          style,
-        ]}
-        {...props}>
-        {children}
-      </Text>
-    );
-  }
-);
+  return (
+    <Text
+      ref={ref}
+      className={cn(typographyVariants({
+ variant,
+className 
+}))}
+      style={[
+        {
+          color: getTextColor(),
+          fontFamily,
+          fontSize,
+          lineHeight,
+        },
+        style,
+      ]}
+      {...props}
+    >
+      {children}
+    </Text>
+  );
+});
 Typography.displayName = 'Typography';
 
-export { Typography, typographyVariants };
-
+export {
+ Typography, typographyVariants 
+};

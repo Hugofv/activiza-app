@@ -1,32 +1,45 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
-import { Input } from '@/components/ui/Input';
-import { PhoneInput } from '@/components/ui/PhoneInput';
-import { Progress } from '@/components/ui/Progress';
-import { Colors } from '@/constants/theme';
-import { useOnboardingForm } from '@/contexts/onboardingFormContext';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import {
-  getDocumentFormat,
-  type DocumentType
-} from '@/lib/services/documentService';
-import type { CountryCode } from '@/lib/services/postalCodeService';
-import { createDocumentSchema, emailSchema, nameSchema, phoneSchema } from '@/lib/validations/onboarding';
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { InferType } from 'yup';
 import * as yup from 'yup';
 
+import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
+import { Input } from '@/components/ui/Input';
+import { PhoneInput } from '@/components/ui/PhoneInput';
+import { Progress } from '@/components/ui/Progress';
 import { Typography } from '@/components/ui/Typography';
+import { Colors } from '@/constants/theme';
+import { useOnboardingForm } from '@/contexts/onboardingFormContext';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import { getCurrentUser } from '@/lib/services/authService';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
+import {
+  type DocumentType,
+  getDocumentFormat,
+} from '@/lib/services/documentService';
+import type { CountryCode } from '@/lib/services/postalCodeService';
+import {
+  createDocumentSchema,
+  emailSchema,
+  nameSchema,
+  phoneSchema,
+} from '@/lib/validations/onboarding';
 
 interface CustomizationFormData {
   businessName: string;
@@ -52,7 +65,8 @@ const CustomizationScreen = () => {
   const currentUser = getCurrentUser();
 
   // Get country code from address or default to BR
-  const countryCode: CountryCode = (formData.address?.countryCode as CountryCode) || 'BR';
+  const countryCode: CountryCode =
+    (formData.address?.countryCode as CountryCode) || 'BR';
   const documentType = (formData.documentType as DocumentType) || undefined;
   const formatConfig = getDocumentFormat(countryCode, documentType);
   const documentSchema = createDocumentSchema(countryCode, documentType);
@@ -148,7 +162,10 @@ const CustomizationScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -170,32 +187,43 @@ const CustomizationScreen = () => {
               <BackButton />
 
               {/* Title */}
-              <Typography variant='h4' style={styles.title}>
+              <Typography
+                variant="h4"
+                style={styles.title}
+              >
                 {t('onboarding.customizationTitle') || 'Customize seu negócio'}
               </Typography>
 
               {/* Description */}
-              <Typography variant='body2' style={[styles.description, { color: colors.icon }]}>
-                {t('onboarding.customizationDescription') || 'Revise e atualize as informações principais do seu negócio'}
+              <Typography
+                variant="body2"
+                style={[styles.description, { color: colors.icon }]}
+              >
+                {t('onboarding.customizationDescription') ||
+                  'Revise e atualize as informações principais do seu negócio'}
               </Typography>
 
               {/* Business Name Field (pre-filled from User.name) */}
               <View style={styles.fieldContainer}>
                 <Input
-                  name='businessName'
+                  name="businessName"
                   control={control}
                   error={errors.businessName?.message}
                   label={t('common.name') || 'Nome'}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
+                  className="border-0 rounded-none px-0 py-4 font-medium"
                   style={[
                     {
                       fontSize: 20,
-                      borderBottomColor: errors.businessName ? '#ef4444' : colors.icon,
+                      borderBottomColor: errors.businessName
+                        ? '#ef4444'
+                        : colors.icon,
                     },
                   ]}
-                  placeholder={t('onboarding.namePlaceholder') || 'Nome completo'}
+                  placeholder={
+                    t('onboarding.namePlaceholder') || 'Nome completo'
+                  }
                   placeholderTextColor={colors.icon}
-                  keyboardType='default'
+                  keyboardType="default"
                   maxLength={100}
                 />
               </View>
@@ -203,22 +231,24 @@ const CustomizationScreen = () => {
               {/* Business Email Field (pre-filled from User.email) */}
               <View style={styles.fieldContainer}>
                 <Input
-                  name='businessEmail'
+                  name="businessEmail"
                   control={control}
                   error={errors.businessEmail?.message}
                   label={t('common.email') || 'Email'}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
+                  className="border-0 rounded-none px-0 py-4 font-medium"
                   style={[
                     {
                       fontSize: 20,
-                      borderBottomColor: errors.businessEmail ? '#ef4444' : colors.icon,
+                      borderBottomColor: errors.businessEmail
+                        ? '#ef4444'
+                        : colors.icon,
                     },
                   ]}
                   placeholder={t('common.email') || 'Email'}
                   placeholderTextColor={colors.icon}
-                  keyboardType='email-address'
-                  autoCapitalize='none'
-                  autoComplete='email'
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
                   autoCorrect={false}
                   maxLength={100}
                 />
@@ -226,30 +256,43 @@ const CustomizationScreen = () => {
 
               {/* Business Phone Field (pre-filled from User.phone) */}
               <View style={styles.fieldContainer}>
-                <Typography variant='body2' style={[styles.fieldLabel, { color: colors.text }]}>
+                <Typography
+                  variant="body2"
+                  style={[styles.fieldLabel, { color: colors.text }]}
+                >
                   {t('common.phone') || 'Telefone'}
                 </Typography>
-                <PhoneInput name='businessPhone' control={control} error={errors.businessPhone?.message} />
+                <PhoneInput
+                  name="businessPhone"
+                  control={control}
+                  error={errors.businessPhone?.message}
+                />
               </View>
 
               {/* Business Document Field (pre-filled from User.document) */}
               <View style={styles.fieldContainer}>
                 <Input
-                  name='businessDocument'
+                  name="businessDocument"
                   control={control}
                   error={errors.businessDocument?.message}
                   label={t('common.document') || 'Documento'}
                   onFormat={formatConfig.format}
-                  className='border-0 rounded-none px-0 py-4 font-medium'
+                  className="border-0 rounded-none px-0 py-4 font-medium"
                   style={[
                     {
                       fontSize: 20,
-                      borderBottomColor: errors.businessDocument ? '#ef4444' : colors.icon,
+                      borderBottomColor: errors.businessDocument
+                        ? '#ef4444'
+                        : colors.icon,
                     },
                   ]}
                   placeholder={formatConfig.placeholder}
                   placeholderTextColor={colors.icon}
-                  keyboardType={countryCode === 'UK' && documentType === 'ni' ? 'default' : 'numeric'}
+                  keyboardType={
+                    countryCode === 'UK' && documentType === 'ni'
+                      ? 'default'
+                      : 'numeric'
+                  }
                   autoCapitalize={countryCode === 'UK' ? 'characters' : 'none'}
                   maxLength={formatConfig.maxLength}
                 />
@@ -260,9 +303,9 @@ const CustomizationScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
@@ -279,35 +322,23 @@ const CustomizationScreen = () => {
 export default CustomizationScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
+  container: {flex: 1,},
+  scrollView: {flex: 1,},
+  scrollContent: {flexGrow: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 24,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  title: {
-    marginTop: 8,
-  },
+  progressContainer: {marginBottom: 8,},
+  title: {marginTop: 8,},
   description: {
     marginTop: -8,
     fontSize: 14,
     lineHeight: 20,
   },
-  fieldContainer: {
-    marginTop: 8,
-  },
+  fieldContainer: {marginTop: 8,},
   fieldLabel: {
     fontSize: 14,
     marginBottom: 8,

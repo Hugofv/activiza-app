@@ -1,23 +1,27 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
 import { useState } from 'react';
+
+import {
+ KeyboardAvoidingView, Platform, StyleSheet, View 
+} from 'react-native';
+
+import { router } from 'expo-router';
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { checkEmailStatus } from '@/lib/services/authService';
 import { emailSchema } from '@/lib/validations/onboarding';
-
-import { BackButton } from '@/components/ui/BackButton';
-import { Typography } from '@/components/ui/Typography';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
 
 interface EmailFormData {
   email: string;
@@ -39,9 +43,7 @@ const EmailScreen = () => {
     formState: { errors, isValid },
   } = useForm<EmailFormData>({
     resolver: yupResolver(emailSchema),
-    defaultValues: {
-      email: formData.email || '',
-    },
+    defaultValues: {email: formData.email || '',},
     mode: 'onChange',
   });
 
@@ -81,7 +83,8 @@ const EmailScreen = () => {
         // User exists but onboarding is not completed (or is a platformUser)
         // Require login, then redirect to the correct onboarding step after authentication
         const targetOnboardingStep =
-          emailStatus.onboardingStep && emailStatus.onboardingStep !== 'completed'
+          emailStatus.onboardingStep &&
+          emailStatus.onboardingStep !== 'completed'
             ? emailStatus.onboardingStep
             : 'document';
 
@@ -130,19 +133,18 @@ const EmailScreen = () => {
       >
         <ThemedView style={styles.container}>
           <ThemedView style={styles.content}>
-
             {/* Back Button */}
             <BackButton />
 
             {/* Title */}
-            <Typography variant='h4'>{t('onboarding.email')}</Typography>
+            <Typography variant="h4">{t('onboarding.email')}</Typography>
 
             {/* Input Field */}
             <Input
-              name='email'
+              name="email"
               control={control}
               error={errors.email?.message}
-              className='border-0 rounded-none px-0 py-4 font-medium'
+              className="border-0 rounded-none px-0 py-4 font-medium"
               style={[
                 {
                   fontSize: 24,
@@ -151,9 +153,9 @@ const EmailScreen = () => {
               ]}
               placeholder={t('common.email')}
               placeholderTextColor={colors.icon}
-              keyboardType='email-address'
-              autoCapitalize='none'
-              autoComplete='email'
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
               autoCorrect={false}
               maxLength={100}
               autoFocus
@@ -163,9 +165,9 @@ const EmailScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleSubmit(onSubmit)}
@@ -182,18 +184,14 @@ const EmailScreen = () => {
 export default EmailScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
+  progressContainer: {marginBottom: 8,},
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

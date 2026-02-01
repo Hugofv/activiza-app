@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { View, type ViewProps } from 'react-native';
 
 import { Colors } from '@/constants/theme';
@@ -11,7 +12,9 @@ export interface ProgressProps extends ViewProps {
 }
 
 const Progress = React.forwardRef<React.ElementRef<typeof View>, ProgressProps>(
-  ({ value = 0, className, style, ...props }, ref) => {
+  ({
+ value = 0, className, style, ...props 
+}, ref) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
 
@@ -21,7 +24,10 @@ const Progress = React.forwardRef<React.ElementRef<typeof View>, ProgressProps>(
     return (
       <View
         ref={ref}
-        className={cn('relative h-2 w-full overflow-hidden rounded-full bg-secondary', className)}
+        className={cn(
+          'relative h-2 w-full overflow-hidden rounded-full bg-secondary',
+          className
+        )}
         style={[
           {
             height: 8,
@@ -48,4 +54,3 @@ const Progress = React.forwardRef<React.ElementRef<typeof View>, ProgressProps>(
 Progress.displayName = 'Progress';
 
 export { Progress };
-

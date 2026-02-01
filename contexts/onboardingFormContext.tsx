@@ -1,9 +1,28 @@
-import { isStepCompleted as checkStepCompleted, getNextStep, isOnboardingCompleted, OnboardingStepKey } from '@/lib/config/onboardingSteps';
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+
+import { useMutation, useQuery } from '@tanstack/react-query';
+
+import {
+  OnboardingStepKey,
+  isStepCompleted as checkStepCompleted,
+  getNextStep,
+  isOnboardingCompleted,
+} from '@/lib/config/onboardingSteps';
 import { isOfflineError } from '@/lib/hooks/useMutation';
 import { getCurrentUser } from '@/lib/services/authService';
-import { getOnboardingData, OnboardingResponse, saveOnboardingData, submitOnboarding, updateOnboardingStep } from '@/lib/services/onboardingService';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import {
+  OnboardingResponse,
+  getOnboardingData,
+  saveOnboardingData,
+  submitOnboarding,
+  updateOnboardingStep,
+} from '@/lib/services/onboardingService';
 
 export interface OnboardingFormData {
   // Email como identificador primário (obrigatório)
@@ -60,9 +79,14 @@ interface OnboardingFormContextType {
   formData: Partial<OnboardingFormData>;
   currentStep: OnboardingStepKey | null;
   clientStatus: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING' | null;
-  updateFormData: (data: Partial<OnboardingFormData>, step?: OnboardingStepKey) => Promise<void>;
+  updateFormData: (
+    data: Partial<OnboardingFormData>,
+    step?: OnboardingStepKey
+  ) => Promise<void>;
   updateStep: (step: OnboardingStepKey) => Promise<OnboardingResponse>; // Para steps de verificação
-  submitFormData: (additionalData?: Partial<OnboardingFormData>) => Promise<void>;
+  submitFormData: (
+    additionalData?: Partial<OnboardingFormData>
+  ) => Promise<void>;
   resetFormData: () => void;
   isSaving: boolean;
   isSubmitting: boolean;
@@ -91,12 +115,14 @@ interface OnboardingFormProviderProps {
   children: ReactNode;
 }
 
-export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
-  children,
-}) => {
+export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({children,}) => {
   const [formData, setFormData] = useState<Partial<OnboardingFormData>>({});
-  const [currentStep, setCurrentStep] = useState<OnboardingStepKey | null>(null);
-  const [clientStatus, setClientStatus] = useState<'IN_PROGRESS' | 'COMPLETED' | 'PENDING' | null>(null);
+  const [currentStep, setCurrentStep] = useState<OnboardingStepKey | null>(
+    null
+  );
+  const [clientStatus, setClientStatus] = useState<
+    'IN_PROGRESS' | 'COMPLETED' | 'PENDING' | null
+  >(null);
 
   // Fetch onboarding data on mount
   const { data: fetchedData } = useQuery({
@@ -129,7 +155,9 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
   // Update formData when fetched data is available
   useEffect(() => {
     if (fetchedData) {
-      const { onboardingStep, clientStatus: status, ...data } = fetchedData;
+      const {
+ onboardingStep, clientStatus: status, ...data 
+} = fetchedData;
       setFormData(data);
       if (onboardingStep) {
         setCurrentStep(onboardingStep as OnboardingStepKey);
@@ -148,8 +176,13 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
 
   // Mutation for saving onboarding data (intermediate saves)
   const saveMutation = useMutation({
-    mutationFn: ({ data, step }: { data: Partial<OnboardingFormData>; step?: OnboardingStepKey }) =>
-      saveOnboardingData(data, step),
+    mutationFn: ({
+      data,
+      step,
+    }: {
+      data: Partial<OnboardingFormData>;
+      step?: OnboardingStepKey;
+    }) => saveOnboardingData(data, step),
     onError: (error: any) => {
       if (isOfflineError(error)) {
         console.log('Offline: data will be saved when connection is restored');
@@ -167,13 +200,17 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
       // Just update the current step from the API response
       if (response.onboardingStep) {
         setCurrentStep(response.onboardingStep as OnboardingStepKey);
-        console.log(`✅ Step ${variables.step || 'unknown'} completed. Next step: ${response.onboardingStep}`);
+        console.log(
+          `✅ Step ${variables.step || 'unknown'} completed. Next step: ${response.onboardingStep}`
+        );
       } else if (variables.step) {
         // If API doesn't return next step, calculate it locally
         const nextStep = getNextStep(variables.step);
         if (nextStep) {
           setCurrentStep(nextStep.key);
-          console.log(`✅ Step ${variables.step} completed. Next step: ${nextStep.key}`);
+          console.log(
+            `✅ Step ${variables.step} completed. Next step: ${nextStep.key}`
+          );
         }
       }
     },
@@ -187,7 +224,9 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
     },
     onError: (error: any) => {
       if (isOfflineError(error)) {
-        console.log('Offline: step update will be saved when connection is restored');
+        console.log(
+          'Offline: step update will be saved when connection is restored'
+        );
       } else {
         console.error('Error updating onboarding step:', error);
       }
@@ -203,15 +242,21 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
       // Just update the current step from the API response
       if (response.onboardingStep) {
         setCurrentStep(response.onboardingStep as OnboardingStepKey);
-        console.log(`✅ Verification step ${completedStep} completed. Next step: ${response.onboardingStep}`);
+        console.log(
+          `✅ Verification step ${completedStep} completed. Next step: ${response.onboardingStep}`
+        );
       } else {
         // If API doesn't return next step, calculate it locally
         const nextStep = getNextStep(completedStep);
         if (nextStep) {
           setCurrentStep(nextStep.key);
-          console.log(`✅ Verification step ${completedStep} completed. Next step: ${nextStep.key}`);
+          console.log(
+            `✅ Verification step ${completedStep} completed. Next step: ${nextStep.key}`
+          );
         } else {
-          console.warn('⚠️ No onboardingStep in response, step may already be completed or onboarding is finished');
+          console.warn(
+            '⚠️ No onboardingStep in response, step may already be completed or onboarding is finished'
+          );
         }
       }
     },
@@ -219,11 +264,18 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
 
   // Mutation for submitting final onboarding data
   const submitMutation = useMutation({
-    mutationFn: ({ data, userId }: { data: OnboardingFormData; userId: string }) =>
-      submitOnboarding(data, userId),
+    mutationFn: ({
+      data,
+      userId,
+    }: {
+      data: OnboardingFormData;
+      userId: string;
+    }) => submitOnboarding(data, userId),
     onError: (error: any) => {
       if (isOfflineError(error)) {
-        console.log('Offline: submission will be queued for when connection is restored');
+        console.log(
+          'Offline: submission will be queued for when connection is restored'
+        );
       } else {
         console.error('Error submitting onboarding data:', error);
       }
@@ -239,17 +291,29 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
   });
 
   // Unified updateFormData: updates local state and saves to API if step is provided
-  const updateFormData = async (data: Partial<OnboardingFormData>, step?: OnboardingStepKey) => {
+  const updateFormData = async (
+    data: Partial<OnboardingFormData>,
+    step?: OnboardingStepKey
+  ) => {
     // Merge data with current formData for API call
-    const mergedData = { ...formData, ...data };
+    const mergedData = {
+ ...formData,
+...data 
+};
 
     // Update local state first
-    setFormData((prev) => ({ ...prev, ...data }));
+    setFormData((prev) => ({
+ ...prev,
+...data 
+}));
 
     // If step is provided, save to API immediately with merged data
     if (step) {
       console.log(JSON.stringify(mergedData, null, 2));
-      await saveMutation.mutateAsync({ data: mergedData, step });
+      await saveMutation.mutateAsync({
+ data: mergedData,
+step 
+});
     }
   };
 
@@ -264,14 +328,21 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
     return response;
   };
 
-  const submitFormData = async (additionalData?: Partial<OnboardingFormData>) => {
+  const submitFormData = async (
+    additionalData?: Partial<OnboardingFormData>
+  ) => {
     const currentUser = getCurrentUser();
     if (!currentUser?.id) {
-      throw new Error('User is not authenticated. Please log in and try again.');
+      throw new Error(
+        'User is not authenticated. Please log in and try again.'
+      );
     }
 
     // Merge formData with any additional data provided (e.g., planId)
-    const finalData = { ...formData, ...additionalData } as OnboardingFormData;
+    const finalData = {
+ ...formData,
+...additionalData 
+} as OnboardingFormData;
 
     await submitMutation.mutateAsync({
       data: finalData,
@@ -287,8 +358,11 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
   // Helper: Check if onboarding is fully completed
   const isOnboardingFullyCompletedHelper = (): boolean => {
     // Filter out PENDING status as it's not part of the completion check
-    const status = clientStatus === 'PENDING' ? undefined : (clientStatus || undefined);
-    return isOnboardingCompleted(status as 'IN_PROGRESS' | 'COMPLETED' | undefined);
+    const status =
+      clientStatus === 'PENDING' ? undefined : clientStatus || undefined;
+    return isOnboardingCompleted(
+      status as 'IN_PROGRESS' | 'COMPLETED' | undefined
+    );
   };
 
   return (

@@ -2,8 +2,8 @@
  * Utility to translate API error codes to user-friendly messages
  * Uses i18n for translations and only uses the error.code field from API responses
  */
-
 import i18n from '@/translation';
+
 import { ApiError } from '../types/apiTypes';
 
 /**
@@ -12,7 +12,10 @@ import { ApiError } from '../types/apiTypes';
  * @param fallback - Optional fallback message if translation not found
  * @returns Translated error message
  */
-export function getTranslatedError(error: ApiError | Error, fallback?: string): string {
+export function getTranslatedError(
+  error: ApiError | Error,
+  fallback?: string
+): string {
   // Extract error code
   let errorCode: string | undefined;
 
@@ -29,15 +32,18 @@ export function getTranslatedError(error: ApiError | Error, fallback?: string): 
   const translationKey = `common.errors.${errorCode}`;
 
   // Try to get translation
-  const translatedMessage = i18n.t(translationKey, {
-    defaultValue: undefined,
-  });
+  const translatedMessage = i18n.t(translationKey, {defaultValue: undefined,});
 
   // If translation exists and is different from the key, use it
   if (translatedMessage && translatedMessage !== translationKey) {
     // Handle interpolation for messages with placeholders (e.g., MISSING_REQUIRED_FIELDS)
-    if (errorCode === 'MISSING_REQUIRED_FIELDS' && 'details' in error && error.details) {
-      const missingFields = error.details.missingFields || error.details.missing_fields;
+    if (
+      errorCode === 'MISSING_REQUIRED_FIELDS' &&
+      'details' in error &&
+      error.details
+    ) {
+      const missingFields =
+        error.details.missingFields || error.details.missing_fields;
       if (missingFields) {
         const fieldsList = Array.isArray(missingFields)
           ? missingFields.join(', ')
@@ -47,24 +53,37 @@ export function getTranslatedError(error: ApiError | Error, fallback?: string): 
     }
 
     // Handle validation errors with details array
-    if (errorCode === 'VALIDATION_ERROR' && 'details' in error && error.details) {
+    if (
+      errorCode === 'VALIDATION_ERROR' &&
+      'details' in error &&
+      error.details
+    ) {
       const details = error.details;
       // Check if details is an array of validation errors
       if (Array.isArray(details) && details.length > 0) {
         // Get the first validation error message
         const firstError = details[0];
-        if (firstError && typeof firstError === 'object' && 'message' in firstError) {
+        if (
+          firstError &&
+          typeof firstError === 'object' &&
+          'message' in firstError
+        ) {
           // Try to translate the specific validation code
           const validationCode = firstError.code || firstError.validation;
           const fieldPath = firstError.path;
 
           // Build a more specific translation key (e.g., INVALID_EMAIL for email field with invalid_string)
-          if (validationCode && fieldPath && Array.isArray(fieldPath) && fieldPath.length > 0) {
+          if (
+            validationCode &&
+            fieldPath &&
+            Array.isArray(fieldPath) &&
+            fieldPath.length > 0
+          ) {
             const fieldName = fieldPath[0];
             // For email field with invalid_string, use INVALID_EMAIL
             if (fieldName === 'email' && validationCode === 'invalid_string') {
               const emailKey = 'common.errors.INVALID_EMAIL';
-              const emailMessage = i18n.t(emailKey, { defaultValue: undefined });
+              const emailMessage = i18n.t(emailKey, {defaultValue: undefined,});
               if (emailMessage && emailMessage !== emailKey) {
                 return emailMessage;
               }
@@ -73,7 +92,7 @@ export function getTranslatedError(error: ApiError | Error, fallback?: string): 
 
           if (validationCode) {
             const validationKey = `common.errors.${validationCode.toUpperCase()}`;
-            const validationMessage = i18n.t(validationKey, { defaultValue: undefined });
+            const validationMessage = i18n.t(validationKey, {defaultValue: undefined,});
             if (validationMessage && validationMessage !== validationKey) {
               return validationMessage;
             }
@@ -90,7 +109,10 @@ export function getTranslatedError(error: ApiError | Error, fallback?: string): 
   }
 
   // Use fallback or default message
-  return fallback || i18n.t('common.errors.UNKNOWN_ERROR', { defaultValue: 'An error occurred' });
+  return (
+    fallback ||
+    i18n.t('common.errors.UNKNOWN_ERROR', { defaultValue: 'An error occurred' })
+  );
 }
 
 /**

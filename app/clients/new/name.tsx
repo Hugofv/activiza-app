@@ -1,9 +1,12 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { router } from 'expo-router';
 import { useState } from 'react';
+
+import { StyleSheet, View } from 'react-native';
+
+import { router, useLocalSearchParams } from 'expo-router';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as yup from 'yup';
 
@@ -14,6 +17,7 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
+import { useEditClientStore } from '@/lib/stores/editClientStore';
 
 import { useNewClientForm } from './_context';
 
@@ -25,12 +29,25 @@ export default function NameScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
+  const searchParams = useLocalSearchParams<{
+    clientId?: string;
+    edit?: string;
+  }>();
+  const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
+  const { draft, updateDraft } = useEditClientStore();
+  const {
+ formData, updateFormData, setCurrentStep 
+} = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const keyboardHeight = useKeyboardHeight();
 
+  const initialName = isEditMode ? (draft.name ?? '') : formData.name || '';
+
   const nameSchema = yup.object().shape({
-    name: yup.string().required(t('clients.nameRequired')).min(2, t('clients.nameMinLength')),
+    name: yup
+      .string()
+      .required(t('clients.nameRequired'))
+      .min(2, t('clients.nameMinLength')),
   });
 
   const {
@@ -39,15 +56,18 @@ export default function NameScreen() {
     formState: { errors, isValid },
   } = useForm<NameFormData>({
     resolver: yupResolver(nameSchema),
-    defaultValues: {
-      name: formData.name || '',
-    },
+    defaultValues: { name: initialName },
     mode: 'onChange',
   });
 
   const onSubmit = async (data: NameFormData) => {
     setIsSubmitting(true);
     try {
+      if (isEditMode) {
+        updateDraft({ name: data.name });
+        router.back();
+        return;
+      }
       updateFormData({ name: data.name });
       setCurrentStep(1);
       router.push('/clients/new/avatar');
@@ -63,58 +83,67 @@ export default function NameScreen() {
     >
       <ThemedView style={styles.container}>
         <ThemedView style={styles.content}>
-            {/* Title */}
-            <Typography variant="h3" color='text'>
-              {t('clients.name')}
-            </Typography>
+          {/* Title */}
+          <Typography
+            variant="h3"
+            color="text"
+          >
+            {t('clients.name')}
+          </Typography>
 
-            {/* Question */}
-            <Typography variant="body1" style={[styles.question, { color: colors.text }]}>
-              {t('clients.nameQuestion')}
-            </Typography>
+          {/* Question */}
+          <Typography
+            variant="body1"
+            style={[styles.question, { color: colors.text }]}
+          >
+            {t('clients.nameQuestion')}
+          </Typography>
 
-            {/* Input Field */}
-            <Input
-              name="name"
-              control={control}
-              error={errors.name?.message}
-              className="border-0 rounded-none px-0 py-4 font-medium"
-              style={[
-                {
-                  fontSize: 24,
-                  borderBottomColor: errors.name ? 'error' : 'icon',
-                },
-              ]}
-              placeholder="João Silva"
-              placeholderTextColor={colors.icon}
-              keyboardType="default"
-              maxLength={100}
-              autoFocus
-            />
-          </ThemedView>
+          {/* Input Field */}
+          <Input
+            name="name"
+            control={control}
+            error={errors.name?.message}
+            className="border-0 rounded-none px-0 py-4 font-medium"
+            style={[
+              {
+                fontSize: 24,
+                borderBottomColor: errors.name ? 'error' : 'icon',
+              },
+            ]}
+            placeholder="João Silva"
+            placeholderTextColor={colors.icon}
+            keyboardType="default"
+            maxLength={100}
+            autoFocus
+          />
+        </ThemedView>
 
-          {/* Continue Button */}
-          <View style={[styles.buttonContainer, keyboardHeight > 0 && { marginBottom: keyboardHeight }]}>
-            <IconButton
-              variant="primary"
-              size="md"
-              icon="arrow-forward"
-              iconSize={32}
-              iconColor="primaryForeground"
-              onPress={handleSubmit(onSubmit)}
-              disabled={!isValid || isSubmitting}
-              loading={isSubmitting}
-            />
-          </View>
+        {/* Continue Button */}
+        <View
+          style={[
+            styles.buttonContainer,
+            keyboardHeight > 0 && { marginBottom: keyboardHeight },
+          ]}
+        >
+          <IconButton
+            variant="primary"
+            size="md"
+            icon="arrow-forward"
+            iconSize={32}
+            iconColor="primaryForeground"
+            onPress={handleSubmit(onSubmit)}
+            disabled={!isValid || isSubmitting}
+            loading={isSubmitting}
+          />
+        </View>
       </ThemedView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 0,

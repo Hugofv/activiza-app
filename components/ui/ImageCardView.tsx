@@ -1,16 +1,20 @@
-import { Image as ExpoImage } from 'expo-image';
 import React, { useState } from 'react';
+
 import {
+  ActivityIndicator,
   Modal,
   Pressable,
+  type StyleProp,
   StyleSheet,
   View,
-  type StyleProp,
   type ViewStyle,
 } from 'react-native';
 
+import { Image as ExpoImage } from 'expo-image';
+
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+
 import { Icon } from './Icon';
 
 export interface ImageCardViewProps {
@@ -21,26 +25,48 @@ export interface ImageCardViewProps {
   onRemove?: () => void;
 }
 
-export function ImageCardView({ uri, style, onRemove }: ImageCardViewProps) {
+export function ImageCardView({
+ uri, style, onRemove 
+}: ImageCardViewProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const [visible, setVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const openViewer = () => setVisible(true);
   const closeViewer = () => setVisible(false);
 
   return (
     <>
-      <Pressable style={[styles.card, style]} onPress={openViewer}>
+      <Pressable
+        style={[styles.card, { backgroundColor: colors.muted }, style]}
+        onPress={openViewer}
+      >
         {onRemove && (
-          <Pressable style={styles.removeButton} onPress={onRemove}>
-            <Icon name="close-circle" size={20} color="text" />
+          <Pressable
+            style={styles.removeButton}
+            onPress={onRemove}
+          >
+            <Icon
+              name="close-circle"
+              size={20}
+              color="text"
+            />
           </Pressable>
+        )}
+        {isLoading && (
+          <View style={styles.loader}>
+            <ActivityIndicator
+              size="small"
+              color={colors.primary}
+            />
+          </View>
         )}
         <ExpoImage
           source={{ uri }}
           style={styles.image}
           contentFit="cover"
+          onLoadEnd={() => setIsLoading(false)}
         />
       </Pressable>
 
@@ -52,17 +78,32 @@ export function ImageCardView({ uri, style, onRemove }: ImageCardViewProps) {
       >
         <View style={styles.backdrop}>
           {/* Área de fundo clicável para fechar */}
-          <Pressable style={styles.backdropOverlay} onPress={closeViewer} />
+          <Pressable
+            style={styles.backdropOverlay}
+            onPress={closeViewer}
+          />
 
           {/* Viewer centralizado */}
-          <View style={[styles.viewerContainer, { backgroundColor: colors.background }]}>
+          <View
+            style={[
+              styles.viewerContainer,
+              { backgroundColor: colors.background },
+            ]}
+          >
             <ExpoImage
               source={{ uri }}
               style={styles.viewerImage}
               contentFit="contain"
             />
-            <Pressable style={styles.closeIcon} onPress={closeViewer}>
-              <Icon name="close" size={24} color="primaryForeground" />
+            <Pressable
+              style={styles.closeIcon}
+              onPress={closeViewer}
+            >
+              <Icon
+                name="close"
+                size={24}
+                color="primaryForeground"
+              />
             </Pressable>
           </View>
         </View>
@@ -83,6 +124,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  loader: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 0,
+  },
   removeButton: {
     position: 'absolute',
     top: 8,
@@ -97,9 +144,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backdropOverlay: {
-    ...StyleSheet.absoluteFillObject,
-  },
+  backdropOverlay: {...StyleSheet.absoluteFillObject,},
   viewerContainer: {
     width: '90%',
     height: '80%',
@@ -118,4 +163,3 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
 });
-

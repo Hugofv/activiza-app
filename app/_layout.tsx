@@ -1,20 +1,28 @@
-import '@/translation';
+import * as React from 'react';
+import { useEffect } from 'react';
+
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider as NavThemeProvider,
 } from '@react-navigation/native';
+
 import { QueryClientProvider } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import * as React from 'react';
-import { useEffect } from 'react';
+
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from '@expo-google-fonts/inter';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
-import '../global.css';
 
 import { Toast } from '@/components/ui/Toast';
 import { ThemeProvider } from '@/contexts/themeContext';
@@ -22,18 +30,14 @@ import { ToastProvider } from '@/contexts/toastContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { persistOptions, queryClient } from '@/lib/api/queryClient';
 import { initializeBackgroundSync } from '@/lib/sync/backgroundSync';
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from '@expo-google-fonts/inter';
+import '@/translation';
+
+import '../global.css';
 
 // Prevent the splash screen from auto-hiding before fonts are loaded
 SplashScreen.preventAutoHideAsync();
 
-export const unstable_settings = {
-  initialRouteName: 'index', // Home screen is now the initial route
+export const unstable_settings = {initialRouteName: 'index', // Home screen is now the initial route
 };
 
 function AppContent() {
@@ -49,21 +53,21 @@ function AppContent() {
           }}
         >
           <Stack.Screen
-            name='index'
+            name="index"
             options={{
               headerShown: false,
               animation: 'default',
             }}
           />
           <Stack.Screen
-            name='onboarding'
+            name="onboarding"
             options={{
               headerShown: false,
               animation: 'default',
             }}
           />
           <Stack.Screen
-            name='auth'
+            name="auth"
             options={{
               headerShown: false,
               animation: 'slide_from_right',
@@ -71,7 +75,7 @@ function AppContent() {
             }}
           />
           <Stack.Screen
-            name='(tabs)'
+            name="(tabs)"
             options={{
               headerShown: false,
               animation: 'fade',
@@ -79,7 +83,7 @@ function AppContent() {
             }}
           />
           <Stack.Screen
-            name='profile'
+            name="profile"
             options={{
               headerShown: false,
               animation: 'slide_from_right',
@@ -87,7 +91,7 @@ function AppContent() {
             }}
           />
           <Stack.Screen
-            name='clients'
+            name="clients"
             options={{
               headerShown: false,
               animation: 'slide_from_right',
@@ -96,7 +100,7 @@ function AppContent() {
             }}
           />
         </Stack>
-        <StatusBar style='auto' />
+        <StatusBar style="auto" />
         <Toast />
       </ToastProvider>
     </NavThemeProvider>
@@ -122,7 +126,10 @@ export default function RootLayout() {
         // Ignore errors if splash screen is not available
         // This can happen in development or if splash screen was already hidden
         if (__DEV__) {
-          console.warn('SplashScreen.hideAsync error (can be ignored in dev):', error.message);
+          console.warn(
+            'SplashScreen.hideAsync error (can be ignored in dev):',
+            error.message
+          );
         }
       });
     }
@@ -152,8 +159,8 @@ export default function RootLayout() {
           <ThemeProvider>
             <AppContent />
           </ThemeProvider>
-      </PersistQueryClientProvider>
-    </QueryClientProvider>
+        </PersistQueryClientProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

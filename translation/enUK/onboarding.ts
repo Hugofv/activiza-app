@@ -1,7 +1,8 @@
 export default {
   title: 'Everything you need to manage your loans and rentals.',
   document: 'What is your document?',
-  documentDescription: 'Enter your CPF or CNPJ to register or access your account',
+  documentDescription:
+    'Enter your CPF or CNPJ to register or access your account',
   documentDescriptionOptional: 'Enter your identification document (optional)',
   documentType: 'Document type',
   documentTypeCPF: 'CPF',
@@ -19,7 +20,8 @@ export default {
   register: 'Register',
   forgotPassword: 'Forgot your password?',
   enterPassword: 'Enter your password',
-  enterPasswordDescription: 'Enter your password to sign in to your account {{email}}',
+  enterPasswordDescription:
+    'Enter your password to sign in to your account {{email}}',
   createAccount: 'Create account',
   alreadyHaveAccount: 'Already have an account?',
   loginWithEmail: 'Login with email',
@@ -53,7 +55,8 @@ export default {
   password: 'Create a password',
   passwordPlaceholder: 'Enter your password',
   confirmPasswordPlaceholder: 'Enter your password again',
-  passwordDescription: 'Your password must be at least 8 characters, including uppercase, lowercase, numbers and special characters',
+  passwordDescription:
+    'Your password must be at least 8 characters, including uppercase, lowercase, numbers and special characters',
   passwordRuleMinLength: 'At least 8 characters',
   passwordRuleUppercase: 'At least one uppercase letter',
   passwordRuleLowercase: 'At least one lowercase letter',
@@ -61,7 +64,8 @@ export default {
   passwordRuleSpecial: 'At least one special character',
   passwordRuleMatch: 'Passwords must match',
   termsTitle: 'Terms and Conditions',
-  termsDescription: 'Please read and accept the terms of use and privacy policy to continue',
+  termsDescription:
+    'Please read and accept the terms of use and privacy policy to continue',
   termsAccept: 'I accept the',
   termsOfUse: 'Terms of Use',
   termsLastUpdated: 'Last updated: January 2024',
@@ -121,7 +125,8 @@ We retain your personal information only for as long as necessary to fulfill the
 7. CHANGES TO THIS POLICY
 We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page.`,
   registerFinished: 'Registration Complete!',
-  registerFinishedDescription: 'Congratulations! Your registration was successful. You can now access your account.',
+  registerFinishedDescription:
+    'Congratulations! Your registration was successful. You can now access your account.',
   goToLogin: 'Go to Login',
   activeCustomers: 'How many active clients do you have?',
   activeCustomersDescription: 'Clients with active or pending services.',
@@ -173,9 +178,11 @@ We may update this privacy policy from time to time. We will notify you of any c
   noPlans: 'No plans available at the moment.',
   wantThisPlan: 'I want this',
   customizationTitle: 'Review your business information',
-  customizationDescription: 'Check and update the main information about your business before continuing',
+  customizationDescription:
+    'Check and update the main information about your business before continuing',
   namePlaceholder: 'Enter your full name',
   saveError: 'Failed to save. Please try again.',
-  codeSendError: 'Failed to send verification code. You can resend it on the next screen.',
+  codeSendError:
+    'Failed to send verification code. You can resend it on the next screen.',
   submitError: 'Failed to complete registration. Please try again.',
 };

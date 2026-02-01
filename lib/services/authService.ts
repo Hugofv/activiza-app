@@ -40,12 +40,19 @@ export async function register(
 
     console.log('Register response:', JSON.stringify(response.data, null, 2));
 
-    const { user, accessToken, refreshToken, expiresIn } = response.data;
+    const {
+ user, accessToken, refreshToken, expiresIn 
+} = response.data;
 
     // Validate tokens before storing
     if (!accessToken || !refreshToken) {
-      console.error('Invalid response: missing tokens', { accessToken: !!accessToken, refreshToken: !!refreshToken });
-      throw new Error('Invalid response: access token or refresh token is missing');
+      console.error('Invalid response: missing tokens', {
+        accessToken: !!accessToken,
+        refreshToken: !!refreshToken,
+      });
+      throw new Error(
+        'Invalid response: access token or refresh token is missing'
+      );
     }
 
     // Ensure tokens are strings
@@ -85,12 +92,19 @@ export async function login(
 
     // Handle response structure: API may return { success: true, data: {...} } or direct data
     const responseData = (response.data as any).data || response.data;
-    const { user, accessToken, refreshToken, expiresIn } = responseData;
+    const {
+ user, accessToken, refreshToken, expiresIn 
+} = responseData;
 
     // Validate tokens before storing
     if (!accessToken || !refreshToken) {
-      console.error('Invalid response: missing tokens', { accessToken: !!accessToken, refreshToken: !!refreshToken });
-      throw new Error('Invalid response: access token or refresh token is missing');
+      console.error('Invalid response: missing tokens', {
+        accessToken: !!accessToken,
+        refreshToken: !!refreshToken,
+      });
+      throw new Error(
+        'Invalid response: access token or refresh token is missing'
+      );
     }
 
     // Ensure tokens are strings
@@ -156,7 +170,7 @@ export async function refreshAccessToken(): Promise<string> {
 
     const response = await apiClient.post<RefreshTokenResponse>(
       ENDPOINTS.AUTH.REFRESH_TOKEN,
-      { refreshToken },
+      { refreshToken }
     );
 
     const { accessToken, expiresIn } = response.data;
@@ -208,10 +222,10 @@ export async function sendVerificationCode(
   type: 'email' | 'phone'
 ): Promise<boolean> {
   try {
-    const response = await apiClient.post(
-      ENDPOINTS.AUTH.VERIFY_SEND,
-      { type, contact },
-    );
+    const response = await apiClient.post(ENDPOINTS.AUTH.VERIFY_SEND, {
+      type,
+      contact,
+    });
 
     return response.status === 200;
   } catch (error: any) {
@@ -231,10 +245,10 @@ export async function verifyCode(
   code: string
 ): Promise<boolean> {
   try {
-    const response = await apiClient.post(
-      ENDPOINTS.AUTH.VERIFY,
-      { type, code },
-    );
+    const response = await apiClient.post(ENDPOINTS.AUTH.VERIFY, {
+      type,
+      code,
+    });
 
     return response.status === 200;
   } catch (error: any) {
@@ -246,9 +260,7 @@ export async function verifyCode(
 /**
  * Verify email with code (wrapper for backward compatibility)
  */
-export async function verifyEmail(
-  code: string
-): Promise<boolean> {
+export async function verifyEmail(code: string): Promise<boolean> {
   // Note: The API uses unified verify endpoint with type field
   // This function is kept for backward compatibility
   return verifyCode('email', code);
@@ -276,10 +288,7 @@ export async function resendVerificationCode(
   type: 'email' | 'phone'
 ): Promise<boolean> {
   try {
-    const response = await apiClient.post(
-      ENDPOINTS.AUTH.VERIFY_RESEND,
-      { type }
-    );
+    const response = await apiClient.post(ENDPOINTS.AUTH.VERIFY_RESEND, {type,});
 
     return response.status === 200;
   } catch (error: any) {
@@ -356,7 +365,10 @@ export async function resetPassword(
   try {
     const response = await apiClient.post(
       ENDPOINTS.AUTH.RESET_PASSWORD,
-      { token, password },
+      {
+ token,
+password 
+},
       { skipAuth: true } as ApiConfig
     );
 

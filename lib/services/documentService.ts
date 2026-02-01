@@ -2,10 +2,16 @@
  * Document service - simplified formatting based on country and type
  * Validation algorithms (CPF/CNPJ, etc) are handled by the backend
  */
-
 import type { CountryCode } from './postalCodeService';
 
-export type DocumentType = 'cpf' | 'cnpj' | 'ssn' | 'ein' | 'ni' | 'crn' | 'other';
+export type DocumentType =
+  | 'cpf'
+  | 'cnpj'
+  | 'ssn'
+  | 'ein'
+  | 'ni'
+  | 'crn'
+  | 'other';
 
 export interface DocumentFormatConfig {
   mask: string;
@@ -35,8 +41,10 @@ export function getDocumentFormat(
           format: (value: string) => {
             const numbers = value.replace(/\D/g, '').slice(0, 11);
             if (numbers.length <= 3) return numbers;
-            if (numbers.length <= 6) return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
-            if (numbers.length <= 9) return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
+            if (numbers.length <= 6)
+              return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
+            if (numbers.length <= 9)
+              return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
             return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9)}`;
           },
           normalize: (value: string) => value.replace(/\D/g, '').slice(0, 11),
@@ -50,9 +58,12 @@ export function getDocumentFormat(
           format: (value: string) => {
             const numbers = value.replace(/\D/g, '').slice(0, 14);
             if (numbers.length <= 2) return numbers;
-            if (numbers.length <= 5) return `${numbers.slice(0, 2)}.${numbers.slice(2)}`;
-            if (numbers.length <= 8) return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5)}`;
-            if (numbers.length <= 12) return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5, 8)}/${numbers.slice(8)}`;
+            if (numbers.length <= 5)
+              return `${numbers.slice(0, 2)}.${numbers.slice(2)}`;
+            if (numbers.length <= 8)
+              return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5)}`;
+            if (numbers.length <= 12)
+              return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5, 8)}/${numbers.slice(8)}`;
             return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5, 8)}/${numbers.slice(8, 12)}-${numbers.slice(12)}`;
           },
           normalize: (value: string) => value.replace(/\D/g, '').slice(0, 14),
@@ -66,7 +77,8 @@ export function getDocumentFormat(
           format: (value: string) => {
             const numbers = value.replace(/\D/g, '').slice(0, 9);
             if (numbers.length <= 3) return numbers;
-            if (numbers.length <= 5) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+            if (numbers.length <= 5)
+              return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
             return `${numbers.slice(0, 3)}-${numbers.slice(3, 5)}-${numbers.slice(5)}`;
           },
           normalize: (value: string) => value.replace(/\D/g, '').slice(0, 9),
@@ -91,10 +103,17 @@ export function getDocumentFormat(
           maxLength: 9,
           minLength: 9,
           format: (value: string) => {
-            const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 9);
+            const cleaned = value
+              .replace(/[^A-Z0-9]/gi, '')
+              .toUpperCase()
+              .slice(0, 9);
             return cleaned;
           },
-          normalize: (value: string) => value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 9),
+          normalize: (value: string) =>
+            value
+              .replace(/[^A-Z0-9]/gi, '')
+              .toUpperCase()
+              .slice(0, 9),
         };
       case 'crn':
         return {
@@ -129,8 +148,10 @@ export function getDocumentFormat(
           format: (value: string) => {
             const numbers = value.replace(/\D/g, '').slice(0, 11);
             if (numbers.length <= 3) return numbers;
-            if (numbers.length <= 6) return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
-            if (numbers.length <= 9) return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
+            if (numbers.length <= 6)
+              return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
+            if (numbers.length <= 9)
+              return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
             return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9)}`;
           },
           normalize: (value: string) => value.replace(/\D/g, '').slice(0, 11),
@@ -144,9 +165,12 @@ export function getDocumentFormat(
           format: (value: string) => {
             const numbers = value.replace(/\D/g, '').slice(0, 14);
             if (numbers.length <= 2) return numbers;
-            if (numbers.length <= 5) return `${numbers.slice(0, 2)}.${numbers.slice(2)}`;
-            if (numbers.length <= 8) return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5)}`;
-            if (numbers.length <= 12) return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5, 8)}/${numbers.slice(8)}`;
+            if (numbers.length <= 5)
+              return `${numbers.slice(0, 2)}.${numbers.slice(2)}`;
+            if (numbers.length <= 8)
+              return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5)}`;
+            if (numbers.length <= 12)
+              return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5, 8)}/${numbers.slice(8)}`;
             return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5, 8)}/${numbers.slice(8, 12)}-${numbers.slice(12)}`;
           },
           normalize: (value: string) => value.replace(/\D/g, '').slice(0, 14),
@@ -163,16 +187,21 @@ export function getDocumentFormat(
             // Formata como CPF
             const limited = numbers.slice(0, 11);
             if (limited.length <= 3) return limited;
-            if (limited.length <= 6) return `${limited.slice(0, 3)}.${limited.slice(3)}`;
-            if (limited.length <= 9) return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6)}`;
+            if (limited.length <= 6)
+              return `${limited.slice(0, 3)}.${limited.slice(3)}`;
+            if (limited.length <= 9)
+              return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6)}`;
             return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6, 9)}-${limited.slice(9)}`;
           } else {
             // Formata como CNPJ
             const limited = numbers.slice(0, 14);
             if (limited.length <= 2) return limited;
-            if (limited.length <= 5) return `${limited.slice(0, 2)}.${limited.slice(2)}`;
-            if (limited.length <= 8) return `${limited.slice(0, 2)}.${limited.slice(2, 5)}.${limited.slice(5)}`;
-            if (limited.length <= 12) return `${limited.slice(0, 2)}.${limited.slice(2, 5)}.${limited.slice(5, 8)}/${limited.slice(8)}`;
+            if (limited.length <= 5)
+              return `${limited.slice(0, 2)}.${limited.slice(2)}`;
+            if (limited.length <= 8)
+              return `${limited.slice(0, 2)}.${limited.slice(2, 5)}.${limited.slice(5)}`;
+            if (limited.length <= 12)
+              return `${limited.slice(0, 2)}.${limited.slice(2, 5)}.${limited.slice(5, 8)}/${limited.slice(8)}`;
             return `${limited.slice(0, 2)}.${limited.slice(2, 5)}.${limited.slice(5, 8)}/${limited.slice(8, 12)}-${limited.slice(12)}`;
           }
         },
@@ -189,7 +218,8 @@ export function getDocumentFormat(
           format: (value: string) => {
             const numbers = value.replace(/\D/g, '').slice(0, 9);
             if (numbers.length <= 3) return numbers;
-            if (numbers.length <= 5) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+            if (numbers.length <= 5)
+              return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
             return `${numbers.slice(0, 3)}-${numbers.slice(3, 5)}-${numbers.slice(5)}`;
           },
           normalize: (value: string) => value.replace(/\D/g, '').slice(0, 9),
@@ -216,7 +246,8 @@ export function getDocumentFormat(
         format: (value: string) => {
           const numbers = value.replace(/\D/g, '').slice(0, 9);
           if (numbers.length <= 3) return numbers;
-          if (numbers.length <= 5) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+          if (numbers.length <= 5)
+            return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
           return `${numbers.slice(0, 3)}-${numbers.slice(3, 5)}-${numbers.slice(5)}`;
         },
         normalize: (value: string) => value.replace(/\D/g, '').slice(0, 9),
@@ -231,10 +262,17 @@ export function getDocumentFormat(
           minLength: 9,
           format: (value: string) => {
             // UK NI: 2 letters + 6 numbers + 1 letter
-            const cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 9);
+            const cleaned = value
+              .replace(/[^A-Z0-9]/gi, '')
+              .toUpperCase()
+              .slice(0, 9);
             return cleaned;
           },
-          normalize: (value: string) => value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 9),
+          normalize: (value: string) =>
+            value
+              .replace(/[^A-Z0-9]/gi, '')
+              .toUpperCase()
+              .slice(0, 9),
         };
       } else if (documentType === 'crn') {
         return {
@@ -251,8 +289,16 @@ export function getDocumentFormat(
         mask: 'AA000000A',
         placeholder: 'NI Number ou CRN',
         maxLength: 10,
-        format: (value: string) => value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 10),
-        normalize: (value: string) => value.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 10),
+        format: (value: string) =>
+          value
+            .replace(/[^A-Z0-9]/gi, '')
+            .toUpperCase()
+            .slice(0, 10),
+        normalize: (value: string) =>
+          value
+            .replace(/[^A-Z0-9]/gi, '')
+            .toUpperCase()
+            .slice(0, 10),
       };
 
     default:
@@ -270,7 +316,11 @@ export function getDocumentFormat(
 /**
  * Normalize document value (remove formatting)
  */
-export function normalizeDocument(value: string, countryCode: CountryCode, documentType?: DocumentType): string {
+export function normalizeDocument(
+  value: string,
+  countryCode: CountryCode,
+  documentType?: DocumentType
+): string {
   const config = getDocumentFormat(countryCode, documentType);
   return config.normalize(value);
 }
@@ -278,7 +328,11 @@ export function normalizeDocument(value: string, countryCode: CountryCode, docum
 /**
  * Format document value for display
  */
-export function formatDocument(value: string, countryCode: CountryCode, documentType?: DocumentType): string {
+export function formatDocument(
+  value: string,
+  countryCode: CountryCode,
+  documentType?: DocumentType
+): string {
   const config = getDocumentFormat(countryCode, documentType);
   return config.format(value);
 }
@@ -286,7 +340,9 @@ export function formatDocument(value: string, countryCode: CountryCode, document
 /**
  * Get default document type for a country based on common usage
  */
-export function getDefaultDocumentTypeForCountry(countryCode: CountryCode): DocumentType {
+export function getDefaultDocumentTypeForCountry(
+  countryCode: CountryCode
+): DocumentType {
   switch (countryCode) {
     case 'BR':
       return 'cpf'; // CPF is more common for individuals
@@ -302,41 +358,105 @@ export function getDefaultDocumentTypeForCountry(countryCode: CountryCode): Docu
 /**
  * Get all available document types (not limited by country)
  */
-export function getAllDocumentTypes(): { value: DocumentType; label: string; labelKey: string }[] {
+export function getAllDocumentTypes(): {
+  value: DocumentType;
+  label: string;
+  labelKey: string;
+}[] {
   return [
-    { value: 'cpf', label: 'CPF', labelKey: 'documentTypeCPF' },
-    { value: 'cnpj', label: 'CNPJ', labelKey: 'documentTypeCNPJ' },
-    { value: 'ssn', label: 'SSN', labelKey: 'documentTypeSSN' },
-    { value: 'ein', label: 'EIN', labelKey: 'documentTypeEIN' },
-    { value: 'ni', label: 'NI Number', labelKey: 'documentTypeNI' },
-    { value: 'crn', label: 'CRN', labelKey: 'documentTypeCRN' },
-    { value: 'other', label: 'Other', labelKey: 'documentTypeOther' },
+    {
+ value: 'cpf',
+label: 'CPF',
+labelKey: 'documentTypeCPF' 
+},
+    {
+ value: 'cnpj',
+label: 'CNPJ',
+labelKey: 'documentTypeCNPJ' 
+},
+    {
+ value: 'ssn',
+label: 'SSN',
+labelKey: 'documentTypeSSN' 
+},
+    {
+ value: 'ein',
+label: 'EIN',
+labelKey: 'documentTypeEIN' 
+},
+    {
+ value: 'ni',
+label: 'NI Number',
+labelKey: 'documentTypeNI' 
+},
+    {
+ value: 'crn',
+label: 'CRN',
+labelKey: 'documentTypeCRN' 
+},
+    {
+ value: 'other',
+label: 'Other',
+labelKey: 'documentTypeOther' 
+},
   ];
 }
 
 /**
  * Get available document types for a country
  */
-export function getDocumentTypesForCountry(countryCode: CountryCode): { value: DocumentType; label: string; labelKey: string }[] {
+export function getDocumentTypesForCountry(
+  countryCode: CountryCode
+): { value: DocumentType;
+label: string;
+labelKey: string }[] {
   switch (countryCode) {
     case 'BR':
       return [
-        { value: 'cpf', label: 'CPF', labelKey: 'documentTypeCPF' },
-        { value: 'cnpj', label: 'CNPJ', labelKey: 'documentTypeCNPJ' },
+        {
+ value: 'cpf',
+label: 'CPF',
+labelKey: 'documentTypeCPF' 
+},
+        {
+ value: 'cnpj',
+label: 'CNPJ',
+labelKey: 'documentTypeCNPJ' 
+},
       ];
     case 'US':
       return [
-        { value: 'ssn', label: 'SSN', labelKey: 'documentTypeSSN' },
-        { value: 'ein', label: 'EIN', labelKey: 'documentTypeEIN' },
+        {
+ value: 'ssn',
+label: 'SSN',
+labelKey: 'documentTypeSSN' 
+},
+        {
+ value: 'ein',
+label: 'EIN',
+labelKey: 'documentTypeEIN' 
+},
       ];
     case 'UK':
       return [
-        { value: 'ni', label: 'NI Number', labelKey: 'documentTypeNI' },
-        { value: 'crn', label: 'CRN', labelKey: 'documentTypeCRN' },
+        {
+ value: 'ni',
+label: 'NI Number',
+labelKey: 'documentTypeNI' 
+},
+        {
+ value: 'crn',
+label: 'CRN',
+labelKey: 'documentTypeCRN' 
+},
       ];
     default:
       return [
-        { value: 'other', label: 'Other', labelKey: 'documentTypeOther' },
+        {
+ value: 'other',
+label: 'Other',
+labelKey: 'documentTypeOther' 
+},
       ];
   }
 }
@@ -345,7 +465,10 @@ export function getDocumentTypesForCountry(countryCode: CountryCode): { value: D
  * Detect document type based on value and country code
  * Returns the detected type or null if cannot be determined
  */
-export function detectDocumentType(value: string, countryCode: CountryCode): DocumentType | null {
+export function detectDocumentType(
+  value: string,
+  countryCode: CountryCode
+): DocumentType | null {
   if (!value) return null;
 
   const normalized = value.replace(/\D/g, '');
@@ -388,7 +511,12 @@ export function detectDocumentType(value: string, countryCode: CountryCode): Doc
  * Get document mask configuration (wrapper for getDocumentFormat for compatibility)
  * Returns mask, placeholder, and maxLength
  */
-export function getDocumentMask(countryCode: CountryCode, documentType?: DocumentType): { mask: string; placeholder: string; maxLength: number } {
+export function getDocumentMask(
+  countryCode: CountryCode,
+  documentType?: DocumentType
+): { mask: string;
+placeholder: string;
+maxLength: number } {
   const config = getDocumentFormat(countryCode, documentType);
   return {
     mask: config.mask,

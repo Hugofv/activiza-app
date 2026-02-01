@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.expo/
+android/
+ios/
+web-build/
+
+# Cache
+.cache/
+*.log
+
+# Assets
+assets/
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Auto-generated
+*.d.ts

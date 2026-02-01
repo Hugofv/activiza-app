@@ -1,8 +1,16 @@
 import * as React from 'react';
-import { Pressable, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+
 import { Icon } from './Icon';
 import { Typography } from './Typography';
 
@@ -134,7 +142,11 @@ export function Select<T = string>({
                       {option.label}
                     </Typography>
                     {isSelected && (
-                      <Icon name="check" size={20} color="primary" />
+                      <Icon
+                        name="check"
+                        size={20}
+                        color="primary"
+                      />
                     )}
                   </Pressable>
                 );
@@ -185,15 +197,16 @@ const styles = StyleSheet.create({
     maxHeight: 200,
     borderRadius: 8,
     marginTop: 4,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+ width: 0,
+height: 2 
+},
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
     zIndex: 1000,
   },
-  list: {
-    maxHeight: 200,
-  },
+  list: {maxHeight: 200,},
   option: {
     flexDirection: 'row',
     alignItems: 'center',

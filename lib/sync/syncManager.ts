@@ -2,7 +2,12 @@
  * Sync manager for processing offline queue when connection is restored
  */
 import { apiClient } from '../api/client';
-import { dequeueRequest, getQueuedRequests, incrementRetryCount, QueuedRequest } from '../storage/queue';
+import {
+  QueuedRequest,
+  dequeueRequest,
+  getQueuedRequests,
+  incrementRetryCount,
+} from '../storage/queue';
 import { isOnline } from './networkMonitor';
 
 export interface SyncResult {
@@ -41,7 +46,7 @@ async function processQueuedRequest(request: QueuedRequest): Promise<boolean> {
     return false;
   } catch (error: any) {
     console.error(`Error processing queued request ${request.id}:`, error);
-    
+
     // If it's a network error and we're still online, retry later
     if (error.isNetworkError && isOnline()) {
       await incrementRetryCount(request.id);
@@ -52,7 +57,7 @@ async function processQueuedRequest(request: QueuedRequest): Promise<boolean> {
       // Other error, increment retry
       await incrementRetryCount(request.id);
     }
-    
+
     return false;
   }
 }
@@ -93,12 +98,14 @@ export async function syncQueue(): Promise<SyncResult> {
       } else {
         result.failed++;
       }
-      
+
       // Small delay between requests to avoid rate limiting
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
-    console.log(`Sync completed: ${result.success} succeeded, ${result.failed} failed`);
+    console.log(
+      `Sync completed: ${result.success} succeeded, ${result.failed} failed`
+    );
     return result;
   } catch (error) {
     console.error('Error syncing queue:', error);
@@ -111,7 +118,11 @@ export async function syncQueue(): Promise<SyncResult> {
  */
 export async function syncQueueWithRetry(maxRetries = 3): Promise<SyncResult> {
   let attempts = 0;
-  let lastResult: SyncResult = { success: 0, failed: 0, total: 0 };
+  let lastResult: SyncResult = {
+ success: 0,
+failed: 0,
+total: 0 
+};
 
   while (attempts < maxRetries) {
     attempts++;

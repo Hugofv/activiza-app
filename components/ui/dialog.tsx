@@ -1,7 +1,12 @@
+import * as React from 'react';
+
+import {
+ Modal, Pressable, StyleSheet, View 
+} from 'react-native';
+
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import * as React from 'react';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+
 import { Typography } from './Typography';
 
 interface DialogContextValue {
@@ -9,7 +14,9 @@ interface DialogContextValue {
   onOpenChange: (open: boolean) => void;
 }
 
-const DialogContext = React.createContext<DialogContextValue | undefined>(undefined);
+const DialogContext = React.createContext<DialogContextValue | undefined>(
+  undefined
+);
 
 const useDialogContext = () => {
   const context = React.useContext(DialogContext);
@@ -25,9 +32,14 @@ interface DialogProps {
   children: React.ReactNode;
 }
 
-const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
+const Dialog = ({
+ open, onOpenChange, children 
+}: DialogProps) => {
   return (
-    <DialogContext.Provider value={{ open, onOpenChange }}>
+    <DialogContext.Provider value={{
+ open,
+onOpenChange 
+}}>
       {children}
     </DialogContext.Provider>
   );
@@ -41,7 +53,9 @@ interface DialogTriggerProps {
 const DialogTrigger = React.forwardRef<
   React.ElementRef<typeof Pressable>,
   DialogTriggerProps & React.ComponentPropsWithoutRef<typeof Pressable>
->(({ children, asChild, ...props }, ref) => {
+>(({
+ children, asChild, ...props 
+}, ref) => {
   const { onOpenChange } = useDialogContext();
 
   if (asChild && React.isValidElement(children)) {
@@ -57,7 +71,11 @@ const DialogTrigger = React.forwardRef<
   }
 
   return (
-    <Pressable ref={ref} onPress={() => onOpenChange(true)} {...props}>
+    <Pressable
+      ref={ref}
+      onPress={() => onOpenChange(true)}
+      {...props}
+    >
       {children}
     </Pressable>
   );
@@ -72,7 +90,9 @@ interface DialogContentProps {
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof View>,
   DialogContentProps
->(({ children, className, ...props }, ref) => {
+>(({
+ children, className, ...props 
+}, ref) => {
   const { open, onOpenChange } = useDialogContext();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -94,9 +114,7 @@ const DialogContent = React.forwardRef<
           ref={ref}
           style={[
             styles.content,
-            {
-              backgroundColor: colors.background,
-            },
+            {backgroundColor: colors.background,},
           ]}
           onPress={(e) => e.stopPropagation()}
           {...props}
@@ -177,7 +195,9 @@ interface DialogCloseProps {
 const DialogClose = React.forwardRef<
   React.ElementRef<typeof Pressable>,
   DialogCloseProps & React.ComponentPropsWithoutRef<typeof Pressable>
->(({ children, asChild, ...props }, ref) => {
+>(({
+ children, asChild, ...props 
+}, ref) => {
   const { onOpenChange } = useDialogContext();
 
   if (asChild && React.isValidElement(children)) {
@@ -193,7 +213,11 @@ const DialogClose = React.forwardRef<
   }
 
   return (
-    <Pressable ref={ref} onPress={() => onOpenChange(false)} {...props}>
+    <Pressable
+      ref={ref}
+      onPress={() => onOpenChange(false)}
+      {...props}
+    >
       {children}
     </Pressable>
   );
@@ -245,8 +269,12 @@ const styles = StyleSheet.create({
 });
 
 export {
-   Dialog, DialogClose, DialogContent, DialogDescription,
-   DialogFooter, DialogHeader,
-   DialogTitle, DialogTrigger
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 };
-

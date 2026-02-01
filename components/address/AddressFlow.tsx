@@ -1,5 +1,8 @@
 import React, { useRef, useState } from 'react';
+
 import { StyleSheet, View } from 'react-native';
+
+import { useTranslation } from 'react-i18next';
 
 import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
@@ -7,14 +10,13 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import type { CountryCode } from '@/lib/services/postalCodeService';
-import { useTranslation } from 'react-i18next';
 
 import {
+  type AddressData,
   AddressForm,
+  type AddressFormData,
   CountrySelector,
   PostalCodeInput,
-  type AddressData,
-  type AddressFormData,
 } from './index';
 
 export type AddressStage = 'country' | 'postalCode' | 'address';
@@ -299,9 +301,9 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
       <View style={styles.buttonContainer}>
         {stage === 'country' && (
           <IconButton
-            variant='primary'
-            size='md'
-            icon='arrow-forward'
+            variant="primary"
+            size="md"
+            icon="arrow-forward"
             iconSize={32}
             iconColor={colors.primaryForeground}
             onPress={handleCountryContinue}
@@ -312,9 +314,9 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
 
         {stage === 'postalCode' && (
           <IconButton
-            variant='primary'
-            size='md'
-            icon='arrow-forward'
+            variant="primary"
+            size="md"
+            icon="arrow-forward"
             iconSize={32}
             iconColor={colors.primaryForeground}
             onPress={handlePostalCodeContinue}
@@ -325,9 +327,9 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
 
         {stage === 'address' && (
           <IconButton
-            variant='primary'
-            size='md'
-            icon='arrow-forward'
+            variant="primary"
+            size="md"
+            icon="arrow-forward"
             iconSize={32}
             iconColor={colors.primaryForeground}
             onPress={handleAddressContinue}
@@ -340,9 +342,7 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -350,9 +350,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 26,
   },
-  headerLeft: {
-    width: 80,
-  },
+  headerLeft: {width: 80,},
   headerCenter: {
     flex: 1,
     alignItems: 'center',

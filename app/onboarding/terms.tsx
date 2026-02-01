@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import {
   KeyboardAvoidingView,
   Platform,
@@ -7,6 +8,10 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+
+import { navigate } from 'expo-router/build/global-state/routing';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -31,8 +36,6 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { useTranslation } from 'react-i18next';
 
 /**
  * Terms and conditions screen for onboarding
@@ -54,10 +57,13 @@ const TermsScreen = () => {
       // Update form data and save to API with step tracking (unified)
       setIsSubmitting(true);
       try {
-        await updateFormData({
-          termsAccepted: true,
-          privacyAccepted: true,
-        }, 'terms');
+        await updateFormData(
+          {
+            termsAccepted: true,
+            privacyAccepted: true,
+          },
+          'terms'
+        );
         navigate('/onboarding/customization');
       } catch (error: any) {
         console.error('Failed to save terms step:', error);
@@ -75,7 +81,10 @@ const TermsScreen = () => {
   const isContinueDisabled = !termsAccepted || !privacyAccepted;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -92,11 +101,11 @@ const TermsScreen = () => {
             <BackButton />
 
             {/* Title */}
-            <Typography variant='h4'>{t('onboarding.termsTitle')}</Typography>
+            <Typography variant="h4">{t('onboarding.termsTitle')}</Typography>
 
             {/* Description */}
             <Typography
-              variant='body2'
+              variant="body2"
               style={[styles.description, { color: colors.icon }]}
             >
               {t('onboarding.termsDescription')}
@@ -124,7 +133,7 @@ const TermsScreen = () => {
                       }}
                     >
                       <Typography
-                        variant='body2'
+                        variant="body2"
                         style={[styles.checkboxLabel, { color: colors.text }]}
                       >
                         {t('onboarding.termsAccept')}{' '}
@@ -136,7 +145,7 @@ const TermsScreen = () => {
                         <DialogTrigger asChild>
                           <Pressable>
                             <Typography
-                              variant='body2'
+                              variant="body2"
                               style={[styles.link, { color: colors.primary }]}
                             >
                               {t('onboarding.termsOfUse')}
@@ -154,7 +163,7 @@ const TermsScreen = () => {
                           </DialogHeader>
                           <ScrollView style={styles.modalScrollView}>
                             <Typography
-                              variant='body2'
+                              variant="body2"
                               style={[styles.modalText, { color: colors.text }]}
                             >
                               {t('onboarding.termsContent')}
@@ -162,7 +171,7 @@ const TermsScreen = () => {
                           </ScrollView>
                           <DialogFooter>
                             <DialogClose asChild>
-                              <Button size='sm'>{t('common.close')}</Button>
+                              <Button size="sm">{t('common.close')}</Button>
                             </DialogClose>
                           </DialogFooter>
                         </DialogContent>
@@ -186,7 +195,7 @@ const TermsScreen = () => {
                       }}
                     >
                       <Typography
-                        variant='body2'
+                        variant="body2"
                         style={[styles.checkboxLabel, { color: colors.text }]}
                       >
                         {t('onboarding.privacyAccept')}{' '}
@@ -198,7 +207,7 @@ const TermsScreen = () => {
                         <DialogTrigger asChild>
                           <Pressable>
                             <Typography
-                              variant='body2'
+                              variant="body2"
                               style={[styles.link, { color: colors.primary }]}
                             >
                               {t('onboarding.privacyPolicy')}
@@ -216,7 +225,7 @@ const TermsScreen = () => {
                           </DialogHeader>
                           <ScrollView style={styles.modalScrollView}>
                             <Typography
-                              variant='body2'
+                              variant="body2"
                               style={[styles.modalText, { color: colors.text }]}
                             >
                               {t('onboarding.privacyContent')}
@@ -224,7 +233,7 @@ const TermsScreen = () => {
                           </ScrollView>
                           <DialogFooter>
                             <DialogClose asChild>
-                              <Button size='sm'>{t('common.close')}</Button>
+                              <Button size="sm">{t('common.close')}</Button>
                             </DialogClose>
                           </DialogFooter>
                         </DialogContent>
@@ -239,9 +248,9 @@ const TermsScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='md'
-              icon='arrow-forward'
+              variant="primary"
+              size="md"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
@@ -258,21 +267,15 @@ const TermsScreen = () => {
 export default TermsScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: {flex: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  scrollView: {
-    flex: 1,
-  },
+  progressContainer: {marginBottom: 8,},
+  scrollView: {flex: 1,},
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 80,

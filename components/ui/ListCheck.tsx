@@ -1,7 +1,12 @@
+import * as React from 'react';
+
+import {
+ StyleSheet, TouchableOpacity, View, ViewStyle 
+} from 'react-native';
+
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import * as React from 'react';
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+
 import { Icon } from './Icon';
 import { Typography } from './Typography';
 
@@ -101,12 +106,10 @@ export function ListCheck<T = string>({
                 <View style={styles.leftContent}>{option.leftContent}</View>
               )}
               <Typography
-                variant='body1'
+                variant="body1"
                 style={[
                   styles.itemText,
-                  {
-                    fontWeight: isSelected ? '600' : '400',
-                  },
+                  {fontWeight: isSelected ? '600' : '400',},
                 ]}
               >
                 {option.label}
@@ -116,19 +119,15 @@ export function ListCheck<T = string>({
               style={[
                 styles.radioButton,
                 {
-                  backgroundColor: isSelected
-                    ? colors.primary
-                    : 'transparent',
+                  backgroundColor: isSelected ? colors.primary : 'transparent',
                   borderColor: isSelected ? colors.primary : colors.icon,
                 },
               ]}
             >
               <Icon
-                name='checkmark'
+                name="checkmark"
                 size={16}
-                color={
-                  isSelected ? "primaryForeground" : "icon"
-                }
+                color={isSelected ? 'primaryForeground' : 'icon'}
               />
             </View>
           </TouchableOpacity>
@@ -139,9 +138,7 @@ export function ListCheck<T = string>({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
+  container: {width: '100%',},
   item: {
     flexDirection: 'row',
     alignItems: 'center',

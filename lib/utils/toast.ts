@@ -3,6 +3,7 @@
  * Integrates with error translator for API errors
  */
 import Toast from 'react-native-toast-message';
+
 import { ApiError } from '../types/apiTypes';
 import { getUserErrorMessage } from './errorTranslator';
 
@@ -20,7 +21,11 @@ interface ToastOptions {
 /**
  * Show a success toast
  */
-export function showSuccess(message: string, subtitle?: string, options?: ToastOptions) {
+export function showSuccess(
+  message: string,
+  subtitle?: string,
+  options?: ToastOptions
+) {
   Toast.show({
     type: 'success',
     text1: message,
@@ -35,7 +40,11 @@ export function showSuccess(message: string, subtitle?: string, options?: ToastO
 /**
  * Show an error toast
  */
-export function showError(message: string, subtitle?: string, options?: ToastOptions) {
+export function showError(
+  message: string,
+  subtitle?: string,
+  options?: ToastOptions
+) {
   Toast.show({
     type: 'error',
     text1: message,
@@ -50,7 +59,11 @@ export function showError(message: string, subtitle?: string, options?: ToastOpt
 /**
  * Show an info toast
  */
-export function showInfo(message: string, subtitle?: string, options?: ToastOptions) {
+export function showInfo(
+  message: string,
+  subtitle?: string,
+  options?: ToastOptions
+) {
   Toast.show({
     type: 'info',
     text1: message,
@@ -65,7 +78,11 @@ export function showInfo(message: string, subtitle?: string, options?: ToastOpti
 /**
  * Show a warning toast
  */
-export function showWarning(message: string, subtitle?: string, options?: ToastOptions) {
+export function showWarning(
+  message: string,
+  subtitle?: string,
+  options?: ToastOptions
+) {
   Toast.show({
     type: 'warning',
     text1: message,
@@ -81,7 +98,11 @@ export function showWarning(message: string, subtitle?: string, options?: ToastO
  * Show an error toast from an API error
  * Automatically translates the error code to a user-friendly message
  */
-export function showApiError(error: ApiError | Error, subtitle?: string, options?: ToastOptions) {
+export function showApiError(
+  error: ApiError | Error,
+  subtitle?: string,
+  options?: ToastOptions
+) {
   const userMessage = getUserErrorMessage(error);
   showError(userMessage, subtitle, options);
 }

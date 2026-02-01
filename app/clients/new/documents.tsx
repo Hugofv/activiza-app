@@ -1,7 +1,5 @@
-import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import {
   Alert,
   Platform,
@@ -10,31 +8,57 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+
+import * as ImagePicker from 'expo-image-picker';
+import { router, useLocalSearchParams } from 'expo-router';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
 import { Icon } from '@/components/ui/Icon';
+import { IconButton } from '@/components/ui/IconButton';
 import { ImageCardView } from '@/components/ui/ImageCardView';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useEditClientStore } from '@/lib/stores/editClientStore';
 
-import { IconButton } from '@/components/ui/IconButton';
 import { useNewClientForm } from './_context';
 
 export default function DocumentsScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
-  const [documentImages, setDocumentImages] = useState<string[]>(
-    formData.documentImages || []
+  const searchParams = useLocalSearchParams<{
+    clientId?: string;
+    edit?: string;
+  }>();
+  const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
+
+  // Edit mode: use store
+  const {
+ getDisplayDocs, addDocument, removeDocument 
+} = useEditClientStore();
+
+  // New client mode: use context
+  const {
+ formData, updateFormData, setCurrentStep 
+} = useNewClientForm();
+  const [localDocuments, setLocalDocuments] = useState<string[]>(
+    formData.documentImages ?? []
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Get documents based on mode
+  const displayDocuments = isEditMode
+    ? getDisplayDocs().map((d: { uri: string }) => d.uri)
+    : localDocuments;
+
   const requestPermissions = async () => {
     if (Platform.OS !== 'web') {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
           t('clients.permissionRequired') || 'Permissão necessária',
@@ -59,9 +83,15 @@ export default function DocumentsScreen() {
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        // Add all selected images to the list
-        const newImageUris = result.assets.map((asset) => asset.uri);
-        setDocumentImages((prev) => [...prev, ...newImageUris]);
+        const newUris = result.assets.map((asset) => asset.uri);
+
+        if (isEditMode) {
+          // Add to store
+          newUris.forEach((uri) => addDocument(uri));
+        } else {
+          // Add to local state
+          setLocalDocuments((prev) => [...prev, ...newUris]);
+        }
       }
     } catch (error) {
       console.error('Error picking image:', error);
@@ -72,16 +102,26 @@ export default function DocumentsScreen() {
     }
   };
 
-  const removeImage = (index: number) => {
-    setDocumentImages((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveImage = (index: number) => {
+    if (isEditMode) {
+      // Remove from store (handles marking as deleted if existing)
+      removeDocument(index);
+    } else {
+      // Remove from local state
+      setLocalDocuments((prev) => prev.filter((_, i) => i !== index));
+    }
   };
 
   const handleNext = async () => {
     setIsSubmitting(true);
     try {
-      updateFormData({
-        documentImages: documentImages.length > 0 ? documentImages : undefined,
-      });
+      if (isEditMode) {
+        // Store is already updated, just go back
+        router.back();
+        return;
+      }
+      // Update form context for new client flow
+      updateFormData({documentImages: localDocuments.length > 0 ? localDocuments : undefined,});
       setCurrentStep(6);
       router.push('/clients/new/address');
     } finally {
@@ -103,10 +143,16 @@ export default function DocumentsScreen() {
           <ThemedView style={styles.content}>
             {/* Title */}
             <View style={styles.titleContainer}>
-              <Typography variant="h3" color='text'>
+              <Typography
+                variant="h3"
+                color="text"
+              >
                 {t('clients.documents')}
               </Typography>
-              <Typography variant="body2" color='placeholder'>
+              <Typography
+                variant="body2"
+                color="placeholder"
+              >
                 {t('clients.optional')}
               </Typography>
             </View>
@@ -123,21 +169,28 @@ export default function DocumentsScreen() {
               onPress={pickImage}
             >
               <View style={styles.addPhotoContent}>
-                <Icon name="photo" size={32} color="primaryForeground" />
-                <Typography variant="body1Medium" color='primaryForeground'>
+                <Icon
+                  name="photo"
+                  size={32}
+                  color="primaryForeground"
+                />
+                <Typography
+                  variant="body1Medium"
+                  color="primaryForeground"
+                >
                   {t('clients.addPhoto')}
                 </Typography>
               </View>
             </Pressable>
 
             {/* Document Images Grid */}
-            {documentImages.length > 0 && (
+            {displayDocuments.length > 0 && (
               <View style={styles.imagesGrid}>
-                {documentImages.map((uri, index) => (
+                {displayDocuments.map((uri: string, index: number) => (
                   <ImageCardView
                     key={uri + index}
                     uri={uri}
-                    onRemove={() => removeImage(index)}
+                    onRemove={() => handleRemoveImage(index)}
                   />
                 ))}
               </View>
@@ -164,15 +217,9 @@ export default function DocumentsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
+  container: {flex: 1,},
+  scrollView: {flex: 1,},
+  scrollContent: {flexGrow: 1,},
   content: {
     flex: 1,
     paddingTop: 0,

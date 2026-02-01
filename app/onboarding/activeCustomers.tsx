@@ -1,5 +1,5 @@
-import { router } from 'expo-router';
 import { useState } from 'react';
+
 import {
   KeyboardAvoidingView,
   Platform,
@@ -7,6 +7,10 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+
+import { router } from 'expo-router';
+
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -20,7 +24,6 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
-import { useTranslation } from 'react-i18next';
 
 // Numeric values represent the maximum number of active customers
 // 0 = unlimited/more than the highest range
@@ -29,8 +32,16 @@ const ACTIVE_CUSTOMERS_OPTIONS: {
   keyPt: string;
   keyEn: string;
 }[] = [
-  { value: 20, keyPt: 'activeCustomersUpTo20', keyEn: 'activeCustomersUpTo20' },
-  { value: 50, keyPt: 'activeCustomers21To50', keyEn: 'activeCustomers21To50' },
+  {
+ value: 20,
+keyPt: 'activeCustomersUpTo20',
+keyEn: 'activeCustomersUpTo20' 
+},
+  {
+ value: 50,
+keyPt: 'activeCustomers21To50',
+keyEn: 'activeCustomers21To50' 
+},
   {
     value: 100,
     keyPt: 'activeCustomers51To100',
@@ -68,7 +79,10 @@ const ActiveCustomersScreen = () => {
     // Update form data and save to API with step tracking (unified)
     setIsSubmitting(true);
     try {
-      await updateFormData({ activeCustomers: selectedOption }, 'active_customers');
+      await updateFormData(
+        { activeCustomers: selectedOption },
+        'active_customers'
+      );
       router.push('/onboarding/financialOperations');
     } catch (error: any) {
       console.error('Failed to save activeCustomers step:', error);
@@ -108,12 +122,18 @@ const ActiveCustomersScreen = () => {
               <BackButton />
 
               {/* Title */}
-              <Typography variant='h4' style={styles.title}>
+              <Typography
+                variant="h4"
+                style={styles.title}
+              >
                 {t('onboarding.activeCustomers')}
               </Typography>
 
               {/* Description */}
-              <Typography variant='body2' style={styles.description}>
+              <Typography
+                variant="body2"
+                style={styles.description}
+              >
                 {t('onboarding.activeCustomersDescription')}
               </Typography>
 
@@ -134,9 +154,9 @@ const ActiveCustomersScreen = () => {
           {/* Continue Button */}
           <View style={styles.buttonContainer}>
             <IconButton
-              variant='primary'
-              size='lg'
-              icon='arrow-forward'
+              variant="primary"
+              size="lg"
+              icon="arrow-forward"
               iconSize={32}
               iconColor={colors.primaryForeground}
               onPress={handleContinue}
@@ -153,34 +173,22 @@ const ActiveCustomersScreen = () => {
 export default ActiveCustomersScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
+  container: {flex: 1,},
+  scrollView: {flex: 1,},
+  scrollContent: {flexGrow: 1,},
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  title: {
-    marginTop: 8,
-  },
+  progressContainer: {marginBottom: 8,},
+  title: {marginTop: 8,},
   description: {
     marginTop: -8,
     opacity: 0.7,
   },
-  optionsList: {
-    marginTop: 8,
-  },
+  optionsList: {marginTop: 8,},
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

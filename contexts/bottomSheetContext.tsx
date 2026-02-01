@@ -2,7 +2,9 @@
  * Bottom Sheet Context
  * Provides global bottom sheet functionality that can be used anywhere in the app
  */
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, {
+ createContext, useCallback, useContext, useState 
+} from 'react';
 
 interface BottomSheetContextType {
   isOpen: boolean;
@@ -11,7 +13,9 @@ interface BottomSheetContextType {
   toggle: () => void;
 }
 
-const BottomSheetContext = createContext<BottomSheetContextType | undefined>(undefined);
+const BottomSheetContext = createContext<BottomSheetContextType | undefined>(
+  undefined
+);
 
 interface BottomSheetProviderProps {
   children: React.ReactNode;
@@ -52,10 +56,10 @@ export function BottomSheetProvider({ children }: BottomSheetProviderProps) {
  */
 export function useBottomSheet(): BottomSheetContextType {
   const context = useContext(BottomSheetContext);
-  
+
   if (context === undefined) {
     throw new Error('useBottomSheet must be used within BottomSheetProvider');
   }
-  
+
   return context;
 }

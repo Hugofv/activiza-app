@@ -1,8 +1,8 @@
 /**
  * Utility functions for geolocation and country detection
  */
-
 import * as Localization from 'expo-localization';
+
 import type { CountryCode } from '../services/postalCodeService';
 
 /**
@@ -21,9 +21,9 @@ export function detectCountryFromLocale(): CountryCode {
     // Try regionCode first (more reliable)
     if (locale.regionCode) {
       const countryMap: Record<string, CountryCode> = {
-        'BR': 'BR',
-        'US': 'US',
-        'GB': 'UK',
+        BR: 'BR',
+        US: 'US',
+        GB: 'UK',
       };
       const mapped = countryMap[locale.regionCode];
       if (mapped) return mapped;
@@ -36,10 +36,10 @@ export function detectCountryFromLocale(): CountryCode {
       const countryCode = parts[parts.length - 1]?.toUpperCase();
 
       const countryMap: Record<string, CountryCode> = {
-        'BR': 'BR',
-        'US': 'US',
-        'GB': 'UK',
-        'UK': 'UK',
+        BR: 'BR',
+        US: 'US',
+        GB: 'UK',
+        UK: 'UK',
       };
 
       return countryMap[countryCode] || 'BR';
@@ -66,9 +66,9 @@ export function getCountryFromRegion(): CountryCode {
     }
 
     const countryMap: Record<string, CountryCode> = {
-      'BR': 'BR',
-      'US': 'US',
-      'GB': 'UK',
+      BR: 'BR',
+      US: 'US',
+      GB: 'UK',
     };
 
     return countryMap[regionCode] || 'BR';
