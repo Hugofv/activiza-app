@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import {
- Pressable, StyleSheet, TouchableOpacity, View 
+  Pressable, StyleSheet, TouchableOpacity, View
 } from 'react-native';
 
 import * as Haptics from 'expo-haptics';
@@ -208,7 +208,6 @@ function TabLayoutContent() {
       <BottomSheet
         visible={isOpen}
         onClose={handleClose}
-        title={t('tabs.newOperation') || 'Nova Operação'}
       >
         <View style={styles.optionsList}>
           {OPERATION_OPTIONS.map((option, index) => (

@@ -18,6 +18,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -38,7 +39,7 @@ export function BottomSheet({
 }: BottomSheetProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const translateY = useSharedValue(0);
+  const translateY = useSharedValue(SCREEN_HEIGHT);
   const context = useSharedValue({ y: 0 });
 
   React.useEffect(() => {
@@ -142,6 +143,13 @@ export function BottomSheet({
             {/* Title */}
             {title && (
               <View style={styles.titleContainer}>
+                <Typography
+                  variant="body2SemiBold"
+                  style={styles.title}
+                  color="text"
+                >
+                  {title}
+                </Typography>
                 <View
                   style={[styles.titleLine, { backgroundColor: colors.icon }]}
                 />
@@ -182,6 +190,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 10,
     maxHeight: SCREEN_HEIGHT * 0.9,
+    minHeight: 200,
   },
   handle: {
     width: 40,
@@ -196,6 +205,10 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 16,
     alignItems: 'center',
+  },
+  title: {
+    fontSize: 18,
+    marginBottom: 12,
   },
   titleLine: {
     width: '100%',

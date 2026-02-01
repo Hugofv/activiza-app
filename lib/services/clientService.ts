@@ -29,10 +29,10 @@ type: string }> {
  value: {
  uri,
 name,
-type 
+type
 },
 name,
-type 
+type
 };
   }
 
@@ -43,17 +43,17 @@ type
     return {
  value: blob,
 name,
-type 
+type
 };
   } catch {
     return {
  value: {
  uri,
 name,
-type 
+type
 },
 name,
-type 
+type
 };
   }
 }
@@ -244,7 +244,6 @@ export async function getClientById(id: string): Promise<Client> {
     const response = await apiClient.get<Client>(
       ENDPOINTS.CLIENTS.GET_BY_ID(id)
     );
-    console.log('Get client by ID response:', response.data);
     return response.data;
   } catch (error: any) {
     console.error('Get client by ID error:', error);
@@ -416,7 +415,6 @@ export async function updateClient(
       formData.append('documents', JSON.stringify(data.documents));
     }
 
-    console.log('Form data:', formData);
     const response = await apiClient.put<Client>(
       ENDPOINTS.CLIENTS.UPDATE(id),
       formData
