@@ -4,8 +4,9 @@ import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Image as ExpoImage } from 'expo-image';
 
-import { type ThemeColorKey } from '@/constants/theme';
+import { Colors, type ThemeColorKey } from '@/constants/theme';
 
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Icon, type IconName } from './Icon';
 
 export interface AvatarProps {
@@ -52,6 +53,8 @@ export const Avatar = React.forwardRef<View, AvatarProps>(
     ref
   ) => {
     const borderRadius = size / 2;
+    const colorScheme = useColorScheme();
+    const colors = Colors[colorScheme ?? 'light'];
 
     if (image) {
       return (
@@ -90,7 +93,7 @@ export const Avatar = React.forwardRef<View, AvatarProps>(
             width: size,
             height: size,
             borderRadius,
-            backgroundColor: backgroundColor,
+            backgroundColor: colors[backgroundColor],
             justifyContent: 'center',
             alignItems: 'center',
           },

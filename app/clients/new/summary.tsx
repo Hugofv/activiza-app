@@ -119,7 +119,6 @@ export default function SummaryScreen() {
     );
   };
 
-  console.log('formData', formData);
   return (
     <SafeAreaView
       style={[styles.container]}

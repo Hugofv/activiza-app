@@ -134,8 +134,8 @@ export default function ClientDetailScreen() {
     try {
       // Remove internal display properties before sending
       const {
- _displayDocs, _guarantor, ...updateData 
-} =
+        _displayDocs, _guarantor, ...updateData
+      } =
         draft as typeof draft & {
           _displayDocs?: unknown;
           _guarantor?: unknown;
@@ -213,12 +213,12 @@ export default function ClientDetailScreen() {
   const documentUrls = draftWithDocs?._displayDocs?.length
     ? draftWithDocs._displayDocs.map((d: { uri: string }) => d.uri)
     : (client?.documents ?? [])
-        .map((d) =>
-          typeof d === 'object' && d && 'downloadUrl' in d
-            ? (d as { downloadUrl?: string }).downloadUrl
-            : undefined
-        )
-        .filter((u): u is string => !!u);
+      .map((d) =>
+        typeof d === 'object' && d && 'downloadUrl' in d
+          ? (d as { downloadUrl?: string }).downloadUrl
+          : undefined
+      )
+      .filter((u): u is string => !!u);
 
   const displayEmail = displayDraft?.email ?? client.email;
   const rawDocument = displayDraft?.document ?? client.document;
@@ -227,24 +227,40 @@ export default function ClientDetailScreen() {
   const countryCode = (addr?.countryCode ?? 'BR') as 'BR' | 'US' | 'UK';
   const displayDocument = rawDocument
     ? formatDocument(
-        rawDocument,
-        countryCode,
-        displayDocumentType as DocumentType | undefined
-      )
+      rawDocument,
+      countryCode,
+      displayDocumentType as DocumentType | undefined
+    )
     : undefined;
-  const address = addr
-    ? [
-        addr.street,
-        addr.number,
-        addr.neighborhood,
-        addr.city,
-        addr.state,
-        addr.postalCode,
-        addr.complement,
-      ]
-        .filter(Boolean)
-        .join(', ')
-    : undefined;
+
+  const formatAddress = () => {
+    const addr = displayDraft?.address ?? client.address;
+    if (!addr) return t('clients.summaryNotInformed');
+    const parts = [
+      addr.street + ', ' + t('clients.addressNumber', { number: addr.number }),
+      addr.neighborhood,
+      addr.city + ', ' + addr.state,
+      addr.complement &&
+      t('clients.addressComplement', { complement: addr.complement }),
+      addr.postalCode &&
+      t('clients.addressPostalCode', { code: addr.postalCode }),
+    ].filter(Boolean);
+
+    return (
+      <View style={styles.addressContainer}>
+        {parts.map((part, index) => (
+          <Typography
+            key={index}
+            variant="body1"
+            color="text"
+            style={styles.addressLine}
+          >
+            {part}
+          </Typography>
+        ))}
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView
@@ -253,7 +269,12 @@ export default function ClientDetailScreen() {
     >
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.background }]}>
-        <BackButton />
+
+        {isEditing ? (
+          <View />
+        ) : (
+          <BackButton />
+        )}
 
         {isEditing ? (
           <View style={styles.editButtonsRow}>
@@ -314,9 +335,9 @@ export default function ClientDetailScreen() {
             onPress={
               isEditing
                 ? (e) => {
-                    e?.stopPropagation?.();
-                    goToEditScreen('/clients/new/avatar');
-                  }
+                  e?.stopPropagation?.();
+                  goToEditScreen('/clients/new/avatar');
+                }
                 : undefined
             }
             disabled={!isEditing}
@@ -373,9 +394,9 @@ export default function ClientDetailScreen() {
               shape="rounded"
               size="lg"
               labelStyle={{
- width: 90,
-textAlign: 'center' 
-}}
+                width: 90,
+                textAlign: 'center'
+              }}
             />
             <IconButton
               icon="whatsapp"
@@ -385,9 +406,9 @@ textAlign: 'center'
               shape="rounded"
               size="lg"
               labelStyle={{
- width: 90,
-textAlign: 'center' 
-}}
+                width: 90,
+                textAlign: 'center'
+              }}
             />
             <IconButton
               icon="map-pin"
@@ -397,9 +418,9 @@ textAlign: 'center'
               shape="rounded"
               size="lg"
               labelStyle={{
- width: 90,
-textAlign: 'center' 
-}}
+                width: 90,
+                textAlign: 'center'
+              }}
             />
           </View>
         )}
@@ -616,22 +637,18 @@ textAlign: 'center'
           )}
 
           {/* Address */}
-          {(address || isEditing) && (
-            <View
-              style={[styles.detailItem, { borderBottomColor: colors.border }]}
-            >
-              <SummaryItem
-                icon="map-pin"
-                isEditing={isEditing}
-                label={t('clients.address') || 'Endereço físico'}
-                value={address ?? '—'}
-                onPress={
-                  isEditing
-                    ? () => goToEditScreen('/clients/new/address')
-                    : undefined
-                }
-              />
-            </View>
+          {(addr || isEditing) && (
+            <SummaryItem
+              icon="map-pin"
+              isEditing={isEditing}
+              label={t('clients.address') || 'Endereço físico'}
+              value={formatAddress()}
+              onPress={
+                isEditing
+                  ? () => goToEditScreen('/clients/new/address')
+                  : undefined
+              }
+            />
           )}
         </View>
       </ScrollView>
@@ -640,7 +657,7 @@ textAlign: 'center'
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1, },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -652,6 +669,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
   },
+  addressContainer: { gap: 4, },
+  addressLine: { fontSize: 16, },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -660,9 +679,9 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 16,
   },
-  editButton: {minWidth: 80,},
-  scrollView: {flex: 1,},
-  scrollContent: {paddingBottom: 24,},
+  editButton: { minWidth: 80, },
+  scrollView: { flex: 1, },
+  scrollContent: { paddingBottom: 24, },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -675,7 +694,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: 8,
   },
-  avatarPressable: {alignSelf: 'flex-start',},
+  avatarPressable: { alignSelf: 'flex-start', },
   clientName: {
     fontSize: 24,
     fontWeight: '600',
@@ -706,7 +725,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
   },
-  actionButtonWrapper: {padding: 8,},
+  actionButtonWrapper: { padding: 8, },
   editableItem: {
     borderWidth: 1,
     borderStyle: 'dashed',
