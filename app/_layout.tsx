@@ -99,6 +99,15 @@ function AppContent() {
               gestureEnabled: true,
             }}
           />
+          <Stack.Screen
+            name="operations"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+              animationDuration: 350,
+              gestureEnabled: true,
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
         <Toast />

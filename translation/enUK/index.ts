@@ -3,6 +3,7 @@ import clients from './clients';
 import common from './common';
 import home from './home';
 import onboarding from './onboarding';
+import operations from './operations';
 import tabs from './tabs';
 
 export default {
@@ -12,4 +13,5 @@ export default {
   tabs,
   auth,
   clients,
+  operations,
 };
