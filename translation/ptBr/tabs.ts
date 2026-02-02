@@ -14,7 +14,7 @@ export default {
   newClient: 'Novo Cliente',
   newOperation: 'Nova Operação',
   lendMoney: 'Emprestar dinheiro a juros',
-  promissoryNotes: 'Notas promissórias',
+  installments: 'Parcelas',
   rentProperties: 'Alugar imóveis',
   rentRooms: 'Alugar quartos',
   rentVehicles: 'Alugar veículos',

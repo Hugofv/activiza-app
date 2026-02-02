@@ -422,6 +422,17 @@ export default function ClientDetailScreen() {
                 textAlign: 'center'
               }}
             />
+            <IconButton
+              icon="add"
+              label={t('clients.blacklist')}
+              backgroundColor="muted"
+              shape="rounded"
+              size="lg"
+              labelStyle={{
+                width: 90,
+                textAlign: 'center'
+              }}
+            />
           </View>
         )}
 

@@ -1,6 +1,7 @@
 export default {
   newClient: 'New client',
   name: 'Name',
+  blacklist: 'Blacklist',
   nameQuestion: "What is your client's full name?",
   nameRequired: 'Name is required',
   nameMinLength: 'Name must be at least 2 characters',

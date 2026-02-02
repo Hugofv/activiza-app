@@ -160,7 +160,7 @@ We may update this privacy policy from time to time. We will notify you of any c
   whatDoYouWantToDo: 'What do you want to do?',
   optionsDescription: 'You can change these options later in the settings.',
   optionLendMoney: 'Lend money with interest',
-  optionPromissoryNotes: 'Promissory notes',
+  optionInstallments: 'Installments',
   optionRentProperties: 'Rent properties',
   optionRentRooms: 'Rent rooms',
   optionRentVehicles: 'Rent vehicles',

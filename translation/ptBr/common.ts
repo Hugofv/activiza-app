@@ -20,6 +20,7 @@ export default {
   save: 'Salvar',
   saving: 'Salvando...',
   loading: 'Carregando...',
+  noData: 'Nenhum dado disponível',
   edit: 'Editar',
   // Validation errors
   validation: {

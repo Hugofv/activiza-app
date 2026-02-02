@@ -162,7 +162,7 @@ Podemos atualizar esta política de privacidade periodicamente. Notificaremos vo
   optionsDescription:
     'Você pode alterar estas opções depois nas configurações.',
   optionLendMoney: 'Emprestar dinheiro com juros',
-  optionPromissoryNotes: 'Notas promissórias',
+  optionInstallments: 'Parcelas',
   optionRentProperties: 'Alugar imóveis',
   optionRentRooms: 'Alugar quartos',
   optionRentVehicles: 'Alugar veículos',

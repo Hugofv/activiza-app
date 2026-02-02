@@ -18,6 +18,7 @@ export default {
   save: 'Save',
   saving: 'Saving...',
   loading: 'Loading...',
+  noData: 'No data available',
   edit: 'Edit',
   cancel: 'Cancel',
   // Validation errors

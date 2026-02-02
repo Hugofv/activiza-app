@@ -11,8 +11,6 @@ import {
 
 import { router } from 'expo-router';
 
-import { useQuery } from '@tanstack/react-query';
-
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -26,50 +24,22 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useModules } from '@/lib/hooks/useModules';
+import {
+  MODULE_ICON_MAP,
+  MODULE_TRANSLATION_MAP,
+} from '@/lib/constants/operationConstants';
 import { useToast } from '@/lib/hooks/useToast';
-import { Module, getModules } from '@/lib/services/onboardingService';
+import type { Module } from '@/lib/services/onboardingService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
 
 type BusinessOption = string;
 
-/**
- * Map module keys to icon configuration
- * This maps the 'key' field from the API (UPPER_SNAKE_CASE) to the appropriate icon and library
- */
-const MODULE_ICON_MAP: Record<string, { icon: string }> = {
-  LOAN: { icon: 'cash-outline' },
-  PROMISSORY_NOTE: { icon: 'document-text-outline' },
-  RENT_HOUSE: { icon: 'home' },
-  RENT_ROOM: { icon: 'door-outline' },
-  RENT_VEHICLE: { icon: 'car' },
-  // Default fallback icon
-  default: { icon: 'ellipse-outline' },
-};
+const getModuleIcon = (key: string) =>
+  MODULE_ICON_MAP[key] ?? MODULE_ICON_MAP.default;
 
-/**
- * Map API module keys (UPPER_SNAKE_CASE) to translation keys (camelCase)
- */
-const MODULE_TRANSLATION_MAP: Record<string, string> = {
-  LOAN: 'optionLendMoney',
-  PROMISSORY_NOTE: 'optionPromissoryNotes',
-  RENT_HOUSE: 'optionRentProperties',
-  RENT_ROOM: 'optionRentRooms',
-  RENT_VEHICLE: 'optionRentVehicles',
-};
-
-/**
- * Get icon configuration for a module key
- */
-const getModuleIcon = (key: string) => {
-  return MODULE_ICON_MAP[key] || MODULE_ICON_MAP.default;
-};
-
-/**
- * Get translation key for a module key
- */
-const getModuleTranslationKey = (key: string): string => {
-  return MODULE_TRANSLATION_MAP[key] || `option${key}`;
-};
+const getModuleTranslationKey = (key: string): string =>
+  MODULE_TRANSLATION_MAP[key] ?? `option${key}`;
 
 /**
  * Business options selection screen for onboarding
@@ -82,16 +52,8 @@ const OptionsScreen = () => {
   const { showError } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch modules from API
-  const {
-    data: modules,
-    isLoading: isLoadingModules,
-    error: modulesError,
-  } = useQuery<Module[]>({
-    queryKey: ['modules'],
-    queryFn: getModules,
-    staleTime: 1000 * 60 * 60, // 1 hour - modules don't change frequently
-  });
+  const { data: modules, isLoading: isLoadingModules, error: modulesError } =
+    useModules();
 
   // Initialize selected options from formData
   const [selectedOptions, setSelectedOptions] = useState<BusinessOption[]>(
@@ -109,15 +71,13 @@ const OptionsScreen = () => {
     if (!modules || !Array.isArray(modules) || modules.length === 0) return [];
 
     return modules.map((module) => {
-      const iconConfig = getModuleIcon(module.key);
       const translationKey = getModuleTranslationKey(module.key);
-
       return {
         value: module.key,
         label: t(`onboarding.${translationKey}`) || module.name || module.key,
         leftContent: (
           <Icon
-            name={iconConfig.icon as any}
+            name={getModuleIcon(module.key) as any}
             size={24}
             color={selectedOptions.includes(module.key) ? 'primary' : 'icon'}
           />

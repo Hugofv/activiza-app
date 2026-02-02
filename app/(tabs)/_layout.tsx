@@ -1,11 +1,15 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import {
-  Pressable, StyleSheet, TouchableOpacity, View
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 import * as Haptics from 'expo-haptics';
-import { Tabs } from 'expo-router';
+import { router, Tabs } from 'expo-router';
 
 import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 
@@ -26,39 +30,8 @@ import {
   useBottomSheet,
 } from '@/contexts/bottomSheetContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-
-const OPERATION_OPTIONS = [
-  {
-    id: 'loan',
-    icon: 'user-dollar',
-    labelKey: 'lendMoney',
-    route: '/operations/loan',
-  },
-  {
-    id: 'promissory_note',
-    icon: 'receipt-2',
-    labelKey: 'promissoryNotes',
-    route: '/operations/promissory-note',
-  },
-  {
-    id: 'rent_property',
-    icon: 'home',
-    labelKey: 'rentProperties',
-    route: '/operations/rent-property',
-  },
-  {
-    id: 'rent_room',
-    icon: 'door-outline',
-    labelKey: 'rentRooms',
-    route: '/operations/rent-room',
-  },
-  {
-    id: 'rent_vehicle',
-    icon: 'car',
-    labelKey: 'rentVehicles',
-    route: '/operations/rent-vehicle',
-  },
-] as const;
+import { mapModulesToOperationOptions } from '@/lib/constants/operationConstants';
+import { useModules } from '@/lib/hooks/useModules';
 
 function CreateTabButton(props: BottomTabBarButtonProps) {
   const { open } = useBottomSheet();
@@ -87,7 +60,7 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
     });
   };
 
-  const animatedStyle = useAnimatedStyle(() => ({transform: [{ scale: scale.value }],}));
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }], }));
 
   return (
     <TouchableOpacity
@@ -114,14 +87,21 @@ function TabLayoutContent() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
   const { isOpen, close } = useBottomSheet();
+  const {
+    data: modules,
+    isLoading: isLoadingModules,
+    error: modulesError,
+  } = useModules();
+  const operationOptions = useMemo(
+    () => mapModulesToOperationOptions(modules),
+    [modules]
+  );
 
   const handleOptionPress = useCallback(
     (route?: string) => {
       close();
       if (route) {
-        // TODO: Navigate to the specific operation screen
-        // router.push(route);
-        console.log('Navigate to:', route);
+        router.push(route as any);
       }
     },
     [close]
@@ -156,7 +136,7 @@ function TabLayoutContent() {
     overflow: 'hidden' as const,
   };
 
-  const tabBarItemStyle = {height: 65,};
+  const tabBarItemStyle = { height: 65, };
 
   return (
     <>
@@ -210,35 +190,64 @@ function TabLayoutContent() {
         onClose={handleClose}
       >
         <View style={styles.optionsList}>
-          {OPERATION_OPTIONS.map((option, index) => (
-            <Pressable
-              key={option.id}
-              style={[
-                styles.optionItem,
-                index < OPERATION_OPTIONS.length - 1 && [
-                  styles.optionItemBorder,
-                  {
-                    borderBottomColor:
-                      Colors[colorScheme ?? 'light'].icon + '20',
-                  },
-                ],
-              ]}
-              onPress={() => handleOptionPress(option.route)}
-              android_ripple={{color: Colors[colorScheme ?? 'light'].icon + '10',}}
-            >
-              <Icon
-                name={option.icon}
-                size={28}
-                color="text"
+          {isLoadingModules ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator
+                size="large"
+                color={Colors[colorScheme ?? 'light'].primary}
               />
               <Typography
-                variant="body1"
-                style={[styles.optionText, { color: 'text' }]}
+                variant="body2"
+                style={[styles.loadingText, { color: Colors[colorScheme ?? 'light'].icon }]}
               >
-                {t(`tabs.${option.labelKey}`)}
+                {t('common.loading')}
               </Typography>
-            </Pressable>
-          ))}
+            </View>
+          ) : modulesError ? (
+            <Typography
+              variant="body2"
+              style={[styles.errorText, { color: Colors[colorScheme ?? 'light'].text }]}
+            >
+              {t('common.error')}
+            </Typography>
+          ) : operationOptions.length === 0 ? (
+            <Typography
+              variant="body2"
+              style={[styles.emptyText, { color: Colors[colorScheme ?? 'light'].icon }]}
+            >
+              {t('common.noData')}
+            </Typography>
+          ) : (
+            operationOptions.map((option, index) => (
+              <Pressable
+                key={option.id}
+                style={[
+                  styles.optionItem,
+                  index < operationOptions.length - 1 && [
+                    styles.optionItemBorder,
+                    {
+                      borderBottomColor:
+                        Colors[colorScheme ?? 'light'].icon + '20',
+                    },
+                  ],
+                ]}
+                onPress={() => handleOptionPress(option.route)}
+                android_ripple={{ color: Colors[colorScheme ?? 'light'].icon + '10', }}
+              >
+                <Icon
+                  name={option.icon as any}
+                  size={28}
+                  color="text"
+                />
+                <Typography
+                  variant="body1"
+                  style={[styles.optionText, { color: 'text' }]}
+                >
+                  {t(`tabs.${option.labelKey}`)}
+                </Typography>
+              </Pressable>
+            ))
+          )}
         </View>
       </BottomSheet>
     </>
@@ -261,7 +270,21 @@ const styles = StyleSheet.create({
     height: 65,
     width: '100%',
   },
-  optionsList: {paddingVertical: 8,},
+  optionsList: { paddingVertical: 8, },
+  loadingContainer: {
+    paddingVertical: 24,
+    alignItems: 'center',
+    gap: 12,
+  },
+  loadingText: { marginTop: 4, },
+  errorText: {
+    textAlign: 'center',
+    paddingVertical: 16,
+  },
+  emptyText: {
+    textAlign: 'center',
+    paddingVertical: 16,
+  },
   optionItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -269,7 +292,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     gap: 16,
   },
-  optionItemBorder: {borderBottomWidth: 1,},
+  optionItemBorder: { borderBottomWidth: 1, },
   optionText: {
     fontSize: 16,
     flex: 1,
