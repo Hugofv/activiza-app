@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -97,6 +98,7 @@ function TabLayoutContent() {
     [modules]
   );
 
+  console.log('modules', modules);
   const handleOptionPress = useCallback(
     (route?: string) => {
       close();
@@ -189,7 +191,11 @@ function TabLayoutContent() {
         visible={isOpen}
         onClose={handleClose}
       >
-        <View style={styles.optionsList}>
+        <ScrollView
+          style={styles.optionsList}
+          contentContainerStyle={styles.optionsListContent}
+          showsVerticalScrollIndicator={false}
+        >
           {isLoadingModules ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator
@@ -248,7 +254,7 @@ function TabLayoutContent() {
               </Pressable>
             ))
           )}
-        </View>
+        </ScrollView>
       </BottomSheet>
     </>
   );
@@ -270,7 +276,11 @@ const styles = StyleSheet.create({
     height: 65,
     width: '100%',
   },
-  optionsList: { paddingVertical: 8, },
+  optionsList: { flexGrow: 0, },
+  optionsListContent: {
+    paddingVertical: 8,
+    paddingBottom: 24,
+  },
   loadingContainer: {
     paddingVertical: 24,
     alignItems: 'center',

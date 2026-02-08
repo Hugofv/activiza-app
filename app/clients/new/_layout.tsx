@@ -71,8 +71,8 @@ export default function NewClientLayout() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  headerLeft: {width: 80,},
+  container: { flex: 1, },
+  headerLeft: { width: 80, },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

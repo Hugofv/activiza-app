@@ -308,7 +308,7 @@ const IconButton = React.forwardRef<
         case 'primary':
           return 'primaryForeground';
         case 'secondary':
-          return 'primary';
+          return 'primaryForeground';
         case 'error':
           return 'text';
         case 'outline':
@@ -398,5 +398,6 @@ const styles = StyleSheet.create({
 });
 
 export {
- IconButton, iconButtonVariants 
+  IconButton, iconButtonVariants
 };
+

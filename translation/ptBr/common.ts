@@ -22,6 +22,7 @@ export default {
   loading: 'Carregando...',
   noData: 'Nenhum dado disponível',
   edit: 'Editar',
+  search: 'Pesquisar',
   // Validation errors
   validation: {
     required: 'Este campo é obrigatório',

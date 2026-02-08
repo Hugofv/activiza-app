@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   buttonContainer: {
-    paddingBottom: 56,
+    paddingBottom: 76,
     paddingHorizontal: 24,
     alignItems: 'flex-end',
   },

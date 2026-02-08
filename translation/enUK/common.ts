@@ -21,6 +21,7 @@ export default {
   noData: 'No data available',
   edit: 'Edit',
   cancel: 'Cancel',
+  search: 'Search',
   // Validation errors
   validation: {
     required: 'This field is required',

@@ -34,6 +34,7 @@ import {
   IconPhoto,
   IconPlus,
   IconReceipt2,
+  IconSearch,
   IconSquareRoundedPlusFilled,
   IconStar,
   IconStarFilled,
@@ -68,7 +69,7 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   plus: IconPlus,
   'square-rounded-plus': IconSquareRoundedPlusFilled,
   note: IconNote,
-
+  search: IconSearch,
   // Visibility
   'eye-outline': IconEye,
   eye: IconEye,
@@ -154,7 +155,7 @@ function resolveIconColor(
 
 const Icon = React.forwardRef<any, IconProps>(
   ({
- name, size = 24, color, style, ...props 
+ name, size = 24, color, style, ...props
 }, ref) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
@@ -173,7 +174,7 @@ const Icon = React.forwardRef<any, IconProps>(
           ref={ref}
           style={[{
  width: size,
-height: size 
+height: size
 }, style]}
         >
           <IconCircle

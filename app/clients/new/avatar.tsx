@@ -38,8 +38,8 @@ export default function AvatarScreen() {
   const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
   const { draft, updateDraft } = useEditClientStore();
   const {
- formData, updateFormData, setCurrentStep 
-} = useNewClientForm();
+    formData, updateFormData, setCurrentStep
+  } = useNewClientForm();
   const initialAvatar = isEditMode
     ? (draft.avatar ?? undefined)
     : (formData.avatar ?? undefined);
@@ -54,7 +54,7 @@ export default function AvatarScreen() {
         Alert.alert(
           t('clients.permissionRequired') || 'Permissão necessária',
           t('clients.cameraPermissionMessage') ||
-            'Precisamos de permissão para acessar suas fotos!'
+          'Precisamos de permissão para acessar suas fotos!'
         );
         return false;
       }
@@ -95,7 +95,7 @@ export default function AvatarScreen() {
         router.back();
         return;
       }
-      updateFormData({avatar: avatar || undefined,});
+      updateFormData({ avatar: avatar || undefined, });
       setCurrentStep(2);
       router.push('/clients/new/whatsapp');
     } finally {
@@ -208,7 +208,7 @@ export default function AvatarScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1, },
   content: {
     paddingTop: 0,
     paddingHorizontal: 24,
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 32,
   },
-  avatarWrapper: {position: 'relative',},
+  avatarWrapper: { position: 'relative', },
   addAvatarButton: {
     borderWidth: 2,
     borderStyle: 'dashed',
@@ -253,9 +253,9 @@ const styles = StyleSheet.create({
     padding: 4,
     shadowColor: '#000',
     shadowOffset: {
- width: 0,
-height: 2 
-},
+      width: 0,
+      height: 2
+    },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
