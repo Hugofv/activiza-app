@@ -37,14 +37,10 @@ export default function DocumentsScreen() {
   const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
 
   // Edit mode: use store
-  const {
- getDisplayDocs, addDocument, removeDocument 
-} = useEditClientStore();
+  const { getDisplayDocs, addDocument, removeDocument } = useEditClientStore();
 
   // New client mode: use context
-  const {
- formData, updateFormData, setCurrentStep 
-} = useNewClientForm();
+  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [localDocuments, setLocalDocuments] = useState<string[]>(
     formData.documentImages ?? []
   );
@@ -121,7 +117,9 @@ export default function DocumentsScreen() {
         return;
       }
       // Update form context for new client flow
-      updateFormData({documentImages: localDocuments.length > 0 ? localDocuments : undefined,});
+      updateFormData({
+        documentImages: localDocuments.length > 0 ? localDocuments : undefined,
+      });
       setCurrentStep(6);
       router.push('/clients/new/address');
     } finally {
@@ -217,9 +215,9 @@ export default function DocumentsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  scrollView: {flex: 1,},
-  scrollContent: {flexGrow: 1,},
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
   content: {
     flex: 1,
     paddingTop: 0,

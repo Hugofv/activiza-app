@@ -26,9 +26,7 @@ export default function AddressScreen() {
   }>();
   const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
   const { draft, updateDraft } = useEditClientStore();
-  const {
- formData, updateFormData, setCurrentStep 
-} = useNewClientForm();
+  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const addressSource = isEditMode ? draft.address : formData.address;
   const countryCode = (addressSource?.countryCode as CountryCode) || null;
 
@@ -40,17 +38,17 @@ export default function AddressScreen() {
   const handleCountrySelect = async (country: CountryCode) => {
     const COUNTRIES = [
       {
- code: 'BR' as CountryCode,
-name: 'Brasil' 
-},
+        code: 'BR' as CountryCode,
+        name: 'Brasil',
+      },
       {
- code: 'UK' as CountryCode,
-name: 'Reino Unido' 
-},
+        code: 'UK' as CountryCode,
+        name: 'Reino Unido',
+      },
       {
- code: 'US' as CountryCode,
-name: 'Estados Unidos' 
-},
+        code: 'US' as CountryCode,
+        name: 'Estados Unidos',
+      },
     ];
     const countryData = COUNTRIES.find((c) => c.code === country);
     const next = {
@@ -64,18 +62,20 @@ name: 'Estados Unidos'
       country: countryData?.name || country,
       countryCode: country,
     };
-    if (isEditMode) updateDraft({
- address: {
- ...addressSource,
-...next 
-} 
-});
-    else updateFormData({
- address: {
- ...formData.address,
-...next 
-} 
-});
+    if (isEditMode)
+      updateDraft({
+        address: {
+          ...addressSource,
+          ...next,
+        },
+      });
+    else
+      updateFormData({
+        address: {
+          ...formData.address,
+          ...next,
+        },
+      });
   };
 
   // Handle postal code submission (stage 2)
@@ -85,18 +85,20 @@ name: 'Estados Unidos'
       number: addressSource?.number || '',
       complement: addressSource?.complement || '',
     };
-    if (isEditMode) updateDraft({
- address: {
- ...addressSource,
-...next 
-} 
-});
-    else updateFormData({
- address: {
- ...formData.address,
-...next 
-} 
-});
+    if (isEditMode)
+      updateDraft({
+        address: {
+          ...addressSource,
+          ...next,
+        },
+      });
+    else
+      updateFormData({
+        address: {
+          ...formData.address,
+          ...next,
+        },
+      });
   };
 
   // Handle address form submission (stage 3)
@@ -111,18 +113,20 @@ name: 'Estados Unidos'
       number: addressData.number,
       complement: addressData.complement,
     };
-    if (isEditMode) updateDraft({
- address: {
- ...addressSource,
-...next 
-} 
-});
-    else updateFormData({
- address: {
- ...formData.address,
-...next 
-} 
-});
+    if (isEditMode)
+      updateDraft({
+        address: {
+          ...addressSource,
+          ...next,
+        },
+      });
+    else
+      updateFormData({
+        address: {
+          ...formData.address,
+          ...next,
+        },
+      });
   };
 
   // Handle complete address (all stages done)
@@ -200,6 +204,6 @@ name: 'Estados Unidos'
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  content: {flex: 1,},
+  container: { flex: 1 },
+  content: { flex: 1 },
 });

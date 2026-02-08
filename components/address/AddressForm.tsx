@@ -160,9 +160,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
         </View>
       )}
 
-      {customHeader
-        ? customHeader
-        : showBackButton && <BackButton onPress={onBack} />}
+      {customHeader || (showBackButton && <BackButton onPress={onBack} />)}
 
       <ScrollView
         ref={scrollViewRef}
@@ -175,7 +173,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
           <View
             onLayout={(event) => {
               const { y } = event.nativeEvent.layout;
-              fieldPositions.current['postalCode'] = y;
+              fieldPositions.current.postalCode = y;
             }}
           >
             <Input
@@ -197,7 +195,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
           <View
             onLayout={(event) => {
               const { y } = event.nativeEvent.layout;
-              fieldPositions.current['street'] = y;
+              fieldPositions.current.street = y;
             }}
           >
             <Input
@@ -217,7 +215,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
           <View
             onLayout={(event) => {
               const { y } = event.nativeEvent.layout;
-              fieldPositions.current['neighborhood'] = y;
+              fieldPositions.current.neighborhood = y;
             }}
           >
             <Input
@@ -237,7 +235,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
           <View
             onLayout={(event) => {
               const { y } = event.nativeEvent.layout;
-              fieldPositions.current['city'] = y;
+              fieldPositions.current.city = y;
             }}
           >
             <Input
@@ -257,7 +255,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
           <View
             onLayout={(event) => {
               const { y } = event.nativeEvent.layout;
-              fieldPositions.current['state'] = y;
+              fieldPositions.current.state = y;
             }}
           >
             <Input
@@ -277,7 +275,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
           <View
             onLayout={(event) => {
               const { y } = event.nativeEvent.layout;
-              fieldPositions.current['country'] = y;
+              fieldPositions.current.country = y;
             }}
           >
             <Input
@@ -297,7 +295,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
           <View
             onLayout={(event) => {
               const { y } = event.nativeEvent.layout;
-              fieldPositions.current['number'] = y;
+              fieldPositions.current.number = y;
             }}
           >
             <Input
@@ -316,7 +314,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
           <View
             onLayout={(event) => {
               const { y } = event.nativeEvent.layout;
-              fieldPositions.current['complement'] = y;
+              fieldPositions.current.complement = y;
             }}
           >
             <Input
@@ -346,8 +344,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
-  scrollView: {flex: 1,},
+  progressContainer: { marginBottom: 8 },
+  scrollView: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 80,

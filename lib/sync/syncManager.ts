@@ -119,10 +119,10 @@ export async function syncQueue(): Promise<SyncResult> {
 export async function syncQueueWithRetry(maxRetries = 3): Promise<SyncResult> {
   let attempts = 0;
   let lastResult: SyncResult = {
- success: 0,
-failed: 0,
-total: 0 
-};
+    success: 0,
+    failed: 0,
+    total: 0,
+  };
 
   while (attempts < maxRetries) {
     attempts++;
@@ -135,7 +135,7 @@ total: 0
 
     // Wait before retrying (exponential backoff)
     if (attempts < maxRetries) {
-      const delay = Math.min(1000 * Math.pow(2, attempts - 1), 10000);
+      const delay = Math.min(1000 * 2 ** (attempts - 1), 10000);
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }

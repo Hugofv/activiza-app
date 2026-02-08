@@ -149,10 +149,10 @@ const CodeInputComponent = ({
         <Typography
           variant="caption"
           style={{
- color: '#ef4444',
-marginTop: 8,
-textAlign: 'center' 
-}}
+            color: '#ef4444',
+            marginTop: 8,
+            textAlign: 'center',
+          }}
         >
           {error}
         </Typography>
@@ -216,7 +216,7 @@ export const CodeInput = ({
 };
 
 const styles = StyleSheet.create({
-  container: {width: '100%',},
+  container: { width: '100%' },
   inputsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',

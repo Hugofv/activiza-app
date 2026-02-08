@@ -19,6 +19,8 @@ export interface AutocompleteOption<T = string> {
   label: string;
 }
 
+export type AutocompleteVariant = 'default' | 'filled';
+
 export interface AutocompleteProps<T = string> {
   options: AutocompleteOption<T>[];
   value: T | null;
@@ -28,6 +30,7 @@ export interface AutocompleteProps<T = string> {
   disabled?: boolean;
   error?: string;
   label?: string;
+  variant?: AutocompleteVariant;
   /**
    * Optional callback fired whenever the internal search query changes.
    * Useful for implementing remote search with debounce in the parent.
@@ -44,6 +47,7 @@ export function Autocomplete<T = string>({
   disabled = false,
   error,
   label,
+  variant = 'default',
   onSearchChange,
 }: AutocompleteProps<T>) {
   const colorScheme = useColorScheme();
@@ -100,15 +104,25 @@ export function Autocomplete<T = string>({
           {label}
         </Typography>
       )}
-      <View style={styles.inputContainer}>
+      <View
+        style={[
+          styles.inputContainer,
+          variant === 'filled' && [
+            styles.inputContainerFilled,
+            { backgroundColor: colors.muted },
+          ],
+        ]}
+      >
         <TextInput
           ref={inputRef}
           style={[
-            styles.input,
+            variant === 'filled' ? styles.inputFilled : styles.input,
             {
               color: disabled ? colors.icon : colors.text,
-              borderBottomColor: error ? colors.error : colors.icon,
               opacity: disabled ? 0.6 : 1,
+            },
+            variant !== 'filled' && {
+              borderBottomColor: error ? colors.error : colors.icon,
             },
           ]}
           placeholder={selectedOption?.label || placeholder}
@@ -238,12 +252,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  inputContainerFilled: {
+    borderRadius: 20,
+    paddingHorizontal: 12,
+  },
   input: {
     flex: 1,
     fontSize: 16,
     paddingVertical: 12,
     paddingRight: 40,
     borderBottomWidth: 1.5,
+  },
+  inputFilled: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '500',
+    paddingVertical: 8,
+    paddingRight: 32,
   },
   iconButton: {
     position: 'absolute',
@@ -260,9 +285,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 4,
     shadowOffset: {
- width: 0,
-height: 2 
-},
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
@@ -276,7 +301,7 @@ height: 2
     bottom: 0,
     zIndex: 1000,
   },
-  list: {maxHeight: 200,},
+  list: { maxHeight: 200 },
   option: {
     flexDirection: 'row',
     alignItems: 'center',

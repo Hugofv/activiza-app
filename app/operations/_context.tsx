@@ -6,6 +6,8 @@ import React, {
   useState,
 } from 'react';
 
+import { Client } from '@/lib/services/clientService';
+
 export type OperationType =
   | 'loan'
   | 'installments'
@@ -17,8 +19,7 @@ export type OperationType =
 export type FrequencyType = 'weekly' | 'biweekly' | 'monthly';
 
 export interface OperationFormData {
-  selectedClientId: string | null;
-  selectedClientName: string | null;
+  client: Client | null;
   amount: string;
   currency: string;
   interest: string;
@@ -52,8 +53,7 @@ interface OperationsProviderProps {
 }
 
 const initialFormData: OperationFormData = {
-  selectedClientId: null,
-  selectedClientName: null,
+  client: null,
   amount: '',
   currency: 'GBP',
   interest: '',

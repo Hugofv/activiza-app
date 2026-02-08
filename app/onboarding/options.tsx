@@ -24,11 +24,11 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useModules } from '@/lib/hooks/useModules';
 import {
   MODULE_ICON_MAP,
   MODULE_TRANSLATION_MAP,
 } from '@/lib/constants/operationConstants';
+import { useModules } from '@/lib/hooks/useModules';
 import { useToast } from '@/lib/hooks/useToast';
 import type { Module } from '@/lib/services/onboardingService';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
@@ -52,8 +52,11 @@ const OptionsScreen = () => {
   const { showError } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: modules, isLoading: isLoadingModules, error: modulesError } =
-    useModules();
+  const {
+    data: modules,
+    isLoading: isLoadingModules,
+    error: modulesError,
+  } = useModules();
 
   // Initialize selected options from formData
   const [selectedOptions, setSelectedOptions] = useState<BusinessOption[]>(
@@ -216,22 +219,22 @@ const OptionsScreen = () => {
 export default OptionsScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  scrollView: {flex: 1,},
-  scrollContent: {flexGrow: 1,},
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
-  title: {marginTop: 8,},
+  progressContainer: { marginBottom: 8 },
+  title: { marginTop: 8 },
   description: {
     marginTop: -8,
     opacity: 0.7,
   },
-  optionsList: {marginTop: 8,},
+  optionsList: { marginTop: 8 },
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,
@@ -242,15 +245,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 16,
   },
-  loadingText: {marginTop: 8,},
+  loadingText: { marginTop: 8 },
   errorContainer: {
     paddingVertical: 40,
     alignItems: 'center',
   },
-  errorText: {textAlign: 'center',},
+  errorText: { textAlign: 'center' },
   emptyContainer: {
     paddingVertical: 40,
     alignItems: 'center',
   },
-  emptyText: {textAlign: 'center',},
+  emptyText: { textAlign: 'center' },
 });

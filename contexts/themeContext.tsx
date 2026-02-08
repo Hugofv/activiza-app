@@ -65,10 +65,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   const value = useMemo<ThemeContextType>(
     () => ({
- preference,
-colorScheme,
-setPreference 
-}),
+      preference,
+      colorScheme,
+      setPreference,
+    }),
     [preference, colorScheme, setPreference]
   );
 

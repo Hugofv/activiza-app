@@ -1,8 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
-import {
- ActivityIndicator, Pressable, StyleSheet, View 
-} from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { router } from 'expo-router';
 
@@ -23,12 +21,8 @@ export default function ProfileScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
-  const {
- isAuthenticated, isChecking, redirectToLogin 
-} = useAuthGuard();
-  const {
- user, logoutAsync, isLoggingOut 
-} = useAuth();
+  const { isAuthenticated, isChecking, redirectToLogin } = useAuthGuard();
+  const { user, logoutAsync, isLoggingOut } = useAuth();
   const theme = useTheme();
 
   useEffect(() => {
@@ -134,7 +128,9 @@ export default function ProfileScreen() {
               key={option}
               style={[
                 styles.themeOption,
-                option === theme?.preference && {backgroundColor: colors.primaryWhitenOpacity,},
+                option === theme?.preference && {
+                  backgroundColor: colors.primaryWhitenOpacity,
+                },
               ]}
               onPress={() => theme?.setPreference(option)}
             >
@@ -177,14 +173,14 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 32,
   },
-  header: {marginBottom: 24,},
+  header: { marginBottom: 24 },
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -199,8 +195,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  info: {flex: 1,},
-  name: {marginBottom: 4,},
+  info: { flex: 1 },
+  name: { marginBottom: 4 },
   email: {},
   themeSection: {
     borderRadius: 16,
@@ -208,7 +204,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 16,
   },
-  themeTitle: {marginBottom: 4,},
+  themeTitle: { marginBottom: 4 },
   themeOption: {
     flexDirection: 'row',
     alignItems: 'center',

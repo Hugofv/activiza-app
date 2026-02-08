@@ -31,7 +31,9 @@ interface PasswordFormData {
   password: string;
 }
 
-const passwordSchema = yup.object({password: yup.string().required('Password is required'),});
+const passwordSchema = yup.object({
+  password: yup.string().required('Password is required'),
+});
 
 /**
  * Password authentication screen for existing users
@@ -56,7 +58,7 @@ const AuthPasswordScreen = () => {
     formState: { errors, isValid },
   } = useForm<PasswordFormData>({
     resolver: yupResolver(passwordSchema),
-    defaultValues: {password: '',},
+    defaultValues: { password: '' },
     mode: 'onChange',
   });
 
@@ -129,9 +131,9 @@ const AuthPasswordScreen = () => {
                 label={t('common.password')}
                 className="border-0 rounded-none px-0 py-4 font-medium"
                 style={{
- fontSize: 20,
-paddingRight: 50 
-}}
+                  fontSize: 20,
+                  paddingRight: 50,
+                }}
                 placeholder={t('onboarding.passwordPlaceholder')}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
@@ -192,9 +194,9 @@ paddingRight: 50
                     style={[
                       styles.forgotPasswordText,
                       {
- color: colors.placeholder,
-fontSize: 12 
-},
+                        color: colors.placeholder,
+                        fontSize: 12,
+                      },
                     ]}
                   >
                     [DEV] Test Reset Password
@@ -226,7 +228,7 @@ fontSize: 12
 export default AuthPasswordScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 18,

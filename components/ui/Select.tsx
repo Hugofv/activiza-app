@@ -19,6 +19,8 @@ export interface SelectOption<T = string> {
   label: string;
 }
 
+export type SelectVariant = 'default' | 'filled';
+
 export interface SelectProps<T = string> {
   options: SelectOption<T>[];
   value: T | null;
@@ -27,6 +29,7 @@ export interface SelectProps<T = string> {
   disabled?: boolean;
   error?: string;
   style?: any;
+  variant?: SelectVariant;
 }
 
 /**
@@ -39,6 +42,7 @@ export function Select<T = string>({
   placeholder = 'Selecione...',
   disabled = false,
   style,
+  variant = 'default',
 }: SelectProps<T>) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -77,25 +81,30 @@ export function Select<T = string>({
       <View style={[styles.container]}>
         <Pressable
           style={[
-            styles.button,
-            {
-              backgroundColor: colors.muted,
-              borderColor: colors.icon,
-              opacity: disabled ? 0.6 : 1,
-            },
+            variant === 'filled' ? styles.buttonFilled : styles.buttonDefault,
+            variant === 'filled'
+              ? {
+                  backgroundColor: colors.muted,
+                  borderColor: colors.icon,
+                }
+              : { borderBottomColor: colors.icon },
+            { opacity: disabled ? 0.6 : 1 },
           ]}
           onPress={handleToggle}
           disabled={disabled}
         >
           <Typography
             variant="body2"
-            style={[styles.buttonText, { color: colors.text }]}
+            style={[
+              styles.buttonText,
+              { color: selectedOption ? colors.text : colors.placeholder },
+            ]}
           >
             {selectedOption?.label || placeholder}
           </Typography>
           <Icon
             name={isOpen ? 'chevron-up' : 'chevron-down'}
-            size={16}
+            size={variant === 'filled' ? 16 : 20}
             color="icon"
           />
         </Pressable>
@@ -175,7 +184,15 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 2,
   },
-  button: {
+  buttonDefault: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 6,
+    paddingVertical: 8,
+    borderBottomWidth: 1.5,
+  },
+  buttonFilled: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -198,15 +215,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 4,
     shadowOffset: {
- width: 0,
-height: 2 
-},
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
     zIndex: 1000,
   },
-  list: {maxHeight: 200,},
+  list: { maxHeight: 200 },
   option: {
     flexDirection: 'row',
     alignItems: 'center',

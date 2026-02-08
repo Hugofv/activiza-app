@@ -1,8 +1,4 @@
-import { useState } from 'react';
-
-import {
-  Pressable, ScrollView, StyleSheet, View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { router } from 'expo-router';
 
@@ -18,12 +14,14 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
+import { type CurrencyCode, MoneyInput } from '@/components/ui/MoneyInput';
 import { Select, type SelectOption } from '@/components/ui/Select';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 
+import { DatePicker } from '@/components/ui/DatePicker';
 import { type FrequencyType, useOperations } from '../_context';
 
 interface LoanFormFields {
@@ -41,22 +39,43 @@ export default function LoanFormScreen() {
   const { formData, updateFormData } = useOperations();
 
   const currencyOptions: SelectOption[] = [
-    { value: 'GBP', label: '£ GBP' },
-    { value: 'USD', label: '$ USD' },
-    { value: 'BRL', label: 'R$ BRL' },
-    { value: 'EUR', label: '€ EUR' },
+    {
+      value: 'GBP',
+      label: '£ GBP',
+    },
+    {
+      value: 'USD',
+      label: '$ USD',
+    },
+    {
+      value: 'BRL',
+      label: 'R$ BRL',
+    },
+    {
+      value: 'EUR',
+      label: '€ EUR',
+    },
   ];
 
   const frequencyOptions: SelectOption[] = [
-    { value: 'weekly', label: t('operations.weekly') },
-    { value: 'biweekly', label: t('operations.biweekly') },
-    { value: 'monthly', label: t('operations.monthly') },
+    {
+      value: 'weekly',
+      label: t('operations.weekly'),
+    },
+    {
+      value: 'biweekly',
+      label: t('operations.biweekly'),
+    },
+    {
+      value: 'monthly',
+      label: t('operations.monthly'),
+    },
   ];
 
   const loanSchema = yup.object().shape({
     amount: yup
       .string()
-      .required(t('operations.amount') + ' ' + t('common.validation.required'))
+      .required(`${t('operations.amount')} ${t('common.validation.required')}`)
       .test('positive', t('operations.invalidValue'), (v) => {
         const n = parseFloat((v ?? '').replace(/\D/g, '').replace(',', '.'));
         return !isNaN(n) && n > 0;
@@ -64,7 +83,7 @@ export default function LoanFormScreen() {
     interest: yup
       .string()
       .required(
-        t('operations.interest') + ' ' + t('common.validation.required')
+        `${t('operations.interest')} ${t('common.validation.required')}`
       )
       .test('valid-percent', t('operations.invalidValue'), (v) => {
         const n = parseFloat((v ?? '').replace(',', '.'));
@@ -111,6 +130,7 @@ export default function LoanFormScreen() {
     router.back();
   };
 
+  console.log(formData);
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -120,13 +140,13 @@ export default function LoanFormScreen() {
       <View style={[styles.header, { backgroundColor: colors.background }]}>
         <View style={styles.headerLeft}>
           <BackButton />
+          <Typography
+            variant="h4"
+            style={styles.headerTitle}
+          >
+            {t('operations.lendLoan')}
+          </Typography>
         </View>
-        <Typography
-          variant="h4"
-          style={styles.headerTitle}
-        >
-          {t('operations.lendLoan')}
-        </Typography>
         <View style={styles.headerRight} />
       </View>
 
@@ -141,10 +161,7 @@ export default function LoanFormScreen() {
       >
         {/* Selected client */}
         <Pressable
-          style={[
-            styles.clientCard,
-            { borderColor: colors.border },
-          ]}
+          style={[styles.clientCard, { borderColor: colors.border }]}
           onPress={handleEditClient}
         >
           <Avatar
@@ -152,12 +169,13 @@ export default function LoanFormScreen() {
             size={40}
             backgroundColor="muted"
             iconColor="icon"
+            image={formData.client?.profilePictureUrl}
           />
           <Typography
             variant="body1Medium"
             style={styles.clientName}
           >
-            {formData.selectedClientName || t('operations.selectClient')}
+            {formData.client?.name || t('operations.selectClient')}
           </Typography>
           <IconButton
             icon="pencil"
@@ -183,13 +201,12 @@ export default function LoanFormScreen() {
             />
           </View>
           <View style={styles.amountInput}>
-            <Input
+            <MoneyInput
               control={control}
-              variant="outline"
               name="amount"
               label={t('operations.amount')}
               placeholder="0,00"
-              keyboardType="decimal-pad"
+              currency={(formData.currency as CurrencyCode) || 'BRL'}
               error={errors.amount?.message}
             />
           </View>
@@ -199,6 +216,7 @@ export default function LoanFormScreen() {
         <Input
           control={control}
           name="interest"
+          type="percentage"
           label={t('operations.interest')}
           placeholder="0"
           keyboardType="decimal-pad"
@@ -207,20 +225,15 @@ export default function LoanFormScreen() {
 
         {/* Due Date */}
         <View style={styles.dateField}>
-          <Input
+          <DatePicker
+            mode="date"
             control={control}
             name="dueDate"
+            value={new Date(formData.dueDate)}
             label={t('operations.dueDate')}
             placeholder={t('operations.today')}
             error={errors.dueDate?.message}
           />
-          <View style={styles.dateIcon}>
-            <Icon
-              name="calendar"
-              size={20}
-              color="icon"
-            />
-          </View>
         </View>
 
         {/* Frequency */}
@@ -281,14 +294,15 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   headerLeft: {
-    width: 80,
-    minWidth: 80,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: 20,
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   headerRight: {
     width: 80,

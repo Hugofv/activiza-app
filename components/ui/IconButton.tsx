@@ -397,7 +397,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {
-  IconButton, iconButtonVariants
-};
-
+export { IconButton, iconButtonVariants };

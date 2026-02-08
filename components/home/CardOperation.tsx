@@ -44,9 +44,9 @@ const CardOperation: React.FC<CardOperationProps> = ({
       <Typography
         variant="body2SemiBold"
         style={{
- color: colors.primaryForeground,
-textAlign: 'center' 
-}}
+          color: colors.primaryForeground,
+          textAlign: 'center',
+        }}
       >
         {label}
       </Typography>

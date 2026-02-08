@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import {
- KeyboardAvoidingView, Platform, StyleSheet, View 
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
 import { useLocalSearchParams } from 'expo-router';
 import { navigate } from 'expo-router/build/global-state/routing';
@@ -46,7 +44,7 @@ const ForgotPasswordScreen = () => {
     formState: { errors, isValid },
   } = useForm<ForgotPasswordFormData>({
     resolver: yupResolver(emailSchema),
-    defaultValues: {email: emailFromParams,},
+    defaultValues: { email: emailFromParams },
     mode: 'onChange',
   });
 
@@ -145,14 +143,14 @@ const ForgotPasswordScreen = () => {
 export default ForgotPasswordScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  inputContainer: {marginTop: 8,},
+  inputContainer: { marginTop: 8 },
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

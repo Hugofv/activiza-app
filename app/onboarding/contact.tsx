@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import {
- KeyboardAvoidingView, Platform, StyleSheet, View 
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
 import { navigate } from 'expo-router/build/global-state/routing';
 
@@ -45,7 +43,7 @@ const ContactScreen = () => {
     formState: { errors, isValid },
   } = useForm<ContactFormData>({
     resolver: yupResolver(phoneSchema) as any,
-    defaultValues: {phone: (formData.phone as any) || null,},
+    defaultValues: { phone: (formData.phone as any) || null },
     mode: 'onChange',
   });
 
@@ -150,20 +148,21 @@ const ContactScreen = () => {
 export default ContactScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
+  progressContainer: { marginBottom: 8 },
   inputContainer: {
     width: '100%',
     marginTop: 8,
     borderBottomWidth: 1.5,
   },
-  inputBorder: {borderBottomWidth: 0, // Remove any border from Input component
+  inputBorder: {
+    borderBottomWidth: 0, // Remove any border from Input component
   },
   buttonContainer: {
     paddingBottom: 56,

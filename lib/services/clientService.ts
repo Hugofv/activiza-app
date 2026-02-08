@@ -4,9 +4,7 @@
 import { apiClient } from '../api/client';
 import { ENDPOINTS } from '../api/endpoints';
 
-type FormDataFileValue = Blob | { uri: string;
-name: string;
-type: string };
+type FormDataFileValue = Blob | { uri: string; name: string; type: string };
 
 /**
  * Prepares a file for FormData. In React Native, use { uri, type, name } so the
@@ -16,9 +14,7 @@ type: string };
 async function uriToFormDataFile(
   uri: string,
   defaultName: string
-): Promise<{ value: FormDataFileValue;
-name: string;
-type: string }> {
+): Promise<{ value: FormDataFileValue; name: string; type: string }> {
   const name = uri.split('/').pop() || defaultName;
   const match = /\.(\w+)$/.exec(name);
   const type = match ? `image/${match[1]}` : 'image/jpeg';
@@ -26,14 +22,14 @@ type: string }> {
   // file:// and content://: always use { uri, type, name }; client reads URI and sends bytes
   if (uri.startsWith('file://') || uri.startsWith('content://')) {
     return {
- value: {
- uri,
-name,
-type
-},
-name,
-type
-};
+      value: {
+        uri,
+        name,
+        type,
+      },
+      name,
+      type,
+    };
   }
 
   // blob:/data: (e.g. web): try Blob so multipart sends the content
@@ -41,20 +37,20 @@ type
     const response = await fetch(uri);
     const blob = await response.blob();
     return {
- value: blob,
-name,
-type
-};
+      value: blob,
+      name,
+      type,
+    };
   } catch {
     return {
- value: {
- uri,
-name,
-type
-},
-name,
-type
-};
+      value: {
+        uri,
+        name,
+        type,
+      },
+      name,
+      type,
+    };
   }
 }
 
@@ -264,7 +260,7 @@ export async function createClient(
       clientData.documentImages && clientData.documentImages.length > 0;
     const hasAvatar = !!clientData.avatar;
     const needsFormData = hasDocumentImages || hasAvatar;
-    const documentImages = clientData.documentImages;
+    const { documentImages } = clientData;
 
     if (needsFormData) {
       // Create FormData for multipart/form-data

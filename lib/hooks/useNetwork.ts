@@ -7,9 +7,7 @@ import { useNetworkStore } from '../sync/networkMonitor';
  * Hook to get current network state
  */
 export function useNetwork() {
-  const {
- isConnected, type, isInternetReachable 
-} = useNetworkStore();
+  const { isConnected, type, isInternetReachable } = useNetworkStore();
 
   return {
     isConnected,

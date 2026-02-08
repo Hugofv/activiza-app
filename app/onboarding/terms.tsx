@@ -267,15 +267,15 @@ const TermsScreen = () => {
 export default TermsScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
-  scrollView: {flex: 1,},
+  progressContainer: { marginBottom: 8 },
+  scrollView: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 80,

@@ -19,7 +19,7 @@ const badgeVariants = cva('', {
       lg: '',
     },
   },
-  defaultVariants: {size: 'md',},
+  defaultVariants: { size: 'md' },
 });
 
 export interface BadgeProps extends VariantProps<typeof badgeVariants> {

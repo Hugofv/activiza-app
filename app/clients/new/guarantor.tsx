@@ -30,9 +30,7 @@ export default function GuarantorScreen() {
   }>();
   const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
   const { draft, updateDraft } = useEditClientStore();
-  const {
- formData, updateFormData, setCurrentStep 
-} = useNewClientForm();
+  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -169,7 +167,7 @@ export default function GuarantorScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 0,

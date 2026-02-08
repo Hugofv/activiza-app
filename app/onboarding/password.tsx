@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import {
- KeyboardAvoidingView, Platform, StyleSheet, View 
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
 import { useLocalSearchParams } from 'expo-router';
 import { navigate } from 'expo-router/build/global-state/routing';
@@ -187,9 +185,9 @@ const PasswordScreen = () => {
                 label={t('common.password')}
                 className="border-0 rounded-none px-0 py-4 font-medium"
                 style={{
- fontSize: 20,
-paddingRight: 50 
-}}
+                  fontSize: 20,
+                  paddingRight: 50,
+                }}
                 placeholder={t('onboarding.passwordPlaceholder')}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
@@ -219,9 +217,9 @@ paddingRight: 50
                 label={t('common.confirmPassword')}
                 className="border-0 rounded-none px-0 py-4 font-medium"
                 style={{
- fontSize: 20,
-paddingRight: 50 
-}}
+                  fontSize: 20,
+                  paddingRight: 50,
+                }}
                 placeholder={t('onboarding.confirmPasswordPlaceholder')}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
@@ -258,7 +256,7 @@ paddingRight: 50
                     variant="body2"
                     style={[
                       styles.ruleText,
-                      {color: rule.isValid ? 'successForeground' : 'icon',},
+                      { color: rule.isValid ? 'successForeground' : 'icon' },
                     ]}
                   >
                     {rule.label}
@@ -290,14 +288,14 @@ paddingRight: 50
 export default PasswordScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
+  progressContainer: { marginBottom: 8 },
   inputContainer: {
     position: 'relative',
     marginTop: 8,

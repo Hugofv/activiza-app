@@ -342,7 +342,7 @@ export const AddressFlow: React.FC<AddressFlowProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 26,
   },
-  headerLeft: {width: 80,},
+  headerLeft: { width: 80 },
   headerCenter: {
     flex: 1,
     alignItems: 'center',

@@ -37,7 +37,8 @@ import '../global.css';
 // Prevent the splash screen from auto-hiding before fonts are loaded
 SplashScreen.preventAutoHideAsync();
 
-export const unstable_settings = {initialRouteName: 'index', // Home screen is now the initial route
+export const unstable_settings = {
+  initialRouteName: 'index', // Home screen is now the initial route
 };
 
 function AppContent() {

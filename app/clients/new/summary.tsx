@@ -94,9 +94,9 @@ export default function SummaryScreen() {
     if (!formData.address) return t('clients.summaryNotInformed');
     const addr = formData.address;
     const parts = [
-      addr.street + ', ' + t('clients.addressNumber', { number: addr.number }),
+      `${addr.street}, ${t('clients.addressNumber', { number: addr.number })}`,
       addr.neighborhood,
-      addr.city + ', ' + addr.state,
+      `${addr.city}, ${addr.state}`,
       addr.complement &&
         t('clients.addressComplement', { complement: addr.complement }),
       addr.postalCode &&
@@ -276,7 +276,9 @@ export default function SummaryScreen() {
                           variant="body1"
                           style={[styles.value, { color: colors.text }]}
                         >
-                          {t('clients.reliabilityLevel', {level: formData.reliability,})}
+                          {t('clients.reliabilityLevel', {
+                            level: formData.reliability,
+                          })}
                         </Typography>
                       </View>
                     }
@@ -328,7 +330,7 @@ export default function SummaryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 0,
@@ -340,21 +342,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 8,
   },
-  scrollView: {flex: 1,},
+  scrollView: { flex: 1 },
   summaryCard: {
     borderRadius: 12,
     borderColor: Colors.light.border,
     borderWidth: 1,
     padding: 20,
   },
-  summaryCardContent: {gap: 20,},
-  avatarSection: {marginBottom: 8,},
-  summaryRow: {gap: 8,},
+  summaryCardContent: { gap: 20 },
+  avatarSection: { marginBottom: 8 },
+  summaryRow: { gap: 8 },
   label: {
     fontSize: 14,
     fontWeight: '500',
   },
-  value: {fontSize: 16,},
+  value: { fontSize: 16 },
   guarantorRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -375,8 +377,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: '23%',
   },
-  addressContainer: {gap: 4,},
-  addressLine: {fontSize: 16,},
+  addressContainer: { gap: 4 },
+  addressLine: { fontSize: 16 },
   starsRow: {
     flexDirection: 'row',
     gap: 4,

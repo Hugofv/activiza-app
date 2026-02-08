@@ -25,9 +25,7 @@ export interface ImageCardViewProps {
   onRemove?: () => void;
 }
 
-export function ImageCardView({
- uri, style, onRemove 
-}: ImageCardViewProps) {
+export function ImageCardView({ uri, style, onRemove }: ImageCardViewProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const [visible, setVisible] = useState(false);
@@ -144,7 +142,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backdropOverlay: {...StyleSheet.absoluteFillObject,},
+  backdropOverlay: { ...StyleSheet.absoluteFillObject },
   viewerContainer: {
     width: '90%',
     height: '80%',

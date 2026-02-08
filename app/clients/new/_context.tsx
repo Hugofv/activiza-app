@@ -1,6 +1,4 @@
-import React, {
- ReactNode, createContext, useContext, useState 
-} from 'react';
+import React, { ReactNode, createContext, useContext, useState } from 'react';
 
 export interface NewClientFormData {
   name?: string;
@@ -61,16 +59,18 @@ interface NewClientFormProviderProps {
   children: ReactNode;
 }
 
-export const NewClientFormProvider: React.FC<NewClientFormProviderProps> = ({children,}) => {
+export const NewClientFormProvider: React.FC<NewClientFormProviderProps> = ({
+  children,
+}) => {
   const [formData, setFormData] = useState<NewClientFormData>({});
   const [currentStep, setCurrentStep] = useState(0);
   const totalSteps = 10; // Nome, Avatar, WhatsApp, E-mail, Documento, Documentos, Endereço, Observação, Avalista, Confiabilidade, Resumo
 
   const updateFormData = (data: Partial<NewClientFormData>) => {
     setFormData((prev) => ({
- ...prev,
-...data 
-}));
+      ...prev,
+      ...data,
+    }));
   };
 
   const resetFormData = () => {

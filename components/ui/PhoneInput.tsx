@@ -94,7 +94,7 @@ const PhoneInputComponent = ({
         )}
         placeholderTextColor={colors.text}
         phoneInputStyles={{
-          divider: {display: 'none',},
+          divider: { display: 'none' },
           input: {
             borderWidth: 0,
             fontSize: 18,
@@ -105,7 +105,7 @@ const PhoneInputComponent = ({
             fontSize: 18,
             color: colors.text,
           },
-          flagContainer: {backgroundColor: 'transparent',},
+          flagContainer: { backgroundColor: 'transparent' },
           container: {
             borderWidth: 0,
             borderBottomWidth: 1,

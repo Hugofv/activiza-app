@@ -96,16 +96,14 @@ export function BottomSheet({
       }
     });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {transform: [{ translateY: translateY.value }],};
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
-  const containerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: colors.background,
-      opacity: 1,
-    };
-  });
+  const containerAnimatedStyle = useAnimatedStyle(() => ({
+    backgroundColor: colors.background,
+    opacity: 1,
+  }));
 
   const overlayAnimatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
@@ -115,7 +113,7 @@ export function BottomSheet({
       Extrapolate.CLAMP
     );
 
-    return {opacity,};
+    return { opacity };
   });
 
   return (
@@ -176,7 +174,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: SCREEN_HEIGHT * 0.40,
+    height: SCREEN_HEIGHT * 0.4,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingTop: 12,
@@ -216,5 +214,5 @@ const styles = StyleSheet.create({
     height: 1,
     opacity: 0.1,
   },
-  content: {paddingHorizontal: 24,},
+  content: { paddingHorizontal: 24 },
 });

@@ -71,9 +71,10 @@ export function useAuthGuard() {
       refetchOnMount: true,
     });
 
-  const isAuthenticated = useMemo(() => {
-    return !!(user && hasValidToken);
-  }, [user, hasValidToken]);
+  const isAuthenticated = useMemo(
+    () => !!(user && hasValidToken),
+    [user, hasValidToken]
+  );
 
   const isChecking = isUserLoading || isTokenLoading;
 

@@ -23,10 +23,10 @@ function initDraft(
   const displayDocs: DisplayDocument[] = (client.documents ?? [])
     .filter((d): d is ClientDocumentItem => !!d?.downloadUrl)
     .map((d) => ({
- uri: d.downloadUrl!,
-key: d.key,
-isNew: false 
-}));
+      uri: d.downloadUrl!,
+      key: d.key,
+      isNew: false,
+    }));
 
   return {
     name: client.name ?? client.meta?.name,
@@ -90,21 +90,25 @@ export const useEditClientStore = create<EditClientState>((set, get) => ({
       isEditMode: true,
     }),
 
-  updateDraft: (data) => set((s) => ({
- draft: {
- ...s.draft,
-...data 
-} 
-})),
+  updateDraft: (data) =>
+    set((s) => ({
+      draft: {
+        ...s.draft,
+        ...data,
+      },
+    })),
 
   addDocument: (uri) =>
     set((s) => ({
       draft: {
         ...s.draft,
-        _displayDocs: [...(s.draft._displayDocs ?? []), {
- uri,
-isNew: true 
-}],
+        _displayDocs: [
+          ...(s.draft._displayDocs ?? []),
+          {
+            uri,
+            isNew: true,
+          },
+        ],
         newDocuments: [...(s.draft.newDocuments ?? []), uri],
       },
     })),
@@ -127,35 +131,38 @@ isNew: true
             ),
           },
         };
-      } else {
-        // Mark existing as deleted
-        const updatedDocs: DocumentUpdate[] = (s.draft.documents ?? []).map(
-          (d) => (d.key === doc.key ? {
- ...d,
-deleted: true 
-} : d)
-        );
-        if (doc.key && !updatedDocs.some((d) => d.key === doc.key)) {
-          updatedDocs.push({
- key: doc.key,
-deleted: true 
-});
-        }
-        return {
-          draft: {
-            ...s.draft,
-            _displayDocs: newDisplayDocs,
-            documents: updatedDocs,
-          },
-        };
       }
+      // Mark existing as deleted
+      const updatedDocs: DocumentUpdate[] = (s.draft.documents ?? []).map(
+        (d) =>
+          d.key === doc.key
+            ? {
+                ...d,
+                deleted: true,
+              }
+            : d
+      );
+      if (doc.key && !updatedDocs.some((d) => d.key === doc.key)) {
+        updatedDocs.push({
+          key: doc.key,
+          deleted: true,
+        });
+      }
+      return {
+        draft: {
+          ...s.draft,
+          _displayDocs: newDisplayDocs,
+          documents: updatedDocs,
+        },
+      };
     }),
 
   getDisplayDocs: () => get().draft._displayDocs ?? [],
 
-  clear: () => set({
- clientId: null,
-draft: {},
-isEditMode: false 
-}),
+  clear: () =>
+    set({
+      clientId: null,
+      draft: {},
+      isEditMode: false,
+    }),
 }));

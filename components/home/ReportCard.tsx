@@ -10,18 +10,19 @@ interface ReportCardProps {
   description?: string;
 }
 
-export function ReportCard({
-  title, subtitle, description
-}: ReportCardProps) {
+export function ReportCard({ title, subtitle, description }: ReportCardProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
     <View
-      style={[styles.reportCard, {
-        borderColor: colors.border,
-        borderWidth: 1
-      }]}
+      style={[
+        styles.reportCard,
+        {
+          borderColor: colors.border,
+          borderWidth: 1,
+        },
+      ]}
     >
       <View style={styles.titleContainer}>
         <Typography
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowOpacity: 0.2,
     shadowRadius: 8,

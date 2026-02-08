@@ -33,10 +33,10 @@ const WORKING_CAPITAL_OPTIONS: {
   keyEn: string;
 }[] = [
   {
- value: 5000,
-keyPt: 'workingCapitalUpTo5k',
-keyEn: 'workingCapitalUpTo5k' 
-},
+    value: 5000,
+    keyPt: 'workingCapitalUpTo5k',
+    keyEn: 'workingCapitalUpTo5k',
+  },
   {
     value: 20000,
     keyPt: 'workingCapital5kTo20k',
@@ -165,18 +165,18 @@ const CapitalScreen = () => {
 export default CapitalScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  scrollView: {flex: 1,},
-  scrollContent: {flexGrow: 1,},
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
-  title: {marginTop: 8,},
-  optionsList: {marginTop: 8,},
+  progressContainer: { marginBottom: 8 },
+  title: { marginTop: 8 },
+  optionsList: { marginTop: 8 },
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

@@ -43,7 +43,7 @@ const ConfirmContactScreen = () => {
             <View
               style={[
                 styles.checkmarkContainer,
-                {backgroundColor: colors.muted,},
+                { backgroundColor: colors.muted },
               ]}
             >
               <Icon
@@ -81,7 +81,7 @@ const ConfirmContactScreen = () => {
 export default ConfirmContactScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 18,

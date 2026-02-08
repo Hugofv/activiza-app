@@ -2,9 +2,7 @@
  * Bottom Sheet Context
  * Provides global bottom sheet functionality that can be used anywhere in the app
  */
-import React, {
- createContext, useCallback, useContext, useState 
-} from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 
 interface BottomSheetContextType {
   isOpen: boolean;

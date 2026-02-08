@@ -35,9 +35,7 @@ export default function NameScreen() {
   }>();
   const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
   const { draft, updateDraft } = useEditClientStore();
-  const {
- formData, updateFormData, setCurrentStep 
-} = useNewClientForm();
+  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const keyboardHeight = useKeyboardHeight();
 
@@ -143,7 +141,7 @@ export default function NameScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 0,

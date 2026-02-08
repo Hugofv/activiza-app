@@ -32,7 +32,7 @@ export function getTranslatedError(
   const translationKey = `common.errors.${errorCode}`;
 
   // Try to get translation
-  const translatedMessage = i18n.t(translationKey, {defaultValue: undefined,});
+  const translatedMessage = i18n.t(translationKey, { defaultValue: undefined });
 
   // If translation exists and is different from the key, use it
   if (translatedMessage && translatedMessage !== translationKey) {
@@ -58,7 +58,7 @@ export function getTranslatedError(
       'details' in error &&
       error.details
     ) {
-      const details = error.details;
+      const { details } = error;
       // Check if details is an array of validation errors
       if (Array.isArray(details) && details.length > 0) {
         // Get the first validation error message
@@ -83,7 +83,9 @@ export function getTranslatedError(
             // For email field with invalid_string, use INVALID_EMAIL
             if (fieldName === 'email' && validationCode === 'invalid_string') {
               const emailKey = 'common.errors.INVALID_EMAIL';
-              const emailMessage = i18n.t(emailKey, {defaultValue: undefined,});
+              const emailMessage = i18n.t(emailKey, {
+                defaultValue: undefined,
+              });
               if (emailMessage && emailMessage !== emailKey) {
                 return emailMessage;
               }
@@ -92,7 +94,9 @@ export function getTranslatedError(
 
           if (validationCode) {
             const validationKey = `common.errors.${validationCode.toUpperCase()}`;
-            const validationMessage = i18n.t(validationKey, {defaultValue: undefined,});
+            const validationMessage = i18n.t(validationKey, {
+              defaultValue: undefined,
+            });
             if (validationMessage && validationMessage !== validationKey) {
               return validationMessage;
             }

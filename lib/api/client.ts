@@ -27,13 +27,14 @@ interface ExtendedInternalAxiosRequestConfig extends InternalAxiosRequestConfig 
 
 class ApiClientClass {
   private client: AxiosInstance;
+
   private retryCountMap = new Map<string, number>();
 
   constructor() {
     this.client = axios.create({
       baseURL: API_BASE_URL,
       timeout: REQUEST_TIMEOUT,
-      headers: {'Content-Type': 'application/json',},
+      headers: { 'Content-Type': 'application/json' },
     });
 
     this.setupInterceptors();
@@ -66,9 +67,7 @@ class ApiClientClass {
 
         return config;
       },
-      (error: AxiosError) => {
-        return Promise.reject(this.handleError(error));
-      }
+      (error: AxiosError) => Promise.reject(this.handleError(error))
     );
 
     // Response interceptor - handle errors and retry
@@ -79,9 +78,7 @@ class ApiClientClass {
         this.retryCountMap.delete(configKey);
         return response;
       },
-      async (error: AxiosError) => {
-        return this.handleResponseError(error);
-      }
+      async (error: AxiosError) => this.handleResponseError(error)
     );
   }
 
@@ -168,7 +165,7 @@ class ApiClientClass {
         this.retryCountMap.set(configKey, retryCount + 1);
 
         // Exponential backoff
-        const delay = RETRY_CONFIG.retryDelay * Math.pow(2, retryCount);
+        const delay = RETRY_CONFIG.retryDelay * 2 ** retryCount;
 
         await new Promise((resolve) => setTimeout(resolve, delay));
 

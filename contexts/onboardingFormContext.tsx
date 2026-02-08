@@ -115,7 +115,9 @@ interface OnboardingFormProviderProps {
   children: ReactNode;
 }
 
-export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({children,}) => {
+export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
+  children,
+}) => {
   const [formData, setFormData] = useState<Partial<OnboardingFormData>>({});
   const [currentStep, setCurrentStep] = useState<OnboardingStepKey | null>(
     null
@@ -155,9 +157,7 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({c
   // Update formData when fetched data is available
   useEffect(() => {
     if (fetchedData) {
-      const {
- onboardingStep, clientStatus: status, ...data 
-} = fetchedData;
+      const { onboardingStep, clientStatus: status, ...data } = fetchedData;
       setFormData(data);
       if (onboardingStep) {
         setCurrentStep(onboardingStep as OnboardingStepKey);
@@ -297,23 +297,23 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({c
   ) => {
     // Merge data with current formData for API call
     const mergedData = {
- ...formData,
-...data 
-};
+      ...formData,
+      ...data,
+    };
 
     // Update local state first
     setFormData((prev) => ({
- ...prev,
-...data 
-}));
+      ...prev,
+      ...data,
+    }));
 
     // If step is provided, save to API immediately with merged data
     if (step) {
       console.log(JSON.stringify(mergedData, null, 2));
       await saveMutation.mutateAsync({
- data: mergedData,
-step 
-});
+        data: mergedData,
+        step,
+      });
     }
   };
 
@@ -340,9 +340,9 @@ step
 
     // Merge formData with any additional data provided (e.g., planId)
     const finalData = {
- ...formData,
-...additionalData 
-} as OnboardingFormData;
+      ...formData,
+      ...additionalData,
+    } as OnboardingFormData;
 
     await submitMutation.mutateAsync({
       data: finalData,

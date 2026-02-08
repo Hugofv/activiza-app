@@ -1,6 +1,4 @@
-import {
-  useCallback, useEffect, useRef, useState,
-} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   NativeScrollEvent,
@@ -15,6 +13,7 @@ import {
 import { router } from 'expo-router';
 
 import { useQuery } from '@tanstack/react-query';
+
 import { useTranslation } from 'react-i18next';
 import Animated, {
   useAnimatedStyle,
@@ -130,14 +129,11 @@ export default function ClientSelectionScreen() {
   const clients: Client[] = clientsData?.results ?? [];
 
   const handleClientPress = (client: Client) => {
-    updateFormData({
-      selectedClientId: String(client.id),
-      selectedClientName: client.name ?? client.meta?.name ?? '',
-    });
+    updateFormData({ client });
   };
 
   const handleNext = () => {
-    if (formData.selectedClientId) {
+    if (formData.client?.id) {
       router.push('/operations/loan/form');
     }
   };
@@ -156,9 +152,7 @@ export default function ClientSelectionScreen() {
         <View style={[styles.header, { backgroundColor: colors.background }]}>
           <View style={styles.headerLeft}>
             <BackButton />
-            <Typography variant="h4">
-              {t('operations.lendLoan')}
-            </Typography>
+            <Typography variant="h4">{t('operations.lendLoan')}</Typography>
           </View>
           <View>
             <IconButton
@@ -218,19 +212,14 @@ export default function ClientSelectionScreen() {
 
         {/* Client list */}
         {clients.map((client) => {
-          const isSelected =
-            formData.selectedClientId === String(client.id);
+          const isSelected = formData.client?.id === client.id;
+          const selectedStyle = isSelected
+            ? [styles.selectedClient, { backgroundColor: colors.muted }]
+            : undefined;
           return (
             <View
               key={client.id}
-              style={[
-                isSelected && {
-                  backgroundColor: colors.muted,
-                  borderRadius: 12,
-                  marginHorizontal: -8,
-                  paddingHorizontal: 8,
-                },
-              ]}
+              style={selectedStyle}
             >
               <ClientItem
                 client={client}
@@ -241,13 +230,12 @@ export default function ClientSelectionScreen() {
         })}
       </ScrollView>
 
-      {/* Next Button */}
       <View style={styles.buttonContainer}>
         <Button
           variant="primary"
           size="full"
           onPress={handleNext}
-          disabled={!formData.selectedClientId}
+          disabled={!formData.client?.id}
         >
           {t('operations.next')}
         </Button>
@@ -293,6 +281,11 @@ const styles = StyleSheet.create({
   newClientText: {
     flex: 1,
     fontSize: 16,
+  },
+  selectedClient: {
+    borderRadius: 12,
+    marginHorizontal: -8,
+    paddingHorizontal: 8,
   },
   buttonContainer: {
     paddingHorizontal: 24,

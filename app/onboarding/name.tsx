@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import {
- KeyboardAvoidingView, Platform, StyleSheet, View 
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
 import { navigate } from 'expo-router/build/global-state/routing';
 
@@ -45,7 +43,7 @@ const NameScreen = () => {
     formState: { errors, isValid },
   } = useForm<NameFormData>({
     resolver: yupResolver(nameSchema),
-    defaultValues: {name: formData.name || '',},
+    defaultValues: { name: formData.name || '' },
     mode: 'onChange',
   });
 
@@ -132,14 +130,14 @@ const NameScreen = () => {
 export default NameScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
+  progressContainer: { marginBottom: 8 },
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

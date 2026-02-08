@@ -1,6 +1,4 @@
-import React, {
- useCallback, useEffect, useMemo, useState 
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ScrollView, StyleSheet, View } from 'react-native';
 
@@ -53,9 +51,7 @@ export default function DocumentScreen() {
   }>();
   const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
   const { draft, updateDraft } = useEditClientStore();
-  const {
- formData, updateFormData, setCurrentStep 
-} = useNewClientForm();
+  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const keyboardHeight = useKeyboardHeight();
 
@@ -91,7 +87,9 @@ export default function DocumentScreen() {
   // Recreate schema when documentType changes to update validation
   const documentSchema = React.useMemo(
     () =>
-      createDocumentSchema(countryCode, documentType, {documentRequired: true,}),
+      createDocumentSchema(countryCode, documentType, {
+        documentRequired: true,
+      }),
     [countryCode, documentType]
   );
 
@@ -346,9 +344,9 @@ export default function DocumentScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  scrollView: {flex: 1,},
-  scrollContent: {flexGrow: 1,},
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
   content: {
     flex: 1,
     paddingTop: 0,

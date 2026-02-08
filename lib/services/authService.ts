@@ -40,9 +40,7 @@ export async function register(
 
     console.log('Register response:', JSON.stringify(response.data, null, 2));
 
-    const {
- user, accessToken, refreshToken, expiresIn 
-} = response.data;
+    const { user, accessToken, refreshToken, expiresIn } = response.data;
 
     // Validate tokens before storing
     if (!accessToken || !refreshToken) {
@@ -92,9 +90,7 @@ export async function login(
 
     // Handle response structure: API may return { success: true, data: {...} } or direct data
     const responseData = (response.data as any).data || response.data;
-    const {
- user, accessToken, refreshToken, expiresIn 
-} = responseData;
+    const { user, accessToken, refreshToken, expiresIn } = responseData;
 
     // Validate tokens before storing
     if (!accessToken || !refreshToken) {
@@ -288,7 +284,9 @@ export async function resendVerificationCode(
   type: 'email' | 'phone'
 ): Promise<boolean> {
   try {
-    const response = await apiClient.post(ENDPOINTS.AUTH.VERIFY_RESEND, {type,});
+    const response = await apiClient.post(ENDPOINTS.AUTH.VERIFY_RESEND, {
+      type,
+    });
 
     return response.status === 200;
   } catch (error: any) {
@@ -316,7 +314,7 @@ export async function checkEmailStatus(email: string): Promise<EmailStatus> {
     );
 
     // Axios returns data in response.data
-    const data = response.data;
+    const { data } = response;
     console.log('Check email status response:', JSON.stringify(data, null, 2));
 
     // Transform API response to simplified format, preserving original fields
@@ -366,9 +364,9 @@ export async function resetPassword(
     const response = await apiClient.post(
       ENDPOINTS.AUTH.RESET_PASSWORD,
       {
- token,
-password 
-},
+        token,
+        password,
+      },
       { skipAuth: true } as ApiConfig
     );
 

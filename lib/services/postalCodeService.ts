@@ -129,7 +129,7 @@ async function lookupUKPostalCode(
       return null;
     }
 
-    const result = data.result;
+    const { result } = data;
 
     return {
       street: result.thoroughfare || result.street || '',
@@ -232,17 +232,17 @@ export function getPostalCodeFormat(countryCode: CountryCode): {
           // Format: first part (2-4 chars) + space + last part (3 chars)
           if (noSpaces.length <= 3) {
             return noSpaces;
-          } else if (noSpaces.length <= 6) {
+          }
+          if (noSpaces.length <= 6) {
             // Insert space after 3-4 characters
             const firstPart = noSpaces.slice(0, noSpaces.length - 3);
             const lastPart = noSpaces.slice(noSpaces.length - 3);
             return `${firstPart} ${lastPart}`;
-          } else {
-            // Limit to 8 characters total (including space)
-            const firstPart = noSpaces.slice(0, 4);
-            const lastPart = noSpaces.slice(4, 7);
-            return `${firstPart} ${lastPart}`;
           }
+          // Limit to 8 characters total (including space)
+          const firstPart = noSpaces.slice(0, 4);
+          const lastPart = noSpaces.slice(4, 7);
+          return `${firstPart} ${lastPart}`;
         },
       };
     default:

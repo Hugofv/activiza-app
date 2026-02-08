@@ -41,13 +41,10 @@ export default function WhatsAppScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const params = useLocalSearchParams<{ clientId?: string;
-edit?: string }>();
+  const params = useLocalSearchParams<{ clientId?: string; edit?: string }>();
   const isEditMode = !!params.clientId && params.edit === '1';
   const { draft, updateDraft } = useEditClientStore();
-  const {
- formData, updateFormData, setCurrentStep 
-} = useNewClientForm();
+  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const keyboardHeight = useKeyboardHeight();
 
@@ -64,7 +61,9 @@ edit?: string }>();
   const whatsappSchema = yup.object().shape({
     whatsapp: yup
       .object()
-      .shape({phoneNumber: yup.string().required(t('clients.whatsappRequired')),})
+      .shape({
+        phoneNumber: yup.string().required(t('clients.whatsappRequired')),
+      })
       .required(t('clients.whatsappRequired')),
   });
 
@@ -74,7 +73,7 @@ edit?: string }>();
     formState: { errors, isValid },
   } = useForm<WhatsAppFormData>({
     resolver: yupResolver(whatsappSchema) as any,
-    defaultValues: {whatsapp: initialWhatsapp ?? undefined,},
+    defaultValues: { whatsapp: initialWhatsapp ?? undefined },
     mode: 'onChange',
   });
 
@@ -166,7 +165,7 @@ edit?: string }>();
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 0,

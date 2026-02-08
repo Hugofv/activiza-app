@@ -1,8 +1,6 @@
 import * as React from 'react';
 
-import {
- Modal, Pressable, StyleSheet, View 
-} from 'react-native';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -32,18 +30,16 @@ interface DialogProps {
   children: React.ReactNode;
 }
 
-const Dialog = ({
- open, onOpenChange, children 
-}: DialogProps) => {
-  return (
-    <DialogContext.Provider value={{
- open,
-onOpenChange 
-}}>
-      {children}
-    </DialogContext.Provider>
-  );
-};
+const Dialog = ({ open, onOpenChange, children }: DialogProps) => (
+  <DialogContext.Provider
+    value={{
+      open,
+      onOpenChange,
+    }}
+  >
+    {children}
+  </DialogContext.Provider>
+);
 
 interface DialogTriggerProps {
   children: React.ReactNode;
@@ -53,9 +49,7 @@ interface DialogTriggerProps {
 const DialogTrigger = React.forwardRef<
   React.ElementRef<typeof Pressable>,
   DialogTriggerProps & React.ComponentPropsWithoutRef<typeof Pressable>
->(({
- children, asChild, ...props 
-}, ref) => {
+>(({ children, asChild, ...props }, ref) => {
   const { onOpenChange } = useDialogContext();
 
   if (asChild && React.isValidElement(children)) {
@@ -90,9 +84,7 @@ interface DialogContentProps {
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof View>,
   DialogContentProps
->(({
- children, className, ...props 
-}, ref) => {
+>(({ children, className, ...props }, ref) => {
   const { open, onOpenChange } = useDialogContext();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -112,10 +104,7 @@ const DialogContent = React.forwardRef<
       >
         <Pressable
           ref={ref}
-          style={[
-            styles.content,
-            {backgroundColor: colors.background,},
-          ]}
+          style={[styles.content, { backgroundColor: colors.background }]}
           onPress={(e) => e.stopPropagation()}
           {...props}
         >
@@ -132,9 +121,9 @@ interface DialogHeaderProps {
   className?: string;
 }
 
-const DialogHeader = ({ children }: DialogHeaderProps) => {
-  return <View style={styles.header}>{children}</View>;
-};
+const DialogHeader = ({ children }: DialogHeaderProps) => (
+  <View style={styles.header}>{children}</View>
+);
 DialogHeader.displayName = 'DialogHeader';
 
 interface DialogTitleProps {
@@ -182,9 +171,9 @@ interface DialogFooterProps {
   className?: string;
 }
 
-const DialogFooter = ({ children }: DialogFooterProps) => {
-  return <View style={styles.footer}>{children}</View>;
-};
+const DialogFooter = ({ children }: DialogFooterProps) => (
+  <View style={styles.footer}>{children}</View>
+);
 DialogFooter.displayName = 'DialogFooter';
 
 interface DialogCloseProps {
@@ -195,9 +184,7 @@ interface DialogCloseProps {
 const DialogClose = React.forwardRef<
   React.ElementRef<typeof Pressable>,
   DialogCloseProps & React.ComponentPropsWithoutRef<typeof Pressable>
->(({
- children, asChild, ...props 
-}, ref) => {
+>(({ children, asChild, ...props }, ref) => {
   const { onOpenChange } = useDialogContext();
 
   if (asChild && React.isValidElement(children)) {

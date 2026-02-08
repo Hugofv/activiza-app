@@ -322,23 +322,23 @@ const CustomizationScreen = () => {
 export default CustomizationScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  scrollView: {flex: 1,},
-  scrollContent: {flexGrow: 1,},
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 24,
   },
-  progressContainer: {marginBottom: 8,},
-  title: {marginTop: 8,},
+  progressContainer: { marginBottom: 8 },
+  title: { marginTop: 8 },
   description: {
     marginTop: -8,
     fontSize: 14,
     lineHeight: 20,
   },
-  fieldContainer: {marginTop: 8,},
+  fieldContainer: { marginTop: 8 },
   fieldLabel: {
     fontSize: 14,
     marginBottom: 8,

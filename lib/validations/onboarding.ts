@@ -55,38 +55,38 @@ export const createDocumentSchema = (
         switch (typeToValidate) {
           case 'cpf':
             if (normalized.length !== 11) {
-              return this.createError({message: t('documentFormatCPF')(),});
+              return this.createError({ message: t('documentFormatCPF')() });
             }
             return true;
 
           case 'cnpj':
             if (normalized.length !== 14) {
-              return this.createError({message: t('documentFormatCNPJ')(),});
+              return this.createError({ message: t('documentFormatCNPJ')() });
             }
             return true;
 
           case 'ssn':
             if (normalized.length !== 9) {
-              return this.createError({message: t('documentFormatSSN')(),});
+              return this.createError({ message: t('documentFormatSSN')() });
             }
             return true;
 
           case 'ein':
             if (normalized.length !== 9) {
-              return this.createError({message: t('documentFormatEIN')(),});
+              return this.createError({ message: t('documentFormatEIN')() });
             }
             return true;
 
           case 'ni':
             // UK NI Number: formato alfanumérico 2 letras + 6 números + 1 letra
             if (!/^[A-Z]{2}\d{6}[A-Z]$/.test(cleaned)) {
-              return this.createError({message: t('documentFormatNI')(),});
+              return this.createError({ message: t('documentFormatNI')() });
             }
             return true;
 
           case 'crn':
             if (normalized.length !== 8) {
-              return this.createError({message: t('documentFormatCRN')(),});
+              return this.createError({ message: t('documentFormatCRN')() });
             }
             return true;
 
@@ -94,7 +94,7 @@ export const createDocumentSchema = (
           default:
             // Para "other", aceita qualquer formato com pelo menos 5 caracteres
             if (value.length < 5 || value.length > 30) {
-              return this.createError({message: t('documentFormatOther')(),});
+              return this.createError({ message: t('documentFormatOther')() });
             }
             return true;
         }
@@ -116,7 +116,9 @@ export const createDocumentSchema = (
         case 'US':
           // Aceita SSN ou EIN (9 dígitos)
           if (normalized.length !== 9) {
-            return this.createError({message: t('documentFormat')() || 'Document must have 9 digits',});
+            return this.createError({
+              message: t('documentFormat')() || 'Document must have 9 digits',
+            });
           }
           return true;
 
@@ -226,8 +228,8 @@ export const passwordSchema = yup.object().shape({
 });
 
 // Postal code schema factory - creates validation based on country
-export const createPostalCodeSchema = (countryCode?: string) => {
-  return yup.object().shape({
+export const createPostalCodeSchema = (countryCode?: string) =>
+  yup.object().shape({
     postalCode: yup
       .string()
       .required(t('postalCodeRequired'))
@@ -266,7 +268,6 @@ export const createPostalCodeSchema = (countryCode?: string) => {
         }
       }),
   });
-};
 
 // Default postal code schema (Brazil format for backward compatibility)
 export const postalCodeSchema = createPostalCodeSchema('BR');

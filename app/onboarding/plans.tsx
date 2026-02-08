@@ -167,7 +167,9 @@ const PlansScreen = () => {
                         setSelectedPlan(Number(plan.id));
                       }
                     }}
-                    renderItem={({item: plan,}: {
+                    renderItem={({
+                      item: plan,
+                    }: {
                       item: SuggestedPlan;
                       index: number;
                     }) => {
@@ -180,9 +182,9 @@ const PlansScreen = () => {
                             {
                               borderColor: isSelected
                                 ? colors.primary
-                                : colors.icon + '33',
+                                : `${colors.icon}33`,
                               backgroundColor: isSelected
-                                ? colors.primary + '10'
+                                ? `${colors.primary}10`
                                 : 'transparent',
                             },
                           ]}
@@ -227,7 +229,7 @@ const PlansScreen = () => {
                             <View
                               style={[
                                 styles.planLimits,
-                                { borderTopColor: colors.icon + '20' },
+                                { borderTopColor: `${colors.icon}20` },
                               ]}
                             >
                               <Typography
@@ -320,7 +322,7 @@ const PlansScreen = () => {
                                 <View
                                   style={[
                                     styles.planFeatures,
-                                    { borderTopColor: colors.icon + '20' },
+                                    { borderTopColor: `${colors.icon}20` },
                                   ]}
                                 >
                                   <Typography
@@ -432,8 +434,8 @@ const PlansScreen = () => {
 export default PlansScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  scrollView: {flex: 1,},
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 20,
@@ -443,8 +445,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
-  title: {marginTop: 8,},
+  progressContainer: { marginBottom: 8 },
+  title: { marginTop: 8 },
   description: {
     marginTop: -8,
     opacity: 0.7,
@@ -491,7 +493,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 4,
   },
-  limitsList: {gap: 8,},
+  limitsList: { gap: 8 },
   limitItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -534,13 +536,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 16,
   },
-  loadingText: {opacity: 0.7,},
+  loadingText: { opacity: 0.7 },
   errorContainer: {
     padding: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  errorText: {textAlign: 'center',},
+  errorText: { textAlign: 'center' },
   emptyContainer: {
     padding: 40,
     alignItems: 'center',

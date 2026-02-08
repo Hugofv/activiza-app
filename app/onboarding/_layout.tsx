@@ -17,9 +17,7 @@ import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
 export default function OnboardingLayout() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const {
- isAuthenticated, isChecking, redirectToLogin 
-} = useAuthGuard();
+  const { isAuthenticated, isChecking, redirectToLogin } = useAuthGuard();
   const segments = useSegments();
   const pathname = usePathname();
 

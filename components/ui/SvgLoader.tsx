@@ -12,9 +12,7 @@ interface SvgLoaderProps extends SvgProps {
 /**
  * Component to load and render SVG from URI using react-native-svg
  */
-export function SvgLoader({
- uri, fallback, ...svgProps 
-}: SvgLoaderProps) {
+export function SvgLoader({ uri, fallback, ...svgProps }: SvgLoaderProps) {
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

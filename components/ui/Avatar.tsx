@@ -5,8 +5,8 @@ import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 
 import { Colors, type ThemeColorKey } from '@/constants/theme';
-
 import { useColorScheme } from '@/hooks/use-color-scheme';
+
 import { Icon, type IconName } from './Icon';
 
 export interface AvatarProps {
@@ -113,4 +113,4 @@ export const Avatar = React.forwardRef<View, AvatarProps>(
 
 Avatar.displayName = 'Avatar';
 
-const styles = StyleSheet.create({container: {overflow: 'hidden',},});
+const styles = StyleSheet.create({ container: { overflow: 'hidden' } });

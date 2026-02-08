@@ -10,6 +10,7 @@ import {
   IconCalendarDot,
   IconCamera,
   IconCar,
+  IconChartArrowsVertical,
   IconCheck,
   IconChevronDown,
   IconChevronLeft,
@@ -19,6 +20,8 @@ import {
   IconCircleCheck,
   IconCircleX,
   IconCurrencyDollar,
+  IconCurrencyPound,
+  IconCurrencyReal,
   IconDoor,
   IconEye,
   IconEyeOff,
@@ -31,9 +34,13 @@ import {
   IconMail,
   IconMapPin,
   IconNote,
+  IconPencil,
+  IconPercentage,
   IconPhoto,
+  IconPig,
   IconPlus,
   IconReceipt2,
+  IconReload,
   IconSearch,
   IconSquareRoundedPlusFilled,
   IconStar,
@@ -70,6 +77,8 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   'square-rounded-plus': IconSquareRoundedPlusFilled,
   note: IconNote,
   search: IconSearch,
+  reload: IconReload,
+
   // Visibility
   'eye-outline': IconEye,
   eye: IconEye,
@@ -115,18 +124,26 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
 
   // Business
   'cash-outline': IconCurrencyDollar,
-  'currency-dollar': IconCurrencyDollar,
   'document-text-outline': IconFileText,
   'file-text': IconFileText,
   history: IconHistory,
+  percentage: IconPercentage,
+  'chart-line': IconChartArrowsVertical,
+  pig: IconPig,
 
   // Shapes
   'ellipse-outline': IconCircle,
   circle: IconCircle,
+  pencil: IconPencil,
 
   // Devices
   camera: IconCamera,
   photo: IconPhoto,
+
+  // Currencies
+  'currency-dollar': IconCurrencyDollar,
+  'currency-pound': IconCurrencyPound,
+  'currency-real': IconCurrencyReal,
 };
 
 export type IconName = keyof typeof ICON_MAP | string;
@@ -154,9 +171,7 @@ function resolveIconColor(
 }
 
 const Icon = React.forwardRef<any, IconProps>(
-  ({
- name, size = 24, color, style, ...props
-}, ref) => {
+  ({ name, size = 24, color, style, ...props }, ref) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
     const resolvedColor = resolveIconColor(color, colors);
@@ -172,10 +187,13 @@ const Icon = React.forwardRef<any, IconProps>(
       return (
         <View
           ref={ref}
-          style={[{
- width: size,
-height: size
-}, style]}
+          style={[
+            {
+              width: size,
+              height: size,
+            },
+            style,
+          ]}
         >
           <IconCircle
             size={size}

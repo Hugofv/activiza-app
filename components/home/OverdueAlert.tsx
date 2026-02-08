@@ -30,9 +30,9 @@ export function OverdueAlert({ count, onPress }: OverdueAlertProps) {
         variant="body2"
         color="warning"
         style={{
- marginLeft: 8,
-flex: 1 
-}}
+          marginLeft: 8,
+          flex: 1,
+        }}
       >
         {count} {t('home.overduePayments')}
       </Typography>

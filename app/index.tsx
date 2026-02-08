@@ -19,9 +19,7 @@ export default function LandingScreen() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const {
- isAuthenticated, isChecking, redirectAfterAuth 
-} = useAuthGuard();
+  const { isAuthenticated, isChecking, redirectAfterAuth } = useAuthGuard();
   const pathname = usePathname();
 
   // If authenticated and we are on the root route, let auth guard decide between onboarding and home
@@ -108,7 +106,7 @@ export default function LandingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     justifyContent: 'space-between',

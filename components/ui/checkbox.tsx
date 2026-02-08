@@ -19,9 +19,7 @@ const Checkbox = React.forwardRef<
   CheckboxProps
 >(
   (
-    {
- checked = false, onCheckedChange, disabled = false, style, ...props 
-},
+    { checked = false, onCheckedChange, disabled = false, style, ...props },
     ref
   ) => {
     const colorScheme = useColorScheme();

@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import {
- KeyboardAvoidingView, Platform, StyleSheet, View 
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
 import { router } from 'expo-router';
 import { navigate } from 'expo-router/build/global-state/routing';
@@ -43,7 +41,7 @@ const EmailScreen = () => {
     formState: { errors, isValid },
   } = useForm<EmailFormData>({
     resolver: yupResolver(emailSchema),
-    defaultValues: {email: formData.email || '',},
+    defaultValues: { email: formData.email || '' },
     mode: 'onChange',
   });
 
@@ -184,14 +182,14 @@ const EmailScreen = () => {
 export default EmailScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
+  progressContainer: { marginBottom: 8 },
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

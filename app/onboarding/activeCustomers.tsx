@@ -33,15 +33,15 @@ const ACTIVE_CUSTOMERS_OPTIONS: {
   keyEn: string;
 }[] = [
   {
- value: 20,
-keyPt: 'activeCustomersUpTo20',
-keyEn: 'activeCustomersUpTo20' 
-},
+    value: 20,
+    keyPt: 'activeCustomersUpTo20',
+    keyEn: 'activeCustomersUpTo20',
+  },
   {
- value: 50,
-keyPt: 'activeCustomers21To50',
-keyEn: 'activeCustomers21To50' 
-},
+    value: 50,
+    keyPt: 'activeCustomers21To50',
+    keyEn: 'activeCustomers21To50',
+  },
   {
     value: 100,
     keyPt: 'activeCustomers51To100',
@@ -173,22 +173,22 @@ const ActiveCustomersScreen = () => {
 export default ActiveCustomersScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  scrollView: {flex: 1,},
-  scrollContent: {flexGrow: 1,},
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
-  title: {marginTop: 8,},
+  progressContainer: { marginBottom: 8 },
+  title: { marginTop: 8 },
   description: {
     marginTop: -8,
     opacity: 0.7,
   },
-  optionsList: {marginTop: 8,},
+  optionsList: { marginTop: 8 },
   buttonContainer: {
     paddingBottom: 56,
     paddingHorizontal: 24,

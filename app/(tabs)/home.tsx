@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 
-import {
- ActivityIndicator, ScrollView, StyleSheet, View 
-} from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 
 import { router } from 'expo-router';
 
@@ -22,9 +20,7 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const {
- isAuthenticated, isChecking, redirectToLogin 
-} = useAuthGuard();
+  const { isAuthenticated, isChecking, redirectToLogin } = useAuthGuard();
 
   useEffect(() => {
     if (!isChecking && !isAuthenticated) {
@@ -66,19 +62,18 @@ export default function HomeScreen() {
   const rentalsTotal = 5108.0;
   const operationsCount = 16;
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
     }).format(value);
-  };
 
   const operations = [
     {
- icon: 'person' as const,
-count: loansCount,
-label: t('home.loans') 
-},
+      icon: 'person' as const,
+      count: loansCount,
+      label: t('home.loans'),
+    },
     {
       icon: 'home' as const,
       count: roomRentalsCount,
@@ -125,9 +120,9 @@ label: t('home.loans')
           <Typography
             variant="h5"
             style={{
- color: colors.icon,
-marginBottom: 16 
-}}
+              color: colors.icon,
+              marginBottom: 16,
+            }}
           >
             {t('home.reports')}
           </Typography>
@@ -162,14 +157,14 @@ marginBottom: 16
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  scrollView: {flex: 1,},
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 100,
   },
-  reportsSection: {marginBottom: 24,},
+  reportsSection: { marginBottom: 24 },
   primaryReportsRow: {
     flexDirection: 'row',
     gap: 12,

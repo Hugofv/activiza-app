@@ -15,6 +15,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 
+import { formatDateWithDay } from '@/lib/utils/dateFormat';
 import { useOperations } from '../_context';
 
 export default function LoanSummaryScreen() {
@@ -27,16 +28,16 @@ export default function LoanSummaryScreen() {
 
   const currencySymbol = useMemo(() => {
     switch (formData.currency) {
-    case 'GBP':
-      return '£';
-    case 'USD':
-      return '$';
-    case 'BRL':
-      return 'R$';
-    case 'EUR':
-      return '€';
-    default:
-      return '£';
+      case 'GBP':
+        return '£';
+      case 'USD':
+        return '$';
+      case 'BRL':
+        return 'R$';
+      case 'EUR':
+        return '€';
+      default:
+        return '£';
     }
   }, [formData.currency]);
 
@@ -64,14 +65,14 @@ export default function LoanSummaryScreen() {
 
   const frequencyLabel = useMemo(() => {
     switch (formData.frequency) {
-    case 'weekly':
-      return t('operations.weekly');
-    case 'biweekly':
-      return t('operations.biweekly');
-    case 'monthly':
-      return t('operations.monthly');
-    default:
-      return formData.frequency;
+      case 'weekly':
+        return t('operations.weekly');
+      case 'biweekly':
+        return t('operations.biweekly');
+      case 'monthly':
+        return t('operations.monthly');
+      default:
+        return formData.frequency;
     }
   }, [formData.frequency, t]);
 
@@ -86,15 +87,15 @@ export default function LoanSummaryScreen() {
   const nextPaymentDate = useMemo(() => {
     const d = new Date();
     switch (formData.frequency) {
-    case 'weekly':
-      d.setDate(d.getDate() + 7);
-      break;
-    case 'biweekly':
-      d.setDate(d.getDate() + 14);
-      break;
-    case 'monthly':
-      d.setMonth(d.getMonth() + 1);
-      break;
+      case 'weekly':
+        d.setDate(d.getDate() + 7);
+        break;
+      case 'biweekly':
+        d.setDate(d.getDate() + 14);
+        break;
+      case 'monthly':
+        d.setMonth(d.getMonth() + 1);
+        break;
     }
     const dd = String(d.getDate()).padStart(2, '0');
     const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -121,6 +122,22 @@ export default function LoanSummaryScreen() {
   const formatAmount = (value: number) =>
     `${value.toLocaleString()}${currencySymbol}`;
 
+  const currencyIcon = useMemo(() => {
+    switch (formData.currency) {
+      case 'GBP':
+        return 'currency-pound';
+      case 'USD':
+        return 'currency-dollar';
+      case 'BRL':
+        return 'currency-real';
+      case 'EUR':
+        return 'currency-euro';
+      default:
+        return 'currency-dollar';
+    }
+  }, [formData.currency]);
+
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -130,13 +147,13 @@ export default function LoanSummaryScreen() {
       <View style={[styles.header, { backgroundColor: colors.background }]}>
         <View style={styles.headerLeft}>
           <BackButton />
+          <Typography
+            variant="h4"
+            style={styles.headerTitle}
+          >
+            {t('operations.lendLoan')}
+          </Typography>
         </View>
-        <Typography
-          variant="h4"
-          style={styles.headerTitle}
-        >
-          {t('operations.lendLoan')}
-        </Typography>
         <View style={styles.headerRight} />
       </View>
 
@@ -158,7 +175,7 @@ export default function LoanSummaryScreen() {
           {/* Client */}
           <View style={styles.row}>
             <Icon
-              name="user-circle"
+              name="user-filled"
               size={20}
               color="icon"
             />
@@ -173,7 +190,7 @@ export default function LoanSummaryScreen() {
                 variant="body1SemiBold"
                 color="text"
               >
-                {formData.selectedClientName}
+                {formData.client?.name}
               </Typography>
             </View>
           </View>
@@ -183,7 +200,7 @@ export default function LoanSummaryScreen() {
             <View style={styles.statItem}>
               <View style={styles.statHeader}>
                 <Icon
-                  name="currency-pound"
+                  name={currencyIcon}
                   size={14}
                   color="icon"
                 />
@@ -265,7 +282,7 @@ export default function LoanSummaryScreen() {
                 variant="body1SemiBold"
                 color="text"
               >
-                {t('operations.today')} ({formData.dueDate || today})
+                {formatDateWithDay(new Date(formData.dueDate))}
               </Typography>
             </View>
           </View>
@@ -273,7 +290,7 @@ export default function LoanSummaryScreen() {
           {/* Frequency */}
           <View style={styles.row}>
             <Icon
-              name="refresh"
+              name="reload"
               size={20}
               color="icon"
             />
@@ -296,7 +313,7 @@ export default function LoanSummaryScreen() {
           {/* Next Payment */}
           <View style={styles.row}>
             <Icon
-              name="clock"
+              name="pig"
               size={20}
               color="icon"
             />
@@ -352,14 +369,15 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   headerLeft: {
-    width: 80,
-    minWidth: 80,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: 20,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    flex: 1,
-    textAlign: 'center',
   },
   headerRight: {
     width: 80,

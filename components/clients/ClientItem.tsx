@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  ratingText: {fontSize: 12,},
+  ratingText: { fontSize: 12 },
   indicators: {
     flexDirection: 'row',
     gap: 8,

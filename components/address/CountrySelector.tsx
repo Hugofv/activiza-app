@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 
-import {
- ScrollView, StyleSheet, TouchableOpacity, View 
-} from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 
@@ -21,23 +19,23 @@ const COUNTRIES: {
   flag: string;
 }[] = [
   {
- code: 'BR',
-name: 'Brasil',
-nameEn: 'Brazil',
-flag: '🇧🇷' 
-},
+    code: 'BR',
+    name: 'Brasil',
+    nameEn: 'Brazil',
+    flag: '🇧🇷',
+  },
   {
- code: 'UK',
-name: 'Reino Unido',
-nameEn: 'United Kingdom',
-flag: '🇬🇧' 
-},
+    code: 'UK',
+    name: 'Reino Unido',
+    nameEn: 'United Kingdom',
+    flag: '🇬🇧',
+  },
   {
- code: 'US',
-name: 'Estados Unidos',
-nameEn: 'United States',
-flag: '🇺🇸' 
-},
+    code: 'US',
+    name: 'Estados Unidos',
+    nameEn: 'United States',
+    flag: '🇺🇸',
+  },
 ];
 
 export interface CountrySelectorProps {
@@ -71,9 +69,8 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
     initialValue
   );
 
-  const getCountryName = (country: (typeof COUNTRIES)[0]) => {
-    return i18n.language.startsWith('pt') ? country.name : country.nameEn;
-  };
+  const getCountryName = (country: (typeof COUNTRIES)[0]) =>
+    i18n.language.startsWith('pt') ? country.name : country.nameEn;
 
   const handleSelect = (countryCode: CountryCode) => {
     setSelectedCountry(countryCode);
@@ -88,9 +85,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
         </View>
       )}
 
-      {customHeader
-        ? customHeader
-        : showBackButton && <BackButton onPress={onBack} />}
+      {customHeader || (showBackButton && <BackButton onPress={onBack} />)}
 
       <Typography
         variant="h4"
@@ -162,10 +157,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
-  title: {marginTop: 8,},
-  scrollView: {flex: 1,},
-  scrollContent: {flexGrow: 1,},
+  progressContainer: { marginBottom: 8 },
+  title: { marginTop: 8 },
+  scrollView: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
   countryList: {
     marginTop: 8,
     gap: 12,
@@ -189,5 +184,5 @@ const styles = StyleSheet.create({
     fontSize: 28,
     lineHeight: 0,
   },
-  countryName: {fontSize: 18,},
+  countryName: { fontSize: 18 },
 });

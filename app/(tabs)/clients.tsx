@@ -37,13 +37,13 @@ export default function ClientsScreen() {
 
   const FILTER_OPTIONS = [
     {
- value: 'all' as const,
-label: t('tabs.filterAll') || 'Todos' 
-},
+      value: 'all' as const,
+      label: t('tabs.filterAll') || 'Todos',
+    },
     {
- value: 'active' as const,
-label: t('tabs.filterActive') || 'Ativos' 
-},
+      value: 'active' as const,
+      label: t('tabs.filterActive') || 'Ativos',
+    },
     {
       value: 'inactive' as const,
       label: t('tabs.filterInactive') || 'Inativos',
@@ -123,6 +123,7 @@ label: t('tabs.filterActive') || 'Ativos'
 
           <View style={styles.headerActions}>
             <Select
+              variant="filled"
               options={FILTER_OPTIONS}
               value={selectedFilter}
               onValueChange={(value) => setSelectedFilter(value)}
@@ -208,7 +209,7 @@ label: t('tabs.filterActive') || 'Ativos'
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   header: {
     paddingHorizontal: 24,
     paddingTop: 16,
@@ -246,8 +247,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  select: {minWidth: 115,},
-  listContent: {paddingBottom: 16,},
+  select: { minWidth: 115 },
+  listContent: { paddingBottom: 16 },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

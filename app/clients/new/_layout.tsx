@@ -49,7 +49,8 @@ export default function NewClientLayout() {
             animation: 'slide_from_right',
             animationDuration: 350,
             gestureEnabled: true,
-            contentStyle: {paddingTop: 0, // Remove default padding since we have our own header
+            contentStyle: {
+              paddingTop: 0, // Remove default padding since we have our own header
             },
           }}
         >
@@ -71,8 +72,8 @@ export default function NewClientLayout() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, },
-  headerLeft: { width: 80, },
+  container: { flex: 1 },
+  headerLeft: { width: 80 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

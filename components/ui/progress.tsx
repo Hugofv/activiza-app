@@ -12,9 +12,7 @@ export interface ProgressProps extends ViewProps {
 }
 
 const Progress = React.forwardRef<React.ElementRef<typeof View>, ProgressProps>(
-  ({
- value = 0, className, style, ...props 
-}, ref) => {
+  ({ value = 0, className, style, ...props }, ref) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
 

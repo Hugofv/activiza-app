@@ -1,8 +1,6 @@
 import * as React from 'react';
 
-import {
- StyleSheet, TouchableOpacity, View, ViewStyle 
-} from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -109,7 +107,7 @@ export function ListCheck<T = string>({
                 variant="body1"
                 style={[
                   styles.itemText,
-                  {fontWeight: isSelected ? '600' : '400',},
+                  { fontWeight: isSelected ? '600' : '400' },
                 ]}
               >
                 {option.label}
@@ -138,7 +136,7 @@ export function ListCheck<T = string>({
 }
 
 const styles = StyleSheet.create({
-  container: {width: '100%',},
+  container: { width: '100%' },
   item: {
     flexDirection: 'row',
     alignItems: 'center',

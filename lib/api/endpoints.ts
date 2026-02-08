@@ -41,7 +41,7 @@ export const ENDPOINTS = {
   },
 
   // Modules endpoints
-  MODULES: {GET: `${PREFIX}/modules`,},
+  MODULES: { GET: `${PREFIX}/modules` },
 
   // Clients endpoints
   CLIENTS: {

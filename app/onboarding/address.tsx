@@ -31,17 +31,17 @@ const AddressScreen = () => {
   const handleCountrySelect = async (country: CountryCode) => {
     const COUNTRIES = [
       {
- code: 'BR' as CountryCode,
-name: 'Brasil' 
-},
+        code: 'BR' as CountryCode,
+        name: 'Brasil',
+      },
       {
- code: 'UK' as CountryCode,
-name: 'Reino Unido' 
-},
+        code: 'UK' as CountryCode,
+        name: 'Reino Unido',
+      },
       {
- code: 'US' as CountryCode,
-name: 'Estados Unidos' 
-},
+        code: 'US' as CountryCode,
+        name: 'Estados Unidos',
+      },
     ];
     const countryData = COUNTRIES.find((c) => c.code === country);
 
@@ -106,10 +106,7 @@ name: 'Estados Unidos'
   // Handle complete address (all stages done)
   const handleComplete = async (completeAddress: any) => {
     // Final save with complete address
-    await updateFormData(
-      {address: completeAddress,},
-      'address'
-    );
+    await updateFormData({ address: completeAddress }, 'address');
     // Navigate to next screen
     router.push('/onboarding/terms');
   };
@@ -157,6 +154,6 @@ name: 'Estados Unidos'
 export default AddressScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  content: {flex: 1,},
+  container: { flex: 1 },
+  content: { flex: 1 },
 });

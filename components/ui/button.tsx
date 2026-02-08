@@ -175,11 +175,13 @@ const Button = React.forwardRef<
 
     return (
       <Pressable
-        className={cn(buttonVariants({
- variant,
-size,
-className 
-}))}
+        className={cn(
+          buttonVariants({
+            variant,
+            size,
+            className,
+          })
+        )}
         style={[variantStyle, style] as any}
         ref={ref}
         disabled={isDisabled}
@@ -194,9 +196,9 @@ className
           <Typography
             variant="body1Medium"
             style={{
- color: textColor,
-fontSize: size === 'sm' ? 14 : 16 
-}}
+              color: textColor,
+              fontSize: size === 'sm' ? 14 : 16,
+            }}
           >
             {children}
           </Typography>
@@ -209,6 +211,4 @@ fontSize: size === 'sm' ? 14 : 16
 );
 Button.displayName = 'Button';
 
-export {
- Button, buttonVariants 
-};
+export { Button, buttonVariants };

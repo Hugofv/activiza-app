@@ -1,6 +1,4 @@
-import React, {
- useCallback, useEffect, useMemo, useState 
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   KeyboardAvoidingView,
@@ -343,9 +341,9 @@ const DocumentScreen = () => {
 export default DocumentScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
-  scrollView: {flex: 1,},
-  scrollContent: {flexGrow: 1,},
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
@@ -353,7 +351,7 @@ const styles = StyleSheet.create({
     gap: 20,
     paddingBottom: 20,
   },
-  progressContainer: {marginBottom: 8,},
+  progressContainer: { marginBottom: 8 },
   typeSelector: {
     marginTop: 8,
     gap: 12,

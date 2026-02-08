@@ -38,7 +38,9 @@ const queryClientOptions: DefaultOptions = {
 };
 
 // Create query client
-export const queryClient = new QueryClient({defaultOptions: queryClientOptions,});
+export const queryClient = new QueryClient({
+  defaultOptions: queryClientOptions,
+});
 
 // Create persister for AsyncStorage
 export const asyncStoragePersister = createAsyncStoragePersister({

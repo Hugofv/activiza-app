@@ -42,9 +42,7 @@ const CodeContactScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const {
- formData, updateFormData, updateStep 
-} = useOnboardingForm();
+  const { formData, updateFormData, updateStep } = useOnboardingForm();
   const [resendTimer, setResendTimer] = useState(60);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -56,7 +54,7 @@ const CodeContactScreen = () => {
     formState: { errors, isValid },
   } = useForm<CodeFormData>({
     resolver: yupResolver(codeSchema),
-    defaultValues: {code: '',},
+    defaultValues: { code: '' },
     mode: 'onChange',
   });
 
@@ -261,15 +259,15 @@ const CodeContactScreen = () => {
 export default CodeContactScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
-  title: {marginTop: 8,},
+  progressContainer: { marginBottom: 8 },
+  title: { marginTop: 8 },
   description: {
     marginTop: -8,
     marginBottom: 8,

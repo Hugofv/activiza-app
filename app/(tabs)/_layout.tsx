@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import * as Haptics from 'expo-haptics';
-import { router, Tabs } from 'expo-router';
+import { Tabs, router } from 'expo-router';
 
 import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 
@@ -61,7 +61,9 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
     });
   };
 
-  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }], }));
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   return (
     <TouchableOpacity
@@ -138,7 +140,7 @@ function TabLayoutContent() {
     overflow: 'hidden' as const,
   };
 
-  const tabBarItemStyle = { height: 65, };
+  const tabBarItemStyle = { height: 65 };
 
   return (
     <>
@@ -204,7 +206,10 @@ function TabLayoutContent() {
               />
               <Typography
                 variant="body2"
-                style={[styles.loadingText, { color: Colors[colorScheme ?? 'light'].icon }]}
+                style={[
+                  styles.loadingText,
+                  { color: Colors[colorScheme ?? 'light'].icon },
+                ]}
               >
                 {t('common.loading')}
               </Typography>
@@ -212,14 +217,20 @@ function TabLayoutContent() {
           ) : modulesError ? (
             <Typography
               variant="body2"
-              style={[styles.errorText, { color: Colors[colorScheme ?? 'light'].text }]}
+              style={[
+                styles.errorText,
+                { color: Colors[colorScheme ?? 'light'].text },
+              ]}
             >
               {t('common.error')}
             </Typography>
           ) : operationOptions.length === 0 ? (
             <Typography
               variant="body2"
-              style={[styles.emptyText, { color: Colors[colorScheme ?? 'light'].icon }]}
+              style={[
+                styles.emptyText,
+                { color: Colors[colorScheme ?? 'light'].icon },
+              ]}
             >
               {t('common.noData')}
             </Typography>
@@ -232,13 +243,14 @@ function TabLayoutContent() {
                   index < operationOptions.length - 1 && [
                     styles.optionItemBorder,
                     {
-                      borderBottomColor:
-                        Colors[colorScheme ?? 'light'].icon + '20',
+                      borderBottomColor: `${Colors[colorScheme ?? 'light'].icon}20`,
                     },
                   ],
                 ]}
                 onPress={() => handleOptionPress(option.route)}
-                android_ripple={{ color: Colors[colorScheme ?? 'light'].icon + '10', }}
+                android_ripple={{
+                  color: `${Colors[colorScheme ?? 'light'].icon}10`,
+                }}
               >
                 <Icon
                   name={option.icon as any}
@@ -276,7 +288,7 @@ const styles = StyleSheet.create({
     height: 65,
     width: '100%',
   },
-  optionsList: { flexGrow: 0, },
+  optionsList: { flexGrow: 0 },
   optionsListContent: {
     paddingVertical: 8,
     paddingBottom: 24,
@@ -286,7 +298,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  loadingText: { marginTop: 4, },
+  loadingText: { marginTop: 4 },
   errorText: {
     textAlign: 'center',
     paddingVertical: 16,
@@ -302,7 +314,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     gap: 16,
   },
-  optionItemBorder: { borderBottomWidth: 1, },
+  optionItemBorder: { borderBottomWidth: 1 },
   optionText: {
     fontSize: 16,
     flex: 1,

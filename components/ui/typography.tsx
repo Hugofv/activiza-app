@@ -42,7 +42,7 @@ const typographyVariants = cva('', {
       link: 'text-base text-primary underline-offset-4 underline leading-6',
     },
   },
-  defaultVariants: {variant: 'p',},
+  defaultVariants: { variant: 'p' },
 });
 
 export type TypographyVariant = VariantProps<
@@ -58,9 +58,7 @@ export interface TypographyProps
 const Typography = React.forwardRef<
   React.ElementRef<typeof Text>,
   TypographyProps
->(({
- className, variant, style, children, color, ...props 
-}, ref) => {
+>(({ className, variant, style, children, color, ...props }, ref) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -181,10 +179,12 @@ const Typography = React.forwardRef<
   return (
     <Text
       ref={ref}
-      className={cn(typographyVariants({
- variant,
-className 
-}))}
+      className={cn(
+        typographyVariants({
+          variant,
+          className,
+        })
+      )}
       style={[
         {
           color: getTextColor(),
@@ -202,6 +202,4 @@ className
 });
 Typography.displayName = 'Typography';
 
-export {
- Typography, typographyVariants 
-};
+export { Typography, typographyVariants };

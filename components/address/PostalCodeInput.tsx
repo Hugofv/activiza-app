@@ -91,7 +91,7 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
     formState: { errors, isValid },
   } = useForm<PostalCodeFormData>({
     resolver: yupResolver(schema),
-    defaultValues: {postalCode: initialValue,},
+    defaultValues: { postalCode: initialValue },
     mode: 'onChange',
   });
 
@@ -116,7 +116,7 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
           ...addressData,
           number: '',
           complement: '',
-          countryCode: countryCode,
+          countryCode,
           _apiFilled: {
             postalCode: !!addressData.postalCode,
             street: !!addressData.street,
@@ -130,7 +130,7 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
         // If not found, just save postal code and let user fill manually
         addressUpdate = {
           postalCode: data.postalCode,
-          countryCode: countryCode,
+          countryCode,
           _apiFilled: {},
         };
       }
@@ -142,7 +142,7 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
       try {
         await onSubmit({
           postalCode: data.postalCode,
-          countryCode: countryCode,
+          countryCode,
           _apiFilled: {},
         });
       } catch (saveError: any) {
@@ -168,9 +168,7 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
         </View>
       )}
 
-      {customHeader
-        ? customHeader
-        : showBackButton && <BackButton onPress={onBack} />}
+      {customHeader || (showBackButton && <BackButton onPress={onBack} />)}
 
       <Typography
         variant="h4"
@@ -209,9 +207,9 @@ export const PostalCodeInput: React.FC<PostalCodeInputProps> = ({
           <Typography
             variant="body2"
             style={{
- color: colors.icon,
-marginLeft: 8 
-}}
+              color: colors.icon,
+              marginLeft: 8,
+            }}
           >
             {t('onboarding.loadingAddress')}
           </Typography>
@@ -231,8 +229,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 20,
   },
-  progressContainer: {marginBottom: 8,},
-  title: {marginTop: 8,},
+  progressContainer: { marginBottom: 8 },
+  title: { marginTop: 8 },
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',

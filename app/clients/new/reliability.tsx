@@ -28,9 +28,7 @@ export default function ReliabilityScreen() {
   }>();
   const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
   const { draft, updateDraft } = useEditClientStore();
-  const {
- formData, updateFormData, setCurrentStep 
-} = useNewClientForm();
+  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const initialValue = isEditMode ? draft.reliability : formData.reliability;
   const [reliability, setReliability] = useState<number | undefined>(
     initialValue
@@ -125,7 +123,7 @@ export default function ReliabilityScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 0,
@@ -148,7 +146,7 @@ const styles = StyleSheet.create({
     gap: 16,
     marginTop: 24,
   },
-  starButton: {padding: 8,},
+  starButton: { padding: 8 },
   buttonContainer: {
     paddingHorizontal: 24,
     paddingBottom: 24,

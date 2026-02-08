@@ -1,6 +1,4 @@
-import {
-  Dimensions, ScrollView, StyleSheet, View
-} from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 
@@ -34,12 +32,11 @@ export function FinancialSummary({
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
     }).format(value);
-  };
 
   return (
     <View style={styles.summarySection}>
@@ -49,7 +46,7 @@ export function FinancialSummary({
           variant="caption"
           style={{
             color: colors.icon,
-            marginBottom: 4
+            marginBottom: 4,
           }}
         >
           {t('home.receivedThisMonth')}
@@ -58,7 +55,7 @@ export function FinancialSummary({
           variant="h3"
           style={{
             color: '#064e3b',
-            marginBottom: 4
+            marginBottom: 4,
           }}
         >
           {formatCurrency(receivedAmount)}
@@ -105,12 +102,13 @@ const styles = StyleSheet.create({
     padding: 5,
     marginBottom: 10,
   },
-  receivedCard: { marginBottom: 15, },
+  receivedCard: { marginBottom: 15 },
   carouselContainer: {
     marginBottom: 5,
     marginLeft: -5,
   },
-  carouselContent: {paddingRight: 20, // Padding no final do scroll
+  carouselContent: {
+    paddingRight: 20, // Padding no final do scroll
   },
   itemWrapper: {
     width: screenWidth * 0.3,

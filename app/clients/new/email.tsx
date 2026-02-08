@@ -35,15 +35,15 @@ export default function EmailScreen() {
   }>();
   const isEditMode = !!searchParams.clientId && searchParams.edit === '1';
   const { draft, updateDraft } = useEditClientStore();
-  const {
- formData, updateFormData, setCurrentStep 
-} = useNewClientForm();
+  const { formData, updateFormData, setCurrentStep } = useNewClientForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const keyboardHeight = useKeyboardHeight();
 
   const initialEmail = isEditMode ? (draft.email ?? '') : formData.email || '';
 
-  const emailSchema = yup.object<EmailFormData>().shape({email: yup.string().email(t('clients.emailInvalid')).optional(),});
+  const emailSchema = yup
+    .object<EmailFormData>()
+    .shape({ email: yup.string().email(t('clients.emailInvalid')).optional() });
 
   const {
     control,
@@ -150,7 +150,7 @@ export default function EmailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1,},
+  container: { flex: 1 },
   content: {
     flex: 1,
     paddingTop: 0,
