@@ -15,6 +15,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 
+import { Avatar } from '@/components/ui/Avatar';
 import { formatDateWithDay } from '@/lib/utils/dateFormat';
 import { useOperations } from '../_context';
 
@@ -174,10 +175,12 @@ export default function LoanSummaryScreen() {
 
           {/* Client */}
           <View style={styles.row}>
-            <Icon
-              name="user-filled"
-              size={20}
-              color="icon"
+            <Avatar
+              icon="user-filled"
+              size={40}
+              backgroundColor="muted"
+              iconColor="icon"
+              image={formData.client?.profilePictureUrl}
             />
             <View>
               <Typography
@@ -198,69 +201,74 @@ export default function LoanSummaryScreen() {
           {/* Amount / Interest / Profit row */}
           <View style={[styles.statsRow, { backgroundColor: colors.muted }]}>
             <View style={styles.statItem}>
+              <Icon
+                name={currencyIcon}
+                size={30}
+                color="icon"
+              />
               <View style={styles.statHeader}>
-                <Icon
-                  name={currencyIcon}
-                  size={14}
-                  color="icon"
-                />
                 <Typography
                   variant="caption"
                   color="placeholder"
                 >
                   {t('operations.amount')}
                 </Typography>
+                <Typography
+                  variant="caption"
+                  color="text"
+                  style={{ fontSize: 16 }}
+                >
+                  {formatAmount(amountNum)}
+                </Typography>
               </View>
-              <Typography
-                variant="body1SemiBold"
-                color="text"
-              >
-                {formatAmount(amountNum)}
-              </Typography>
             </View>
 
             <View style={styles.statItem}>
+              <Icon
+                name="percentage"
+                size={30}
+                color="icon"
+              />
               <View style={styles.statHeader}>
-                <Icon
-                  name="percentage"
-                  size={14}
-                  color="icon"
-                />
                 <Typography
                   variant="caption"
                   color="placeholder"
                 >
                   {t('operations.interest')}
                 </Typography>
+                <Typography
+                  variant="caption"
+                  color="text"
+                  style={{ fontSize: 16 }}
+                >
+                  {interestNum}%
+                </Typography>
               </View>
-              <Typography
-                variant="body1SemiBold"
-                color="text"
-              >
-                {interestNum}%
-              </Typography>
             </View>
 
             <View style={styles.statItem}>
+              <Icon
+                name="chart-line"
+                size={30}
+                color="icon"
+              />
               <View style={styles.statHeader}>
-                <Icon
-                  name="chart-line"
-                  size={14}
-                  color="icon"
-                />
+
                 <Typography
                   variant="caption"
                   color="placeholder"
                 >
                   {t('operations.profit')}
                 </Typography>
+                <Typography
+                  variant="caption"
+                  color="text"
+                  style={{ fontSize: 16 }}
+                >
+                  {formatAmount(profit)}
+                </Typography>
               </View>
-              <Typography
-                variant="body1SemiBold"
-                color="text"
-              >
-                {formatAmount(profit)}
-              </Typography>
+
             </View>
           </View>
 
@@ -392,7 +400,7 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
     borderRadius: 16,
-    padding: 20,
+    padding: 10,
     gap: 20,
   },
   cardTitle: {
@@ -407,17 +415,18 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
     borderRadius: 12,
-    padding: 12,
+    paddingVertical: 12,
+    gap: 8,
   },
   statItem: {
-    alignItems: 'center',
+    flexDirection: 'row',
     gap: 4,
   },
   statHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
     gap: 4,
   },
   paymentInfo: {

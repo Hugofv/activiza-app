@@ -8,10 +8,9 @@ import {
 } from 'date-fns';
 import { enGB, ptBR } from 'date-fns/locale';
 
-import i18n from '@/translation';
-
 // -----------------------------------------------------------------------
 // Locale resolution (aligned with the app's i18n supported languages)
+// Lazy-imports i18n to avoid circular / timing issues during app startup.
 // -----------------------------------------------------------------------
 
 const LOCALE_MAP: Record<string, Locale> = {
@@ -20,8 +19,18 @@ const LOCALE_MAP: Record<string, Locale> = {
   'en-BR': enGB,
 };
 
+let _i18n: { language?: string } | null = null;
+
+function getI18n() {
+  if (!_i18n) {
+    // Lazy import to avoid circular / timing issues during app startup
+    _i18n = (require('@/translation') as { default: { language?: string } }).default; // eslint-disable-line
+  }
+  return _i18n;
+}
+
 function getLocale(override?: string): Locale {
-  const key = override ?? i18n.language;
+  const key = override ?? getI18n()?.language ?? 'pt-BR';
   return LOCALE_MAP[key] ?? ptBR;
 }
 
@@ -40,11 +49,13 @@ function getLocale(override?: string): Locale {
  * formatDate(new Date(), 'PPPp', 'en-UK')     // "8 February 2026 at 14:30"
  */
 export function formatDate(
-  date: Date,
+  date: Date | string | null | undefined,
   pattern = 'dd/MM/yyyy',
   locale?: string
 ): string {
-  return fnsFormat(date, pattern, { locale: getLocale(locale) });
+  const d = date instanceof Date ? date : new Date(date as string);
+  if (!date || Number.isNaN(d.getTime())) return '';
+  return fnsFormat(d, pattern, { locale: getLocale(locale) });
 }
 
 // -----------------------------------------------------------------------

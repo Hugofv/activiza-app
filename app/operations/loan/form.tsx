@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   },
   currencySelect: {
     width: 130,
-    gap: 6,
+    gap: 1,
   },
   amountInput: { flex: 1 },
   fieldLabel: {
