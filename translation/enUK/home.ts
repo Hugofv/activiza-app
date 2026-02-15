@@ -10,4 +10,6 @@ export default {
   inLoans: 'in loans',
   inRentals: 'in rentals',
   operations: 'Operations',
+  clients: 'Clients',
+  loadError: 'Could not load dashboard',
 };

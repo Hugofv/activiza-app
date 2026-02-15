@@ -1,9 +1,17 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Dimensions,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import { router } from 'expo-router';
 
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -11,10 +19,143 @@ import { FinancialSummary } from '@/components/home/FinancialSummary';
 import { Header } from '@/components/home/Header';
 import { OverdueAlert } from '@/components/home/OverdueAlert';
 import { ReportCard } from '@/components/home/ReportCard';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
+import {
+  type DashboardData,
+  type DashboardReportByType,
+  getDashboard,
+} from '@/lib/services/dashboardService';
+
+const { width: screenWidth } = Dimensions.get('window');
+
+// -----------------------------------------------------------------------
+// Helpers
+// -----------------------------------------------------------------------
+
+const ICON_MAP: Record<string, 'person' | 'home' | 'car' | 'cash'> = {
+  LOAN: 'person',
+  INSTALLMENTS: 'cash',
+  RENT_PROPERTY: 'home',
+  RENT_ROOM: 'home',
+  RENT_VEHICLE: 'car',
+};
+
+const LABEL_MAP: Record<string, string> = {
+  LOAN: 'home.loans',
+  INSTALLMENTS: 'home.operations',
+  RENT_PROPERTY: 'home.roomRentals',
+  RENT_ROOM: 'home.roomRentals',
+  RENT_VEHICLE: 'home.vehicleRentals',
+};
+
+function findReport(
+  reports: DashboardReportByType[] | undefined,
+  type: string
+): DashboardReportByType | undefined {
+  return reports?.find((r) => r.type === type);
+}
+
+// -----------------------------------------------------------------------
+// Skeleton placeholders
+// -----------------------------------------------------------------------
+
+function HomeSkeleton() {
+  return (
+    <View style={skeletonStyles.container}>
+      {/* Financial summary skeleton */}
+      <View style={skeletonStyles.summarySection}>
+        <Skeleton
+          width={180}
+          height={14}
+        />
+        <Skeleton
+          width={220}
+          height={32}
+          style={{ marginTop: 8 }}
+        />
+        <Skeleton
+          width={140}
+          height={18}
+          style={{ marginTop: 6 }}
+        />
+
+        {/* Operation cards skeleton */}
+        <View style={skeletonStyles.cardsRow}>
+          {[0, 1, 2].map((i) => (
+            <Skeleton
+              key={i}
+              width={screenWidth * 0.28}
+              height={120}
+              borderRadius={12}
+            />
+          ))}
+        </View>
+      </View>
+
+      {/* Overdue alert skeleton */}
+      <Skeleton
+        height={44}
+        borderRadius={8}
+        style={{ marginBottom: 16 }}
+      />
+
+      {/* Reports section skeleton */}
+      <Skeleton
+        width={120}
+        height={18}
+        style={{ marginBottom: 16 }}
+      />
+
+      <View style={skeletonStyles.reportsRow}>
+        <Skeleton
+          height={130}
+          borderRadius={16}
+          style={{ flex: 1 }}
+        />
+        <Skeleton
+          height={130}
+          borderRadius={16}
+          style={{ flex: 1 }}
+        />
+      </View>
+
+      <View style={[skeletonStyles.reportsRow, { marginTop: 12 }]}>
+        <Skeleton
+          height={130}
+          borderRadius={16}
+          style={{ flex: 1 }}
+        />
+        <Skeleton
+          height={130}
+          borderRadius={16}
+          style={{ flex: 1 }}
+        />
+      </View>
+    </View>
+  );
+}
+
+const skeletonStyles = StyleSheet.create({
+  container: { paddingTop: 5 },
+  summarySection: { padding: 5, marginBottom: 10 },
+  cardsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 20,
+  },
+  reportsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+});
+
+// -----------------------------------------------------------------------
+// Screen
+// -----------------------------------------------------------------------
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -24,12 +165,61 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (!isChecking && !isAuthenticated) {
-      console.log(
-        '[HomeScreen] User not authenticated, calling redirectToLogin("home")'
-      );
       redirectToLogin('home');
     }
   }, [isAuthenticated, isChecking, redirectToLogin]);
+
+  const {
+    data: dashboard,
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useQuery<DashboardData>({
+    queryKey: ['dashboard', 'this_month'],
+    queryFn: () => getDashboard({ period: 'this_month' }),
+    enabled: isAuthenticated,
+    staleTime: 1000 * 60 * 5,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
+  const onRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const formatCurrency = useCallback(
+    (value: number) =>
+      new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      }).format(value),
+    []
+  );
+
+  const operations = useMemo(() => {
+    if (!dashboard?.operationsByType) return [];
+    return dashboard.operationsByType.map((op) => ({
+      icon: ICON_MAP[op.type] ?? ('cash' as const),
+      count: op.count ?? 0,
+      label: t(LABEL_MAP[op.type] ?? 'home.operations'),
+    }));
+  }, [dashboard, t]);
+
+  const loanReport = findReport(dashboard?.reportsByType, 'LOAN');
+
+  const rentalReport = useMemo(() => {
+    if (!dashboard?.reportsByType) return { totalAmount: 0, count: 0 };
+    const rentalTypes = ['RENT_PROPERTY', 'RENT_ROOM', 'RENT_VEHICLE'];
+    return dashboard.reportsByType
+      .filter((r) => rentalTypes.includes(r.type))
+      .reduce(
+        (acc, r) => ({
+          totalAmount: acc.totalAmount + (r.totalAmount ?? 0),
+          count: acc.count + (r.count ?? 0),
+        }),
+        { totalAmount: 0, count: 0 }
+      );
+  }, [dashboard]);
 
   if (isChecking) {
     return (
@@ -37,7 +227,7 @@ export default function HomeScreen() {
         style={[styles.container, { backgroundColor: colors.background }]}
         edges={['top']}
       >
-        <View style={styles.loadingContainer}>
+        <View style={styles.centeredContainer}>
           <ActivityIndicator
             size="large"
             color={colors.primary}
@@ -50,41 +240,6 @@ export default function HomeScreen() {
   if (!isAuthenticated) {
     return null;
   }
-
-  // Mock data - replace with real data from API
-  const receivedThisMonth = 8113.12;
-  const totalExpected = 19954.98;
-  const loansCount = 12;
-  const roomRentalsCount = 2;
-  const vehicleRentalsCount = 1;
-  const overduePaymentsCount = 6;
-  const loansTotal = 21200.1;
-  const rentalsTotal = 5108.0;
-  const operationsCount = 16;
-
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-
-  const operations = [
-    {
-      icon: 'person' as const,
-      count: loansCount,
-      label: t('home.loans'),
-    },
-    {
-      icon: 'home' as const,
-      count: roomRentalsCount,
-      label: t('home.roomRentals'),
-    },
-    {
-      icon: 'car' as const,
-      count: vehicleRentalsCount,
-      label: t('home.vehicleRentals'),
-    },
-  ];
 
   return (
     <SafeAreaView
@@ -101,56 +256,69 @@ export default function HomeScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
+        }
       >
-        <FinancialSummary
-          receivedAmount={receivedThisMonth}
-          totalExpected={totalExpected}
-          operations={operations}
-        />
-
-        <OverdueAlert
-          count={overduePaymentsCount}
-          onPress={() => {
-            /* Navigate to overdue screen */
-          }}
-        />
-
-        {/* Reports Section */}
-        <View style={styles.reportsSection}>
-          <Typography
-            variant="h5"
-            style={{
-              color: colors.icon,
-              marginBottom: 16,
-            }}
-          >
-            {t('home.reports')}
-          </Typography>
-
-          <View style={styles.primaryReportsRow}>
-            <ReportCard
-              title={formatCurrency(loansTotal)}
-              subtitle={`${loansCount} ${t('home.loans').toLowerCase()}`}
-              description={t('home.inLoans')}
+        {isLoading ? (
+          <HomeSkeleton />
+        ) : (
+          <>
+            <FinancialSummary
+              receivedAmount={dashboard?.received ?? 0}
+              totalExpected={dashboard?.expected ?? 0}
+              operations={operations}
             />
-            <ReportCard
-              title={formatCurrency(rentalsTotal)}
-              subtitle={`${roomRentalsCount + vehicleRentalsCount} ${t('home.roomRentals').toLowerCase().split(' ')[0]}`}
-              description={t('home.inRentals')}
-            />
-          </View>
 
-          <View style={styles.secondaryReportsRow}>
-            <ReportCard
-              title={operationsCount.toString()}
-              description={t('home.operations')}
+            <OverdueAlert
+              count={dashboard?.overdueCount ?? 0}
+              onPress={() => {
+                /* Navigate to overdue screen */
+              }}
             />
-            <ReportCard
-              title="34"
-              description=""
-            />
-          </View>
-        </View>
+
+            {/* Reports Section */}
+            <View style={styles.reportsSection}>
+              <Typography
+                variant="h5"
+                style={{
+                  color: colors.icon,
+                  marginBottom: 16,
+                }}
+              >
+                {t('home.reports')}
+              </Typography>
+
+              <View style={styles.primaryReportsRow}>
+                <ReportCard
+                  title={formatCurrency(loanReport?.totalAmount ?? 0)}
+                  subtitle={`${loanReport?.count ?? 0} ${t('home.loans').toLowerCase()}`}
+                  description={t('home.inLoans')}
+                />
+                <ReportCard
+                  title={formatCurrency(rentalReport.totalAmount)}
+                  subtitle={`${rentalReport.count} ${t('home.inRentals')}`}
+                  description={t('home.inRentals')}
+                />
+              </View>
+
+              <View style={styles.secondaryReportsRow}>
+                <ReportCard
+                  title={(dashboard?.totalOperations ?? 0).toString()}
+                  description={t('home.operations')}
+                />
+                <ReportCard
+                  title={(dashboard?.totalClients ?? 0).toString()}
+                  description={t('home.clients')}
+                />
+              </View>
+            </View>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -174,7 +342,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
-  loadingContainer: {
+  centeredContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

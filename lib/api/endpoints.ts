@@ -52,6 +52,9 @@ export const ENDPOINTS = {
     DELETE: (id: string) => `${PREFIX}/clients/${id}`,
   },
 
+  // Dashboard endpoint
+  DASHBOARD: `${PREFIX}/dashboard`,
+
   // Operations endpoints
   OPERATIONS: {
     GET: `${PREFIX}/operations`,
