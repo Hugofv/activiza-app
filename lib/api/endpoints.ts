@@ -51,6 +51,15 @@ export const ENDPOINTS = {
     UPDATE: (id: string) => `${PREFIX}/clients/${id}`,
     DELETE: (id: string) => `${PREFIX}/clients/${id}`,
   },
+
+  // Operations endpoints
+  OPERATIONS: {
+    GET: `${PREFIX}/operations`,
+    GET_BY_ID: (id: string) => `${PREFIX}/operations/${id}`,
+    CREATE: `${PREFIX}/operations`,
+    UPDATE: (id: string) => `${PREFIX}/operations/${id}`,
+    DELETE: (id: string) => `${PREFIX}/operations/${id}`,
+  },
 } as const;
 
 // Request timeout (ms)

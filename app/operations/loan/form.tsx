@@ -11,7 +11,6 @@ import * as yup from 'yup';
 import { Avatar } from '@/components/ui/Avatar';
 import { BackButton } from '@/components/ui/BackButton';
 import { Button } from '@/components/ui/Button';
-import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { type CurrencyCode, MoneyInput } from '@/components/ui/MoneyInput';
@@ -250,23 +249,6 @@ export default function LoanFormScreen() {
             onValueChange={handleFrequencyChange}
           />
         </View>
-
-        {/* Alerts */}
-        <Pressable
-          style={[styles.alertsRow, { borderBottomColor: colors.border }]}
-        >
-          <Typography
-            variant="body1"
-            style={{ color: colors.text }}
-          >
-            {t('operations.alerts')}
-          </Typography>
-          <Icon
-            name="chevron-right"
-            size={20}
-            color="icon"
-          />
-        </Pressable>
       </ScrollView>
 
       {/* Next Button */}

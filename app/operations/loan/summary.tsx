@@ -16,6 +16,11 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 
 import { Avatar } from '@/components/ui/Avatar';
+import {
+  createOperation,
+  parseAmount,
+  parseInterest,
+} from '@/lib/services/operationService';
 import { formatDateWithDay } from '@/lib/utils/dateFormat';
 import { useOperations } from '../_context';
 
@@ -23,7 +28,7 @@ export default function LoanSummaryScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { t } = useTranslation();
-  const { showSuccess } = useToast();
+  const { showSuccess, showError } = useToast();
   const { formData, resetOperation } = useOperations();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -105,9 +110,29 @@ export default function LoanSummaryScreen() {
   }, [formData.frequency]);
 
   const handleConfirm = async () => {
+    if (!formData.client?.id) return;
+
     setIsSubmitting(true);
     try {
-      // TODO: call loan API when endpoint exists
+      const dueDateValue = formData.dueDate
+        ? new Date(formData.dueDate)
+        : new Date();
+      const safeDueDate =
+        dueDateValue instanceof Date && !Number.isNaN(dueDateValue.getTime())
+          ? dueDateValue.toISOString()
+          : new Date().toISOString();
+
+      await createOperation({
+        type: 'LOAN',
+        clientId: formData.client.id,
+        principalAmount: parseAmount(formData.amount),
+        currency: formData.currency,
+        interest: parseInterest(formData.interest),
+        startDate: safeDueDate,
+        frequency: formData.frequency.toUpperCase() as 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY',
+        observation: formData.observation || undefined,
+      });
+
       showSuccess(
         t('operations.createLoan'),
         t('operations.lendLoanDescription')
@@ -115,6 +140,11 @@ export default function LoanSummaryScreen() {
       resetOperation();
       router.dismissAll();
       router.back();
+    } catch (error: any) {
+      showError(
+        t('common.error'),
+        error?.message || t('common.genericError')
+      );
     } finally {
       setIsSubmitting(false);
     }
