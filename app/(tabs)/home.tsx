@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo } from 'react';
 
 import {
   ActivityIndicator,
-  Dimensions,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -19,7 +18,6 @@ import { FinancialSummary } from '@/components/home/FinancialSummary';
 import { Header } from '@/components/home/Header';
 import { OverdueAlert } from '@/components/home/OverdueAlert';
 import { ReportCard } from '@/components/home/ReportCard';
-import { Skeleton } from '@/components/ui/Skeleton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -29,8 +27,6 @@ import {
   type DashboardReportByType,
   getDashboard,
 } from '@/lib/services/dashboardService';
-
-const { width: screenWidth } = Dimensions.get('window');
 
 // -----------------------------------------------------------------------
 // Helpers
@@ -58,100 +54,6 @@ function findReport(
 ): DashboardReportByType | undefined {
   return reports?.find((r) => r.type === type);
 }
-
-// -----------------------------------------------------------------------
-// Skeleton placeholders
-// -----------------------------------------------------------------------
-
-function HomeSkeleton() {
-  return (
-    <View style={skeletonStyles.container}>
-      {/* Financial summary skeleton */}
-      <View style={skeletonStyles.summarySection}>
-        <Skeleton
-          width={180}
-          height={14}
-        />
-        <Skeleton
-          width={220}
-          height={32}
-          style={{ marginTop: 8 }}
-        />
-        <Skeleton
-          width={140}
-          height={18}
-          style={{ marginTop: 6 }}
-        />
-
-        {/* Operation cards skeleton */}
-        <View style={skeletonStyles.cardsRow}>
-          {[0, 1, 2].map((i) => (
-            <Skeleton
-              key={i}
-              width={screenWidth * 0.28}
-              height={120}
-              borderRadius={12}
-            />
-          ))}
-        </View>
-      </View>
-
-      {/* Overdue alert skeleton */}
-      <Skeleton
-        height={44}
-        borderRadius={8}
-        style={{ marginBottom: 16 }}
-      />
-
-      {/* Reports section skeleton */}
-      <Skeleton
-        width={120}
-        height={18}
-        style={{ marginBottom: 16 }}
-      />
-
-      <View style={skeletonStyles.reportsRow}>
-        <Skeleton
-          height={130}
-          borderRadius={16}
-          style={{ flex: 1 }}
-        />
-        <Skeleton
-          height={130}
-          borderRadius={16}
-          style={{ flex: 1 }}
-        />
-      </View>
-
-      <View style={[skeletonStyles.reportsRow, { marginTop: 12 }]}>
-        <Skeleton
-          height={130}
-          borderRadius={16}
-          style={{ flex: 1 }}
-        />
-        <Skeleton
-          height={130}
-          borderRadius={16}
-          style={{ flex: 1 }}
-        />
-      </View>
-    </View>
-  );
-}
-
-const skeletonStyles = StyleSheet.create({
-  container: { paddingTop: 5 },
-  summarySection: { padding: 5, marginBottom: 10 },
-  cardsRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginTop: 20,
-  },
-  reportsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-});
 
 // -----------------------------------------------------------------------
 // Screen
@@ -205,6 +107,7 @@ export default function HomeScreen() {
     }));
   }, [dashboard, t]);
 
+  console.log('operations', dashboard?.operationsByType);
   const loanReport = findReport(dashboard?.reportsByType, 'LOAN');
 
   const rentalReport = useMemo(() => {
@@ -264,61 +167,63 @@ export default function HomeScreen() {
           />
         }
       >
-        {isLoading ? (
-          <HomeSkeleton />
-        ) : (
-          <>
-            <FinancialSummary
-              receivedAmount={dashboard?.received ?? 0}
-              totalExpected={dashboard?.expected ?? 0}
-              operations={operations}
+        <FinancialSummary
+          receivedAmount={dashboard?.received ?? 0}
+          totalExpected={dashboard?.expected ?? 0}
+          operations={operations}
+          loading={isLoading}
+        />
+
+        <OverdueAlert
+          count={dashboard?.overdueCount ?? 0}
+          onPress={() => {
+            /* Navigate to overdue screen */
+          }}
+          loading={isLoading}
+        />
+
+        {/* Reports Section */}
+        <View style={styles.reportsSection}>
+          <Typography
+            variant="h5"
+            style={{
+              color: colors.icon,
+              marginBottom: 16,
+            }}
+            loading={isLoading}
+            skeletonWidth={120}
+          >
+            {t('home.reports')}
+          </Typography>
+
+          <View style={styles.primaryReportsRow}>
+            <ReportCard
+              title={formatCurrency(loanReport?.totalAmount ?? 0)}
+              subtitle={`${loanReport?.count ?? 0} ${t('home.loans').toLowerCase()}`}
+              description={t('home.inLoans')}
+              loading={isLoading}
             />
-
-            <OverdueAlert
-              count={dashboard?.overdueCount ?? 0}
-              onPress={() => {
-                /* Navigate to overdue screen */
-              }}
+            <ReportCard
+              title={formatCurrency(rentalReport.totalAmount)}
+              subtitle={`${rentalReport.count} ${t('home.inRentals')}`}
+              description={t('home.inRentals')}
+              loading={isLoading}
             />
+          </View>
 
-            {/* Reports Section */}
-            <View style={styles.reportsSection}>
-              <Typography
-                variant="h5"
-                style={{
-                  color: colors.icon,
-                  marginBottom: 16,
-                }}
-              >
-                {t('home.reports')}
-              </Typography>
-
-              <View style={styles.primaryReportsRow}>
-                <ReportCard
-                  title={formatCurrency(loanReport?.totalAmount ?? 0)}
-                  subtitle={`${loanReport?.count ?? 0} ${t('home.loans').toLowerCase()}`}
-                  description={t('home.inLoans')}
-                />
-                <ReportCard
-                  title={formatCurrency(rentalReport.totalAmount)}
-                  subtitle={`${rentalReport.count} ${t('home.inRentals')}`}
-                  description={t('home.inRentals')}
-                />
-              </View>
-
-              <View style={styles.secondaryReportsRow}>
-                <ReportCard
-                  title={(dashboard?.totalOperations ?? 0).toString()}
-                  description={t('home.operations')}
-                />
-                <ReportCard
-                  title={(dashboard?.totalClients ?? 0).toString()}
-                  description={t('home.clients')}
-                />
-              </View>
-            </View>
-          </>
-        )}
+          <View style={styles.secondaryReportsRow}>
+            <ReportCard
+              title={(dashboard?.totalOperations ?? 0).toString()}
+              description={t('home.operations')}
+              loading={isLoading}
+            />
+            <ReportCard
+              title={(dashboard?.totalClients ?? 0).toString()}
+              description={t('home.clients')}
+              loading={isLoading}
+            />
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

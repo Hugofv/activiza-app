@@ -1,9 +1,10 @@
 import * as React from 'react';
 
-import { Text, type TextProps } from 'react-native';
+import { Text, type TextProps, type ViewStyle } from 'react-native';
 
 import { type VariantProps, cva } from 'class-variance-authority';
 
+import { Skeleton } from '@/components/ui/Skeleton';
 import { Colors, type ThemeColorKey } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { cn } from '@/lib/utils';
@@ -53,12 +54,14 @@ export interface TypographyProps
   extends TextProps, VariantProps<typeof typographyVariants> {
   children?: React.ReactNode;
   color?: ThemeColorKey;
+  loading?: boolean;
+  skeletonWidth?: number | string;
 }
 
 const Typography = React.forwardRef<
   React.ElementRef<typeof Text>,
   TypographyProps
->(({ className, variant, style, children, color, ...props }, ref) => {
+>(({ className, variant, style, children, color, loading, skeletonWidth, ...props }, ref) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -175,6 +178,18 @@ const Typography = React.forwardRef<
         return colors.primaryForeground; // Default text color (theme-aware)
     }
   };
+
+  if (loading) {
+    const h = fontSize ?? 16;
+    return (
+      <Skeleton
+        width={skeletonWidth ?? '60%'}
+        height={h}
+        borderRadius={h / 2}
+        style={style as ViewStyle}
+      />
+    );
+  }
 
   return (
     <Text

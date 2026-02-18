@@ -8,9 +8,10 @@ interface ReportCardProps {
   title: string;
   subtitle?: string;
   description?: string;
+  loading?: boolean;
 }
 
-export function ReportCard({ title, subtitle, description }: ReportCardProps) {
+export function ReportCard({ title, subtitle, description, loading }: ReportCardProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -29,23 +30,29 @@ export function ReportCard({ title, subtitle, description }: ReportCardProps) {
           variant="h4"
           color="primaryForeground"
           style={{ marginBottom: 4 }}
+          loading={loading}
+          skeletonWidth="70%"
         >
           {title}
         </Typography>
-        {subtitle && (
+        {(subtitle || loading) && (
           <Typography
             variant="body2"
             color="placeholder"
             style={{ marginBottom: 2 }}
+            loading={loading}
+            skeletonWidth="50%"
           >
             {subtitle}
           </Typography>
         )}
       </View>
-      {description && (
+      {(description || loading) && (
         <Typography
           variant="caption"
           color="text"
+          loading={loading}
+          skeletonWidth="40%"
         >
           {description}
         </Typography>

@@ -1,19 +1,32 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 
 import { Icon } from '@/components/ui/Icon';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { Typography } from '@/components/ui/Typography';
 
 interface OverdueAlertProps {
   count: number;
   onPress?: () => void;
+  loading?: boolean;
 }
 
-export function OverdueAlert({ count, onPress }: OverdueAlertProps) {
+export function OverdueAlert({ count, onPress, loading }: OverdueAlertProps) {
   const { t } = useTranslation();
 
-  if (count === 0) return null;
+  if (!loading && count === 0) return null;
+
+  if (loading) {
+    return (
+      <View style={styles.overdueAlert}>
+        <Skeleton
+          height={20}
+          borderRadius={8}
+        />
+      </View>
+    );
+  }
 
   return (
     <TouchableOpacity

@@ -21,12 +21,14 @@ interface FinancialSummaryProps {
   receivedAmount: number;
   totalExpected: number;
   operations: OperationData[];
+  loading?: boolean;
 }
 
 export function FinancialSummary({
   receivedAmount,
   totalExpected,
   operations,
+  loading,
 }: FinancialSummaryProps) {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
@@ -48,6 +50,8 @@ export function FinancialSummary({
             color: colors.icon,
             marginBottom: 4,
           }}
+          loading={loading}
+          skeletonWidth={160}
         >
           {t('home.receivedThisMonth')}
         </Typography>
@@ -57,12 +61,16 @@ export function FinancialSummary({
             color: '#064e3b',
             marginBottom: 4,
           }}
+          loading={loading}
+          skeletonWidth={200}
         >
           {formatCurrency(receivedAmount)}
         </Typography>
         <Typography
           variant="h2Medium"
           style={{ color: colors.icon }}
+          loading={loading}
+          skeletonWidth={140}
         >
           {t('home.of')} {formatCurrency(totalExpected)}
         </Typography>
@@ -77,19 +85,35 @@ export function FinancialSummary({
         bounces={false}
         scrollEventThrottle={16}
       >
-        {operations.map((operation, index) => (
-          <View
-            key={index}
-            style={styles.itemWrapper}
-          >
-            <CardOperation
-              icon={operation.icon}
-              count={operation.count}
-              label={operation.label}
-              index={index}
-            />
-          </View>
-        ))}
+        {loading && operations.length === 0
+          ? [0, 1, 2].map((i) => (
+              <View
+                key={i}
+                style={styles.itemWrapper}
+              >
+                <CardOperation
+                  icon="cash"
+                  count={0}
+                  label=""
+                  index={i}
+                  loading
+                />
+              </View>
+            ))
+          : operations.map((operation, index) => (
+              <View
+                key={index}
+                style={styles.itemWrapper}
+              >
+                <CardOperation
+                  icon={operation.icon}
+                  count={operation.count}
+                  label={operation.label}
+                  index={index}
+                  loading={loading}
+                />
+              </View>
+            ))}
         {/* Spacer no final para criar padding */}
         <View style={styles.spacerItem} />
       </ScrollView>

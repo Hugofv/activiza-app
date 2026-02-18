@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Icon, type IconName } from '@/components/ui/Icon';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -12,6 +13,7 @@ interface CardOperationProps {
   count: number;
   label: string;
   index: number;
+  loading?: boolean;
 }
 
 const CardOperation: React.FC<CardOperationProps> = ({
@@ -19,6 +21,7 @@ const CardOperation: React.FC<CardOperationProps> = ({
   count,
   label,
   index,
+  loading,
 }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -29,14 +32,24 @@ const CardOperation: React.FC<CardOperationProps> = ({
       style={[styles.summaryCard, { backgroundColor: colors.muted }]}
     >
       <View style={styles.headerCard}>
-        <Icon
-          name={icon}
-          size={24}
-          color="primaryForeground"
-        />
+        {loading ? (
+          <Skeleton
+            width={24}
+            height={24}
+            borderRadius={12}
+          />
+        ) : (
+          <Icon
+            name={icon}
+            size={24}
+            color="primaryForeground"
+          />
+        )}
         <Typography
           variant="body1"
           color="placeholder"
+          loading={loading}
+          skeletonWidth={28}
         >
           {count}
         </Typography>
@@ -47,6 +60,8 @@ const CardOperation: React.FC<CardOperationProps> = ({
           color: colors.primaryForeground,
           textAlign: 'center',
         }}
+        loading={loading}
+        skeletonWidth="80%"
       >
         {label}
       </Typography>
