@@ -15,6 +15,7 @@ interface OperationData {
   icon: IconName;
   count: number;
   label: string;
+  onPress?: () => void;
 }
 
 interface FinancialSummaryProps {
@@ -111,6 +112,7 @@ export function FinancialSummary({
                   label={operation.label}
                   index={index}
                   loading={loading}
+                  onPress={operation.onPress}
                 />
               </View>
             ))}

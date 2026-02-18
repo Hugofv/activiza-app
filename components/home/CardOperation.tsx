@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -14,6 +14,7 @@ interface CardOperationProps {
   label: string;
   index: number;
   loading?: boolean;
+  onPress?: () => void;
 }
 
 const CardOperation: React.FC<CardOperationProps> = ({
@@ -22,14 +23,17 @@ const CardOperation: React.FC<CardOperationProps> = ({
   label,
   index,
   loading,
+  onPress,
 }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
-    <View
+    <Pressable
       key={index}
       style={[styles.summaryCard, { backgroundColor: colors.muted }]}
+      onPress={onPress}
+      disabled={loading || !onPress}
     >
       <View style={styles.headerCard}>
         {loading ? (
@@ -65,7 +69,7 @@ const CardOperation: React.FC<CardOperationProps> = ({
       >
         {label}
       </Typography>
-    </View>
+    </Pressable>
   );
 };
 

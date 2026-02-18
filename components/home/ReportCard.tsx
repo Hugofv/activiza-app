@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
@@ -9,22 +9,23 @@ interface ReportCardProps {
   subtitle?: string;
   description?: string;
   loading?: boolean;
+  onPress?: () => void;
 }
 
-export function ReportCard({ title, subtitle, description, loading }: ReportCardProps) {
+export function ReportCard({ title, subtitle, description, loading, onPress }: ReportCardProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
-  return (
-    <View
-      style={[
-        styles.reportCard,
-        {
-          borderColor: colors.border,
-          borderWidth: 1,
-        },
-      ]}
-    >
+  const cardStyle = [
+    styles.reportCard,
+    {
+      borderColor: colors.border,
+      borderWidth: 1,
+    },
+  ];
+
+  const content = (
+    <>
       <View style={styles.titleContainer}>
         <Typography
           variant="h4"
@@ -57,8 +58,21 @@ export function ReportCard({ title, subtitle, description, loading }: ReportCard
           {description}
         </Typography>
       )}
-    </View>
+    </>
   );
+
+  if (onPress) {
+    return (
+      <Pressable
+        style={cardStyle}
+        onPress={onPress}
+      >
+        {content}
+      </Pressable>
+    );
+  }
+
+  return <View style={cardStyle}>{content}</View>;
 }
 
 const styles = StyleSheet.create({

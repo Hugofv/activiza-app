@@ -27,25 +27,30 @@ import {
   type DashboardReportByType,
   getDashboard,
 } from '@/lib/services/dashboardService';
+import { OperationType } from '@/lib/services/operationService';
 
 // -----------------------------------------------------------------------
 // Helpers
 // -----------------------------------------------------------------------
 
 const ICON_MAP: Record<string, 'person' | 'home' | 'car' | 'cash'> = {
-  LOAN: 'person',
-  INSTALLMENTS: 'cash',
-  RENT_PROPERTY: 'home',
-  RENT_ROOM: 'home',
-  RENT_VEHICLE: 'car',
+  [OperationType.LOAN]: 'person',
+  [OperationType.INSTALLMENTS]: 'cash',
+  [OperationType.RENT_HOUSE]: 'home',
+  [OperationType.RENT_ROOM]: 'home',
+  [OperationType.RENT_VEHICLE]: 'car',
 };
 
 const LABEL_MAP: Record<string, string> = {
-  LOAN: 'home.loans',
-  INSTALLMENTS: 'home.operations',
-  RENT_PROPERTY: 'home.roomRentals',
-  RENT_ROOM: 'home.roomRentals',
-  RENT_VEHICLE: 'home.vehicleRentals',
+  [OperationType.LOAN]: 'home.loans',
+  [OperationType.INSTALLMENTS]: 'home.operations',
+  [OperationType.RENT_HOUSE]: 'home.roomRentals',
+  [OperationType.RENT_ROOM]: 'home.roomRentals',
+  [OperationType.RENT_VEHICLE]: 'home.vehicleRentals',
+};
+
+const ROUTE_MAP: Record<string, string> = {
+  [OperationType.LOAN]: '/operations/loan/list',
 };
 
 function findReport(
@@ -100,19 +105,22 @@ export default function HomeScreen() {
 
   const operations = useMemo(() => {
     if (!dashboard?.operationsByType) return [];
-    return dashboard.operationsByType.map((op) => ({
-      icon: ICON_MAP[op.type] ?? ('cash' as const),
-      count: op.count ?? 0,
-      label: t(LABEL_MAP[op.type] ?? 'home.operations'),
-    }));
+    return dashboard.operationsByType.map((op) => {
+      const route = ROUTE_MAP[op.type];
+      return {
+        icon: ICON_MAP[op.type] ?? ('cash' as const),
+        count: op.count ?? 0,
+        label: t(LABEL_MAP[op.type] ?? 'home.operations'),
+        onPress: route ? () => router.push(route as any) : undefined,
+      };
+    });
   }, [dashboard, t]);
 
-  console.log('operations', dashboard?.operationsByType);
-  const loanReport = findReport(dashboard?.reportsByType, 'LOAN');
+  const loanReport = findReport(dashboard?.reportsByType, OperationType.LOAN);
 
   const rentalReport = useMemo(() => {
     if (!dashboard?.reportsByType) return { totalAmount: 0, count: 0 };
-    const rentalTypes = ['RENT_PROPERTY', 'RENT_ROOM', 'RENT_VEHICLE'];
+    const rentalTypes: string[] = [OperationType.RENT_HOUSE, OperationType.RENT_ROOM, OperationType.RENT_VEHICLE];
     return dashboard.reportsByType
       .filter((r) => rentalTypes.includes(r.type))
       .reduce(

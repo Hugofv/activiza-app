@@ -23,4 +23,17 @@ export default {
   currency: 'Moeda',
   alerts: 'Avisos',
   today: 'Hoje',
+  // Loan list
+  loansList: 'Empréstimos',
+  weeklyContract: 'Contrato semanal',
+  biweeklyContract: 'Contrato quinzenal',
+  monthlyContract: 'Contrato mensal',
+  closed: 'Encerrado',
+  totalWithInterest: 'Total com juros',
+  filterAll: 'Todos',
+  filterActive: 'Ativos',
+  filterCompleted: 'Encerrados',
+  filterOverdue: 'Atrasados',
+  noLoans: 'Nenhum empréstimo encontrado',
+  loadError: 'Erro ao carregar empréstimos',
 };

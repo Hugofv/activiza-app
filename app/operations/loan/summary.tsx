@@ -17,6 +17,7 @@ import { useToast } from '@/lib/hooks/useToast';
 
 import { Avatar } from '@/components/ui/Avatar';
 import {
+  OperationType,
   createOperation,
   parseAmount,
   parseInterest,
@@ -123,7 +124,7 @@ export default function LoanSummaryScreen() {
           : new Date().toISOString();
 
       await createOperation({
-        type: 'LOAN',
+        type: OperationType.LOAN,
         clientId: formData.client.id,
         principalAmount: parseAmount(formData.amount),
         currency: formData.currency,

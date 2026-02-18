@@ -1,4 +1,5 @@
 import type { Module } from '@/lib/services/onboardingService';
+import { OperationType } from '@/lib/services/operationService';
 
 export interface OperationOption {
   id: string;
@@ -9,43 +10,39 @@ export interface OperationOption {
 
 /** Map API module keys (UPPER_SNAKE_CASE) to icon names for tabs/operations */
 export const MODULE_ICON_MAP: Record<string, string> = {
-  LOAN: 'user-dollar',
-  INSTALLMENTS: 'receipt-2',
-  RENT_HOUSE: 'home',
-  RENT_PROPERTY: 'home',
-  RENT_ROOM: 'door-outline',
-  RENT_VEHICLE: 'car',
+  [OperationType.LOAN]: 'user-dollar',
+  [OperationType.INSTALLMENTS]: 'receipt-2',
+  [OperationType.RENT_HOUSE]: 'home',
+  [OperationType.RENT_ROOM]: 'door-outline',
+  [OperationType.RENT_VEHICLE]: 'car',
   default: 'ellipse-outline',
 };
 
 /** Map API module keys to translation keys used under tabs.* (e.g. tabs.lendMoney) */
 export const MODULE_LABEL_KEY_MAP: Record<string, string> = {
-  LOAN: 'lendMoney',
-  INSTALLMENTS: 'installments',
-  RENT_HOUSE: 'rentProperties',
-  RENT_PROPERTY: 'rentProperties',
-  RENT_ROOM: 'rentRooms',
-  RENT_VEHICLE: 'rentVehicles',
+  [OperationType.LOAN]: 'lendMoney',
+  [OperationType.INSTALLMENTS]: 'installments',
+  [OperationType.RENT_HOUSE]: 'rentProperties',
+  [OperationType.RENT_ROOM]: 'rentRooms',
+  [OperationType.RENT_VEHICLE]: 'rentVehicles',
 };
 
 /** Map API module keys to operation routes */
 export const MODULE_ROUTE_MAP: Record<string, string> = {
-  LOAN: '/operations/loan',
-  INSTALLMENTS: '/operations/installments',
-  RENT_HOUSE: '/operations/rent-property',
-  RENT_PROPERTY: '/operations/rent-property',
-  RENT_ROOM: '/operations/rent-room',
-  RENT_VEHICLE: '/operations/rent-vehicle',
+  [OperationType.LOAN]: '/operations/loan',
+  [OperationType.INSTALLMENTS]: '/operations/installments',
+  [OperationType.RENT_HOUSE]: '/operations/rent-property',
+  [OperationType.RENT_ROOM]: '/operations/rent-room',
+  [OperationType.RENT_VEHICLE]: '/operations/rent-vehicle',
 };
 
 /** Map API module keys to onboarding translation keys (e.g. onboarding.optionLendMoney) */
 export const MODULE_TRANSLATION_MAP: Record<string, string> = {
-  LOAN: 'optionLendMoney',
-  INSTALLMENTS: 'optionInstallments',
-  RENT_HOUSE: 'optionRentProperties',
-  RENT_PROPERTY: 'optionRentProperties',
-  RENT_ROOM: 'optionRentRooms',
-  RENT_VEHICLE: 'optionRentVehicles',
+  [OperationType.LOAN]: 'optionLendMoney',
+  [OperationType.INSTALLMENTS]: 'optionInstallments',
+  [OperationType.RENT_HOUSE]: 'optionRentProperties',
+  [OperationType.RENT_ROOM]: 'optionRentRooms',
+  [OperationType.RENT_VEHICLE]: 'optionRentVehicles',
 };
 
 export function mapModulesToOperationOptions(

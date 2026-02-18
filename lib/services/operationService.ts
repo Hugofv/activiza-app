@@ -8,12 +8,13 @@ import { ENDPOINTS } from '../api/endpoints';
 // Types
 // -----------------------------------------------------------------------
 
-export type OperationType =
-  | 'LOAN'
-  | 'INSTALLMENTS'
-  | 'RENT_PROPERTY'
-  | 'RENT_ROOM'
-  | 'RENT_VEHICLE';
+export enum OperationType {
+  LOAN = 'LOAN',
+  RENT_ROOM = 'RENT_ROOM',
+  RENT_HOUSE = 'RENT_HOUSE',
+  RENT_VEHICLE = 'RENT_VEHICLE',
+  INSTALLMENTS = 'INSTALLMENTS',
+}
 
 export type OperationStatus =
   | 'ACTIVE'

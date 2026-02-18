@@ -23,4 +23,17 @@ export default {
   currency: 'Currency',
   alerts: 'Alerts',
   today: 'Today',
+  // Loan list
+  loansList: 'Loans',
+  weeklyContract: 'Weekly contract',
+  biweeklyContract: 'Biweekly contract',
+  monthlyContract: 'Monthly contract',
+  closed: 'Closed',
+  totalWithInterest: 'Total with interest',
+  filterAll: 'All',
+  filterActive: 'Active',
+  filterCompleted: 'Closed',
+  filterOverdue: 'Overdue',
+  noLoans: 'No loans found',
+  loadError: 'Failed to load loans',
 };

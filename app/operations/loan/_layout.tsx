@@ -13,6 +13,7 @@ export default function LoanLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="form" />
       <Stack.Screen name="summary" />
+      <Stack.Screen name="list" />
     </Stack>
   );
 }
