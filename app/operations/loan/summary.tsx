@@ -128,10 +128,10 @@ export default function LoanSummaryScreen() {
         clientId: formData.client.id,
         principalAmount: parseAmount(formData.amount),
         currency: formData.currency,
-        interest: parseInterest(formData.interest),
+        interestRate: parseInterest(formData.interest),
         startDate: safeDueDate,
         frequency: formData.frequency.toUpperCase() as 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY',
-        observation: formData.observation || undefined,
+        description: formData.observation || undefined,
       });
 
       showSuccess(

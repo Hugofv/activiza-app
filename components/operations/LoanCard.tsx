@@ -94,7 +94,7 @@ export function LoanCard({ operation, onPress }: LoanCardProps) {
     [operation.status, operation.dueDate, colors, t]
   );
 
-  const totalWithInterest = operation.amount * (1 + operation.interest / 100);
+  const totalWithInterest = operation.principalAmount * (1 + operation.interestRate / 100);
 
   const clientName = operation.client?.name ?? `Client #${operation.clientId}`;
 
@@ -149,14 +149,14 @@ export function LoanCard({ operation, onPress }: LoanCardProps) {
             variant="h5"
             style={{ textAlign: 'right' }}
           >
-            {formatCurrency(operation.amount, operation.currency)}
+            {formatCurrency(operation.principalAmount, operation.currency)}
           </Typography>
           <Typography
             variant="caption"
             color="placeholder"
             style={{ textAlign: 'right' }}
           >
-            +{operation.interest}%
+            +{operation.interestRate}%
           </Typography>
         </View>
       </View>

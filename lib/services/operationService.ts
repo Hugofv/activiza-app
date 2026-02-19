@@ -30,12 +30,18 @@ export interface Operation {
   clientId: number;
   type: OperationType;
   status: OperationStatus;
-  amount: number;
+  title?: string;
+  description?: string;
+  principalAmount: number;
   currency: string;
-  interest: number;
+  startDate: string;
   dueDate: string;
   frequency: FrequencyType;
-  observation?: string;
+  interestRate: number;
+  entryAmount?: number;
+  installments?: number;
+  depositAmount?: number;
+  resourceId?: number;
   createdAt?: string;
   updatedAt?: string;
   client?: {
@@ -68,12 +74,18 @@ export interface OperationFilters {
 export interface CreateOperationData {
   type: OperationType;
   clientId: number;
+  title?: string;
+  description?: string;
   principalAmount: number;
   currency: string;
-  interest: number;
   startDate: string;
+  dueDate?: string;
   frequency: FrequencyType;
-  observation?: string;
+  interestRate: number;
+  entryAmount?: number;
+  installments?: number;
+  depositAmount?: number;
+  resourceId?: number;
 }
 
 export interface UpdateOperationData extends Partial<Omit<CreateOperationData, 'type' | 'clientId'>> {

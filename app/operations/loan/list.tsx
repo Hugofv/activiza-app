@@ -58,7 +58,11 @@ export default function LoanListScreen() {
         type: OperationType.LOAN,
         status: statusFilter,
       }),
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
+
+  console.log('operationsData', operationsData);
 
   const operations = operationsData?.results ?? [];
   const count = operationsData?.count ?? 0;
