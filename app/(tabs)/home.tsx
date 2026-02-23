@@ -51,6 +51,7 @@ const LABEL_MAP: Record<string, string> = {
 
 const ROUTE_MAP: Record<string, string> = {
   [OperationType.LOAN]: '/operations/loan/list',
+  [OperationType.RENT_VEHICLE]: '/vehicles',
 };
 
 function findReport(

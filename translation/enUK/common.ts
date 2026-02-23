@@ -90,6 +90,9 @@ export default {
     OFFLINE_QUEUED: 'Request queued for offline processing',
     UNKNOWN_ERROR: 'An unknown error occurred. Please try again',
   },
+  confirmDelete: 'Confirm deletion',
+  delete: 'Delete',
+  discard: 'Discard',
   // Toast messages
   toast: {
     success: 'Success',

@@ -13,7 +13,7 @@ export type OperationType =
   | 'installments'
   | 'rent-property'
   | 'rent-room'
-  | 'rent-vehicle'
+  | 'rentVehicle'
   | null;
 
 export type FrequencyType = 'weekly' | 'biweekly' | 'monthly';

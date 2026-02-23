@@ -63,6 +63,14 @@ export const ENDPOINTS = {
     UPDATE: (id: string) => `${PREFIX}/operations/${id}`,
     DELETE: (id: string) => `${PREFIX}/operations/${id}`,
   },
+  // Resources (vehicles, properties, rooms)
+  RESOURCES: {
+    GET: `${PREFIX}/resources`,
+    GET_BY_ID: (id: string) => `${PREFIX}/resources/${id}`,
+    CREATE: `${PREFIX}/resources`,
+    UPDATE: (id: string) => `${PREFIX}/resources/${id}`,
+    DELETE: (id: string) => `${PREFIX}/resources/${id}`,
+  },
 } as const;
 
 // Request timeout (ms)

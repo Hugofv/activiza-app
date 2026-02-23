@@ -10,6 +10,10 @@ import {
   IconCalendarDot,
   IconCamera,
   IconCar,
+  IconClipboardCheck,
+  IconMotorbike,
+  IconSettings,
+  IconTrash,
   IconChartArrowsVertical,
   IconCheck,
   IconChevronDown,
@@ -119,6 +123,11 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   // Places
   home: IconHomeFilled,
   car: IconCar,
+  motorbike: IconMotorbike,
+  motorcycle: IconMotorbike,
+  trash: IconTrash,
+  settings: IconSettings,
+  'clipboard-check': IconClipboardCheck,
   'door-outline': IconDoor,
   door: IconDoor,
 

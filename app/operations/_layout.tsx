@@ -14,6 +14,7 @@ export default function OperationsLayout() {
         }}
       >
         <Stack.Screen name="loan" />
+        <Stack.Screen name="rentVehicle" />
       </Stack>
     </OperationsProvider>
   );

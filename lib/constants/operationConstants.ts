@@ -33,7 +33,7 @@ export const MODULE_ROUTE_MAP: Record<string, string> = {
   [OperationType.INSTALLMENTS]: '/operations/installments',
   [OperationType.RENT_HOUSE]: '/operations/rent-property',
   [OperationType.RENT_ROOM]: '/operations/rent-room',
-  [OperationType.RENT_VEHICLE]: '/operations/rent-vehicle',
+  [OperationType.RENT_VEHICLE]: '/operations/rentVehicle',
 };
 
 /** Map API module keys to onboarding translation keys (e.g. onboarding.optionLendMoney) */

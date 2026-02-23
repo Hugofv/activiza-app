@@ -93,6 +93,9 @@ export default {
     OFFLINE_QUEUED: 'Solicitação enfileirada para processamento offline',
     UNKNOWN_ERROR: 'Ocorreu um erro desconhecido. Tente novamente',
   },
+  confirmDelete: 'Confirmar exclusão',
+  delete: 'Excluir',
+  discard: 'Descartar',
   // Toast messages
   toast: {
     success: 'Sucesso',
