@@ -1,6 +1,7 @@
 export default {
   home: 'Início',
   create: 'Criar',
+  assets: 'Ativos',
   contacts: 'Contatos',
   customers: 'Clientes',
   profile: 'Perfil',

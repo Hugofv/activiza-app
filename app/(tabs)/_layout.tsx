@@ -22,27 +22,27 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { TabBarItem } from '@/components/TabBarItem';
-import { BottomSheet } from '@/components/ui/BottomSheet';
+import { BottomSheetHost, type BottomSheetHostItem } from '@/components/ui/BottomSheetHost';
 import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
-import {
-  BottomSheetProvider,
-  useBottomSheet,
-} from '@/contexts/bottomSheetContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { mapModulesToOperationOptions } from '@/lib/constants/operationConstants';
+import { useBottomSheetController } from '@/lib/hooks/useBottomSheetController';
 import { useModules } from '@/lib/hooks/useModules';
 
-function CreateTabButton(props: BottomTabBarButtonProps) {
-  const { open } = useBottomSheet();
+interface ActionTabButtonProps extends BottomTabBarButtonProps {
+  onOpen: () => void;
+}
+
+function CreateTabButton({ onOpen, ...props }: ActionTabButtonProps) {
   const scale = useSharedValue(1);
 
   const handlePress = () => {
     if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    open();
+    onOpen();
   };
 
   const handlePressIn = () => {
@@ -86,10 +86,63 @@ function CreateTabButton(props: BottomTabBarButtonProps) {
   );
 }
 
+function AssetsTabButton({ onOpen, ...props }: ActionTabButtonProps) {
+  const scale = useSharedValue(1);
+
+  const handlePress = () => {
+    if (process.env.EXPO_OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onOpen();
+  };
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.9, {
+      damping: 25,
+      stiffness: 120,
+      mass: 0.8,
+    });
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, {
+      damping: 25,
+      stiffness: 120,
+      mass: 0.8,
+    });
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={styles.createButton}
+      activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={props.accessibilityLabel}
+    >
+      <Animated.View style={animatedStyle}>
+        <Icon
+          name="layout-grid"
+          size={34}
+          color="text"
+        />
+      </Animated.View>
+    </TouchableOpacity>
+  );
+}
+
+
 function TabLayoutContent() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
-  const { isOpen, close } = useBottomSheet();
+  type TabsSheetId = 'operations' | 'assets';
+  const bottomSheets = useBottomSheetController<TabsSheetId>();
   const {
     data: modules,
     isLoading: isLoadingModules,
@@ -99,21 +152,51 @@ function TabLayoutContent() {
     () => mapModulesToOperationOptions(modules),
     [modules]
   );
+  const assetOptions = useMemo(
+    () => [
+      {
+        id: 'vehicles',
+        icon: 'car',
+        label: t('operations.vehicles'),
+        route: '/vehicles',
+      },
+      {
+        id: 'clients',
+        icon: 'users',
+        label: t('tabs.customers'),
+        route: '/clients',
+      },
+    ],
+    [t]
+  );
 
-  console.log('modules', modules);
   const handleOptionPress = useCallback(
     (route?: string) => {
-      close();
+      bottomSheets.close('operations');
       if (route) {
         router.push(route as any);
       }
     },
-    [close]
+    [bottomSheets]
   );
 
   const handleClose = useCallback(() => {
-    close();
-  }, [close]);
+    bottomSheets.close('operations');
+  }, [bottomSheets]);
+
+  const handleCloseAssets = useCallback(() => {
+    bottomSheets.close('assets');
+  }, [bottomSheets]);
+
+  const handleAssetOptionPress = useCallback(
+    (route?: string) => {
+      bottomSheets.close('assets');
+      if (route) {
+        router.push(route as any);
+      }
+    },
+    [bottomSheets]
+  );
 
   const tabBarStyle = {
     backgroundColor:
@@ -141,6 +224,144 @@ function TabLayoutContent() {
   };
 
   const tabBarItemStyle = { height: 65 };
+
+  const operationsSheetContent = useMemo(
+    () => (
+      <ScrollView
+        style={styles.optionsList}
+        contentContainerStyle={styles.optionsListContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {isLoadingModules ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator
+              size="large"
+              color={Colors[colorScheme ?? 'light'].primary}
+            />
+            <Typography
+              variant="body2"
+              style={[
+                styles.loadingText,
+                { color: Colors[colorScheme ?? 'light'].icon },
+              ]}
+            >
+              {t('common.loading')}
+            </Typography>
+          </View>
+        ) : modulesError ? (
+          <Typography
+            variant="body2"
+            style={[
+              styles.errorText,
+              { color: Colors[colorScheme ?? 'light'].text },
+            ]}
+          >
+            {t('common.error')}
+          </Typography>
+        ) : operationOptions.length === 0 ? (
+          <Typography
+            variant="body2"
+            style={[
+              styles.emptyText,
+              { color: Colors[colorScheme ?? 'light'].icon },
+            ]}
+          >
+            {t('common.noData')}
+          </Typography>
+        ) : (
+          operationOptions.map((option, index) => (
+            <Pressable
+              key={option.id}
+              style={[
+                styles.optionItem,
+                index < operationOptions.length - 1 && [
+                  styles.optionItemBorder,
+                  {
+                    borderBottomColor: `${Colors[colorScheme ?? 'light'].icon}20`,
+                  },
+                ],
+              ]}
+              onPress={() => handleOptionPress(option.route)}
+              android_ripple={{
+                color: `${Colors[colorScheme ?? 'light'].icon}10`,
+              }}
+            >
+              <Icon
+                name={option.icon as any}
+                size={28}
+                color="text"
+              />
+              <Typography
+                variant="body1"
+                style={[styles.optionText, { color: 'text' }]}
+              >
+                {t(`tabs.${option.labelKey}`)}
+              </Typography>
+            </Pressable>
+          ))
+        )}
+      </ScrollView>
+    ),
+    [colorScheme, handleOptionPress, isLoadingModules, modulesError, operationOptions, t]
+  );
+
+  const assetsSheetContent = useMemo(
+    () => (
+      <ScrollView
+        style={styles.assetsList}
+        contentContainerStyle={styles.assetsListContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {assetOptions.map((option, index) => (
+          <Pressable
+            key={option.id}
+            style={[
+              styles.optionItem,
+              index < assetOptions.length - 1 && [
+                styles.optionItemBorder,
+                {
+                  borderBottomColor: `${Colors[colorScheme ?? 'light'].icon}20`,
+                },
+              ],
+            ]}
+            onPress={() => handleAssetOptionPress(option.route)}
+            android_ripple={{
+              color: `${Colors[colorScheme ?? 'light'].icon}10`,
+            }}
+          >
+            <Icon
+              name={option.icon as any}
+              size={28}
+              color="text"
+            />
+            <Typography
+              variant="body1"
+              style={[styles.optionText, { color: 'text' }]}
+            >
+              {option.label}
+            </Typography>
+          </Pressable>
+        ))}
+      </ScrollView>
+    ),
+    [assetOptions, colorScheme, handleAssetOptionPress]
+  );
+
+  const sheets = useMemo<BottomSheetHostItem<TabsSheetId>[]>(
+    () => [
+      {
+        id: 'operations',
+        onClose: handleClose,
+        content: operationsSheetContent,
+      },
+      {
+        id: 'assets',
+        onClose: handleCloseAssets,
+        content: assetsSheetContent,
+      },
+    ],
+    [assetsSheetContent, handleClose, handleCloseAssets, operationsSheetContent]
+  );
 
   return (
     <>
@@ -171,113 +392,38 @@ function TabLayoutContent() {
           name="create"
           options={{
             title: t('tabs.create') || 'Criar',
-            tabBarButton: (props) => <CreateTabButton {...props} />,
+            tabBarButton: (props) => (
+              <CreateTabButton
+                {...props}
+                onOpen={() => bottomSheets.open('operations')}
+              />
+            ),
           }}
         />
         <Tabs.Screen
-          name="clients"
+          name="assets"
           options={{
-            title: t('tabs.clients') || 'Clientes',
+            title: t('tabs.assets') || 'Ativos',
             tabBarButton: (props) => (
-              <TabBarItem
+              <AssetsTabButton
                 {...props}
-                icon="people"
-                routeName="clients"
-                color="text"
+                onOpen={() => bottomSheets.open('assets')}
               />
             ),
           }}
         />
       </Tabs>
-      <BottomSheet
-        visible={isOpen}
-        onClose={handleClose}
-      >
-        <ScrollView
-          style={styles.optionsList}
-          contentContainerStyle={styles.optionsListContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {isLoadingModules ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator
-                size="large"
-                color={Colors[colorScheme ?? 'light'].primary}
-              />
-              <Typography
-                variant="body2"
-                style={[
-                  styles.loadingText,
-                  { color: Colors[colorScheme ?? 'light'].icon },
-                ]}
-              >
-                {t('common.loading')}
-              </Typography>
-            </View>
-          ) : modulesError ? (
-            <Typography
-              variant="body2"
-              style={[
-                styles.errorText,
-                { color: Colors[colorScheme ?? 'light'].text },
-              ]}
-            >
-              {t('common.error')}
-            </Typography>
-          ) : operationOptions.length === 0 ? (
-            <Typography
-              variant="body2"
-              style={[
-                styles.emptyText,
-                { color: Colors[colorScheme ?? 'light'].icon },
-              ]}
-            >
-              {t('common.noData')}
-            </Typography>
-          ) : (
-            operationOptions.map((option, index) => (
-              <Pressable
-                key={option.id}
-                style={[
-                  styles.optionItem,
-                  index < operationOptions.length - 1 && [
-                    styles.optionItemBorder,
-                    {
-                      borderBottomColor: `${Colors[colorScheme ?? 'light'].icon}20`,
-                    },
-                  ],
-                ]}
-                onPress={() => handleOptionPress(option.route)}
-                android_ripple={{
-                  color: `${Colors[colorScheme ?? 'light'].icon}10`,
-                }}
-              >
-                <Icon
-                  name={option.icon as any}
-                  size={28}
-                  color="text"
-                />
-                <Typography
-                  variant="body1"
-                  style={[styles.optionText, { color: 'text' }]}
-                >
-                  {t(`tabs.${option.labelKey}`)}
-                </Typography>
-              </Pressable>
-            ))
-          )}
-        </ScrollView>
-      </BottomSheet>
+      <BottomSheetHost
+        openedIds={bottomSheets.openedIds}
+        close={bottomSheets.close}
+        sheets={sheets}
+      />
     </>
   );
 }
 
 export default function TabLayout() {
-  return (
-    <BottomSheetProvider>
-      <TabLayoutContent />
-    </BottomSheetProvider>
-  );
+  return <TabLayoutContent />;
 }
 
 const styles = StyleSheet.create({
@@ -290,6 +436,11 @@ const styles = StyleSheet.create({
   },
   optionsList: { flexGrow: 0 },
   optionsListContent: {
+    paddingVertical: 8,
+    paddingBottom: 24,
+  },
+  assetsList: { flexGrow: 0 },
+  assetsListContent: {
     paddingVertical: 8,
     paddingBottom: 24,
   },

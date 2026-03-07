@@ -96,6 +96,7 @@ export default {
   confirmDelete: 'Confirmar exclusão',
   delete: 'Excluir',
   discard: 'Descartar',
+  ok: 'OK',
   // Toast messages
   toast: {
     success: 'Sucesso',

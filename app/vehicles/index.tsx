@@ -16,7 +16,10 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { VehicleCard } from '@/components/operations/VehicleCard';
+import { BackButton } from '@/components/ui/BackButton';
+import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
+import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -75,7 +78,6 @@ export default function VehicleListScreen() {
 
   const vehicles = vehiclesData?.results ?? [];
   const count = vehiclesData?.count ?? 0;
-  console.log('vehicles', vehicles);
 
   const toggleEditMode = () => {
     if (isEditing) {
@@ -133,29 +135,15 @@ export default function VehicleListScreen() {
         {/* Header */}
         <View style={styles.header}>
           {isEditing ? (
-            <Pressable
+            <Button
+              variant="secondary"
+              size="sm"
               onPress={toggleEditMode}
-              hitSlop={12}
             >
-              <Typography
-                variant="body1SemiBold"
-                color="primaryForeground"
-              >
-                OK
-              </Typography>
-            </Pressable>
+              {t('common.ok')}
+            </Button>
           ) : (
-            <Pressable
-              onPress={() => router.back()}
-              hitSlop={12}
-              style={styles.backButton}
-            >
-              <Icon
-                name="chevron-back"
-                size={24}
-                color="primaryForeground"
-              />
-            </Pressable>
+            <BackButton />
           )}
 
           <View style={{ flex: 1 }} />
@@ -163,28 +151,23 @@ export default function VehicleListScreen() {
           <View style={styles.headerActions}>
             {!isEditing && (
               <>
-                <Pressable
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onPress={toggleEditMode}
-                  hitSlop={8}
                 >
-                  <Typography
-                    variant="body2SemiBold"
-                    color="primaryForeground"
-                    style={styles.editLabel}
-                  >
+                  <Typography variant="body2Medium" color="primaryForeground">
                     {t('operations.edit')}
                   </Typography>
-                </Pressable>
-                <Pressable
+                </Button>
+
+                <IconButton
+                  icon="plus"
+                  size="sm"
+                  variant="secondary"
+                  shape="rounded"
                   onPress={handleAddVehicle}
-                  hitSlop={8}
-                >
-                  <Icon
-                    name="plus"
-                    size={24}
-                    color="primaryForeground"
-                  />
-                </Pressable>
+                />
               </>
             )}
           </View>
@@ -192,7 +175,7 @@ export default function VehicleListScreen() {
 
         {/* Title + count */}
         <View style={styles.titleRow}>
-          <Typography variant="h3">
+          <Typography variant="h3Bold">
             {t('operations.vehicles')}
           </Typography>
           {!isLoading && (

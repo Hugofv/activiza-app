@@ -32,7 +32,7 @@ export function CancelButton() {
 
   const handleCancel = () => {
     resetFormData();
-    router.replace('/(tabs)/clients');
+    router.replace('/clients');
   };
 
   return (

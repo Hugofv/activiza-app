@@ -81,9 +81,8 @@ export default function SummaryScreen() {
 
       showSuccess(t('clients.successTitle'), t('clients.successMessage'));
       resetFormData();
-      router.replace('/(tabs)/clients');
-    } catch (error: any) {
-      console.error('Error creating client:', error);
+      router.replace('/clients');
+    } catch {
       showError(t('clients.errorTitle'), t('clients.errorMessage'));
     } finally {
       setIsSubmitting(false);

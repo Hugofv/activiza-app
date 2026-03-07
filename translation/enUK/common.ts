@@ -93,6 +93,7 @@ export default {
   confirmDelete: 'Confirm deletion',
   delete: 'Delete',
   discard: 'Discard',
+  ok: 'OK',
   // Toast messages
   toast: {
     success: 'Success',

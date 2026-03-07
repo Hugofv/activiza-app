@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ClientItem } from '@/components/clients';
+import { BackButton } from '@/components/ui/BackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Select } from '@/components/ui/Select';
 import { Typography } from '@/components/ui/Typography';
@@ -105,22 +106,16 @@ export default function ClientsScreen() {
 
   const clients = clientsData?.results || [];
 
-  console.log(clients);
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={['top']}
     >
       <View style={[styles.content, { backgroundColor: colors.background }]}>
-        {/* Sub-header with title, filter and new client button */}
-        <View style={styles.subHeader}>
-          <Typography
-            variant="h4"
-            style={[styles.title]}
-          >
-            {t('tabs.customers') || 'Clientes'}
-          </Typography>
 
+        <View style={styles.header}>
+          <BackButton />
+          <View style={{ flex: 1 }} />
           <View style={styles.headerActions}>
             <Select
               variant="filled"
@@ -130,6 +125,15 @@ export default function ClientsScreen() {
               style={styles.select}
             />
           </View>
+        </View>
+
+        <View style={styles.subHeader}>
+          <Typography
+            variant="h3Bold"
+            style={[styles.title]}
+          >
+            {t('tabs.customers') || 'Clientes'}
+          </Typography>
         </View>
 
         <View>
@@ -210,10 +214,14 @@ export default function ClientsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: {
+  content: {
+    flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 8,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
   },
   newClientButton: {
     flexDirection: 'row',
@@ -225,10 +233,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
   },
   subHeader: {
     flexDirection: 'row',

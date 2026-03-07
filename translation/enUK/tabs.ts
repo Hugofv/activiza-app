@@ -1,6 +1,7 @@
 export default {
   home: 'Home',
   create: 'Create',
+  assets: 'Assets',
   contacts: 'Contacts',
   customers: 'Clients',
   profile: 'Profile',
