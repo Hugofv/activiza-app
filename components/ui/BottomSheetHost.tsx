@@ -7,6 +7,8 @@ export interface BottomSheetHostItem<TSheetId extends string = string> {
   title?: string;
   content: React.ReactNode | ((id: TSheetId) => React.ReactNode);
   onClose?: () => void;
+  minHeight?: number;
+  maxHeightRatio?: number;
 }
 
 interface BottomSheetHostProps<TSheetId extends string = string> {
@@ -23,9 +25,10 @@ export function BottomSheetHost<TSheetId extends string = string>({
   close,
   sheets,
 }: BottomSheetHostProps<TSheetId>) {
-  const sheetById = React.useMemo(() => {
-    return new Map(sheets.map((sheet) => [sheet.id, sheet]));
-  }, [sheets]);
+  const sheetById = React.useMemo(
+    () => new Map(sheets.map((sheet) => [sheet.id, sheet])),
+    [sheets]
+  );
 
   return (
     <>
@@ -47,6 +50,8 @@ export function BottomSheetHost<TSheetId extends string = string>({
             visible
             onClose={handleClose}
             title={sheet.title}
+            minHeight={sheet.minHeight}
+            maxHeightRatio={sheet.maxHeightRatio}
           >
             {content}
           </BottomSheet>

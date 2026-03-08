@@ -11,6 +11,8 @@ interface BottomSheetWrapperProps {
   onClose: () => void;
   children: React.ReactNode;
   title?: string;
+  minHeight?: number;
+  maxHeightRatio?: number;
 }
 
 /**
@@ -24,12 +26,16 @@ export function BottomSheetWrapper({
   onClose,
   children,
   title,
+  minHeight,
+  maxHeightRatio,
 }: BottomSheetWrapperProps) {
   return (
     <BottomSheet
       visible={visible}
       onClose={onClose}
       title={title}
+      minHeight={minHeight}
+      maxHeightRatio={maxHeightRatio}
     >
       {children}
     </BottomSheet>

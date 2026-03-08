@@ -3,6 +3,7 @@ import * as React from 'react';
 import {
   Dimensions,
   Modal,
+  ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -27,20 +28,43 @@ interface BottomSheetProps {
   onClose: () => void;
   children: React.ReactNode;
   title?: string;
+  minHeight?: number;
+  maxHeightRatio?: number;
 }
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const DEFAULT_MIN_HEIGHT = 280;
+const DEFAULT_MAX_HEIGHT_RATIO = 0.9;
+const HANDLE_AREA_HEIGHT = 24; // handle + spacing
+const TITLE_AREA_HEIGHT = 64; // title block + divider
+const SHEET_VERTICAL_PADDING = 32;
 
 export function BottomSheet({
   visible,
   onClose,
   children,
   title,
+  minHeight = DEFAULT_MIN_HEIGHT,
+  maxHeightRatio = DEFAULT_MAX_HEIGHT_RATIO,
 }: BottomSheetProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const translateY = useSharedValue(SCREEN_HEIGHT);
   const context = useSharedValue({ y: 0 });
+  const [contentHeight, setContentHeight] = React.useState(0);
+
+  const safeMaxHeightRatio = Math.min(Math.max(maxHeightRatio, 0.3), 1);
+  const maxSheetHeight = SCREEN_HEIGHT * safeMaxHeightRatio;
+  const chromeHeight =
+    HANDLE_AREA_HEIGHT +
+    (title ? TITLE_AREA_HEIGHT : 0) +
+    SHEET_VERTICAL_PADDING;
+  const maxContentHeight = Math.max(0, maxSheetHeight - chromeHeight);
+  const shouldScroll = contentHeight > maxContentHeight;
+  const dynamicSheetHeight = Math.min(
+    Math.max(contentHeight + chromeHeight, minHeight),
+    maxSheetHeight
+  );
 
   React.useEffect(() => {
     if (visible) {
@@ -133,7 +157,12 @@ export function BottomSheet({
         </TouchableWithoutFeedback>
         <GestureDetector gesture={gesture}>
           <Animated.View
-            style={[styles.container, containerAnimatedStyle, animatedStyle]}
+            style={[
+              styles.container,
+              containerAnimatedStyle,
+              animatedStyle,
+              { minHeight, maxHeight: maxSheetHeight, height: dynamicSheetHeight },
+            ]}
           >
             {/* Handle */}
             <View style={[styles.handle, { backgroundColor: colors.icon }]} />
@@ -155,7 +184,15 @@ export function BottomSheet({
             )}
 
             {/* Content */}
-            <View style={styles.content}>{children}</View>
+            <ScrollView
+              style={styles.content}
+              contentContainerStyle={styles.contentContainer}
+              scrollEnabled={shouldScroll}
+              showsVerticalScrollIndicator={false}
+              onContentSizeChange={(_, height) => setContentHeight(height)}
+            >
+              {children}
+            </ScrollView>
           </Animated.View>
         </GestureDetector>
       </Animated.View>
@@ -174,7 +211,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: SCREEN_HEIGHT * 0.4,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingTop: 12,
@@ -188,8 +224,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 10,
-    maxHeight: SCREEN_HEIGHT * 0.9,
-    minHeight: 280,
   },
   handle: {
     width: 40,
@@ -215,4 +249,5 @@ const styles = StyleSheet.create({
     opacity: 0.1,
   },
   content: { paddingHorizontal: 24 },
+  contentContainer: { paddingBottom: 4 },
 });
