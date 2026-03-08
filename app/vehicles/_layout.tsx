@@ -13,6 +13,8 @@ export default function VehiclesLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="new" />
       <Stack.Screen name="[id]" />
+      <Stack.Screen name="maintenance" />
+      <Stack.Screen name="mileageHistory" />
     </Stack>
   );
 }

@@ -7,4 +7,5 @@ export * from './documentService';
 export * from './onboardingService';
 export * from './operationService';
 export * from './postalCodeService';
+export * from './vehicleHistoryService';
 export * from './vehicleService';

@@ -381,7 +381,13 @@ export default function VehicleDetailScreen() {
         {/* Non-edit mode action rows */}
         {!isEditing && (
           <>
-            <Button variant="secondary">
+            <Button
+              variant="secondary"
+              onPress={() => {
+                if (!id) return;
+                router.push(`/vehicles/mileageHistory?vehicleId=${id}` as any);
+              }}
+            >
               <View style={styles.mileageHistoryRow}>
                 <View style={styles.mileageHistoryRowLeft}>
                   <Icon name="gauge" size={24} color="primaryForeground" />
@@ -419,7 +425,12 @@ export default function VehicleDetailScreen() {
                   <Typography variant="body2SemiBold" color="warning" style={{ marginTop: 8 }}>
                     {t('operations.maintenance')}
                   </Typography>
-                } />
+                }
+                onPress={() => {
+                  if (!id) return;
+                  router.push(`/vehicles/maintenance?vehicleId=${id}` as any);
+                }}
+              />
 
               <Card
                 backgroundColor={colors.muted}
