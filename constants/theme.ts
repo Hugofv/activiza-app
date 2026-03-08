@@ -30,6 +30,7 @@ export const Colors = {
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
     starFilled: '#fbbf24',
+    lightWarning: '#F9F3E8',
   },
   dark: {
     text: '#ECEDEE',
@@ -53,6 +54,7 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
     starFilled: '#fbbf24',
+    lightWarning: '#F9F3E8',
   },
 } as const;
 

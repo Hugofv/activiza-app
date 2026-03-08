@@ -18,13 +18,20 @@ const badgeVariants = cva('', {
       md: '',
       lg: '',
     },
+    shape: {
+      default: '',
+      rounded: '',
+    },
   },
-  defaultVariants: { size: 'md' },
+  defaultVariants: {
+    size: 'md',
+    shape: 'default',
+  },
 });
 
 export interface BadgeProps extends VariantProps<typeof badgeVariants> {
   /** Icon name to display */
-  icon: IconName;
+  icon?: IconName;
   /** Text or value to display */
   value?: string | number | React.ReactNode;
   /** Background color */
@@ -56,6 +63,9 @@ export interface BadgeProps extends VariantProps<typeof badgeVariants> {
  * <Badge icon="check" value={6} backgroundColor="#E5F7E7" foregroundColor="#2B7B3B" size="sm" />
  * <Badge icon="calendar" value={4} backgroundColor="#FCF1D2" foregroundColor="#A07E2F" size="md" />
  * <Badge icon="user-dollar" value="700£" backgroundColor="#F5F5F5" foregroundColor="#2B7B3B" size="lg" />
+ *
+ * // Rounded shape
+ * <Badge icon="check" value="Done" backgroundColor="success" foregroundColor="primaryForeground" shape="rounded" />
  * ```
  */
 export const Badge = React.forwardRef<View, BadgeProps>(
@@ -64,6 +74,7 @@ export const Badge = React.forwardRef<View, BadgeProps>(
       icon,
       value,
       size = 'md',
+      shape = 'default',
       backgroundColor,
       foregroundColor,
       iconSize,
@@ -114,22 +125,23 @@ export const Badge = React.forwardRef<View, BadgeProps>(
             paddingHorizontal: size === 'sm' ? 8 : size === 'md' ? 12 : 16,
             paddingVertical: size === 'sm' ? 4 : size === 'md' ? 8 : 12,
             gap: size === 'sm' ? 4 : size === 'md' ? 6 : 8,
+            borderRadius: shape === 'rounded' ? 999 : 8,
           },
           style,
         ]}
-        className={cn(badgeVariants({ size }), className)}
+        className={cn(badgeVariants({ size, shape }), className)}
         {...props}
       >
-        <Icon
+        {icon && <Icon
           name={icon}
           size={getIconSize()}
           color={foregroundColor}
-        />
+        />}
         <Typography
           variant={getTextVariant()}
+          color={foregroundColor}
           style={[
             {
-              color: foregroundColor,
               fontSize: size === 'sm' ? 13 : size === 'md' ? 14 : 15,
               fontWeight: '600',
             },
@@ -148,6 +160,5 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 8,
   },
 });

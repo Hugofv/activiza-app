@@ -12,6 +12,7 @@ import {
   IconCar,
   IconChartArrowsVertical,
   IconCheck,
+  IconChecklist,
   IconChevronDown,
   IconChevronLeft,
   IconChevronRight,
@@ -27,6 +28,7 @@ import {
   IconEye,
   IconEyeOff,
   IconFileText,
+  IconGauge,
   IconHistory,
   IconHomeFilled,
   IconHourglass,
@@ -46,6 +48,7 @@ import {
   IconReload,
   IconSearch,
   IconSettings,
+  IconSettingsExclamation,
   IconSquareRoundedPlusFilled,
   IconStar,
   IconStarFilled,
@@ -83,6 +86,8 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   note: IconNote,
   search: IconSearch,
   reload: IconReload,
+  gauge: IconGauge,
+  'checklist': IconChecklist,
 
   // Visibility
   'eye-outline': IconEye,
@@ -107,6 +112,7 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   mail: IconMail,
   'map-pin': IconMapPin,
   'user-share': IconUserShare,
+  'settings-exclamation': IconSettingsExclamation,
 
   // People
   person: IconUser,

@@ -19,11 +19,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import SummaryItem from '@/app/clients/new/components/SummaryItem';
 import { BackButton } from '@/components/ui/BackButton';
+import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { ImageCardView } from '@/components/ui/ImageCardView';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Typography } from '@/components/ui/Typography';
+import Card from '@/components/vehicles/Card';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import {
@@ -376,8 +378,81 @@ export default function VehicleDetailScreen() {
           </View>
         )}
 
+        {/* Non-edit mode action rows */}
+        {!isEditing && (
+          <>
+            <Button variant="secondary">
+              <View style={styles.mileageHistoryRow}>
+                <View style={styles.mileageHistoryRowLeft}>
+                  <Icon name="gauge" size={24} color="primaryForeground" />
+                  <Typography variant="body2Medium" color="primaryForeground">
+                    {t('operations.mileageHistory')}
+                  </Typography>
+                </View>
+                <Icon name="chevron-right" color="primaryForeground" />
+              </View>
+            </Button>
+
+            <View style={styles.cardRow}>
+              <Card
+                backgroundColor={colors.lightWarning}
+                style={{
+                  height: 130,
+                  width: '48%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  flexDirection: 'column',
+                }}
+                topRow={
+                  <View style={styles.infoCardHeader}>
+                    <Icon name="settings-exclamation" size={24} color="warning" />
+                    <Badge
+                      size="sm"
+                      shape="rounded"
+                      backgroundColor="warning"
+                      foregroundColor="background"
+                      value={vehicle.maintenanceCount || 0}
+                    />
+                  </View>
+                }
+                bottomRow={
+                  <Typography variant="body2SemiBold" color="warning" style={{ marginTop: 8 }}>
+                    {t('operations.maintenance')}
+                  </Typography>
+                } />
+
+              <Card
+                backgroundColor={colors.muted}
+                style={{
+                  height: 130,
+                  width: '48%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  flexDirection: 'column',
+                }}
+                topRow={
+                  <View style={styles.infoCardHeader}>
+                    <Icon name="checklist" size={24} color="primaryForeground" />
+                    <Badge
+                      size="sm"
+                      shape="rounded"
+                      backgroundColor="muted"
+                      foregroundColor="placeholder"
+                      value={vehicle.inspectionCount || 0}
+                    />
+                  </View>
+                }
+                bottomRow={
+                  <Typography variant="body2SemiBold" color="primaryForeground" style={{ marginTop: 8 }}>
+                    {t('operations.inspections')}
+                  </Typography>
+                } />
+            </View>
+          </>
+        )}
+
         {/* Details section */}
-        <View style={styles.detailsSection}>
+        {isEditing && (<View style={styles.detailsSection}>
           {/* Vehicle info (type + brand + model + year + plate) */}
           <SummaryItem
             icon="car"
@@ -430,82 +505,40 @@ export default function VehicleDetailScreen() {
           )}
 
           {/* Photos */}
-          <SummaryItem
-            icon="photo"
-            isEditing={isEditing}
-            label={t('operations.photos')}
-            onPress={isEditing ? () => goToEditScreen('/vehicles/new/photos') : undefined}
-            value={
-              displayPhotos.length > 0 ? (
-                <FlatList
-                  data={displayPhotos}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={(_, i) => `photo-${i}`}
-                  contentContainerStyle={{ gap: 8, marginTop: 4 }}
-                  scrollEnabled={!isEditing}
-                  renderItem={({ item }) => (
-                    <ImageCardView
-                      uri={item}
-                      style={{ width: photoCardSize, height: photoCardSize }}
+          {
+            isEditing && (
+              <SummaryItem
+                icon="photo"
+                isEditing={isEditing}
+                label={t('operations.photos')}
+                onPress={isEditing ? () => goToEditScreen('/vehicles/new/photos') : undefined}
+                value={
+                  displayPhotos.length > 0 ? (
+                    <FlatList
+                      data={displayPhotos}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      keyExtractor={(_, i) => `photo-${i}`}
+                      contentContainerStyle={{ gap: 8, marginTop: 4 }}
+                      scrollEnabled={!isEditing}
+                      renderItem={({ item }) => (
+                        <ImageCardView
+                          uri={item}
+                          style={{ width: photoCardSize, height: photoCardSize }}
+                        />
+                      )}
                     />
-                  )}
-                />
-              ) : (
-                <Typography variant="body2" color="placeholder">
-                  {t('operations.noPhotos')}
-                </Typography>
-              )
-            }
-          />
-        </View>
-
-        {/* Non-edit mode action rows */}
-        {!isEditing && (
-          <>
-            <View style={styles.cardRow}>
-              <Pressable
-                style={[styles.infoCard, { borderColor: colors.border }]}
-                onPress={() => {
-                  // TODO: navigate to maintenance list
-                }}
-              >
-                <View style={styles.infoCardHeader}>
-                  <Icon name="settings" size={24} color="primaryForeground" />
-                  {(vehicle.maintenanceCount ?? 0) > 0 && (
-                    <View style={[styles.countBadge, { backgroundColor: colors.error }]}>
-                      <Typography variant="caption" style={{ color: '#fff', fontWeight: '700', fontSize: 11 }}>
-                        {vehicle.maintenanceCount}
-                      </Typography>
-                    </View>
-                  )}
-                </View>
-                <Typography variant="body2SemiBold" color="primary" style={{ marginTop: 8 }}>
-                  {t('operations.maintenance')}
-                </Typography>
-              </Pressable>
-
-              <Pressable
-                style={[styles.infoCard, { borderColor: colors.border }]}
-                onPress={() => {
-                  // TODO: navigate to inspections list
-                }}
-              >
-                <View style={styles.infoCardHeader}>
-                  <Icon name="clipboard-check" size={24} color="primaryForeground" />
-                  {(vehicle.inspectionCount ?? 0) > 0 && (
-                    <Typography variant="body2" color="icon" style={{ marginLeft: 'auto' }}>
-                      {vehicle.inspectionCount}
+                  ) : (
+                    <Typography variant="body2" color="placeholder">
+                      {t('operations.noPhotos')}
                     </Typography>
-                  )}
-                </View>
-                <Typography variant="body2SemiBold" color="primary" style={{ marginTop: 8 }}>
-                  {t('operations.inspections')}
-                </Typography>
-              </Pressable>
-            </View>
-          </>
-        )}
+                  )
+                }
+              />
+            )
+          }
+
+        </View>)}
       </ScrollView>
     </SafeAreaView>
   );
@@ -514,17 +547,28 @@ export default function VehicleDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 20,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
     paddingTop: 8,
     paddingBottom: 16,
   },
   headerBtn: {
     minWidth: 80,
+  },
+  mileageHistoryRow: {
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  mileageHistoryRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   editButtonsRow: {
     flexDirection: 'row',
@@ -532,12 +576,13 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 40,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 16,
   },
   heroContainer: {
-    marginHorizontal: 20,
     borderRadius: 20,
     overflow: 'hidden',
-    marginBottom: 16,
   },
   heroImage: {
     width: SCREEN_WIDTH - 40,
@@ -621,7 +666,6 @@ const styles = StyleSheet.create({
   cardRow: {
     flexDirection: 'row',
     gap: 12,
-    marginHorizontal: 20,
     marginBottom: 20,
   },
   infoCard: {
@@ -633,6 +677,7 @@ const styles = StyleSheet.create({
   infoCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   countBadge: {
     minWidth: 20,
