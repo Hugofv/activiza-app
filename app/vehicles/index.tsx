@@ -356,6 +356,7 @@ const styles = StyleSheet.create({
   },
   bottomButton: {
     position: 'absolute',
+    paddingHorizontal: 24,
     bottom: 24,
     left: 0,
     right: 0,

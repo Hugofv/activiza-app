@@ -94,4 +94,9 @@ export default {
   configure: 'Configurar',
   noMaintenanceRecords: 'Nenhuma manutenção encontrada',
   noMileageRecords: 'Nenhum registro de quilometragem',
+  maintenanceAlerts: 'Alertas',
+  markAsDone: 'Marcar como feita',
+  remindLater: 'Lembrar depois',
+  maintenanceOptions: 'Opções',
+  configureAlerts: 'Configurar alertas',
 };

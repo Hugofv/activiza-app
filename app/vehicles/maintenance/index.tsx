@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 
 import {
   ActivityIndicator,
-  FlatList,
   Pressable,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -23,7 +23,6 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import {
   type MaintenanceType,
   getVehicleMaintenances,
-  groupHistoryByMonth,
 } from '@/lib/services/vehicleHistoryService';
 
 const MAINTENANCE_TYPE_LABELS: Record<MaintenanceType, string> = {
@@ -34,15 +33,6 @@ const MAINTENANCE_TYPE_LABELS: Record<MaintenanceType, string> = {
   OTHER: 'Outro',
 };
 
-function toCurrency(value: number, currency: string, locale: string) {
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
 function toDate(value: string, locale: string) {
   return new Intl.DateTimeFormat(locale, {
     day: '2-digit',
@@ -51,13 +41,8 @@ function toDate(value: string, locale: string) {
   }).format(new Date(value));
 }
 
-function capitalize(value: string) {
-  if (!value) return value;
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-export default function VehicleMaintenanceListScreen() {
-  const { t, i18n } = useTranslation();
+export default function VehicleMaintenanceIndexScreen() {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { vehicleId } = useLocalSearchParams<{ vehicleId: string }>();
@@ -68,10 +53,8 @@ export default function VehicleMaintenanceListScreen() {
     enabled: !!vehicleId,
   });
 
-  const groups = useMemo(
-    () => groupHistoryByMonth(data ?? [], 'maintenanceDate', i18n.language),
-    [data, i18n.language]
-  );
+  const alerts = useMemo(() => (data ?? []).slice(0, 4), [data]);
+  const historyCount = data?.length ?? 0;
 
   return (
     <SafeAreaView
@@ -80,22 +63,10 @@ export default function VehicleMaintenanceListScreen() {
     >
       <View style={styles.header}>
         <BackButton />
-        <Button
-          variant="secondary"
-          size="sm"
-          disabled
-        >
-          <View style={styles.filterButton}>
-            <Typography variant="body2Medium" color="primaryForeground">
-              {t('operations.filterAll')}
-            </Typography>
-            <Icon name="chevron-down" size={16} color="primaryForeground" />
-          </View>
-        </Button>
       </View>
 
       <Typography variant="h3Bold" style={styles.title}>
-        {t('operations.maintenanceHistory')}
+        {t('operations.maintenance')}
       </Typography>
 
       {isLoading ? (
@@ -108,63 +79,131 @@ export default function VehicleMaintenanceListScreen() {
             {t('operations.vehicleLoadError')}
           </Typography>
         </View>
-      ) : groups.length === 0 ? (
-        <View style={styles.centered}>
-          <Typography variant="body2" color="placeholder">
-            {t('operations.noMaintenanceRecords')}
-          </Typography>
-        </View>
       ) : (
-        <FlatList
-          data={groups}
-          keyExtractor={(item) => item.key}
-          onRefresh={refetch}
-          refreshing={isRefetching}
-          contentContainerStyle={styles.listContent}
-          renderItem={({ item: group }) => (
-            <View style={styles.group}>
-              <View style={[styles.groupTitle, { backgroundColor: colors.muted }]}>
-                <Typography variant="caption" color="placeholder">
-                  {capitalize(group.monthLabel)}
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          onScrollEndDrag={() => {
+            if (!isRefetching) refetch();
+          }}
+        >
+          <View style={styles.section}>
+            <Typography variant="h6Medium" color="text">
+              {t('operations.maintenanceAlerts')}
+            </Typography>
+
+            {alerts.length === 0 ? (
+              <View style={styles.emptyCard}>
+                <Typography variant="body2" color="placeholder">
+                  {t('operations.noMaintenanceRecords')}
                 </Typography>
               </View>
-
-              {group.records.map((record) => (
+            ) : (
+              alerts.map((alert) => (
                 <View
-                  key={record.id}
-                  style={[styles.row, { borderBottomColor: colors.border }]}
+                  key={alert.id}
+                  style={[
+                    styles.alertCard,
+                    {
+                      backgroundColor: colors.background,
+                      borderColor: colors.border,
+                    },
+                  ]}
                 >
-                  <View style={styles.rowTop}>
+                  <View style={styles.alertHeader}>
                     <View style={[styles.tag, { backgroundColor: colors.tertiary }]}>
                       <Typography variant="body2Medium" color="tertiaryForeground">
-                        {MAINTENANCE_TYPE_LABELS[record.type]}
+                        {MAINTENANCE_TYPE_LABELS[alert.type]}
                       </Typography>
                     </View>
-                    <Icon name="chevron-right" size={16} color="icon" />
-                  </View>
-                  <View style={styles.rowBottom}>
-                    <Typography variant="body1SemiBold" color="text">
-                      {toCurrency(record.amount, record.currency, i18n.language)}
-                    </Typography>
-                    <Typography variant="body2" color="placeholder">
-                      {toDate(record.maintenanceDate, i18n.language)}
+                    <Typography variant="h4" color="placeholder">
+                      ...
                     </Typography>
                   </View>
+
+                  <Typography variant="body1" color="placeholder">
+                    {toDate(alert.maintenanceDate, 'pt-BR')}
+                  </Typography>
+
+                  <Button
+                    variant="secondary"
+                    size="full"
+                    onPress={() => {
+                      // Placeholder-only behavior for now.
+                    }}
+                    style={styles.alertAction}
+                  >
+                    {t('operations.markAsDone')}
+                  </Button>
+
+                  <Button
+                    variant="secondary"
+                    size="full"
+                    onPress={() => {
+                      // Placeholder-only behavior for now.
+                    }}
+                    style={[styles.alertAction, { backgroundColor: colors.muted }]}
+                  >
+                    {t('operations.remindLater')}
+                  </Button>
                 </View>
-              ))}
+              ))
+            )}
+          </View>
+
+          <View style={styles.section}>
+            <Typography variant="h6Medium" color="text">
+              {t('operations.maintenanceOptions')}
+            </Typography>
+
+            <View style={styles.optionsRow}>
+              <Pressable
+                style={[styles.optionCard, { backgroundColor: colors.muted }]}
+                onPress={() => {
+                  if (!vehicleId) return;
+                  router.push(`/vehicles/maintenance/history?vehicleId=${vehicleId}` as any);
+                }}
+              >
+                <View style={styles.optionTop}>
+                  <Icon name="history" size={24} color="primaryForeground" />
+                  <Typography variant="body1" color="placeholder">
+                    {historyCount}
+                  </Typography>
+                </View>
+                <Typography variant="body1Medium" color="primaryForeground">
+                  {t('operations.maintenanceHistory')}
+                </Typography>
+              </Pressable>
+
+              <Pressable
+                style={[styles.optionCard, { backgroundColor: colors.muted }]}
+                onPress={() => {
+                  // Placeholder-only behavior for now.
+                }}
+              >
+                <View style={styles.optionTop}>
+                  <Icon name="warning" size={24} color="primaryForeground" />
+                  <Typography variant="body1" color="placeholder">
+                    7
+                  </Typography>
+                </View>
+                <Typography variant="body1Medium" color="primaryForeground">
+                  {t('operations.configureAlerts')}
+                </Typography>
+              </Pressable>
             </View>
-          )}
-          showsVerticalScrollIndicator={false}
-        />
+          </View>
+        </ScrollView>
       )}
 
       <View style={styles.footer}>
         <Button
           variant="primary"
           size="full"
-          onPress={() =>
-            router.push(`/vehicles/maintenance/new?vehicleId=${vehicleId}` as any)
-          }
+          onPress={() => {
+            if (!vehicleId) return;
+            router.push(`/vehicles/maintenance/new?vehicleId=${vehicleId}` as any);
+          }}
         >
           {t('operations.register')}
         </Button>
@@ -184,50 +223,61 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
   },
-  filterButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
   title: {
-    marginBottom: 14,
+    marginBottom: 16,
   },
   centered: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  listContent: {
+  scrollContent: {
     paddingBottom: 120,
-    gap: 12,
+    gap: 20,
   },
-  group: {
-    gap: 8,
+  section: {
+    gap: 10,
   },
-  groupTitle: {
-    borderRadius: 2,
-    paddingVertical: 4,
+  emptyCard: {
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingVertical: 16,
     alignItems: 'center',
   },
-  row: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
+  alertCard: {
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 12,
+    gap: 8,
   },
-  rowTop: {
+  alertHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
   },
   tag: {
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  rowBottom: {
+  alertAction: {
+    minHeight: 44,
+  },
+  optionsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  optionCard: {
+    flex: 1,
+    borderRadius: 12,
+    padding: 14,
+    minHeight: 118,
+    justifyContent: 'space-between',
+  },
+  optionTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    justifyContent: 'space-between',
   },
   footer: {
     position: 'absolute',

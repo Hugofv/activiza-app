@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { PressableProps } from 'react-native';
 
-import { router } from 'expo-router';
+import { type Href, router } from 'expo-router';
 
 import { IconColor } from './Icon';
 import { IconButton } from './IconButton';
@@ -12,6 +12,7 @@ export interface BackButtonProps extends Omit<
   'children' | 'onPress'
 > {
   onPress?: () => void;
+  fallbackRoute?: Href;
   variant?: 'primary' | 'secondary' | 'error' | 'outline' | 'ghost';
   iconColor?: IconColor;
 }
@@ -28,6 +29,7 @@ export const BackButton = React.forwardRef<
   (
     {
       onPress,
+      fallbackRoute = '/' as Href,
       variant = 'secondary',
       iconColor = 'primaryForeground',
       ...props
@@ -38,7 +40,11 @@ export const BackButton = React.forwardRef<
       if (onPress) {
         onPress();
       } else {
-        router.back();
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.replace(fallbackRoute);
+        }
       }
     };
 

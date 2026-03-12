@@ -101,6 +101,19 @@ const OnboardingFormContext = createContext<
   OnboardingFormContextType | undefined
 >(undefined);
 
+function isOnboardingServiceUnavailableError(error: any): boolean {
+  const status = error?.response?.status;
+  const message = String(
+    error?.response?.data?.message ?? error?.message ?? ''
+  ).toLowerCase();
+  const details = JSON.stringify(error?.response?.data?.details ?? '').toLowerCase();
+
+  return (
+    status === 500 &&
+    (message.includes('onboardingservice') || details.includes('onboardingservice'))
+  );
+}
+
 export const useOnboardingForm = () => {
   const context = useContext(OnboardingFormContext);
   if (!context) {
@@ -310,10 +323,24 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
     // If step is provided, save to API immediately with merged data
     if (step) {
       console.log(JSON.stringify(mergedData, null, 2));
-      await saveMutation.mutateAsync({
-        data: mergedData,
-        step,
-      });
+      try {
+        await saveMutation.mutateAsync({
+          data: mergedData,
+          step,
+        });
+      } catch (error: any) {
+        if (isOnboardingServiceUnavailableError(error)) {
+          // Temporary fallback: keep onboarding moving locally when backend
+          // onboarding service is unavailable in the current environment.
+          const nextStep = getNextStep(step);
+          if (nextStep) setCurrentStep(nextStep.key);
+          console.warn(
+            `[OnboardingFormContext] Backend onboarding service unavailable on step "${step}". Continuing locally.`
+          );
+          return;
+        }
+        throw error;
+      }
     }
   };
 
@@ -322,10 +349,25 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
     // The API will return the next step in the response
     // Don't update local state first, wait for API response
     console.log(`🔄 Updating step: ${step}`);
-    const response = await updateStepMutation.mutateAsync(step);
-    console.log(`✅ Step update completed. Response:`, response);
-    // Local state will be updated in onSuccess callback from the mutation
-    return response;
+    try {
+      const response = await updateStepMutation.mutateAsync(step);
+      console.log(`✅ Step update completed. Response:`, response);
+      // Local state will be updated in onSuccess callback from the mutation
+      return response;
+    } catch (error: any) {
+      if (isOnboardingServiceUnavailableError(error)) {
+        const nextStep = getNextStep(step);
+        if (nextStep) setCurrentStep(nextStep.key);
+        console.warn(
+          `[OnboardingFormContext] Backend onboarding step update unavailable for "${step}". Continuing locally.`
+        );
+        return {
+          success: false,
+          message: 'Local fallback due to onboarding service unavailability',
+        };
+      }
+      throw error;
+    }
   };
 
   const submitFormData = async (

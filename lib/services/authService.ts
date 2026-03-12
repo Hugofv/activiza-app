@@ -25,6 +25,19 @@ import {
 // Use the extended config type for skipAuth
 type ApiConfig = { skipAuth?: boolean };
 
+function isExpectedAuthExpiration(error: any): boolean {
+  const status = error?.response?.status ?? error?.statusCode;
+  const code = error?.response?.data?.code ?? error?.code;
+  const message = String(error?.response?.data?.message ?? error?.message ?? '').toLowerCase();
+
+  return (
+    status === 401 ||
+    code === 'UNAUTHORIZED' ||
+    message.includes('token') ||
+    message.includes('expired')
+  );
+}
+
 /**
  * Register new user with email and password
  */
@@ -177,7 +190,11 @@ export async function refreshAccessToken(): Promise<string> {
 
     return accessToken;
   } catch (error: any) {
-    console.error('Refresh token error:', error);
+    if (isExpectedAuthExpiration(error)) {
+      console.warn('Refresh token expired/unauthorized. Clearing session.');
+    } else {
+      console.error('Refresh token error:', error);
+    }
 
     // If refresh fails, clear tokens and force re-login
     await clearTokens();
@@ -202,8 +219,12 @@ export async function ensureValidToken(): Promise<string | null> {
     // Token is still valid
     const { getAccessToken } = await import('../storage/secureStorage');
     return await getAccessToken();
-  } catch (error) {
-    console.error('Error ensuring valid token:', error);
+  } catch (error: any) {
+    if (isExpectedAuthExpiration(error)) {
+      console.warn('Session expired. User needs to login again.');
+    } else {
+      console.error('Error ensuring valid token:', error);
+    }
     return null;
   }
 }
