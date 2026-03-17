@@ -33,31 +33,14 @@ export default function LoanSummaryScreen() {
   const { formData, resetOperation } = useOperations();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const currencySymbol = useMemo(() => {
-    switch (formData.currency) {
-      case 'GBP':
-        return '£';
-      case 'USD':
-        return '$';
-      case 'BRL':
-        return 'R$';
-      case 'EUR':
-        return '€';
-      default:
-        return '£';
-    }
-  }, [formData.currency]);
+  const currency = formData.currency || 'GBP';
 
   const amountNum = useMemo(() => {
-    const n = parseFloat(
-      (formData.amount || '0').replace(/\D/g, '').replace(',', '.')
-    );
-    return isNaN(n) ? 0 : n;
+    return parseAmount(formData.amount || '');
   }, [formData.amount]);
 
   const interestNum = useMemo(() => {
-    const n = parseFloat((formData.interest || '0').replace(',', '.'));
-    return isNaN(n) ? 0 : n;
+    return parseInterest(formData.interest || '');
   }, [formData.interest]);
 
   const profit = useMemo(
@@ -151,8 +134,24 @@ export default function LoanSummaryScreen() {
     }
   };
 
-  const formatAmount = (value: number) =>
-    `${value.toLocaleString()}${currencySymbol}`;
+  const numberFormatter = useMemo(() => {
+    const localeByCurrency: Record<string, string> = {
+      BRL: 'pt-BR',
+      USD: 'en-US',
+      GBP: 'en-GB',
+      EUR: 'de-DE',
+    };
+    const locale = localeByCurrency[currency] || 'en-GB';
+
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }, [currency]);
+
+  const formatAmount = (value: number) => numberFormatter.format(value);
 
   const currencyIcon = useMemo(() => {
     switch (formData.currency) {

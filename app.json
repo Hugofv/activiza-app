@@ -44,13 +44,24 @@
         "expo-localization",
         {
           "fallbackLocale": "pt-BR",
-          "availableLocales": ["pt-BR", "en-UK", "en-BR"]
+          "availableLocales": [
+            "pt-BR",
+            "en-UK",
+            "en-BR"
+          ]
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a5889af9-cee4-4a3a-ba9c-bd06dcf82cdf"
+      }
+    },
+    "owner": "hugodev"
   }
 }

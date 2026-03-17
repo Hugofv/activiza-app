@@ -21,6 +21,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 
 import { DatePicker } from '@/components/ui/DatePicker';
+import { parseAmount } from '@/lib/services/operationService';
 import { type FrequencyType, useOperations } from '../_context';
 
 interface LoanFormFields {
@@ -76,7 +77,7 @@ export default function LoanFormScreen() {
       .string()
       .required(`${t('operations.amount')} ${t('common.validation.required')}`)
       .test('positive', t('operations.invalidValue'), (v) => {
-        const n = parseFloat((v ?? '').replace(/\D/g, '').replace(',', '.'));
+        const n = parseAmount(v ?? '');
         return !isNaN(n) && n > 0;
       }),
     interest: yup

@@ -45,7 +45,16 @@ export default function NameScreen() {
     name: yup
       .string()
       .required(t('clients.nameRequired'))
-      .min(2, t('clients.nameMinLength')),
+      .max(120, t('clients.nameMaxLength'))
+      .matches(/^[\p{L}\s'-]+$/u, t('clients.nameInvalidChars'))
+      .test('full-name', t('clients.nameFullRequired'), (value) => {
+        if (!value) return false;
+        const words = value
+          .trim()
+          .split(/\s+/)
+          .filter((word) => /\p{L}/u.test(word));
+        return words.length >= 2;
+      }),
   });
 
   const {
@@ -112,7 +121,7 @@ export default function NameScreen() {
             placeholder="João Silva"
             placeholderTextColor={colors.icon}
             keyboardType="default"
-            maxLength={100}
+            maxLength={120}
             autoFocus
           />
         </ThemedView>

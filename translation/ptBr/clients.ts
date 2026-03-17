@@ -5,6 +5,10 @@ export default {
   nameQuestion: 'Qual o nome completo do seu cliente?',
   nameRequired: 'Nome é obrigatório',
   nameMinLength: 'Nome deve ter pelo menos 2 caracteres',
+  nameMaxLength: 'Nome deve ter no máximo 120 caracteres',
+  nameInvalidChars:
+    "Nome pode conter apenas letras, espaços, hífen (-) e apóstrofo (')",
+  nameFullRequired: 'Informe o nome completo (nome e sobrenome)',
   whatsapp: 'WhatsApp',
   whatsappQuestion: 'Qual o WhatsApp de {{name}}?',
   whatsappRequired: 'WhatsApp é obrigatório',
