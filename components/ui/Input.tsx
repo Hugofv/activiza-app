@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import {
+  Platform,
   Pressable,
   StyleSheet,
   TextInput,
@@ -113,6 +114,15 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
       hasError: boolean,
       extraStyle?: any
     ) => {
+      const flattenedStyle = StyleSheet.flatten(extraStyle) || {};
+      const resolvedFontSize =
+        typeof flattenedStyle.fontSize === 'number' ? flattenedStyle.fontSize : 18;
+      const resolvedLineHeight =
+        typeof flattenedStyle.lineHeight === 'number'
+          ? flattenedStyle.lineHeight
+          : Math.ceil(resolvedFontSize * 1.25);
+      const resolvedMinHeight = Math.max(40, resolvedLineHeight + 12);
+
       if (isOutline) {
         return [
           inputStyles.outline,
@@ -121,6 +131,11 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
             borderColor: hasError ? colors.error : colors.border,
             backgroundColor: colors.background,
             opacity: isDisabled ? 0.6 : 1,
+            fontSize: resolvedFontSize,
+            lineHeight: resolvedLineHeight,
+            minHeight: resolvedMinHeight,
+            textAlignVertical: 'center',
+            includeFontPadding: false,
           },
           hasError && { borderColor: colors.error },
           extraStyle,
@@ -129,13 +144,18 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
       return [
         {
           color: isDisabled ? colors.icon : colors.text,
-          height: 30,
+          fontSize: resolvedFontSize,
+          lineHeight: resolvedLineHeight,
+          minHeight: resolvedMinHeight,
+          paddingVertical: 0,
           borderWidth: 0,
           borderBottomWidth: 1.5,
           borderBottomColor: hasError
             ? colors.error
             : (extraStyle as any)?.borderBottomColor || colors.icon,
           opacity: isDisabled ? 0.6 : 1,
+          textAlignVertical: 'center',
+          includeFontPadding: false,
         },
         hasError && { borderBottomColor: colors.error },
         extraStyle,
@@ -191,7 +211,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
                     className={cn(
                       isOutline
                         ? 'flex w-full text-base'
-                        : 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-lg',
+                        : 'flex w-full rounded-md border border-input bg-background px-3 text-lg',
                       className
                     )}
                     style={[
@@ -256,7 +276,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
             className={cn(
               isOutline
                 ? 'flex w-full text-base'
-                : 'flex h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-lg',
+                : 'flex w-full rounded-md border border-input bg-background px-3 text-lg',
               className
             )}
             style={[
@@ -293,9 +313,9 @@ const inputStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: Platform.OS === 'android' ? 8 : 12,
     fontSize: 16,
-    height: 48,
+    minHeight: 48,
   },
   row: {
     flexDirection: 'row',
