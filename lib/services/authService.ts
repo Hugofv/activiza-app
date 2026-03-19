@@ -25,6 +25,10 @@ import {
 // Use the extended config type for skipAuth
 type ApiConfig = { skipAuth?: boolean };
 
+function normalizeEmailAddress(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 function isExpectedAuthExpiration(error: any): boolean {
   const status = error?.response?.status ?? error?.statusCode;
   const code = error?.response?.data?.code ?? error?.code;
@@ -45,9 +49,14 @@ export async function register(
   credentials: RegisterCredentials
 ): Promise<AuthResponse> {
   try {
+    const payload = {
+      ...credentials,
+      email: normalizeEmailAddress(credentials.email),
+    };
+
     const response = await apiClient.post<AuthResponse>(
       ENDPOINTS.AUTH.REGISTER,
-      credentials,
+      payload,
       { skipAuth: true } as ApiConfig
     );
 
@@ -95,9 +104,14 @@ export async function login(
   credentials: LoginCredentials
 ): Promise<AuthResponse> {
   try {
+    const payload = {
+      ...credentials,
+      email: normalizeEmailAddress(credentials.email),
+    };
+
     const response = await apiClient.post<AuthResponse>(
       ENDPOINTS.AUTH.LOGIN,
-      credentials,
+      payload,
       { skipAuth: true } as ApiConfig
     );
 
@@ -329,8 +343,9 @@ export function getCurrentUser(): User | undefined {
  */
 export async function checkEmailStatus(email: string): Promise<EmailStatus> {
   try {
+    const normalizedEmail = normalizeEmailAddress(email);
     const response = await apiClient.get<EmailStatusResponse>(
-      `${ENDPOINTS.AUTH.CHECK_EMAIL}?email=${encodeURIComponent(email)}`,
+      `${ENDPOINTS.AUTH.CHECK_EMAIL}?email=${encodeURIComponent(normalizedEmail)}`,
       { skipAuth: true } as ApiConfig
     );
 

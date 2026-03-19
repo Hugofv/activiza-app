@@ -2,8 +2,7 @@ import { useState } from 'react';
 
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
-import { useLocalSearchParams } from 'expo-router';
-import { navigate } from 'expo-router/build/global-state/routing';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -100,7 +99,9 @@ const PasswordScreen = () => {
   ];
 
   const onSubmit = async (data: PasswordFormData) => {
-    const effectiveEmail = formData.email || emailFromParams;
+    const effectiveEmail = (emailFromParams || formData.email || '')
+      .trim()
+      .toLowerCase();
 
     if (!effectiveEmail) {
       showError(
@@ -110,9 +111,9 @@ const PasswordScreen = () => {
       return;
     }
 
-    // Ensure email is persisted in onboarding form data for subsequent steps
-    if (!formData.email && emailFromParams) {
-      await updateFormData({ email: emailFromParams });
+    // Always keep context aligned with the exact email used for this submit.
+    if (formData.email !== effectiveEmail) {
+      await updateFormData({ email: effectiveEmail });
     }
 
     setIsRegistering(true);
@@ -131,9 +132,21 @@ const PasswordScreen = () => {
       // Continue to next step (email verification)
       // User is now authenticated, so onboarding routes are accessible
       console.log('📧 Calling updateStep for email_verification...');
-      navigate('/onboarding/codeEmail');
+      router.push('/onboarding/codeEmail');
     } catch (error: any) {
       console.error('Registration error:', error);
+      const errorCode =
+        error?.response?.data?.code || error?.response?.data?.details?.error?.code;
+
+      // If API reports that email already exists, move user to login flow.
+      if (errorCode === 'EMAIL_ALREADY_EXISTS') {
+        router.push({
+          pathname: '/auth/password',
+          params: { email: effectiveEmail },
+        });
+        return;
+      }
+
       const apiMessage = getTranslatedError(
         (error?.response?.data as any) || error,
         t('onboarding.saveError') ||

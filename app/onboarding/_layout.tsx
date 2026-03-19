@@ -24,7 +24,6 @@ export default function OnboardingLayout() {
   // Routes that don't require authentication (pre-auth creation + immediate email verification after register)
   const publicRoutes = useMemo(
     () => [
-      '/onboarding/email',
       '/onboarding/password',
       '/onboarding/codeEmail',
       '/authPassword',
@@ -147,14 +146,6 @@ export default function OnboardingLayout() {
             headerShown: false,
             animation: 'fade',
             animationDuration: 400,
-          }}
-        />
-        <Stack.Screen
-          name="email"
-          options={{
-            headerShown: false,
-            animation: 'slide_from_right',
-            animationDuration: 300,
           }}
         />
         <Stack.Screen

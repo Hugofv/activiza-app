@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
 import { router } from 'expo-router';
-import { navigate } from 'expo-router/build/global-state/routing';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -46,13 +45,14 @@ const EmailScreen = () => {
   });
 
   const onSubmit = async (data: EmailFormData) => {
+    const normalizedEmail = data.email.trim().toLowerCase();
     setIsChecking(true);
     try {
       // Check if email exists and registration status
-      const emailStatus = await checkEmailStatus(data.email);
+      const emailStatus = await checkEmailStatus(normalizedEmail);
 
       // Just update form data (don't save to API yet - user doesn't have account)
-      updateFormData({ email: data.email });
+      updateFormData({ email: normalizedEmail });
 
       // Check if user is fully registered (COMPLETED) vs in-progress onboarding
       // Rule:
@@ -75,7 +75,7 @@ const EmailScreen = () => {
         // Pass email via params so onboarding context can persist it
         router.push({
           pathname: '/onboarding/password',
-          params: { email: data.email },
+          params: { email: normalizedEmail },
         });
       } else if (isInProgressOnboarding) {
         // User exists but onboarding is not completed (or is a platformUser)
@@ -89,7 +89,7 @@ const EmailScreen = () => {
         router.push({
           pathname: '/auth/password',
           params: {
-            email: data.email,
+            email: normalizedEmail,
             onboardingStep: targetOnboardingStep,
           },
         });
@@ -98,7 +98,7 @@ const EmailScreen = () => {
         router.push({
           pathname: '/auth/password',
           params: {
-            email: data.email,
+            email: normalizedEmail,
             onboardingStep: emailStatus.onboardingStep || '',
           },
         });
@@ -106,14 +106,17 @@ const EmailScreen = () => {
         // Fallback: treat as new onboarding flow starting at password
         router.push({
           pathname: '/onboarding/password',
-          params: { email: data.email },
+          params: { email: normalizedEmail },
         });
       }
     } catch (error: any) {
       console.error('Check email status error:', error);
       // On error, assume new user and continue with onboarding
-      updateFormData({ email: data.email });
-      navigate('/onboarding/password');
+      updateFormData({ email: normalizedEmail });
+      router.push({
+        pathname: '/onboarding/password',
+        params: { email: normalizedEmail },
+      });
     } finally {
       setIsChecking(false);
     }
