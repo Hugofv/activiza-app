@@ -30,6 +30,8 @@ export interface InputProps extends Omit<
   type?: InputType;
   /** Visual suffix rendered after the input value (e.g. '%', 'kg') */
   suffix?: string;
+  /** Trailing slot on the same row as the field (e.g. password visibility toggle) */
+  trailing?: React.ReactNode;
   // RHF props (optional)
   name?: FieldPath<any>;
   control?: Control<any>;
@@ -50,6 +52,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
       variant = 'default',
       type = 'text',
       suffix,
+      trailing,
       name,
       control,
       error,
@@ -103,6 +106,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
         : props.keyboardType;
     const resolvedSuffix =
       type === 'percentage' ? (suffix ?? '%') : suffix;
+    const useInputRow = Boolean(resolvedSuffix) || Boolean(trailing);
 
     // Use theme-based placeholder color (lighter when disabled, better contrast when enabled)
     const finalPlaceholderColor = disabled
@@ -205,7 +209,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
                     </Typography>
                   </Pressable>
                 )}
-                <View style={resolvedSuffix ? inputStyles.row : undefined}>
+                <View style={useInputRow ? inputStyles.row : undefined}>
                   <TextInput
                     ref={inputRef}
                     className={cn(
@@ -216,7 +220,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
                     )}
                     style={[
                       ...getInputStyle(isDisabled, !!error, style),
-                      resolvedSuffix ? { flex: 1 } : undefined,
+                      useInputRow ? { flex: 1, minWidth: 0 } : undefined,
                     ]}
                     placeholderTextColor={finalPlaceholderColor}
                     value={fieldValue || ''}
@@ -237,6 +241,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
                       {resolvedSuffix}
                     </Typography>
                   )}
+                  {trailing}
                 </View>
                 {error && (
                   <Typography
@@ -270,7 +275,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
             </Typography>
           </Pressable>
         )}
-        <View style={resolvedSuffix ? inputStyles.row : undefined}>
+        <View style={useInputRow ? inputStyles.row : undefined}>
           <TextInput
             ref={inputRef}
             className={cn(
@@ -281,7 +286,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
             )}
             style={[
               ...getInputStyle(isDisabled, false, style),
-              resolvedSuffix ? { flex: 1 } : undefined,
+              useInputRow ? { flex: 1, minWidth: 0 } : undefined,
             ]}
             placeholderTextColor={finalPlaceholderColor}
             value={value}
@@ -301,6 +306,7 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
               {resolvedSuffix}
             </Typography>
           )}
+          {trailing}
         </View>
       </View>
     );

@@ -22,6 +22,10 @@ export default {
   edit: 'Edit',
   cancel: 'Cancel',
   search: 'Search',
+  accessibilityShowPassword: 'Show password',
+  accessibilityHidePassword: 'Hide password',
+  accessibilityShowConfirmPassword: 'Show confirm password',
+  accessibilityHideConfirmPassword: 'Hide confirm password',
   // Validation errors
   validation: {
     required: 'This field is required',

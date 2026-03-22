@@ -39,6 +39,7 @@ const PasswordScreen = () => {
   const { showError } = useToast();
   const { formData, updateFormData } = useOnboardingForm();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const params = useLocalSearchParams<{ email?: string }>();
   const emailFromParams =
@@ -190,68 +191,72 @@ const PasswordScreen = () => {
             </Typography>
 
             {/* Password Input Field */}
-            <View style={styles.inputContainer}>
-              <Input
-                name="password"
-                control={control}
-                error={errors.password?.message}
-                label={t('common.password')}
-                className="border-0 rounded-none px-0 py-4 font-medium"
-                style={{
-                  fontSize: 20,
-                  paddingRight: 50,
-                }}
-                placeholder={t('onboarding.passwordPlaceholder')}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-                autoComplete="password-new"
-                autoCorrect={false}
-                textContentType="newPassword"
-              />
-
-              {/* Show/Hide Password Button */}
-              <IconButton
-                variant="ghost"
-                size="sm"
-                icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                iconSize={24}
-                iconColor={colors.icon}
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeButton}
-              />
-            </View>
+            <Input
+              name="password"
+              control={control}
+              error={errors.password?.message}
+              label={t('common.password')}
+              className="border-0 rounded-none px-0 py-4 font-medium"
+              style={{
+                fontSize: 20,
+              }}
+              placeholder={t('onboarding.passwordPlaceholder')}
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              autoComplete="password-new"
+              autoCorrect={false}
+              textContentType="newPassword"
+              trailing={
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                  iconSize={24}
+                  iconColor={colors.icon}
+                  onPress={() => setShowPassword((v) => !v)}
+                  accessibilityLabel={
+                    showPassword
+                      ? t('common.accessibilityHidePassword')
+                      : t('common.accessibilityShowPassword')
+                  }
+                  accessibilityRole="button"
+                />
+              }
+            />
 
             {/* Confirm Password Input Field */}
-            <View style={styles.inputContainer}>
-              <Input
-                name="confirmPassword"
-                control={control}
-                error={errors.confirmPassword?.message}
-                label={t('common.confirmPassword')}
-                className="border-0 rounded-none px-0 py-4 font-medium"
-                style={{
-                  fontSize: 20,
-                  paddingRight: 50,
-                }}
-                placeholder={t('onboarding.confirmPasswordPlaceholder')}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-                autoComplete="password-new"
-                autoCorrect={false}
-                textContentType="newPassword"
-              />
-
-              {/* Show/Hide Password Button */}
-              <IconButton
-                variant="ghost"
-                size="sm"
-                icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                iconSize={24}
-                iconColor={colors.icon}
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeButton}
-              />
-            </View>
+            <Input
+              name="confirmPassword"
+              control={control}
+              error={errors.confirmPassword?.message}
+              label={t('common.confirmPassword')}
+              className="border-0 rounded-none px-0 py-4 font-medium"
+              style={{
+                fontSize: 20,
+              }}
+              placeholder={t('onboarding.confirmPasswordPlaceholder')}
+              secureTextEntry={!showConfirmPassword}
+              autoCapitalize="none"
+              autoComplete="password-new"
+              autoCorrect={false}
+              textContentType="newPassword"
+              trailing={
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  icon={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+                  iconSize={24}
+                  iconColor={colors.icon}
+                  onPress={() => setShowConfirmPassword((v) => !v)}
+                  accessibilityLabel={
+                    showConfirmPassword
+                      ? t('common.accessibilityHideConfirmPassword')
+                      : t('common.accessibilityShowConfirmPassword')
+                  }
+                  accessibilityRole="button"
+                />
+              }
+            />
 
             {/* Password Rules List */}
             <View style={styles.rulesContainer}>
@@ -309,17 +314,6 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   progressContainer: { marginBottom: 8 },
-  inputContainer: {
-    position: 'relative',
-    marginTop: 8,
-  },
-  eyeButton: {
-    position: 'absolute',
-    right: 0,
-    top: 50,
-    zIndex: 1,
-    padding: 8,
-  },
   buttonContainer: {
     paddingTop: 24,
     paddingBottom: 40,

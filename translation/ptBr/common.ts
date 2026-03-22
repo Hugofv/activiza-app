@@ -23,6 +23,10 @@ export default {
   noData: 'Nenhum dado disponível',
   edit: 'Editar',
   search: 'Pesquisar',
+  accessibilityShowPassword: 'Mostrar senha',
+  accessibilityHidePassword: 'Ocultar senha',
+  accessibilityShowConfirmPassword: 'Mostrar confirmação de senha',
+  accessibilityHideConfirmPassword: 'Ocultar confirmação de senha',
   // Validation errors
   validation: {
     required: 'Este campo é obrigatório',
