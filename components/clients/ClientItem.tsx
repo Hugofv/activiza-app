@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+
+import { useTranslation } from 'react-i18next';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Icon } from '@/components/ui/Icon';
@@ -16,10 +18,37 @@ export interface ClientItemProps {
   onPress?: (client: Client) => void;
 }
 
+function getClientReliabilityScore(client: Client): number {
+  if (client.rating != null && Number.isFinite(client.rating)) {
+    return Math.round(client.rating);
+  }
+  const raw = client.meta?.reliability;
+  if (raw != null && raw !== '') {
+    const n = Number(raw);
+    if (Number.isFinite(n)) return Math.round(n);
+  }
+  return 0;
+}
+
+function formatDebtAmount(amount: number | undefined, currency?: string): string {
+  const code = currency || 'GBP';
+  const currencySymbol =
+    code === 'GBP'
+      ? '£'
+      : code === 'USD'
+        ? '$'
+        : code === 'BRL'
+          ? 'R$'
+          : '';
+  const n = amount ?? 0;
+  return `${currencySymbol}${n.toLocaleString()}`;
+}
+
 /**
  * Client list item component
  */
 export const ClientItem: React.FC<ClientItemProps> = ({ client, onPress }) => {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -27,18 +56,24 @@ export const ClientItem: React.FC<ClientItemProps> = ({ client, onPress }) => {
     onPress?.(client);
   };
 
-  const formatCurrency = (amount?: number, currency?: string) => {
-    if (!amount) return '0';
-    const currencySymbol =
-      currency === 'GBP'
-        ? '£'
-        : currency === 'USD'
-          ? '$'
-          : currency === 'BRL'
-            ? 'R$'
-            : '';
-    return `${currencySymbol}${amount.toLocaleString()}`;
-  };
+  const reliability = useMemo(() => getClientReliabilityScore(client), [client]);
+  const pendingNearDue = client.pendingOperations ?? 0;
+  const paidContracts = client.completedOperations ?? 0;
+  const debtLabel = formatDebtAmount(
+    client.totalAmount,
+    client.currency || 'GBP'
+  );
+
+  const a11yReliability = t('clients.listChipReliabilityA11y', {
+    value: reliability,
+  });
+  const a11yLoansDue = t('clients.listChipLoansDueA11y', {
+    value: pendingNearDue,
+  });
+  const a11yPaid = t('clients.listChipPaidContractsA11y', {
+    value: paidContracts,
+  });
+  const a11yDebt = t('clients.listChipDebtA11y', { value: debtLabel });
 
   return (
     <TouchableOpacity
@@ -47,7 +82,6 @@ export const ClientItem: React.FC<ClientItemProps> = ({ client, onPress }) => {
       activeOpacity={0.7}
     >
       <View style={styles.content}>
-        {/* Avatar */}
         <Avatar
           image={client.profilePictureUrl}
           icon="user-filled"
@@ -56,7 +90,6 @@ export const ClientItem: React.FC<ClientItemProps> = ({ client, onPress }) => {
           iconColor="icon"
         />
 
-        {/* Client Info */}
         <View style={styles.info}>
           <View style={styles.nameRow}>
             <Typography
@@ -65,112 +98,47 @@ export const ClientItem: React.FC<ClientItemProps> = ({ client, onPress }) => {
             >
               {client.name}
             </Typography>
-            <View style={styles.rating}>
+            <View style={styles.metricsRow}>
               <Badge
                 icon="star-filled"
-                value={client.rating || 4}
+                value={reliability}
                 backgroundColor="muted"
                 foregroundColor="icon"
                 size="sm"
+                accessibilityLabel={a11yReliability}
+                accessible
               />
               <Badge
                 icon="calendar-dots"
-                value={client.rating || 3}
+                value={pendingNearDue}
                 backgroundColor="tertiary"
                 foregroundColor="tertiaryForeground"
                 size="sm"
+                accessibilityLabel={a11yLoansDue}
+                accessible
               />
               <Badge
                 icon="check"
-                value={client.rating || 2}
+                value={paidContracts}
                 backgroundColor="success"
                 foregroundColor="successForeground"
                 size="sm"
+                accessibilityLabel={a11yPaid}
+                accessible
               />
               <Badge
                 icon="user-dollar"
-                value="600£"
+                value={debtLabel}
                 backgroundColor="muted"
                 foregroundColor="primaryForeground"
                 size="sm"
+                accessibilityLabel={a11yDebt}
+                accessible
               />
             </View>
           </View>
-
-          {/* Indicators */}
-          <View style={styles.indicators}>
-            {client.pendingOperations !== undefined &&
-              client.pendingOperations > 0 && (
-                <View
-                  style={[
-                    styles.indicator,
-                    styles.pendingIndicator,
-                    { backgroundColor: '#fef3c7' },
-                  ]}
-                >
-                  <Icon
-                    name="calendar"
-                    size={14}
-                    color="warning"
-                  />
-                  <Typography
-                    variant="caption"
-                    style={[styles.indicatorText, { color: 'warning' }]}
-                  >
-                    {client.pendingOperations}
-                  </Typography>
-                </View>
-              )}
-
-            {client.completedOperations !== undefined &&
-              client.completedOperations > 0 && (
-                <View
-                  style={[
-                    styles.indicator,
-                    styles.completedIndicator,
-                    { backgroundColor: '#d1fae5' },
-                  ]}
-                >
-                  <Icon
-                    name="check"
-                    size={14}
-                    color="successForeground"
-                  />
-                  <Typography
-                    variant="caption"
-                    color="successForeground"
-                    style={[styles.indicatorText]}
-                  >
-                    {client.completedOperations}
-                  </Typography>
-                </View>
-              )}
-
-            {client.totalAmount !== undefined && client.totalAmount > 0 && (
-              <View
-                style={[
-                  styles.indicator,
-                  styles.amountIndicator,
-                  { backgroundColor: colors.muted },
-                ]}
-              >
-                <Icon
-                  name="users"
-                  size={14}
-                  color="icon"
-                />
-                <Typography
-                  variant="caption"
-                  style={[styles.indicatorText, { color: colors.text }]}
-                >
-                  {formatCurrency(client.totalAmount, client.currency || 'GBP')}
-                </Typography>
-              </View>
-            )}
-          </View>
         </View>
 
-        {/* Chevron */}
         <Icon
           name="chevron-right"
           size={20}
@@ -203,30 +171,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  rating: {
+  metricsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-  },
-  ratingText: { fontSize: 12 },
-  indicators: {
-    flexDirection: 'row',
-    gap: 8,
     flexWrap: 'wrap',
-  },
-  indicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  pendingIndicator: {},
-  completedIndicator: {},
-  amountIndicator: {},
-  indicatorText: {
-    fontSize: 11,
-    fontWeight: '500',
   },
 });

@@ -49,7 +49,7 @@ import {
   IconSearch,
   IconSettings,
   IconSettingsExclamation,
-  IconSquareRoundedPlusFilled,
+  IconSquareRoundedPlus,
   IconStar,
   IconStarFilled,
   IconTrash,
@@ -82,7 +82,9 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   check: IconCheck,
   add: IconPlus,
   plus: IconPlus,
-  'square-rounded-plus': IconSquareRoundedPlusFilled,
+  // Use outline variant: filled Tabler icons set path fill to "currentColor", which
+  // overrides the passed color and often renders black in react-native-svg dark mode.
+  'square-rounded-plus': IconSquareRoundedPlus,
   note: IconNote,
   search: IconSearch,
   reload: IconReload,

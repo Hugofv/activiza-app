@@ -3,6 +3,12 @@ import * as yup from 'yup';
 import i18n from '@/translation';
 
 import type { DocumentType } from '../services/documentService';
+import {
+  isValidCNPJDigits,
+  isValidCPFDigits,
+} from '../utils/brDocumentValidation';
+import { isValidEmailWhenPresent } from '../utils/emailValidation';
+import { isPhoneInputValueComplete } from '../utils/phoneValidation';
 
 // Helper function to get translated error message
 // Returns a function so translation is resolved at validation time, not schema definition time
@@ -19,8 +25,8 @@ const VALID_DOCUMENT_TYPES: DocumentType[] = [
   'other',
 ];
 
-// Document schema simplificado (validação mínima baseada em tipo de documento)
-// Validação de algoritmo (CPF/CNPJ, etc) fica no backend
+// Document schema: formato por tipo + dígitos verificadores CPF/CNPJ no cliente
+// Outros tipos (SSN, EIN, etc.): validação principal continua no backend quando aplicável
 // Prioriza o tipo de documento quando fornecido, usa país apenas como fallback
 // IMPORTANTE: O schema sempre usa this.parent?.documentType (valor do formulário) como fonte de verdade
 export const createDocumentSchema = (
@@ -57,11 +63,17 @@ export const createDocumentSchema = (
             if (normalized.length !== 11) {
               return this.createError({ message: t('documentFormatCPF')() });
             }
+            if (!isValidCPFDigits(normalized)) {
+              return this.createError({ message: t('documentInvalidCPF')() });
+            }
             return true;
 
           case 'cnpj':
             if (normalized.length !== 14) {
               return this.createError({ message: t('documentFormatCNPJ')() });
+            }
+            if (!isValidCNPJDigits(normalized)) {
+              return this.createError({ message: t('documentInvalidCNPJ')() });
             }
             return true;
 
@@ -103,13 +115,22 @@ export const createDocumentSchema = (
       // PRIORIDADE 2: Fallback para validação baseada no país (quando tipo não especificado)
       switch (countryCode) {
         case 'BR':
-          // Se tipo não especificado, aceita CPF ou CNPJ
+          // Se tipo não especificado, aceita CPF ou CNPJ (com dígitos verificadores)
           if (normalized.length !== 11 && normalized.length !== 14) {
             return this.createError({
               message:
                 t('documentFormat')() ||
                 'Document must have 11 digits (CPF) or 14 digits (CNPJ)',
             });
+          }
+          if (normalized.length === 11) {
+            if (!isValidCPFDigits(normalized)) {
+              return this.createError({ message: t('documentInvalidCPF')() });
+            }
+            return true;
+          }
+          if (!isValidCNPJDigits(normalized)) {
+            return this.createError({ message: t('documentInvalidCNPJ')() });
           }
           return true;
 
@@ -162,7 +183,26 @@ export const createDocumentSchema = (
 // Schema padrão (retrocompatibilidade)
 export const documentSchema = createDocumentSchema('BR');
 
-// Name schema
+/** Person full name (onboarding + combined schema): same rules as client registration */
+const personFullNameField = yup
+  .string()
+  .required(t('nameRequired'))
+  .max(120, t('nameMaxLength'))
+  .matches(/^[\p{L}\s'-]+$/u, t('nameInvalidChars'))
+  .test('full-name', t('nameFullRequired'), (value) => {
+    if (!value) return false;
+    const words = value
+      .trim()
+      .split(/\s+/)
+      .filter((word) => /\p{L}/u.test(word));
+    return words.length >= 2;
+  });
+
+export const personFullNameSchema = yup.object().shape({
+  name: personFullNameField,
+});
+
+/** Business / generic name (e.g. customization screen) — single word allowed */
 export const nameSchema = yup.object().shape({
   name: yup
     .string()
@@ -172,31 +212,50 @@ export const nameSchema = yup.object().shape({
     .matches(/^[a-zA-ZÀ-ÿ\s]+$/, t('nameLettersOnly')),
 });
 
-// Phone schema
+// Phone schema — só avança com número completo e válido (libphonenumber-js)
 export const phoneSchema = yup.object().shape({
   phone: yup
     .object({
       country: yup.string().nullable().optional(),
-      countryCode: yup.string().required(),
-      phoneNumber: yup.string().required(),
-      formattedPhoneNumber: yup.string().required(),
+      countryCode: yup.string().optional(),
+      phoneNumber: yup.string().required(t('phoneRequired')),
+      formattedPhoneNumber: yup.string().optional(),
     })
     .nullable()
     .required(t('phoneRequired'))
-    .test('phone-valid', t('phoneInvalid'), (value) => {
+    .test('phone-complete', t('phoneIncomplete'), (value) => {
       if (!value) return false;
-      return !!value.phoneNumber && value.phoneNumber.length >= 8;
+      return isPhoneInputValueComplete(value);
     }),
 });
 
-// Email schema
+// Email schema (required, trimmed; whitespace-only is invalid)
 export const emailSchema = yup.object().shape({
   email: yup
     .string()
+    .transform((v) => (typeof v === 'string' ? v.trim() : ''))
     .required(t('emailRequired'))
-    .email(t('emailInvalid'))
-    .max(100, t('emailMax')),
+    .max(100, t('emailMax'))
+    .email(t('emailInvalid')),
 });
+
+/**
+ * Client form: email is optional; if the user types anything, it must be a valid email.
+ * Use translated messages from the screen (e.g. clients.* / common.validation.*).
+ */
+export const createClientOptionalEmailSchema = (
+  getInvalidMessage: () => string,
+  getMaxMessage: () => string = t('emailMax')
+) =>
+  yup.object().shape({
+    email: yup
+      .string()
+      .transform((v) => (typeof v === 'string' ? v.trim() : ''))
+      .max(100, getMaxMessage)
+      .test('email-if-present', getInvalidMessage, (v) =>
+        isValidEmailWhenPresent(v ?? '')
+      ),
+  });
 
 // Code schema
 export const codeSchema = yup.object().shape({
@@ -289,31 +348,27 @@ export const onboardingSchema = yup.object().shape({
   // Email é obrigatório (identificador primário)
   email: yup
     .string()
+    .transform((v) => (typeof v === 'string' ? v.trim() : ''))
     .required(t('emailRequired'))
-    .email(t('emailInvalid'))
-    .max(100, t('emailMax')),
+    .max(100, t('emailMax'))
+    .email(t('emailInvalid')),
 
   // Documento é opcional (informação de identificação)
   document: yup.string().optional(),
   documentType: yup.string().optional(),
 
-  name: yup
-    .string()
-    .required(t('nameRequired'))
-    .min(3, t('nameMin'))
-    .max(100, t('nameMax'))
-    .matches(/^[a-zA-ZÀ-ÿ\s]+$/, t('nameLettersOnly')),
+  name: personFullNameField,
   phone: yup
     .object({
-      country: yup.string().nullable(),
-      countryCode: yup.string().required(),
-      phoneNumber: yup.string().required(),
-      formattedPhoneNumber: yup.string().required(),
+      country: yup.string().nullable().optional(),
+      countryCode: yup.string().optional(),
+      phoneNumber: yup.string().required(t('phoneRequired')),
+      formattedPhoneNumber: yup.string().optional(),
     })
     .nullable()
     .required(t('phoneRequired'))
-    .test('phone-valid', t('phoneInvalid'), (value) => {
+    .test('phone-complete', t('phoneIncomplete'), (value) => {
       if (!value) return false;
-      return !!value.phoneNumber && value.phoneNumber.length >= 8;
+      return isPhoneInputValueComplete(value);
     }),
 });

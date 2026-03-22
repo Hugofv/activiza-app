@@ -4,10 +4,8 @@ import { Image as ExpoImage } from 'expo-image';
 
 import { useTranslation } from 'react-i18next';
 
-import { Icon } from '@/components/ui/Icon';
-import { Typography } from '@/components/ui/Typography';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { TFunction } from 'i18next';
+import { Select } from '../ui/Select';
 
 interface HeaderProps {
   profileImageUri?: string;
@@ -15,14 +13,19 @@ interface HeaderProps {
   onMonthPress?: () => void;
 }
 
+const MONTH_OPTIONS = (t: TFunction<"translation", undefined>) => [
+  {
+    value: 'thisMonth',
+    label: t('home.thisMonth'),
+  },
+]
+
 export function Header({
   profileImageUri = 'https://i.pravatar.cc/150?img=12',
   onProfilePress,
   onMonthPress,
 }: HeaderProps) {
   const { t } = useTranslation();
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
 
   return (
     <View style={styles.header}>
@@ -36,22 +39,16 @@ export function Header({
           contentFit="cover"
         />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.monthSelector, { backgroundColor: '#F3F7F5' }]}
-        onPress={onMonthPress}
-      >
-        <Typography
-          variant="body2"
-          style={{ color: colors.text }}
-        >
-          {t('home.thisMonth')}
-        </Typography>
-        <Icon
-          name="chevron-down"
-          size={16}
-          color="text"
+
+      <View>
+        <Select
+          variant="filled"
+          options={MONTH_OPTIONS(t)}
+          value={null}
+          onValueChange={(value) => onMonthPress?.()}
         />
-      </TouchableOpacity>
+      </View>
+
     </View>
   );
 }

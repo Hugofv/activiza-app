@@ -18,6 +18,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { useEditClientStore } from '@/lib/stores/editClientStore';
+import { isPhoneInputValueComplete } from '@/lib/utils/phoneValidation';
 
 import { useNewClientForm } from './_context';
 
@@ -60,11 +61,24 @@ export default function WhatsAppScreen() {
 
   const whatsappSchema = yup.object().shape({
     whatsapp: yup
-      .object()
-      .shape({
+      .object({
+        country: yup.string().nullable().optional(),
+        countryCode: yup.string().optional(),
         phoneNumber: yup.string().required(t('clients.whatsappRequired')),
+        formattedPhoneNumber: yup.string().optional(),
       })
-      .required(t('clients.whatsappRequired')),
+      .required(t('clients.whatsappRequired'))
+      .test('whatsapp-complete', function (value) {
+        if (!value) {
+          return this.createError({ message: t('clients.whatsappRequired') });
+        }
+        if (!isPhoneInputValueComplete(value)) {
+          return this.createError({
+            message: t('common.validation.phoneIncomplete'),
+          });
+        }
+        return true;
+      }),
   });
 
   const {

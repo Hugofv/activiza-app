@@ -1,6 +1,11 @@
 import * as React from 'react';
 
-import { StyleSheet, View, type ViewStyle } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  type ViewProps,
+  type ViewStyle,
+} from 'react-native';
 
 import { type VariantProps, cva } from 'class-variance-authority';
 
@@ -29,7 +34,9 @@ const badgeVariants = cva('', {
   },
 });
 
-export interface BadgeProps extends VariantProps<typeof badgeVariants> {
+export interface BadgeProps
+  extends VariantProps<typeof badgeVariants>,
+    Pick<ViewProps, 'accessibilityLabel' | 'accessible'> {
   /** Icon name to display */
   icon?: IconName;
   /** Text or value to display */
@@ -80,6 +87,8 @@ export const Badge = React.forwardRef<View, BadgeProps>(
       iconSize,
       style,
       className,
+      accessibilityLabel,
+      accessible,
       ...props
     },
     ref
@@ -130,6 +139,8 @@ export const Badge = React.forwardRef<View, BadgeProps>(
           style,
         ]}
         className={cn(badgeVariants({ size, shape }), className)}
+        accessibilityLabel={accessibilityLabel}
+        accessible={accessible}
         {...props}
       >
         {icon && <Icon

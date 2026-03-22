@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
@@ -8,8 +8,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as yup from 'yup';
-
 import { ThemedView } from '@/components/ThemedView';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
@@ -18,6 +16,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { useEditClientStore } from '@/lib/stores/editClientStore';
+import { createClientOptionalEmailSchema } from '@/lib/validations/onboarding';
 
 import { useNewClientForm } from './_context';
 
@@ -41,14 +40,19 @@ export default function EmailScreen() {
 
   const initialEmail = isEditMode ? (draft.email ?? '') : formData.email || '';
 
-  const emailSchema = yup
-    .object<EmailFormData>()
-    .shape({ email: yup.string().email(t('clients.emailInvalid')).optional() });
+  const emailSchema = useMemo(
+    () =>
+      createClientOptionalEmailSchema(
+        () => t('clients.emailInvalid'),
+        () => t('common.validation.emailMax')
+      ),
+    [t]
+  );
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<EmailFormData>({
     resolver: yupResolver(emailSchema) as any,
     defaultValues: { email: initialEmail },
@@ -123,6 +127,7 @@ export default function EmailScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             autoFocus
+            maxLength={100}
           />
         </ThemedView>
 
@@ -140,7 +145,7 @@ export default function EmailScreen() {
             iconSize={32}
             iconColor={colors.primaryForeground}
             onPress={handleSubmit(onSubmit)}
-            disabled={isSubmitting}
+            disabled={!isValid || isSubmitting}
             loading={isSubmitting}
           />
         </View>

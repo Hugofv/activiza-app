@@ -20,7 +20,7 @@ import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import { getTranslatedError } from '@/lib/utils/errorTranslator';
-import { nameSchema } from '@/lib/validations/onboarding';
+import { personFullNameSchema } from '@/lib/validations/onboarding';
 
 interface NameFormData {
   name: string;
@@ -42,7 +42,7 @@ const NameScreen = () => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<NameFormData>({
-    resolver: yupResolver(nameSchema),
+    resolver: yupResolver(personFullNameSchema),
     defaultValues: { name: formData.name || '' },
     mode: 'onChange',
   });
@@ -103,7 +103,7 @@ const NameScreen = () => {
               placeholder={t('onboarding.namePlaceholder')}
               placeholderTextColor={colors.icon}
               keyboardType="default"
-              maxLength={100}
+              maxLength={120}
               autoFocus
             />
           </ThemedView>
