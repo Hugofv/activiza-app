@@ -94,6 +94,8 @@ export default {
       'Password must be at least 8 characters long, including uppercase, lowercase, numbers and special characters',
     MISSING_REQUIRED_FIELDS: 'Missing required fields: {{missingFields}}',
     CLIENT_NOT_FOUND: 'Client not found',
+    CLIENT_DOCUMENT_ALREADY_EXISTS:
+      'A client with this document already exists in your account.',
     NOT_FOUND: 'Resource not found',
     UNAUTHORIZED: 'You need to be authenticated to access this resource',
     FORBIDDEN: 'You do not have permission to access this resource',

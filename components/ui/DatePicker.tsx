@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Control, Controller, FieldPath } from 'react-hook-form';
@@ -326,6 +326,13 @@ function DatePickerInner({
             minimumDate={minimumDate}
             maximumDate={maximumDate}
             locale={locale}
+            {...(Platform.OS === 'ios'
+              ? {
+                  // Match sheet + app theme; otherwise wheel labels can be invisible (e.g. white on white).
+                  themeVariant: colorScheme === 'dark' ? 'dark' : 'light',
+                  textColor: colors.text,
+                }
+              : {})}
           />
           <Button
             variant="primary"

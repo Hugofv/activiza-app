@@ -6,6 +6,29 @@ import i18n from '@/translation';
 
 import { ApiError } from '../types/apiTypes';
 
+/** Matches API copy and minor wording changes (e.g. "this account" vs "your account"). */
+const DUPLICATE_CLIENT_DOCUMENT_SNIPPET = 'document already exists';
+
+function getApiErrorDetailTexts(error: ApiError | Error): string {
+  const parts: string[] = [];
+  if ('message' in error && typeof error.message === 'string') {
+    parts.push(error.message);
+  }
+  if ('details' in error && error.details && typeof error.details === 'object') {
+    const nested = (error.details as { error?: { message?: string } }).error
+      ?.message;
+    if (typeof nested === 'string') {
+      parts.push(nested);
+    }
+  }
+  return parts.join(' ').toLowerCase();
+}
+
+function isDuplicateClientDocumentError(error: ApiError | Error): boolean {
+  const haystack = getApiErrorDetailTexts(error);
+  return haystack.includes(DUPLICATE_CLIENT_DOCUMENT_SNIPPET);
+}
+
 /**
  * Get translated error message from API error code
  * @param error - API error object with code
@@ -26,6 +49,11 @@ export function getTranslatedError(
     errorCode = 'UNKNOWN_ERROR';
   } else {
     errorCode = 'UNKNOWN_ERROR';
+  }
+
+  // API often returns INTERNAL_ERROR while the real reason is in message / details.error.message
+  if (isDuplicateClientDocumentError(error)) {
+    return i18n.t('common.errors.CLIENT_DOCUMENT_ALREADY_EXISTS');
   }
 
   // Get translation key

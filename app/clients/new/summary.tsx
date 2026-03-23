@@ -25,7 +25,9 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { useToast } from '@/lib/hooks/useToast';
+import type { ApiError } from '@/lib/types/apiTypes';
 import { createClient } from '@/lib/services/clientService';
+import { getTranslatedError } from '@/lib/utils/errorTranslator';
 import { getAllDocumentTypes } from '@/lib/services/documentService';
 
 import { useNewClientForm } from './_context';
@@ -82,8 +84,12 @@ export default function SummaryScreen() {
       showSuccess(t('clients.successTitle'), t('clients.successMessage'));
       resetFormData();
       router.replace('/clients');
-    } catch {
-      showError(t('clients.errorTitle'), t('clients.errorMessage'));
+    } catch (error: unknown) {
+      const message = getTranslatedError(
+        error as ApiError,
+        t('clients.errorMessage')
+      );
+      showError(t('clients.errorTitle'), message);
     } finally {
       setIsSubmitting(false);
     }

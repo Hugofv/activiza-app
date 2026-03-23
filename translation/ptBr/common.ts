@@ -97,6 +97,8 @@ export default {
       'A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais',
     MISSING_REQUIRED_FIELDS: 'Campos obrigatórios faltando: {{missingFields}}',
     CLIENT_NOT_FOUND: 'Cliente não encontrado',
+    CLIENT_DOCUMENT_ALREADY_EXISTS:
+      'Já existe um cliente com este documento nesta conta.',
     NOT_FOUND: 'Recurso não encontrado',
     UNAUTHORIZED: 'Você precisa estar autenticado para acessar este recurso',
     FORBIDDEN: 'Você não tem permissão para acessar este recurso',
