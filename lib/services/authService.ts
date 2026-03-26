@@ -87,8 +87,9 @@ export async function register(
     // Update query client cache with user data
     queryClient.setQueryData<User>(['auth', 'user'], user);
 
-    // Invalidate token validation query to ensure auth guard detects authentication immediately
-    queryClient.invalidateQueries({ queryKey: ['auth', 'token-valid'] });
+    // Refresh token-valid immediately so isAuthenticated is true before any navigation
+    // (avoids home/profile guards firing redirectToLogin while refetch is still pending)
+    await queryClient.refetchQueries({ queryKey: ['auth', 'token-valid'] });
 
     return response.data;
   } catch (error: any) {
@@ -142,8 +143,8 @@ export async function login(
     // Update query client cache with user data
     queryClient.setQueryData<User>(['auth', 'user'], user);
 
-    // Invalidate token validation query to ensure auth guard detects authentication immediately
-    queryClient.invalidateQueries({ queryKey: ['auth', 'token-valid'] });
+    // Refresh token-valid immediately so isAuthenticated is true before any navigation
+    await queryClient.refetchQueries({ queryKey: ['auth', 'token-valid'] });
 
     return response.data;
   } catch (error: any) {

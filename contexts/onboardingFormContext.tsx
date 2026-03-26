@@ -403,7 +403,8 @@ export const OnboardingFormProvider: React.FC<OnboardingFormProviderProps> = ({
     const status =
       clientStatus === 'PENDING' ? undefined : clientStatus || undefined;
     return isOnboardingCompleted(
-      status as 'IN_PROGRESS' | 'COMPLETED' | undefined
+      status as 'IN_PROGRESS' | 'COMPLETED' | undefined,
+      currentStep ?? undefined
     );
   };
 

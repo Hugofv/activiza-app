@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
+import { OnboardingBackButton } from '@/components/onboarding/OnboardingBackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { Progress } from '@/components/ui/Progress';
@@ -83,7 +83,7 @@ const NameScreen = () => {
             </View>
 
             {/* Back Button */}
-            <BackButton />
+            <OnboardingBackButton />
 
             {/* Title */}
             <Typography variant="h4">{t('onboarding.name')}</Typography>

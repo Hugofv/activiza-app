@@ -7,7 +7,10 @@ import {
   isValidCNPJDigits,
   isValidCPFDigits,
 } from '../utils/brDocumentValidation';
-import { isValidEmailWhenPresent } from '../utils/emailValidation';
+import {
+  isValidEmailString,
+  isValidEmailWhenPresent,
+} from '../utils/emailValidation';
 import { isPhoneInputValueComplete } from '../utils/phoneValidation';
 
 // Helper function to get translated error message
@@ -236,7 +239,7 @@ export const emailSchema = yup.object().shape({
     .transform((v) => (typeof v === 'string' ? v.trim() : ''))
     .required(t('emailRequired'))
     .max(100, t('emailMax'))
-    .email(t('emailInvalid')),
+    .test('email-format', t('emailInvalid'), (v) => isValidEmailString(v ?? '')),
 });
 
 /**
@@ -351,7 +354,7 @@ export const onboardingSchema = yup.object().shape({
     .transform((v) => (typeof v === 'string' ? v.trim() : ''))
     .required(t('emailRequired'))
     .max(100, t('emailMax'))
-    .email(t('emailInvalid')),
+    .test('email-format', t('emailInvalid'), (v) => isValidEmailString(v ?? '')),
 
   // Documento é opcional (informação de identificação)
   document: yup.string().optional(),

@@ -28,6 +28,7 @@ export function Toast() {
           {text1 && (
             <Typography
               variant="body2"
+              color="lightWarning"
               style={styles.text}
             >
               {text1}
@@ -36,6 +37,7 @@ export function Toast() {
           {text2 && (
             <Typography
               variant="caption"
+              color="lightWarning"
               style={[styles.text, styles.subText]}
             >
               {text2}
@@ -55,12 +57,13 @@ export function Toast() {
         <Icon
           name="close-circle"
           size={24}
-          color="muted"
+          color="lightWarning"
         />
         <View style={styles.textContainer}>
           {text1 && (
             <Typography
               variant="body2"
+              color="lightWarning"
               style={styles.text}
             >
               {text1}
@@ -69,6 +72,7 @@ export function Toast() {
           {text2 && (
             <Typography
               variant="caption"
+              color="lightWarning"
               style={[styles.text, styles.subText]}
             >
               {text2}
@@ -90,6 +94,7 @@ export function Toast() {
           {text1 && (
             <Typography
               variant="body2"
+              color="lightWarning"
               style={styles.text}
             >
               {text1}
@@ -98,6 +103,7 @@ export function Toast() {
           {text2 && (
             <Typography
               variant="caption"
+              color="lightWarning"
               style={[styles.text, styles.subText]}
             >
               {text2}
@@ -179,7 +185,6 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   text: {
-    color: 'text',
     fontFamily: 'Inter_500Medium',
   },
   subText: {

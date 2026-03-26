@@ -4,10 +4,6 @@ import { StyleSheet, View } from 'react-native';
 
 import { router, useLocalSearchParams } from 'expo-router';
 
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedView } from '@/components/ThemedView';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
@@ -17,6 +13,10 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { useEditClientStore } from '@/lib/stores/editClientStore';
 import { createClientOptionalEmailSchema } from '@/lib/validations/onboarding';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useNewClientForm } from './_context';
 
@@ -127,7 +127,7 @@ export default function EmailScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             autoFocus
-            maxLength={100}
+            maxLength={254}
           />
         </ThemedView>
 

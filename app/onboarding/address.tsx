@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useOnboardingBackHandler } from '@/components/onboarding/OnboardingBackButton';
 import { ThemedView } from '@/components/ThemedView';
 import { AddressFlow } from '@/components/address';
 import { Colors } from '@/constants/theme';
@@ -22,9 +23,7 @@ const AddressScreen = () => {
   const countryCode =
     ((formData.address as any)?.countryCode as CountryCode) || null;
 
-  const handleBack = () => {
-    router.back();
-  };
+  const handleBack = useOnboardingBackHandler();
 
   // Handle country selection (stage 1)
   // Save locally only, no API call until complete

@@ -237,9 +237,20 @@ export function isStepCompleted(
  * Check if onboarding is fully completed
  */
 export function isOnboardingCompleted(
-  clientStatus?: 'IN_PROGRESS' | 'COMPLETED'
+  clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING',
+  onboardingStep?: string
 ): boolean {
-  return clientStatus === 'COMPLETED';
+  if (clientStatus === 'COMPLETED') return true;
+  const step = onboardingStep?.trim().toLowerCase();
+  if (
+    step === 'completed' ||
+    step === 'done' ||
+    step === 'finished' ||
+    step === 'complete'
+  ) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -274,4 +285,35 @@ export function getLastCompletedStep(
 export function isLastStep(step: OnboardingStepKey): boolean {
   const index = getStepIndex(step);
   return index === ONBOARDING_STEPS.length - 1;
+}
+
+/**
+ * Routes not listed in ONBOARDING_STEPS but used in the flow (e.g. success screens).
+ */
+const ONBOARDING_BACK_PREVIOUS_BY_PATH: Record<string, string> = {
+  '/onboarding/confirmEmail': '/onboarding/codeEmail',
+  '/onboarding/confirmContact': '/onboarding/codeContact',
+};
+
+/**
+ * When the navigation stack has no history (e.g. after `router.replace` on resume),
+ * returns the previous step URL for the current onboarding pathname, or null if unknown.
+ * Email capture lives under `/auth/email`, not `/onboarding/email`.
+ */
+export function getOnboardingPreviousHref(pathname: string): string | null {
+  const normalized = (pathname || '').replace(/\/$/, '') || pathname;
+  const extra = ONBOARDING_BACK_PREVIOUS_BY_PATH[normalized];
+  if (extra) return extra;
+
+  const step = getStepByRoute(normalized);
+  if (!step) return null;
+
+  const idx = ONBOARDING_STEPS.findIndex((s) => s.key === step.key);
+  if (idx <= 0) return null;
+
+  const prev = ONBOARDING_STEPS[idx - 1];
+  if (prev.key === 'email') {
+    return '/auth/email';
+  }
+  return prev.route;
 }

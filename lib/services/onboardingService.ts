@@ -141,13 +141,26 @@ export async function getOnboardingData(): Promise<
 > {
   try {
     const response = await apiClient.get<
-      Partial<OnboardingFormData> & {
-        onboardingStep?: string;
-        clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING';
-      }
+      | Partial<OnboardingFormData> & {
+          onboardingStep?: string;
+          clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING';
+        }
+      | { data?: Partial<OnboardingFormData> & { onboardingStep?: string; clientStatus?: string } }
     >(ENDPOINTS.ONBOARDING.GET);
 
-    return response.data;
+    const raw = response.data as Record<string, unknown> | undefined;
+    if (raw && typeof raw === 'object' && 'data' in raw && raw.data != null) {
+      return raw.data as Partial<OnboardingFormData> & {
+        onboardingStep?: string;
+        clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING';
+      };
+    }
+    return raw as
+      | (Partial<OnboardingFormData> & {
+          onboardingStep?: string;
+          clientStatus?: 'IN_PROGRESS' | 'COMPLETED' | 'PENDING';
+        })
+      | undefined;
   } catch (error: any) {
     console.log('Get onboarding data error:', error);
   }

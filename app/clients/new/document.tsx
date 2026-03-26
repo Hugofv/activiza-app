@@ -253,6 +253,7 @@ export default function DocumentScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
           <ThemedView style={styles.content}>
             {/* Title */}
@@ -346,9 +347,11 @@ export default function DocumentScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },
-  scrollContent: { flexGrow: 1 },
+  scrollContent: {
+    flexGrow: 0,
+    paddingBottom: 16,
+  },
   content: {
-    flex: 1,
     paddingTop: 0,
     paddingHorizontal: 24,
     gap: 20,
@@ -373,7 +376,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   documentContainer: {
-    flex: 1,
     gap: 30,
   },
 });

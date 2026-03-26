@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
+import { OnboardingBackButton } from '@/components/onboarding/OnboardingBackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { ListCheck } from '@/components/ui/ListCheck';
 import { Progress } from '@/components/ui/Progress';
@@ -114,7 +114,7 @@ const BusinessDurationScreen = () => {
               </View>
 
               {/* Back Button */}
-              <BackButton />
+              <OnboardingBackButton />
 
               {/* Title */}
               <Typography

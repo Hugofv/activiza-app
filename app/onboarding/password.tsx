@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
+import { OnboardingBackButton } from '@/components/onboarding/OnboardingBackButton';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
@@ -177,7 +177,7 @@ const PasswordScreen = () => {
             </View>
 
             {/* Back Button */}
-            <BackButton />
+            <OnboardingBackButton />
 
             {/* Title */}
             <Typography variant="h4">{t('onboarding.password')}</Typography>

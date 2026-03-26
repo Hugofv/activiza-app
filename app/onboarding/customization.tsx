@@ -18,7 +18,7 @@ import type { InferType } from 'yup';
 import * as yup from 'yup';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
+import { OnboardingBackButton } from '@/components/onboarding/OnboardingBackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { PhoneInput } from '@/components/ui/PhoneInput';
@@ -184,7 +184,7 @@ const CustomizationScreen = () => {
               </View>
 
               {/* Back Button */}
-              <BackButton />
+              <OnboardingBackButton />
 
               {/* Title */}
               <Typography

@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
+import { OnboardingBackButton } from '@/components/onboarding/OnboardingBackButton';
 import { CodeInput } from '@/components/ui/CodeInput';
 import { IconButton } from '@/components/ui/IconButton';
 import { Progress } from '@/components/ui/Progress';
@@ -182,7 +182,7 @@ const CodeContactScreen = () => {
             </View>
 
             {/* Back Button */}
-            <BackButton />
+            <OnboardingBackButton />
 
             {/* Title */}
             <Typography

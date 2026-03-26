@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
+import { OnboardingBackButton } from '@/components/onboarding/OnboardingBackButton';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Typography } from '@/components/ui/Typography';
@@ -35,7 +35,7 @@ const ConfirmEmailScreen = () => {
         <ThemedView style={styles.content}>
           {/* Back Button */}
           <View style={styles.backButtonContainer}>
-            <BackButton />
+            <OnboardingBackButton />
           </View>
 
           {/* Checkmark Icon and Text */}

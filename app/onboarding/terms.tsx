@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
+import { OnboardingBackButton } from '@/components/onboarding/OnboardingBackButton';
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import {
@@ -98,7 +98,7 @@ const TermsScreen = () => {
             </View>
 
             {/* Back Button */}
-            <BackButton />
+            <OnboardingBackButton />
 
             {/* Title */}
             <Typography variant="h4">{t('onboarding.termsTitle')}</Typography>

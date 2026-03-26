@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
@@ -21,6 +21,8 @@ export function ReportCard({ title, subtitle, description, loading, onPress }: R
     {
       borderColor: colors.border,
       borderWidth: 1,
+      // Required for Android elevation — without it, shadow renders as a dark inset halo
+      backgroundColor: colors.background,
     },
   ];
 
@@ -81,16 +83,21 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     height: 130,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 3,
     flexDirection: 'column',
     justifyContent: 'space-between',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+      },
+      android: {
+        // Keep modest; iOS shadow props are not used on Android
+        elevation: 3,
+      },
+      default: {},
+    }),
   },
   titleContainer: {
     flexDirection: 'column',

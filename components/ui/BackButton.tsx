@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { PressableProps } from 'react-native';
 
+import { useNavigation } from '@react-navigation/native';
 import { type Href, router } from 'expo-router';
 
 import { IconColor } from './Icon';
@@ -20,7 +21,8 @@ export interface BackButtonProps extends Omit<
 /**
  * Standardized back button component with consistent styling
  * Uses cylinder shape, medium size, and secondary variant by default
- * Default behavior: router.back() if onPress is not provided
+ * Default: nearest navigator goBack(), then root router.back(), then fallbackRoute
+ * (root `canGoBack()` is often false on nested stacks even when the inner stack has history)
  */
 export const BackButton = React.forwardRef<
   React.ElementRef<typeof IconButton>,
@@ -36,16 +38,22 @@ export const BackButton = React.forwardRef<
     },
     ref
   ) => {
+    const navigation = useNavigation();
+
     const handlePress = () => {
       if (onPress) {
         onPress();
-      } else {
-        if (router.canGoBack()) {
-          router.back();
-        } else {
-          router.replace(fallbackRoute);
-        }
+        return;
       }
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+        return;
+      }
+      if (router.canGoBack()) {
+        router.back();
+        return;
+      }
+      router.replace(fallbackRoute);
     };
 
     return (

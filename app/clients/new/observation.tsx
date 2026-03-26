@@ -97,6 +97,7 @@ export default function ObservationScreen() {
             onChangeText={setObservation}
             multiline
             numberOfLines={6}
+            maxLength={500}
             textAlignVertical="top"
           />
 

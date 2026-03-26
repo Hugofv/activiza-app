@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { InferType } from 'yup';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
+import { OnboardingBackButton } from '@/components/onboarding/OnboardingBackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { PhoneInput } from '@/components/ui/PhoneInput';
 import { Progress } from '@/components/ui/Progress';
@@ -113,7 +113,7 @@ const ContactScreen = () => {
             </View>
 
             {/* Back Button */}
-            <BackButton />
+            <OnboardingBackButton />
 
             {/* Title */}
             <Typography variant="h4">{t('onboarding.contact')}</Typography>

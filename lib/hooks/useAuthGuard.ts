@@ -98,18 +98,34 @@ export function useAuthGuard() {
         '[AuthGuard] Resolving post-auth route based on onboarding status...'
       );
       const data = await getOnboardingData();
-      const { clientStatus, onboardingStep } = data ?? {};
+      const userFromCache = getCurrentUser() as
+        | { clientStatus?: string; onboardingStep?: string }
+        | undefined;
+
+      const onboardingStep =
+        data?.onboardingStep ?? userFromCache?.onboardingStep;
+
+      const clientStatusRaw =
+        data?.clientStatus ??
+        (userFromCache?.clientStatus as
+          | 'IN_PROGRESS'
+          | 'COMPLETED'
+          | 'PENDING'
+          | undefined);
 
       // Normalize status for completion helper (PENDING treated as not completed)
       const normalizedStatus =
-        clientStatus === 'PENDING'
+        clientStatusRaw === 'PENDING'
           ? undefined
-          : (clientStatus as 'IN_PROGRESS' | 'COMPLETED' | undefined);
+          : (clientStatusRaw as 'IN_PROGRESS' | 'COMPLETED' | undefined);
 
-      const completed = isOnboardingCompleted(normalizedStatus);
+      const completed = isOnboardingCompleted(
+        normalizedStatus,
+        onboardingStep
+      );
 
       console.log('[AuthGuard] Onboarding status:', {
-        clientStatus,
+        clientStatus: clientStatusRaw,
         onboardingStep,
         completed,
       });

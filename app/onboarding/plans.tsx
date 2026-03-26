@@ -19,7 +19,7 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedView } from '@/components/ThemedView';
-import { BackButton } from '@/components/ui/BackButton';
+import { OnboardingBackButton } from '@/components/onboarding/OnboardingBackButton';
 import { Button } from '@/components/ui/Button';
 import { Progress } from '@/components/ui/Progress';
 import { Typography } from '@/components/ui/Typography';
@@ -91,7 +91,7 @@ const PlansScreen = () => {
               </View>
 
               {/* Back Button */}
-              <BackButton />
+              <OnboardingBackButton />
 
               {/* Title */}
               <Typography

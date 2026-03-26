@@ -20,7 +20,7 @@ import {
   Autocomplete,
   type AutocompleteOption,
 } from '@/components/ui/Autocomplete';
-import { BackButton } from '@/components/ui/BackButton';
+import { OnboardingBackButton } from '@/components/onboarding/OnboardingBackButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Input } from '@/components/ui/Input';
 import { Progress } from '@/components/ui/Progress';
@@ -28,6 +28,7 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useOnboardingForm } from '@/contexts/onboardingFormContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { useToast } from '@/lib/hooks/useToast';
 import {
   type DocumentType,
@@ -58,6 +59,7 @@ const DocumentScreen = () => {
   const { formData, updateFormData } = useOnboardingForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showError } = useToast();
+  const keyboardHeight = useKeyboardHeight();
 
   // Memoize country detection (only runs once)
   const detectedCountry = useMemo(() => detectCountryFromLocale(), []);
@@ -244,8 +246,9 @@ const DocumentScreen = () => {
     >
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        enabled={Platform.OS === 'ios'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <ThemedView style={styles.container}>
           <ScrollView
@@ -253,6 +256,7 @@ const DocumentScreen = () => {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
           >
             <ThemedView style={styles.content}>
               {/* Progress Bar */}
@@ -261,7 +265,7 @@ const DocumentScreen = () => {
               </View>
 
               {/* Back Button */}
-              <BackButton />
+              <OnboardingBackButton />
 
               <Typography variant="h4">{t('onboarding.document')}</Typography>
 
@@ -320,7 +324,12 @@ const DocumentScreen = () => {
           </ScrollView>
 
           {/* Continue Button */}
-          <View style={styles.buttonContainer}>
+          <View
+            style={[
+              styles.buttonContainer,
+              keyboardHeight > 0 && { marginBottom: keyboardHeight },
+            ]}
+          >
             <IconButton
               variant="primary"
               size="md"
@@ -343,13 +352,14 @@ export default DocumentScreen;
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },
-  scrollContent: { flexGrow: 1 },
+  scrollContent: {
+    flexGrow: 0,
+    paddingBottom: 16,
+  },
   content: {
-    flex: 1,
     paddingTop: 18,
     paddingHorizontal: 24,
     gap: 20,
-    paddingBottom: 20,
   },
   progressContainer: { marginBottom: 8 },
   typeSelector: {
@@ -361,12 +371,11 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonContainer: {
-    paddingBottom: 56,
+    paddingBottom: 24,
     paddingHorizontal: 24,
     alignItems: 'flex-end',
   },
   documentContainer: {
-    flex: 1,
     gap: 30,
   },
 });

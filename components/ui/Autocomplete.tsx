@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -10,6 +11,7 @@ import {
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 
 import { Icon } from './Icon';
 import { Typography } from './Typography';
@@ -52,6 +54,7 @@ export function Autocomplete<T = string>({
 }: AutocompleteProps<T>) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const keyboardHeight = useKeyboardHeight();
   const [isOpen, setIsOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
   const inputRef = React.useRef<TextInput>(null);
@@ -93,8 +96,15 @@ export function Autocomplete<T = string>({
     }
   };
 
+  const openUpward = isOpen && keyboardHeight > 0;
+
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        isOpen && (Platform.OS === 'android' ? styles.containerOpenAndroid : styles.containerOpenIos),
+      ]}
+    >
       {label && (
         <Typography
           variant="body2"
@@ -172,6 +182,7 @@ export function Autocomplete<T = string>({
           <View
             style={[
               styles.dropdown,
+              openUpward ? styles.dropdownAbove : styles.dropdownBelow,
               {
                 backgroundColor: colors.background,
                 shadowColor: colors.icon,
@@ -242,6 +253,14 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 1,
   },
+  /** Lift above ScrollView siblings (e.g. advance button) on Android */
+  containerOpenAndroid: {
+    zIndex: 10000,
+    elevation: 24,
+  },
+  containerOpenIos: {
+    zIndex: 100,
+  },
   label: {
     marginBottom: 8,
     fontSize: 14,
@@ -278,20 +297,27 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: 'absolute',
-    top: '100%',
     left: 0,
     right: 0,
     maxHeight: 200,
     borderRadius: 8,
-    marginTop: 4,
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 8,
     zIndex: 1001,
+  },
+  dropdownBelow: {
+    top: '100%',
+    marginTop: 4,
+  },
+  /** When keyboard is open, open upward so list is not trapped between field and keyboard */
+  dropdownAbove: {
+    bottom: '100%',
+    marginBottom: 4,
   },
   backdrop: {
     position: 'absolute',
