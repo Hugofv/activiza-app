@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { BottomSheet } from '@/components/ui/BottomSheet';
+import { DatePicker } from '@/components/ui/DatePicker';
 import { IconButton } from '@/components/ui/IconButton';
 import {
   MoneyInput,
@@ -24,6 +25,18 @@ import {
   registerLoanPayment,
 } from '@/lib/services/operationService';
 
+function startOfTodayLocal(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function endOfTodayLocal(): Date {
+  const d = new Date();
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
 function toCurrencyCode(currency: string): CurrencyCode {
   const u = (currency || 'GBP').toUpperCase();
   if (u === 'BRL' || u === 'USD' || u === 'GBP' || u === 'EUR') return u;
@@ -32,6 +45,7 @@ function toCurrencyCode(currency: string): CurrencyCode {
 
 interface FormValues {
   amount: string;
+  paidAt: Date;
 }
 
 export interface RegisterPaymentBottomSheetProps {
@@ -62,10 +76,11 @@ export function RegisterPaymentBottomSheet({
   const currencyCode = useMemo(() => toCurrencyCode(currency), [currency]);
 
   const { control, reset, watch, setValue, handleSubmit } = useForm<FormValues>({
-    defaultValues: { amount: '' },
+    defaultValues: { amount: '', paidAt: startOfTodayLocal() },
   });
 
   const amountStr = watch('amount');
+  const paidAtValue = watch('paidAt');
   const parsedAmount = useMemo(
     () => parseMoneyValue(amountStr || '', currencyCode),
     [amountStr, currencyCode]
@@ -76,20 +91,26 @@ export function RegisterPaymentBottomSheet({
 
   useEffect(() => {
     if (visible) {
-      reset({ amount: '' });
+      reset({ amount: '', paidAt: startOfTodayLocal() });
     }
   }, [visible, reset]);
 
   const mutation = useMutation({
-    mutationFn: (amount: number) =>
-      registerLoanPayment(operationId, { amount }),
+    mutationFn: (vars: { amount: number; paidAt: Date }) =>
+      registerLoanPayment(operationId, {
+        amount: vars.amount,
+        paidAt: vars.paidAt.toISOString(),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['operations', 'loans'] });
       queryClient.invalidateQueries({
         queryKey: ['operations', 'loan', operationId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['operations', 'loan', operationId, 'payments'],
+      });
       showSuccess(t('operations.paymentRegistered'));
-      reset({ amount: '' });
+      reset({ amount: '', paidAt: startOfTodayLocal() });
       onClose();
     },
     onError: (err: unknown) => {
@@ -97,9 +118,15 @@ export function RegisterPaymentBottomSheet({
     },
   });
 
-  const onSubmit = () => {
-    if (!canSubmit) return;
-    mutation.mutate(parsedAmount);
+  const onSubmit = (data: FormValues) => {
+    const parsed = parseMoneyValue(data.amount || '', currencyCode);
+    const ok =
+      parsed > 0 &&
+      parsed <= amountReceivable + 0.000001 &&
+      data.paidAt instanceof Date &&
+      !Number.isNaN(data.paidAt.getTime());
+    if (!ok) return;
+    mutation.mutate({ amount: parsed, paidAt: data.paidAt });
   };
 
   const applyMinimum = () => {
@@ -123,11 +150,13 @@ export function RegisterPaymentBottomSheet({
 
   const moneyPlaceholder = currencyCode === 'BRL' ? '0,00' : '0.00';
 
+  const maxDate = useMemo(() => endOfTodayLocal(), []);
+
   return (
     <BottomSheet
       visible={visible}
       onClose={onClose}
-      minHeight={360}
+      minHeight={440}
       maxHeightRatio={0.85}
     >
       <View style={styles.sheetInner}>
@@ -204,6 +233,15 @@ export function RegisterPaymentBottomSheet({
           </Pressable>
         </View>
 
+        <DatePicker
+          mode="date"
+          control={control}
+          name="paidAt"
+          label={t('operations.paymentDate')}
+          placeholder={t('operations.today')}
+          maximumDate={maxDate}
+        />
+
         <View style={styles.footerRow}>
           <View style={{ flex: 1 }} />
           <IconButton
@@ -214,7 +252,13 @@ export function RegisterPaymentBottomSheet({
             iconSize={28}
             iconColor={colors.primaryForeground}
             onPress={handleSubmit(onSubmit)}
-            disabled={!canSubmit || mutation.isPending}
+            disabled={
+              !canSubmit ||
+              !paidAtValue ||
+              !(paidAtValue instanceof Date) ||
+              Number.isNaN(paidAtValue.getTime()) ||
+              mutation.isPending
+            }
             loading={mutation.isPending}
           />
         </View>

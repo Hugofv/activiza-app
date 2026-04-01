@@ -92,9 +92,36 @@ export interface UpdateOperationData extends Partial<Omit<CreateOperationData, '
   status?: OperationStatus;
 }
 
-/** Loan payment — amount in major currency units (e.g. GBP → pounds, BRL → reais). */
+/**
+ * Loan payment — POST /api/operations/:id/payments
+ * `amount` in major currency units; `paidAt` ISO 8601 (e.g. from selected date).
+ */
 export interface RegisterLoanPaymentPayload {
   amount: number;
+  paidAt: string;
+  installmentId?: string;
+  method?: string;
+  reference?: string;
+  meta?: Record<string, unknown>;
+  accountId?: number;
+}
+
+/** Row from GET /api/operations/:id/payments (extend if API uses extra fields). */
+export interface LoanPayment {
+  id?: string | number;
+  amount: number;
+  paidAt: string;
+  currency?: string;
+  method?: string;
+  type?: 'FULL' | 'PARTIAL' | string;
+  isFullPayment?: boolean;
+}
+
+export interface OperationPaymentsResponse {
+  results: LoanPayment[];
+  count: number;
+  next?: string | null;
+  previous?: string | null;
 }
 
 // -----------------------------------------------------------------------
@@ -246,8 +273,32 @@ export async function deleteOperation(id: string): Promise<void> {
 }
 
 /**
+ * Payment history for a loan operation.
+ * GET /api/operations/:id/payments?page=&limit=
+ */
+export async function getOperationPayments(
+  operationId: string,
+  params?: { page?: number; limit?: number }
+): Promise<OperationPaymentsResponse> {
+  try {
+    const search = new URLSearchParams();
+    if (params?.page != null) search.append('page', String(params.page));
+    if (params?.limit != null) search.append('limit', String(params.limit));
+    const qs = search.toString();
+    const url = qs
+      ? `${ENDPOINTS.OPERATIONS.PAYMENTS(operationId)}?${qs}`
+      : ENDPOINTS.OPERATIONS.PAYMENTS(operationId);
+    const response = await apiClient.get<OperationPaymentsResponse>(url);
+    return response.data;
+  } catch (error: any) {
+    console.error('Get operation payments error:', error);
+    throw error;
+  }
+}
+
+/**
  * Register a payment against a loan operation.
- * POST /api/operations/:id/payments
+ * POST /api/operations/:id/register-payment
  */
 export async function registerLoanPayment(
   operationId: string,

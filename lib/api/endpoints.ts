@@ -62,9 +62,11 @@ export const ENDPOINTS = {
     CREATE: `${PREFIX}/operations`,
     UPDATE: (id: string) => `${PREFIX}/operations/${id}`,
     DELETE: (id: string) => `${PREFIX}/operations/${id}`,
-    /** POST body: { amount: number } — amount in major currency units (e.g. 1120.5) */
+    /** GET ?page=&limit= — loan payment history */
+    PAYMENTS: (id: string) => `${PREFIX}/operations/${id}/payments`,
+    /** POST — register payment */
     REGISTER_PAYMENT: (id: string) =>
-      `${PREFIX}/operations/${id}/payments`,
+      `${PREFIX}/operations/${id}/register-payment`,
   },
   // Resources (vehicles, properties, rooms)
   RESOURCES: {

@@ -17,7 +17,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { RegisterPaymentBottomSheet } from '@/components/operations/RegisterPaymentBottomSheet';
 import { Avatar } from '@/components/ui/Avatar';
 import { BackButton } from '@/components/ui/BackButton';
-import { BottomSheet } from '@/components/ui/BottomSheet';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
@@ -78,7 +77,6 @@ export default function LoanDetailScreen() {
   const { showInfo } = useToast();
 
   const [paymentSheetOpen, setPaymentSheetOpen] = useState(false);
-  const [historySheetOpen, setHistorySheetOpen] = useState(false);
 
   const {
     data: operation,
@@ -350,7 +348,9 @@ export default function LoanDetailScreen() {
         <View style={styles.actionGrid}>
           <Pressable
             style={[styles.actionTile, { borderColor: colors.border }]}
-            onPress={() => setHistorySheetOpen(true)}
+            onPress={() =>
+              router.push(`/operations/loan/${id}/payments` as any)
+            }
           >
             <Icon
               name="history"
@@ -426,23 +426,6 @@ export default function LoanDetailScreen() {
         amountReceivable={amountReceivable}
         minimumAmount={minimumPayment}
       />
-
-      <BottomSheet
-        visible={historySheetOpen}
-        onClose={() => setHistorySheetOpen(false)}
-        title={t('operations.paymentHistory')}
-        minHeight={280}
-      >
-        <View style={styles.historyBody}>
-          <Typography
-            variant="body2"
-            color="placeholder"
-            style={{ textAlign: 'center' }}
-          >
-            {t('operations.loanHistoryEmpty')}
-          </Typography>
-        </View>
-      </BottomSheet>
     </SafeAreaView>
   );
 }
@@ -523,8 +506,4 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   footerSecondary: { marginTop: 0 },
-  historyBody: {
-    paddingVertical: 24,
-    paddingHorizontal: 8,
-  },
 });
