@@ -92,6 +92,11 @@ export interface UpdateOperationData extends Partial<Omit<CreateOperationData, '
   status?: OperationStatus;
 }
 
+/** Loan payment — amount in major currency units (e.g. GBP → pounds, BRL → reais). */
+export interface RegisterLoanPaymentPayload {
+  amount: number;
+}
+
 // -----------------------------------------------------------------------
 // Helpers — convert form data to API payload
 // -----------------------------------------------------------------------
@@ -117,6 +122,25 @@ export function parseInterest(formatted: string): number {
   const cleaned = formatted.replace(',', '.');
   const num = parseFloat(cleaned);
   return Number.isNaN(num) ? 0 : num;
+}
+
+const CURRENCY_SYMBOL: Record<string, string> = {
+  BRL: 'R$',
+  USD: '$',
+  GBP: '£',
+  EUR: '€',
+};
+
+/**
+ * Display amount with symbol suffix (aligned with loan list cards).
+ */
+export function formatOperationCurrency(value: number, currency: string): string {
+  const symbol = CURRENCY_SYMBOL[currency?.toUpperCase()] ?? '£';
+  const formatted = new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(value);
+  return `${formatted}${symbol}`;
 }
 
 // -----------------------------------------------------------------------
@@ -217,6 +241,25 @@ export async function deleteOperation(id: string): Promise<void> {
     await apiClient.delete(ENDPOINTS.OPERATIONS.DELETE(id));
   } catch (error: any) {
     console.error('Delete operation error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Register a payment against a loan operation.
+ * POST /api/operations/:id/payments
+ */
+export async function registerLoanPayment(
+  operationId: string,
+  payload: RegisterLoanPaymentPayload
+): Promise<void> {
+  try {
+    await apiClient.post(
+      ENDPOINTS.OPERATIONS.REGISTER_PAYMENT(operationId),
+      payload
+    );
+  } catch (error: any) {
+    console.error('Register loan payment error:', error);
     throw error;
   }
 }

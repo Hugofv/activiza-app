@@ -62,13 +62,11 @@ export default function LoanListScreen() {
     refetchOnWindowFocus: true,
   });
 
-  console.log('operationsData', operationsData);
-
   const operations = operationsData?.results ?? [];
   const count = operationsData?.count ?? 0;
 
   const handleLoanPress = (operation: Operation) => {
-    // Future: navigate to loan detail
+    router.push(`/operations/loan/${operation.id}` as any);
   };
 
   return (

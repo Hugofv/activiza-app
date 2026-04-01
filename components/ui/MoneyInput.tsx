@@ -62,6 +62,19 @@ function formatMoney(rawDigits: string, currency: CurrencyCode): string {
 }
 
 /**
+ * Converts a decimal amount (e.g. 1120.5) to the masked string used by MoneyInput.
+ */
+export function amountToMoneyInputString(
+  amount: number,
+  currency: CurrencyCode
+): string {
+  if (!Number.isFinite(amount) || amount < 0) return '';
+  const cents = Math.round(amount * 100);
+  const rawDigits = String(cents);
+  return formatMoney(rawDigits, currency);
+}
+
+/**
  * Extracts the numeric value (as a float) from a formatted money string.
  */
 export function parseMoneyValue(
