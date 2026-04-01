@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LoanStatusBadge } from '@/components/operations/LoanStatusBadge';
 import { RegisterPaymentBottomSheet } from '@/components/operations/RegisterPaymentBottomSheet';
 import { Avatar } from '@/components/ui/Avatar';
 import { BackButton } from '@/components/ui/BackButton';
@@ -25,7 +26,6 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/lib/hooks/useToast';
 import {
   type FrequencyType,
-  type Operation,
   formatOperationCurrency,
   getOperationById,
 } from '@/lib/services/operationService';
@@ -36,37 +36,6 @@ const FREQUENCY_KEY: Record<FrequencyType, string> = {
   BIWEEKLY: 'operations.biweeklyContract',
   MONTHLY: 'operations.monthlyContract',
 };
-
-function getDetailStatusBadge(
-  operation: Operation,
-  t: (k: string) => string
-): { label: string; bg: string; fg: string } {
-  if (operation.status === 'COMPLETED') {
-    return {
-      label: t('operations.closed'),
-      bg: '#DCFCE7',
-      fg: '#166534',
-    };
-  }
-
-  const due = new Date(operation.dueDate);
-  const overdue =
-    operation.status === 'OVERDUE' || (due < new Date() && operation.status === 'ACTIVE');
-
-  if (overdue) {
-    return {
-      label: formatDate(operation.dueDate, 'dd/MM/yyyy'),
-      bg: '#FEE2E2',
-      fg: '#991B1B',
-    };
-  }
-
-  return {
-    label: t('operations.inProgress'),
-    bg: '#DBEAFE',
-    fg: '#1E40AF',
-  };
-}
 
 export default function LoanDetailScreen() {
   const { id: idParam } = useLocalSearchParams<{ id: string }>();
@@ -111,11 +80,6 @@ export default function LoanDetailScreen() {
     return t(
       FREQUENCY_KEY[operation.frequency] ?? 'operations.monthlyContract'
     );
-  }, [operation, t]);
-
-  const statusBadge = useMemo(() => {
-    if (!operation) return null;
-    return getDetailStatusBadge(operation, t);
   }, [operation, t]);
 
   const clientName = operation?.client?.name ?? (operation ? `#${operation.clientId}` : '');
@@ -198,16 +162,7 @@ export default function LoanDetailScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {statusBadge && (
-          <View style={[styles.statusPill, { backgroundColor: statusBadge.bg }]}>
-            <Typography
-              variant="caption"
-              style={{ color: statusBadge.fg }}
-            >
-              {statusBadge.label}
-            </Typography>
-          </View>
-        )}
+        <LoanStatusBadge operation={operation} />
 
         <View
           style={[
@@ -451,12 +406,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
     gap: 16,
-  },
-  statusPill: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
   },
   card: {
     borderWidth: 1,
