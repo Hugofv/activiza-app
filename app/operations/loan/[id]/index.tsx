@@ -162,14 +162,14 @@ export default function LoanDetailScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <LoanStatusBadge operation={operation} />
-
         <View
           style={[
             styles.card,
             { borderColor: colors.border, backgroundColor: colors.background },
           ]}
         >
+          <LoanStatusBadge operation={operation} />
+
           <Typography
             variant="h5"
             style={styles.contractHeading}

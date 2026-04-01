@@ -9,12 +9,8 @@ import { Icon } from '@/components/ui/Icon';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import type {
-  FrequencyType,
-  Operation,
-  OperationStatus,
-} from '@/lib/services/operationService';
-import { formatDate } from '@/lib/utils/dateFormat';
+import { getLoanStatusPresentation } from '@/lib/operations/loanStatusPresentation';
+import type { FrequencyType, Operation } from '@/lib/services/operationService';
 
 // -----------------------------------------------------------------------
 // Helpers
@@ -25,42 +21,6 @@ const FREQUENCY_KEY: Record<FrequencyType, string> = {
   BIWEEKLY: 'operations.biweeklyContract',
   MONTHLY: 'operations.monthlyContract',
 };
-
-function getStatusBadge(
-  status: OperationStatus,
-  dueDate: string,
-  colors: { success: string; successForeground: string },
-  t: (key: string) => string
-): { label: string; bg: string; fg: string; icon: string } {
-  if (status === 'COMPLETED') {
-    return {
-      label: t('operations.closed'),
-      bg: colors.success,
-      fg: colors.successForeground,
-      icon: 'checkmark',
-    };
-  }
-
-  const now = new Date();
-  const due = new Date(dueDate);
-  const isOverdue = due < now;
-
-  if (status === 'OVERDUE' || isOverdue) {
-    return {
-      label: formatDate(dueDate, 'dd/MM/yyyy'),
-      bg: '#FEE2E2',
-      fg: '#991B1B',
-      icon: 'calendar-dots',
-    };
-  }
-
-  return {
-    label: formatDate(dueDate, 'dd/MM/yyyy'),
-    bg: '#DCFCE7',
-    fg: '#166534',
-    icon: 'calendar-dots',
-  };
-}
 
 function formatCurrency(value: number, currency: string): string {
   const symbol = currency === 'BRL' ? 'R$' : currency === 'USD' ? '$' : '£';
@@ -90,8 +50,8 @@ export function LoanCard({ operation, onPress }: LoanCardProps) {
   );
 
   const badge = useMemo(
-    () => getStatusBadge(operation.status, operation.dueDate, colors, t),
-    [operation.status, operation.dueDate, colors, t]
+    () => getLoanStatusPresentation(operation, t),
+    [operation, t]
   );
 
   const totalWithInterest = operation.principalAmount * (1 + operation.interestRate / 100);
@@ -164,14 +124,9 @@ export function LoanCard({ operation, onPress }: LoanCardProps) {
       {/* Bottom row: status badge | total with interest */}
       <View style={styles.bottomRow}>
         <View style={[styles.badge, { backgroundColor: badge.bg }]}>
-          <Icon
-            name={badge.icon as any}
-            size={14}
-            color={badge.fg}
-          />
           <Typography
-            variant="caption"
-            style={{ color: badge.fg, marginLeft: 4 }}
+            variant="body2SemiBold"
+            style={{ color: badge.fg }}
           >
             {badge.label}
           </Typography>
@@ -237,11 +192,11 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   badge: {
-    flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
   },
   totalRow: {
     flexDirection: 'row',
