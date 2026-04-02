@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   ActivityIndicator,
@@ -24,6 +24,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthGuard } from '@/lib/hooks/useAuthGuard';
 import {
   type DashboardData,
+  DashboardPeriod,
   type DashboardReportByType,
   getDashboard,
 } from '@/lib/services/dashboardService';
@@ -68,6 +69,7 @@ function findReport(
 export default function HomeScreen() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
+  const [period, setPeriod] = useState('this_month');
   const colors = Colors[colorScheme ?? 'light'];
   const { isAuthenticated, isChecking, redirectToLogin } = useAuthGuard();
 
@@ -83,8 +85,8 @@ export default function HomeScreen() {
     isRefetching,
     refetch,
   } = useQuery<DashboardData>({
-    queryKey: ['dashboard', 'this_month'],
-    queryFn: () => getDashboard({ period: 'this_month' }),
+    queryKey: ['dashboard', period],
+    queryFn: () => getDashboard({ period: period as DashboardPeriod }),
     enabled: isAuthenticated,
     staleTime: 1000 * 60 * 5,
     refetchOnMount: true,
@@ -153,12 +155,18 @@ export default function HomeScreen() {
     return null;
   }
 
+  const handlePeriodChange = (newPeriod: string) => {
+    setPeriod(newPeriod);
+  };
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={['top']}
     >
       <Header
+        period={period}
+        onPeriodChange={handlePeriodChange}
         onProfilePress={() => {
           router.push('/profile');
         }}

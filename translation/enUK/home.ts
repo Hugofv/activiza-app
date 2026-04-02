@@ -1,5 +1,8 @@
 export default {
   thisMonth: 'This month',
+  thisWeek: 'This week',
+  thisYear: 'This year',
+  pastMonth: 'Past month',
   receivedThisMonth: 'Received this month',
   of: 'of',
   loans: 'Loans',

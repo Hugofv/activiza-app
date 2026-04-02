@@ -8,22 +8,36 @@ import { TFunction } from 'i18next';
 import { Select } from '../ui/Select';
 
 interface HeaderProps {
+  period: string;
   profileImageUri?: string;
   onProfilePress?: () => void;
-  onMonthPress?: () => void;
+  onPeriodChange?: (period: string) => void;
 }
 
 const MONTH_OPTIONS = (t: TFunction<"translation", undefined>) => [
   {
-    value: 'thisMonth',
+    value: 'last_month',
+    label: t('home.pastMonth'),
+  },
+  {
+    value: 'this_month',
     label: t('home.thisMonth'),
+  },
+  {
+    value: 'this_week',
+    label: t('home.thisWeek'),
+  },
+  {
+    value: 'this_year',
+    label: t('home.thisYear'),
   },
 ]
 
 export function Header({
+  period,
   profileImageUri = 'https://i.pravatar.cc/150?img=12',
   onProfilePress,
-  onMonthPress,
+  onPeriodChange,
 }: HeaderProps) {
   const { t } = useTranslation();
 
@@ -44,8 +58,8 @@ export function Header({
         <Select
           variant="filled"
           options={MONTH_OPTIONS(t)}
-          value={null}
-          onValueChange={(value) => onMonthPress?.()}
+          value={period}
+          onValueChange={(value) => onPeriodChange?.(value)}
         />
       </View>
 
