@@ -22,6 +22,7 @@ import { getReliabilityScore } from '@/lib/utils/clientReliability';
 // -----------------------------------------------------------------------
 
 const FREQUENCY_KEY: Record<FrequencyType, string> = {
+  DAILY: 'operations.dailyContract',
   WEEKLY: 'operations.weeklyContract',
   BIWEEKLY: 'operations.biweeklyContract',
   MONTHLY: 'operations.monthlyContract',

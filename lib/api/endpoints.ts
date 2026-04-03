@@ -62,8 +62,8 @@ export const ENDPOINTS = {
     CREATE: `${PREFIX}/operations`,
     UPDATE: (id: string) => `${PREFIX}/operations/${id}`,
     DELETE: (id: string) => `${PREFIX}/operations/${id}`,
-    /** GET ?page=&limit= — loan payment history */
-    PAYMENTS: (id: string) => `${PREFIX}/operations/${id}/payments`,
+    /** GET ?page=&limit= — operation audit / history */
+    HISTORY: (id: string) => `${PREFIX}/operations/${id}/history`,
     /** POST — register payment */
     REGISTER_PAYMENT: (id: string) =>
       `${PREFIX}/operations/${id}/register-payment`,

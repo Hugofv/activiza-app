@@ -22,7 +22,7 @@ export type OperationStatus =
   | 'OVERDUE'
   | 'CANCELLED';
 
-export type FrequencyType = 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
+export type FrequencyType = 'DAILY' | 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
 
 export interface Operation {
   id: number;
@@ -100,7 +100,7 @@ export interface UpdateOperationData extends Partial<Omit<CreateOperationData, '
 }
 
 /**
- * Loan payment — POST /api/operations/:id/payments
+ * Register payment — POST /api/operations/:id/register-payment
  * `amount` in major currency units; `paidAt` ISO 8601 (e.g. from selected date).
  */
 export interface RegisterLoanPaymentPayload {
@@ -113,22 +113,58 @@ export interface RegisterLoanPaymentPayload {
   accountId?: number;
 }
 
-/** Row from GET /api/operations/:id/payments (extend if API uses extra fields). */
-export interface LoanPayment {
+export type OperationHistoryReason =
+  | 'CREATED'
+  | 'UPDATED'
+  | 'DELETED'
+  | 'PAYMENT'
+  | 'COMPLETED'
+  | 'CONTRACT_EVALUATION'
+  | 'MANUAL'
+  | string;
+
+export interface OperationHistoryPayment {
   id?: string | number;
+  clientId?: number;
+  installmentId?: string | number;
+  operationId?: string | number;
   amount: number;
-  paidAt: string;
   currency?: string;
-  method?: string;
-  type?: 'FULL' | 'PARTIAL' | string;
-  isFullPayment?: boolean;
+  paidAt?: string;
+  method?: string | null;
+  reference?: string | null;
+  meta?: {
+    contractSettlement?: string;
+    installmentPaymentType?: string;
+    [key: string]: unknown;
+  } | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface OperationPaymentsResponse {
-  results: LoanPayment[];
-  count: number;
-  next?: string | null;
-  previous?: string | null;
+export interface OperationHistoryEntry {
+  id: string | number;
+  operationId?: string | number;
+  previousAmount: number;
+  newAmount: number;
+  reason: OperationHistoryReason;
+  actor?: string | null;
+  paymentId?: string | number | null;
+  metadata?: Record<string, unknown> | null;
+  createdAt: string;
+  payment?: OperationHistoryPayment | null;
+}
+
+export interface OperationHistoryPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface OperationHistoryResponse {
+  results: OperationHistoryEntry[];
+  pagination: OperationHistoryPagination;
 }
 
 // -----------------------------------------------------------------------
@@ -296,26 +332,111 @@ export async function deleteOperation(id: string): Promise<void> {
   }
 }
 
+function asRecord(v: unknown): Record<string, unknown> | null {
+  return v != null && typeof v === 'object' && !Array.isArray(v)
+    ? (v as Record<string, unknown>)
+    : null;
+}
+
+function mapOperationHistoryPayment(
+  raw: Record<string, unknown>
+): OperationHistoryPayment {
+  const meta = asRecord(raw.meta);
+  return {
+    id: raw.id as string | number | undefined,
+    clientId: raw.clientId as number | undefined,
+    installmentId: (raw.installment_id ?? raw.installmentId) as
+      | string
+      | number
+      | undefined,
+    operationId: (raw.operation_id ?? raw.operationId) as
+      | string
+      | number
+      | undefined,
+    amount: Number(raw.amount ?? 0),
+    currency: raw.currency as string | undefined,
+    paidAt: (raw.paid_at ?? raw.paidAt) as string | undefined,
+    method: (raw.method ?? null) as string | null,
+    reference: (raw.reference ?? null) as string | null,
+    meta: meta as OperationHistoryPayment['meta'],
+    createdAt: (raw.created_at ?? raw.createdAt) as string | undefined,
+    updatedAt: (raw.updated_at ?? raw.updatedAt) as string | undefined,
+  };
+}
+
+function mapOperationHistoryEntry(
+  raw: Record<string, unknown>
+): OperationHistoryEntry {
+  const paymentRaw = asRecord(raw.payment);
+  return {
+    id: raw.id as string | number,
+    operationId: (raw.operation_id ?? raw.operationId) as
+      | string
+      | number
+      | undefined,
+    previousAmount: Number(raw.previous_amount ?? raw.previousAmount ?? 0),
+    newAmount: Number(raw.new_amount ?? raw.newAmount ?? 0),
+    reason: String(raw.reason ?? '') as OperationHistoryReason,
+    actor: (raw.actor ?? null) as string | null,
+    paymentId: (raw.payment_id ?? raw.paymentId ?? null) as
+      | string
+      | number
+      | null,
+    metadata: asRecord(raw.metadata),
+    createdAt: String(raw.created_at ?? raw.createdAt ?? ''),
+    payment: paymentRaw ? mapOperationHistoryPayment(paymentRaw) : null,
+  };
+}
+
+interface OperationHistoryApiBody {
+  success?: boolean;
+  results?: unknown[];
+  pagination?: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    total_pages?: number;
+    totalPages?: number;
+  };
+}
+
 /**
- * Payment history for a loan operation.
- * GET /api/operations/:id/payments?page=&limit=
+ * Operation audit / history (balance changes, payments, etc.).
+ * GET /api/operations/:id/history?page=&limit=
  */
-export async function getOperationPayments(
+export async function getOperationHistory(
   operationId: string,
   params?: { page?: number; limit?: number }
-): Promise<OperationPaymentsResponse> {
+): Promise<OperationHistoryResponse> {
   try {
     const search = new URLSearchParams();
     if (params?.page != null) search.append('page', String(params.page));
     if (params?.limit != null) search.append('limit', String(params.limit));
     const qs = search.toString();
     const url = qs
-      ? `${ENDPOINTS.OPERATIONS.PAYMENTS(operationId)}?${qs}`
-      : ENDPOINTS.OPERATIONS.PAYMENTS(operationId);
-    const response = await apiClient.get<OperationPaymentsResponse>(url);
-    return response.data;
+      ? `${ENDPOINTS.OPERATIONS.HISTORY(operationId)}?${qs}`
+      : ENDPOINTS.OPERATIONS.HISTORY(operationId);
+    const response = await apiClient.get<OperationHistoryApiBody>(url);
+    const body = response.data;
+    const rawList = Array.isArray(body.results) ? body.results : [];
+    const results = rawList
+      .map((row) => asRecord(row))
+      .filter((r): r is Record<string, unknown> => r != null)
+      .map(mapOperationHistoryEntry);
+
+    const p = body.pagination;
+    const page = p?.page ?? 1;
+    const limit = p?.limit ?? 50;
+    const total = p?.total ?? results.length;
+    const totalPages =
+      p?.totalPages ?? p?.total_pages ?? Math.max(1, Math.ceil(total / limit));
+
+    return {
+      results,
+      pagination: { page, limit, total, totalPages },
+    };
   } catch (error: any) {
-    console.error('Get operation payments error:', error);
+    console.error('Get operation history error:', error);
     throw error;
   }
 }

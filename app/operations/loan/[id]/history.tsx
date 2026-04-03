@@ -11,6 +11,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { useQuery } from '@tanstack/react-query';
+import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -21,24 +22,68 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import {
-  type LoanPayment,
+  type OperationHistoryEntry,
   formatOperationCurrency,
   getOperationById,
-  getOperationPayments,
+  getOperationHistory,
 } from '@/lib/services/operationService';
 import { formatDate } from '@/lib/utils/dateFormat';
 
+const PAGE = 1;
 const PAGE_SIZE = 50;
 
-function isFullPaymentRow(p: LoanPayment): boolean {
-  if (p.isFullPayment === true) return true;
-  if (p.isFullPayment === false) return false;
-  if (p.type === 'FULL' || p.type === 'full') return true;
-  if (p.type === 'PARTIAL' || p.type === 'partial') return false;
-  return false;
+const KNOWN_HISTORY_REASONS = new Set([
+  'CREATED',
+  'UPDATED',
+  'DELETED',
+  'PAYMENT',
+  'COMPLETED',
+  'CONTRACT_EVALUATION',
+  'MANUAL',
+]);
+
+function historyReasonKey(reason: string): string {
+  if (KNOWN_HISTORY_REASONS.has(reason)) {
+    return `operations.historyReason.${reason}`;
+  }
+  return 'operations.historyReason.OTHER';
 }
 
-export default function LoanPaymentsHistoryScreen() {
+function historyEntryTitle(entry: OperationHistoryEntry, t: TFunction): string {
+  if (entry.reason !== 'PAYMENT') {
+    return t(historyReasonKey(String(entry.reason)));
+  }
+  const settlement = entry.payment?.meta?.contractSettlement?.toUpperCase();
+  if (settlement === 'FULL') return t('operations.fullPayment');
+  if (settlement === 'PARTIAL') return t('operations.partialPayment');
+  return t('operations.historyPayment');
+}
+
+function entryDisplayAmount(entry: OperationHistoryEntry): number | null {
+  if (entry.reason !== 'PAYMENT') return null;
+  if (entry.payment != null) return entry.payment.amount;
+  const delta = Math.abs(entry.previousAmount - entry.newAmount);
+  return delta > 0 ? delta : null;
+}
+
+function entryDisplayDateIso(entry: OperationHistoryEntry): string {
+  if (entry.reason === 'PAYMENT' && entry.payment?.paidAt) {
+    return entry.payment.paidAt;
+  }
+  return entry.createdAt;
+}
+
+function entrySubtitle(
+  entry: OperationHistoryEntry,
+  currency: string
+): string | null {
+  if (entry.reason === 'PAYMENT') return null;
+  const a = formatOperationCurrency(entry.previousAmount, currency);
+  const b = formatOperationCurrency(entry.newAmount, currency);
+  return `${a} → ${b}`;
+}
+
+export default function LoanOperationHistoryScreen() {
   const { id: idParam } = useLocalSearchParams<{ id: string }>();
   const id = Array.isArray(idParam) ? idParam[0] : idParam;
   const { t } = useTranslation();
@@ -52,59 +97,86 @@ export default function LoanPaymentsHistoryScreen() {
   });
 
   const {
-    data: paymentsData,
+    data: historyData,
     isLoading,
     isError,
     refetch,
     isRefetching,
   } = useQuery({
-    queryKey: ['operations', 'loan', id, 'payments', 1, PAGE_SIZE],
+    queryKey: ['operations', 'loan', id, 'history', PAGE, PAGE_SIZE],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
     queryFn: () =>
-      getOperationPayments(id!, { page: 1, limit: PAGE_SIZE }),
+      getOperationHistory(id!, { page: PAGE, limit: PAGE_SIZE }),
     enabled: !!id,
   });
 
-  const results = paymentsData?.results ?? [];
+  const results = historyData?.results ?? [];
   const currency = operation?.currency ?? 'GBP';
 
-  const paymentTitle = useCallback(
-    (p: LoanPayment) => {
-      if (isFullPaymentRow(p)) return t('operations.fullPayment');
-      return t('operations.partialPayment');
-    },
-    [t]
-  );
-
   const renderItem = useCallback(
-    ({ item }: { item: LoanPayment }) => (
-      <View
-        style={[styles.row, { borderBottomColor: colors.border }]}
-      >
-        <Icon
-          name="receipt-2"
-          size={24}
-          color="icon"
-          style={styles.rowIcon}
-        />
-        <View style={styles.rowMain}>
-          <Typography variant="body1SemiBold">{paymentTitle(item)}</Typography>
-          <Typography variant="h6Medium">
-            {formatOperationCurrency(
-              item.amount,
-              item.currency ?? currency
+    ({ item }: { item: OperationHistoryEntry }) => {
+      const title = historyEntryTitle(item, t);
+      const amount = entryDisplayAmount(item);
+      const subtitle = entrySubtitle(item, currency);
+      const dateIso = entryDisplayDateIso(item);
+      const dateLabel =
+        dateIso && !Number.isNaN(new Date(dateIso).getTime())
+          ? formatDate(dateIso, 'dd/MM/yyyy')
+          : '—';
+
+      const iconName = item.reason === 'PAYMENT' ? 'receipt-2' : 'history';
+
+      return (
+        <View
+          style={[styles.row, { borderBottomColor: colors.border }]}
+        >
+          <Icon
+            name={iconName}
+            size={24}
+            color="icon"
+            style={styles.rowIcon}
+          />
+          <View style={styles.rowMain}>
+            <Typography variant="body1SemiBold">{title}</Typography>
+            {amount != null && (
+              <Typography variant="h6Medium">
+                {formatOperationCurrency(
+                  amount,
+                  item.payment?.currency ?? currency
+                )}
+              </Typography>
             )}
+            {subtitle != null && (
+              <Typography
+                variant="body2"
+                color="placeholder"
+              >
+                {subtitle}
+              </Typography>
+            )}
+            {item.reason !== 'PAYMENT' && item.actor ? (
+              <Typography
+                variant="caption"
+                color="placeholder"
+                numberOfLines={1}
+              >
+                {item.actor}
+              </Typography>
+            ) : null}
+          </View>
+          <Typography
+            variant="body2"
+            color="placeholder"
+            style={styles.rowDate}
+          >
+            {dateLabel}
           </Typography>
         </View>
-        <Typography
-          variant="body2"
-          color="placeholder"
-          style={styles.rowDate}
-        >
-          {formatDate(item.paidAt, 'dd/MM/yyyy')}
-        </Typography>
-      </View>
-    ),
-    [colors.border, currency, paymentTitle]
+      );
+    },
+    [colors.border, currency, t]
   );
 
   if (!id) {
@@ -135,7 +207,7 @@ export default function LoanPaymentsHistoryScreen() {
             variant="h4"
             style={styles.headerTitle}
           >
-            {t('operations.paymentHistory')}
+            {t('operations.operationHistory')}
           </Typography>
           <View style={{ width: 44 }} />
         </View>
@@ -161,13 +233,13 @@ export default function LoanPaymentsHistoryScreen() {
             variant="h4"
             style={styles.headerTitle}
           >
-            {t('operations.paymentHistory')}
+            {t('operations.operationHistory')}
           </Typography>
           <View style={{ width: 44 }} />
         </View>
         <View style={styles.centered}>
           <Typography color="text">
-            {t('operations.paymentsLoadError')}
+            {t('operations.historyLoadError')}
           </Typography>
           <Button
             variant="outline"
@@ -192,16 +264,14 @@ export default function LoanPaymentsHistoryScreen() {
           variant="h4"
           style={styles.headerTitle}
         >
-          {t('operations.paymentHistory')}
+          {t('operations.operationHistory')}
         </Typography>
         <View style={{ width: 44 }} />
       </View>
 
       <FlatList
         data={results}
-        keyExtractor={(item, index) =>
-          String(item.id ?? `payment-${index}`)
-        }
+        keyExtractor={(item, index) => String(item.id ?? `hist-${index}`)}
         renderItem={renderItem}
         ListEmptyComponent={
           <Typography
@@ -209,7 +279,7 @@ export default function LoanPaymentsHistoryScreen() {
             color="placeholder"
             style={styles.empty}
           >
-            {t('operations.loanHistoryEmpty')}
+            {t('operations.historyEmpty')}
           </Typography>
         }
         contentContainerStyle={
@@ -253,7 +323,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderBottomWidth: StyleSheet.hairlineWidth,

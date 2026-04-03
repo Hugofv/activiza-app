@@ -16,7 +16,7 @@ export type OperationType =
   | 'rentVehicle'
   | null;
 
-export type FrequencyType = 'weekly' | 'biweekly' | 'monthly';
+export type FrequencyType = 'daily' | 'weekly' | 'biweekly' | 'monthly';
 
 export interface OperationFormData {
   client: Client | null;

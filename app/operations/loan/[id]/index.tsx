@@ -35,6 +35,7 @@ import {
 import { formatDate, formatDateWithDay } from '@/lib/utils/dateFormat';
 
 const FREQUENCY_KEY: Record<FrequencyType, string> = {
+  DAILY: 'operations.dailyContract',
   WEEKLY: 'operations.weeklyContract',
   BIWEEKLY: 'operations.biweeklyContract',
   MONTHLY: 'operations.monthlyContract',
@@ -333,7 +334,7 @@ export default function LoanDetailScreen() {
           <Pressable
             style={[styles.actionTile, { borderColor: colors.border }]}
             onPress={() =>
-              router.push(`/operations/loan/${id}/payments` as any)
+              router.push(`/operations/loan/${id}/history` as any)
             }
           >
             <Icon

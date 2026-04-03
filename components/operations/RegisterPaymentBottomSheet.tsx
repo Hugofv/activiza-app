@@ -108,7 +108,7 @@ export function RegisterPaymentBottomSheet({
         queryKey: ['operations', 'loan', operationId],
       });
       queryClient.invalidateQueries({
-        queryKey: ['operations', 'loan', operationId, 'payments'],
+        queryKey: ['operations', 'loan', operationId, 'history'],
       });
       showSuccess(t('operations.paymentRegistered'));
       reset({ amount: '', paidAt: startOfTodayLocal() });

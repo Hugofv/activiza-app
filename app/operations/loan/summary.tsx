@@ -35,13 +35,9 @@ export default function LoanSummaryScreen() {
 
   const currency = formData.currency || 'GBP';
 
-  const amountNum = useMemo(() => {
-    return parseAmount(formData.amount || '');
-  }, [formData.amount]);
+  const amountNum = useMemo(() => parseAmount(formData.amount || ''), [formData.amount]);
 
-  const interestNum = useMemo(() => {
-    return parseInterest(formData.interest || '');
-  }, [formData.interest]);
+  const interestNum = useMemo(() => parseInterest(formData.interest || ''), [formData.interest]);
 
   const profit = useMemo(
     () => Math.round(amountNum * (interestNum / 100)),
@@ -55,6 +51,8 @@ export default function LoanSummaryScreen() {
 
   const frequencyLabel = useMemo(() => {
     switch (formData.frequency) {
+      case 'daily':
+        return t('operations.daily');
       case 'weekly':
         return t('operations.weekly');
       case 'biweekly':
@@ -77,6 +75,9 @@ export default function LoanSummaryScreen() {
   const nextPaymentDate = useMemo(() => {
     const d = new Date();
     switch (formData.frequency) {
+      case 'daily':
+        d.setDate(d.getDate() + 1);
+        break;
       case 'weekly':
         d.setDate(d.getDate() + 7);
         break;
