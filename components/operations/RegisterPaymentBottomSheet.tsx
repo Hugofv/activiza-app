@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -24,6 +24,7 @@ import {
   formatOperationCurrency,
   registerLoanPayment,
 } from '@/lib/services/operationService';
+import { Button } from '../ui/Button';
 
 function startOfTodayLocal(): Date {
   const d = new Date();
@@ -194,43 +195,14 @@ export function RegisterPaymentBottomSheet({
             />
           </View>
         </View>
-        <View
-          style={[styles.amountUnderline, { backgroundColor: colors.border }]}
-        />
 
         <View style={styles.chips}>
-          <Pressable
-            onPress={applyMinimum}
-            style={({ pressed }) => [
-              styles.chip,
-              styles.chipOutline,
-              { borderColor: colors.border },
-              pressed && { opacity: 0.85 },
-            ]}
-          >
-            <Typography
-              variant="body2Medium"
-              style={{ color: colors.primary }}
-            >
-              {t('operations.minimum')}
-            </Typography>
-          </Pressable>
-          <Pressable
-            onPress={applyTotal}
-            style={({ pressed }) => [
-              styles.chip,
-              styles.chipFilled,
-              { backgroundColor: colors.muted },
-              pressed && { opacity: 0.85 },
-            ]}
-          >
-            <Typography
-              variant="body2Medium"
-              color="placeholder"
-            >
-              {t('operations.total')}
-            </Typography>
-          </Pressable>
+          <Button variant="primary" size="sm" onPress={applyMinimum}>
+            {t('operations.minimum')}
+          </Button>
+          <Button variant="outline" size="sm" onPress={applyTotal}>
+            {t('operations.total')}
+          </Button>
         </View>
 
         <DatePicker
@@ -246,7 +218,6 @@ export function RegisterPaymentBottomSheet({
           <View style={{ flex: 1 }} />
           <IconButton
             variant="primary"
-            shape="rounded"
             size="md"
             icon="arrow-forward"
             iconSize={28}
@@ -274,7 +245,7 @@ const styles = StyleSheet.create({
   amountRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    gap: 8,
+    gap: 4,
     marginTop: 8,
   },
   currencyGlyph: { marginBottom: 4 },
@@ -285,7 +256,7 @@ const styles = StyleSheet.create({
     marginTop: -4,
     marginBottom: 16,
   },
-  chips: { flexDirection: 'row', gap: 12, marginBottom: 24 },
+  chips: { flexDirection: 'row', gap: 12, marginBottom: 10 },
   chip: {
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -297,6 +268,7 @@ const styles = StyleSheet.create({
   },
   chipFilled: {},
   footerRow: {
+    marginTop: 24,
     flexDirection: 'row',
     alignItems: 'center',
   },
