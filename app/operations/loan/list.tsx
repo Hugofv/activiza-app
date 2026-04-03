@@ -63,7 +63,13 @@ export default function LoanListScreen() {
   });
 
   const operations = operationsData?.results ?? [];
-  const count = operationsData?.count ?? 0;
+  /** Some API responses omit or zero `count` while still returning `results`. */
+  const count =
+    operationsData == null
+      ? 0
+      : operationsData.count > 0
+        ? operationsData.count
+        : operations.length;
 
   const handleLoanPress = (operation: Operation) => {
     router.push(`/operations/loan/${operation.id}` as any);

@@ -10,24 +10,13 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Client } from '@/lib/services/clientService';
+import { getReliabilityScore } from '@/lib/utils/clientReliability';
 
 import { Badge } from '../ui/Badge';
 
 export interface ClientItemProps {
   client: Client;
   onPress?: (client: Client) => void;
-}
-
-function getClientReliabilityScore(client: Client): number {
-  if (client.rating != null && Number.isFinite(client.rating)) {
-    return Math.round(client.rating);
-  }
-  const raw = client.meta?.reliability;
-  if (raw != null && raw !== '') {
-    const n = Number(raw);
-    if (Number.isFinite(n)) return Math.round(n);
-  }
-  return 0;
 }
 
 function formatDebtAmount(amount: number | undefined, currency?: string): string {
@@ -56,7 +45,7 @@ export const ClientItem: React.FC<ClientItemProps> = ({ client, onPress }) => {
     onPress?.(client);
   };
 
-  const reliability = useMemo(() => getClientReliabilityScore(client), [client]);
+  const reliability = useMemo(() => getReliabilityScore(client), [client]);
   const pendingNearDue = client.pendingOperations ?? 0;
   const paidContracts = client.completedOperations ?? 0;
   const debtLabel = formatDebtAmount(

@@ -48,6 +48,9 @@ export interface Operation {
     id: number;
     name?: string;
     profilePictureUrl?: string;
+    rating?: number;
+    reliability?: number | string;
+    meta?: { reliability?: string | number } | null;
   };
 }
 

@@ -11,6 +11,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { getLoanStatusPresentation } from '@/lib/operations/loanStatusPresentation';
 import type { FrequencyType, Operation } from '@/lib/services/operationService';
+import { getReliabilityScore } from '@/lib/utils/clientReliability';
 
 // -----------------------------------------------------------------------
 // Helpers
@@ -54,6 +55,11 @@ export function LoanCard({ operation, onPress }: LoanCardProps) {
     [operation, t]
   );
 
+  const reliability = useMemo(
+    () => getReliabilityScore(operation.client),
+    [operation.client]
+  );
+
   const totalWithInterest = operation.principalAmount * (1 + operation.interestRate / 100);
 
   const clientName = operation.client?.name ?? `Client #${operation.clientId}`;
@@ -90,8 +96,11 @@ export function LoanCard({ operation, onPress }: LoanCardProps) {
                   variant="caption"
                   color="icon"
                   style={{ marginLeft: 2 }}
+                  accessibilityLabel={t('clients.listChipReliabilityA11y', {
+                    value: reliability,
+                  })}
                 >
-                  {0}
+                  {reliability}
                 </Typography>
               </View>
             </View>
