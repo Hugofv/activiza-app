@@ -44,6 +44,10 @@ export interface Operation {
   resourceId?: number;
   createdAt?: string;
   updatedAt?: string;
+  /** Outstanding balance from API (same unit as principalAmount). */
+  remainingToReceive?: number | string | null;
+  /** Snake_case alias some backends send on GET operation(s). */
+  remaining_to_receive?: number | string | null;
   client?: {
     id: number;
     name?: string;
@@ -171,6 +175,23 @@ export function formatOperationCurrency(value: number, currency: string): string
     maximumFractionDigits: 2,
   }).format(value);
   return `${formatted}${symbol}`;
+}
+
+function coerceOperationAmount(raw: unknown): number | null {
+  if (raw == null || raw === '') return null;
+  const n = typeof raw === 'string' ? parseFloat(raw.replace(',', '.')) : Number(raw);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Amount still owed; uses API remaining fields when present, else principal + interest. */
+export function getOperationRemainingToReceive(operation: Operation): number {
+  const r = coerceOperationAmount(
+    operation.remainingToReceive ?? operation.remaining_to_receive
+  );
+  if (r != null) {
+    return r;
+  }
+  return operation.principalAmount * (1 + operation.interestRate / 100);
 }
 
 // -----------------------------------------------------------------------

@@ -56,6 +56,7 @@ class ApiClientClass {
 
         // Add access token if available
         const token = await getAccessToken();
+        console.log('token', token);
         if (token && !config.headers.Authorization) {
           config.headers.Authorization = `Bearer ${token}`;
         }

@@ -30,6 +30,7 @@ import {
   type FrequencyType,
   formatOperationCurrency,
   getOperationById,
+  getOperationRemainingToReceive,
 } from '@/lib/services/operationService';
 import { formatDate, formatDateWithDay } from '@/lib/utils/dateFormat';
 
@@ -60,9 +61,10 @@ export default function LoanDetailScreen() {
     enabled: !!id,
   });
 
-  const amountReceivable = useMemo(() => {
+  /** Balance still to receive (API `remainingToReceive` / `remaining_to_receive`). */
+  const remainingToReceive = useMemo(() => {
     if (!operation) return 0;
-    return operation.principalAmount * (1 + operation.interestRate / 100);
+    return getOperationRemainingToReceive(operation);
   }, [operation]);
 
   const profitAmount = useMemo(() => {
@@ -73,9 +75,9 @@ export default function LoanDetailScreen() {
   const minimumPayment = useMemo(() => {
     if (!operation) return 0;
     const p = profitAmount;
-    if (p > 0) return Math.min(p, amountReceivable);
+    if (p > 0) return Math.min(p, remainingToReceive);
     return 0;
-  }, [operation, profitAmount, amountReceivable]);
+  }, [operation, profitAmount, remainingToReceive]);
 
   const frequencyLabel = useMemo(() => {
     if (!operation) return '';
@@ -207,7 +209,7 @@ export default function LoanDetailScreen() {
                   style={{ fontSize: 40 }}
                 >
                   {formatOperationCurrency(
-                    amountReceivable,
+                    remainingToReceive,
                     operation.currency
                   )}
                 </Typography>
@@ -387,7 +389,6 @@ export default function LoanDetailScreen() {
             variant="primary"
             size="full"
             onPress={() => setPaymentSheetOpen(true)}
-            disabled={operation.status === 'COMPLETED'}
           >
             {t('operations.registerPayment')}
           </Button>
@@ -407,7 +408,7 @@ export default function LoanDetailScreen() {
         onClose={() => setPaymentSheetOpen(false)}
         operationId={String(operation.id)}
         currency={operation.currency}
-        amountReceivable={amountReceivable}
+        amountReceivable={remainingToReceive}
         minimumAmount={minimumPayment}
       />
     </SafeAreaView>

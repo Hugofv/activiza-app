@@ -25,6 +25,7 @@ export default {
   today: 'Today',
   // Loan list
   loansList: 'Loans',
+  dailyContract: 'Daily contract',
   weeklyContract: 'Weekly contract',
   biweeklyContract: 'Biweekly contract',
   monthlyContract: 'Monthly contract',

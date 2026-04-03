@@ -27,8 +27,20 @@ import { type FrequencyType, useOperations } from '../_context';
 interface LoanFormFields {
   amount: string;
   interest: string;
-  dueDate: string;
+  dueDate: Date;
   observation: string;
+}
+
+function startOfTodayLocal(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function parseStoredDueDate(raw: string | undefined): Date | null {
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+  const d = new Date(raw);
+  return Number.isNaN(d.getTime()) ? null : d;
 }
 
 export default function LoanFormScreen() {
@@ -58,6 +70,10 @@ export default function LoanFormScreen() {
   ];
 
   const frequencyOptions: SelectOption[] = [
+    {
+      value: 'daily',
+      label: t('operations.daily'),
+    },
     {
       value: 'weekly',
       label: t('operations.weekly'),
@@ -89,7 +105,10 @@ export default function LoanFormScreen() {
         const n = parseFloat((v ?? '').replace(',', '.'));
         return !isNaN(n) && n >= 0 && n <= 100;
       }),
-    dueDate: yup.string().optional().default(''),
+    dueDate: yup
+      .date()
+      .typeError(t('operations.invalidValue'))
+      .required(`${t('operations.dueDate')} ${t('common.validation.required')}`),
     observation: yup.string().optional().default(''),
   });
 
@@ -102,7 +121,7 @@ export default function LoanFormScreen() {
     defaultValues: {
       amount: formData.amount || '',
       interest: formData.interest || '',
-      dueDate: formData.dueDate || '',
+      dueDate: parseStoredDueDate(formData.dueDate) ?? startOfTodayLocal(),
       observation: formData.observation || '',
     },
     mode: 'onChange',
@@ -120,7 +139,7 @@ export default function LoanFormScreen() {
     updateFormData({
       amount: data.amount,
       interest: data.interest,
-      dueDate: data.dueDate || '',
+      dueDate: data.dueDate.toISOString(),
       observation: data.observation || '',
     });
     router.push('/operations/loan/summary');
@@ -130,7 +149,6 @@ export default function LoanFormScreen() {
     router.back();
   };
 
-  console.log(formData);
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -229,7 +247,6 @@ export default function LoanFormScreen() {
             mode="date"
             control={control}
             name="dueDate"
-            value={new Date(formData.dueDate)}
             label={t('operations.dueDate')}
             placeholder={t('operations.today')}
             error={errors.dueDate?.message}

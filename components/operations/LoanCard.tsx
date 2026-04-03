@@ -10,7 +10,11 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { getLoanStatusPresentation } from '@/lib/operations/loanStatusPresentation';
-import type { FrequencyType, Operation } from '@/lib/services/operationService';
+import {
+  type FrequencyType,
+  type Operation,
+  getOperationRemainingToReceive,
+} from '@/lib/services/operationService';
 import { getReliabilityScore } from '@/lib/utils/clientReliability';
 
 // -----------------------------------------------------------------------
@@ -60,7 +64,10 @@ export function LoanCard({ operation, onPress }: LoanCardProps) {
     [operation.client]
   );
 
-  const totalWithInterest = operation.principalAmount * (1 + operation.interestRate / 100);
+  const remainingToReceive = useMemo(
+    () => getOperationRemainingToReceive(operation),
+    [operation]
+  );
 
   const clientName = operation.client?.name ?? `Client #${operation.clientId}`;
 
@@ -152,7 +159,7 @@ export function LoanCard({ operation, onPress }: LoanCardProps) {
             color="placeholder"
             style={{ marginLeft: 4 }}
           >
-            {formatCurrency(totalWithInterest, operation.currency)}
+            {formatCurrency(remainingToReceive, operation.currency)}
           </Typography>
         </View>
       </View>
