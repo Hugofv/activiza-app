@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 
@@ -10,9 +10,10 @@ import type { Operation } from '@/lib/services/operationService';
 
 interface LoanStatusBadgeProps {
   operation: Operation;
+  style?: ViewStyle;
 }
 
-export function LoanStatusBadge({ operation }: LoanStatusBadgeProps) {
+export function LoanStatusBadge({ operation, style }: LoanStatusBadgeProps) {
   const { t } = useTranslation();
   const badge = useMemo(
     () => getLoanStatusPresentation(operation, t),
@@ -20,7 +21,7 @@ export function LoanStatusBadge({ operation }: LoanStatusBadgeProps) {
   );
 
   return (
-    <View style={[styles.pill, { backgroundColor: badge.bg }]}>
+    <View style={[styles.pill, { backgroundColor: badge.bg }, style]}>
       <Typography
         variant="body2SemiBold"
         style={{ color: badge.fg }}

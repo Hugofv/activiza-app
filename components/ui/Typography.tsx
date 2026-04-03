@@ -1,6 +1,11 @@
 import * as React from 'react';
 
-import { Text, type TextProps, type ViewStyle } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  type TextProps,
+  type ViewStyle,
+} from 'react-native';
 
 import { type VariantProps, cva } from 'class-variance-authority';
 
@@ -161,8 +166,18 @@ const Typography = React.forwardRef<
   };
 
   const fontFamily = variant ? fontFamilyMap[variant] : 'Inter_400Regular';
-  const fontSize = variant ? fontSizeMap[variant] : 16;
-  const lineHeight = variant ? lineHeightMap[variant] : 24;
+  const variantFontSize = variant ? fontSizeMap[variant] : 16;
+  const variantLineHeight = variant ? lineHeightMap[variant] : 24;
+
+  const flatStyle = StyleSheet.flatten(style) ?? {};
+  const resolvedFontSize =
+    typeof flatStyle.fontSize === 'number' ? flatStyle.fontSize : variantFontSize;
+  const resolvedLineHeight =
+    typeof flatStyle.lineHeight === 'number'
+      ? flatStyle.lineHeight
+      : resolvedFontSize > variantFontSize
+        ? Math.max(variantLineHeight, Math.ceil(resolvedFontSize * 1.2))
+        : variantLineHeight;
 
   // Get text color based on color prop, variant, and theme
   const getTextColor = () => {
@@ -184,7 +199,7 @@ const Typography = React.forwardRef<
   };
 
   if (loading) {
-    const h = fontSize ?? 16;
+    const h = variantFontSize ?? 16;
     return (
       <Skeleton
         width={skeletonWidth ?? '60%'}
@@ -208,8 +223,8 @@ const Typography = React.forwardRef<
         {
           color: getTextColor(),
           fontFamily,
-          fontSize,
-          lineHeight,
+          fontSize: resolvedFontSize,
+          lineHeight: resolvedLineHeight,
         },
         style,
       ]}

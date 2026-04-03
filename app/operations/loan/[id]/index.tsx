@@ -11,6 +11,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { useQuery } from '@tanstack/react-query';
+
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -20,6 +21,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { BackButton } from '@/components/ui/BackButton';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
+import ListItemIcon from '@/components/ui/ListItemIcon';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -82,7 +84,8 @@ export default function LoanDetailScreen() {
     );
   }, [operation, t]);
 
-  const clientName = operation?.client?.name ?? (operation ? `#${operation.clientId}` : '');
+  const clientName =
+    operation?.client?.name ?? (operation ? `#${operation.clientId}` : '');
 
   if (!id) {
     return (
@@ -168,10 +171,18 @@ export default function LoanDetailScreen() {
             { borderColor: colors.border, backgroundColor: colors.background },
           ]}
         >
-          <LoanStatusBadge operation={operation} />
+          <LoanStatusBadge
+            operation={operation}
+            style={{
+              width: '100%',
+              borderTopLeftRadius: 0,
+              borderTopRightRadius: 0,
+              alignItems: 'center',
+            }}
+          />
 
           <Typography
-            variant="h5"
+            variant="h3Bold"
             style={styles.contractHeading}
           >
             {contractTitle}
@@ -190,12 +201,23 @@ export default function LoanDetailScreen() {
               >
                 {t('operations.nextPayment')}
               </Typography>
-              <Typography variant="body1Medium">
-                {formatDate(operation.dueDate, 'dd/MM/yyyy')}
-              </Typography>
-              <Typography variant="h4">
-                {formatOperationCurrency(amountReceivable, operation.currency)}
-              </Typography>
+              <View style={styles.rowAmount}>
+                <Typography
+                  variant="h4"
+                  style={{ fontSize: 40 }}
+                >
+                  {formatOperationCurrency(
+                    amountReceivable,
+                    operation.currency
+                  )}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  color="placeholder"
+                >
+                  {formatDate(operation.dueDate, 'dd/MM/yyyy')}
+                </Typography>
+              </View>
             </View>
           </View>
 
@@ -203,7 +225,7 @@ export default function LoanDetailScreen() {
 
           <View style={styles.rowIcon}>
             <Icon
-              name="user-filled"
+              name="user-circle"
               size={22}
               color="icon"
             />
@@ -230,19 +252,21 @@ export default function LoanDetailScreen() {
             </View>
           </View>
 
-          <View style={styles.metrics}>
+          <View style={[styles.metrics, { backgroundColor: colors.muted }]}>
             <View style={styles.metric}>
-              <Icon
-                name="cash-outline"
-                size={20}
-                color="icon"
-              />
-              <Typography
-                variant="caption"
-                color="placeholder"
-              >
-                {t('operations.amount')}
-              </Typography>
+              <View style={styles.metricHeader}>
+                <Icon
+                  name="cash-outline"
+                  size={20}
+                  color="icon"
+                />
+                <Typography
+                  variant="caption"
+                  color="placeholder"
+                >
+                  {t('operations.amount')}
+                </Typography>
+              </View>
               <Typography variant="body1SemiBold">
                 {formatOperationCurrency(
                   operation.principalAmount,
@@ -251,53 +275,56 @@ export default function LoanDetailScreen() {
               </Typography>
             </View>
             <View style={styles.metric}>
-              <Icon
-                name="percentage"
-                size={20}
-                color="icon"
-              />
-              <Typography
-                variant="caption"
-                color="placeholder"
-              >
-                {t('operations.interestMetric')}
-              </Typography>
+              <View style={styles.metricHeader}>
+                <Icon
+                  name="percentage"
+                  size={20}
+                  color="icon"
+                />
+                <Typography
+                  variant="caption"
+                  color="placeholder"
+                >
+                  {t('operations.interestMetric')}
+                </Typography>
+              </View>
               <Typography variant="body1SemiBold">
                 {operation.interestRate}%
               </Typography>
             </View>
             <View style={styles.metric}>
-              <Icon
-                name="chart-line"
-                size={20}
-                color="icon"
-              />
+              <View style={styles.metricHeader}>
+                <Icon
+                  name="chart-line"
+                  size={20}
+                  color="icon"
+                />
+                <Typography
+                  variant="caption"
+                  color="placeholder"
+                >
+                  {t('operations.profit')}
+                </Typography>
+              </View>
               <Typography
-                variant="caption"
-                color="placeholder"
+                variant="body1SemiBold"
+                color="text"
               >
-                {t('operations.profit')}
-              </Typography>
-              <Typography variant="body1SemiBold">
                 {formatOperationCurrency(profitAmount, operation.currency)}
               </Typography>
             </View>
           </View>
 
-          <Typography
-            variant="body2"
-            color="placeholder"
-            style={styles.metaLine}
-          >
-            {t('operations.loanDate')}:{' '}
-            {formatDateWithDay(new Date(operation.startDate))}
-          </Typography>
-          <Typography
-            variant="body2"
-            color="placeholder"
-          >
-            {t('operations.frequency')}: {frequencyLabel}
-          </Typography>
+          <ListItemIcon
+            icon="calendar"
+            label={t('operations.loanDate')}
+            value={formatDateWithDay(new Date(operation.startDate))}
+          />
+          <ListItemIcon
+            icon="reload"
+            label={t('operations.frequency')}
+            value={frequencyLabel}
+          />
         </View>
 
         <View style={styles.actionGrid}>
@@ -354,24 +381,26 @@ export default function LoanDetailScreen() {
         </View>
       </ScrollView>
 
-      <View style={styles.footer}>
-        <Button
-          variant="primary"
-          size="full"
-          onPress={() => setPaymentSheetOpen(true)}
-          disabled={operation.status === 'COMPLETED'}
-        >
-          {t('operations.registerPayment')}
-        </Button>
-        <Button
-          variant="outline"
-          size="full"
-          onPress={() => showInfo(t('operations.featureComingSoon'))}
-          style={styles.footerSecondary}
-        >
-          {t('operations.finalizeContract')}
-        </Button>
-      </View>
+      {operation.status !== 'COMPLETED' ? (
+        <View style={styles.footer}>
+          <Button
+            variant="primary"
+            size="full"
+            onPress={() => setPaymentSheetOpen(true)}
+            disabled={operation.status === 'COMPLETED'}
+          >
+            {t('operations.registerPayment')}
+          </Button>
+          <Button
+            variant="outline"
+            size="full"
+            onPress={() => showInfo(t('operations.featureComingSoon'))}
+            style={styles.footerSecondary}
+          >
+            {t('operations.finalizeContract')}
+          </Button>
+        </View>
+      ) : null}
 
       <RegisterPaymentBottomSheet
         visible={paymentSheetOpen}
@@ -411,11 +440,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 16,
     padding: 20,
+    paddingTop: 0,
     gap: 16,
   },
   contractHeading: { marginBottom: 4 },
   rowIcon: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
   rowText: { flex: 1, gap: 4 },
+  rowAmount: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 4,
+  },
   clientRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -428,8 +465,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 8,
+    borderRadius: 8,
   },
-  metric: { flex: 1, alignItems: 'center', gap: 4 },
+  metric: { flex: 1, alignItems: 'center', gap: 4, paddingVertical: 4 },
+  metricHeader: {
+    flexDirection: 'row',
+    paddingBottom: 4,
+    alignItems: 'center',
+    gap: 4,
+  },
   metaLine: { marginTop: 4 },
   actionGrid: {
     flexDirection: 'row',
