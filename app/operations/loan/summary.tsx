@@ -23,6 +23,7 @@ import {
   parseInterest,
 } from '@/lib/services/operationService';
 import { formatDateWithDay } from '@/lib/utils/dateFormat';
+import { dueDateFromLoanStart } from '@/lib/utils/loanDueDate';
 import { useOperations } from '../_context';
 
 export default function LoanSummaryScreen() {
@@ -64,48 +65,42 @@ export default function LoanSummaryScreen() {
     }
   }, [formData.frequency, t]);
 
-  const today = useMemo(() => {
-    const d = new Date();
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const yyyy = d.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
-  }, []);
+  const loanStartLabel = useMemo(() => {
+    const raw = formData.startDate || formData.dueDate;
+    if (!raw) return '—';
+    const d = new Date(raw);
+    return Number.isNaN(d.getTime()) ? '—' : formatDateWithDay(d);
+  }, [formData.startDate, formData.dueDate]);
 
-  const nextPaymentDate = useMemo(() => {
-    const d = new Date();
-    switch (formData.frequency) {
-      case 'daily':
-        d.setDate(d.getDate() + 1);
-        break;
-      case 'weekly':
-        d.setDate(d.getDate() + 7);
-        break;
-      case 'biweekly':
-        d.setDate(d.getDate() + 14);
-        break;
-      case 'monthly':
-        d.setMonth(d.getMonth() + 1);
-        break;
+  const firstDueLabel = useMemo(() => {
+    if (formData.dueDate) {
+      const d = new Date(formData.dueDate);
+      if (!Number.isNaN(d.getTime())) return formatDateWithDay(d);
     }
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const yyyy = d.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
-  }, [formData.frequency]);
+    const startRaw = formData.startDate || formData.dueDate;
+    const start = startRaw ? new Date(startRaw) : new Date();
+    if (Number.isNaN(start.getTime())) return '—';
+    return formatDateWithDay(
+      dueDateFromLoanStart(start, formData.frequency)
+    );
+  }, [formData.dueDate, formData.startDate, formData.frequency]);
 
   const handleConfirm = async () => {
     if (!formData.client?.id) return;
 
     setIsSubmitting(true);
     try {
-      const dueDateValue = formData.dueDate
-        ? new Date(formData.dueDate)
-        : new Date();
-      const safeDueDate =
-        dueDateValue instanceof Date && !Number.isNaN(dueDateValue.getTime())
-          ? dueDateValue.toISOString()
-          : new Date().toISOString();
+      const startRaw = formData.startDate || formData.dueDate;
+      const startDateObj = startRaw ? new Date(startRaw) : new Date();
+      const startOk =
+        startDateObj instanceof Date && !Number.isNaN(startDateObj.getTime())
+          ? startDateObj
+          : new Date();
+
+      let dueDateObj = formData.dueDate ? new Date(formData.dueDate) : null;
+      if (!dueDateObj || Number.isNaN(dueDateObj.getTime())) {
+        dueDateObj = dueDateFromLoanStart(startOk, formData.frequency);
+      }
 
       await createOperation({
         type: OperationType.LOAN,
@@ -113,8 +108,13 @@ export default function LoanSummaryScreen() {
         principalAmount: parseAmount(formData.amount),
         currency: formData.currency,
         interestRate: parseInterest(formData.interest),
-        startDate: safeDueDate,
-        frequency: formData.frequency.toUpperCase() as 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY',
+        startDate: startOk.toISOString(),
+        dueDate: dueDateObj.toISOString(),
+        frequency: formData.frequency.toUpperCase() as
+          | 'DAILY'
+          | 'WEEKLY'
+          | 'BIWEEKLY'
+          | 'MONTHLY',
         description: formData.observation || undefined,
       });
 
@@ -321,7 +321,7 @@ export default function LoanSummaryScreen() {
                 variant="body1SemiBold"
                 color="text"
               >
-                {formatDateWithDay(new Date(formData.dueDate))}
+                {loanStartLabel}
               </Typography>
             </View>
           </View>
@@ -367,7 +367,7 @@ export default function LoanSummaryScreen() {
                 variant="body2"
                 color="placeholder"
               >
-                {nextPaymentDate}
+                {firstDueLabel}
               </Typography>
             </View>
           </View>

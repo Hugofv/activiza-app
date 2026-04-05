@@ -57,6 +57,9 @@ export default function LoanDetailScreen() {
     isError,
     refetch,
   } = useQuery({
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
     queryKey: ['operations', 'loan', id],
     queryFn: () => getOperationById(id!),
     enabled: !!id,

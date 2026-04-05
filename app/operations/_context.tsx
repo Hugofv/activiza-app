@@ -23,6 +23,9 @@ export interface OperationFormData {
   amount: string;
   currency: string;
   interest: string;
+  /** Loan / contract start (ISO), from the date picker. */
+  startDate: string;
+  /** First due date: startDate + one frequency period (ISO). */
   dueDate: string;
   frequency: FrequencyType;
   observation: string;
@@ -57,6 +60,7 @@ const initialFormData: OperationFormData = {
   amount: '',
   currency: 'GBP',
   interest: '',
+  startDate: '',
   dueDate: '',
   frequency: 'weekly',
   observation: '',

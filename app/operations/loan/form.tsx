@@ -22,12 +22,13 @@ import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 
 import { DatePicker } from '@/components/ui/DatePicker';
 import { parseAmount } from '@/lib/services/operationService';
+import { dueDateFromLoanStart } from '@/lib/utils/loanDueDate';
 import { type FrequencyType, useOperations } from '../_context';
 
 interface LoanFormFields {
   amount: string;
   interest: string;
-  dueDate: Date;
+  startDate: Date;
   observation: string;
 }
 
@@ -37,7 +38,7 @@ function startOfTodayLocal(): Date {
   return d;
 }
 
-function parseStoredDueDate(raw: string | undefined): Date | null {
+function parseStoredIsoDate(raw: string | undefined): Date | null {
   if (typeof raw !== 'string' || !raw.trim()) return null;
   const d = new Date(raw);
   return Number.isNaN(d.getTime()) ? null : d;
@@ -105,10 +106,10 @@ export default function LoanFormScreen() {
         const n = parseFloat((v ?? '').replace(',', '.'));
         return !isNaN(n) && n >= 0 && n <= 100;
       }),
-    dueDate: yup
+    startDate: yup
       .date()
       .typeError(t('operations.invalidValue'))
-      .required(`${t('operations.dueDate')} ${t('common.validation.required')}`),
+      .required(`${t('operations.loanDate')} ${t('common.validation.required')}`),
     observation: yup.string().optional().default(''),
   });
 
@@ -121,7 +122,10 @@ export default function LoanFormScreen() {
     defaultValues: {
       amount: formData.amount || '',
       interest: formData.interest || '',
-      dueDate: parseStoredDueDate(formData.dueDate) ?? startOfTodayLocal(),
+      startDate:
+        parseStoredIsoDate(formData.startDate) ??
+        parseStoredIsoDate(formData.dueDate) ??
+        startOfTodayLocal(),
       observation: formData.observation || '',
     },
     mode: 'onChange',
@@ -136,10 +140,13 @@ export default function LoanFormScreen() {
   };
 
   const onNext = (data: LoanFormFields) => {
+    const start = data.startDate;
+    const due = dueDateFromLoanStart(start, formData.frequency);
     updateFormData({
       amount: data.amount,
       interest: data.interest,
-      dueDate: data.dueDate.toISOString(),
+      startDate: start.toISOString(),
+      dueDate: due.toISOString(),
       observation: data.observation || '',
     });
     router.push('/operations/loan/summary');
@@ -241,15 +248,15 @@ export default function LoanFormScreen() {
           error={errors.interest?.message}
         />
 
-        {/* Due Date */}
+        {/* Loan start date (due date is start + frequency, computed on continue) */}
         <View style={styles.dateField}>
           <DatePicker
             mode="date"
             control={control}
-            name="dueDate"
-            label={t('operations.dueDate')}
+            name="startDate"
+            label={t('operations.loanDate')}
             placeholder={t('operations.today')}
-            error={errors.dueDate?.message}
+            error={errors.startDate?.message}
           />
         </View>
 
