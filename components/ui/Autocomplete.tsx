@@ -1,13 +1,19 @@
 import * as React from 'react';
 
 import {
+  Dimensions,
+  FlatList,
+  Keyboard,
+  Modal,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -40,6 +46,62 @@ export interface AutocompleteProps<T = string> {
   onSearchChange?: (query: string) => void;
 }
 
+type AnchorRect = { x: number; y: number; width: number; height: number };
+
+const DROPDOWN_GAP = 6;
+const MIN_LIST_HEIGHT = 120;
+const MAX_LIST_HEIGHT = 280;
+/** Ignore focus-driven open briefly after a list selection (avoids Modal reopening). */
+const SUPPRESS_FOCUS_OPEN_MS = 400;
+
+function computeModalDropdownLayout(
+  anchor: AnchorRect,
+  keyboardHeight: number,
+  topInset: number
+): { top: number; left: number; width: number; maxHeight: number } | null {
+  if (anchor.width <= 0 || anchor.height <= 0) return null;
+
+  const winH = Dimensions.get('window').height;
+  const bottomReserve = keyboardHeight + DROPDOWN_GAP;
+  const topReserve = topInset + DROPDOWN_GAP;
+
+  const spaceBelow = winH - anchor.y - anchor.height - bottomReserve;
+  const spaceAbove = anchor.y - topReserve;
+
+  const openAbove =
+    spaceBelow < MIN_LIST_HEIGHT + 40 && spaceAbove > spaceBelow;
+
+  let maxHeight = Math.min(
+    MAX_LIST_HEIGHT,
+    Math.max(MIN_LIST_HEIGHT, openAbove ? spaceAbove : spaceBelow)
+  );
+
+  let top: number;
+  if (openAbove) {
+    top = anchor.y - maxHeight - DROPDOWN_GAP;
+    if (top < topReserve) {
+      top = topReserve;
+      maxHeight = Math.max(
+        MIN_LIST_HEIGHT,
+        Math.min(MAX_LIST_HEIGHT, anchor.y - topReserve - DROPDOWN_GAP)
+      );
+    }
+  } else {
+    top = anchor.y + anchor.height + DROPDOWN_GAP;
+    const overflow = top + maxHeight + bottomReserve - winH;
+    if (overflow > 0) {
+      maxHeight = Math.max(MIN_LIST_HEIGHT, maxHeight - overflow);
+    }
+  }
+
+  return {
+    top,
+    left: anchor.x,
+    width: anchor.width,
+    maxHeight,
+  };
+}
+
 export function Autocomplete<T = string>({
   options,
   value,
@@ -55,13 +117,26 @@ export function Autocomplete<T = string>({
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const keyboardHeight = useKeyboardHeight();
+  const insets = useSafeAreaInsets();
   const [isOpen, setIsOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [anchorRect, setAnchorRect] = React.useState<AnchorRect>({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
   const inputRef = React.useRef<TextInput>(null);
+  const anchorRef = React.useRef<View>(null);
+  const suppressFocusOpenRef = React.useRef(false);
+  const suppressFocusTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+
+  const topInset = insets.top;
 
   const selectedOption = options.find((opt) => opt.value === value);
 
-  // Filter options based on search query
   const filteredOptions = React.useMemo(() => {
     if (!searchable || !searchQuery.trim()) {
       return options;
@@ -70,20 +145,72 @@ export function Autocomplete<T = string>({
     return options.filter((opt) => opt.label.toLowerCase().includes(query));
   }, [options, searchQuery, searchable]);
 
-  const handleSelect = (option: AutocompleteOption<T>) => {
-    onValueChange(option.value);
-    setSearchQuery('');
+  React.useEffect(
+    () => () => {
+      if (suppressFocusTimerRef.current) {
+        clearTimeout(suppressFocusTimerRef.current);
+      }
+    },
+    []
+  );
+
+  const measureAnchor = React.useCallback(() => {
+    anchorRef.current?.measureInWindow((x, y, width, height) => {
+      if (width > 0 && height > 0) {
+        setAnchorRect({ x, y, width, height });
+      }
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (!isOpen || filteredOptions.length === 0) return;
+    const id = requestAnimationFrame(measureAnchor);
+    return () => cancelAnimationFrame(id);
+  }, [isOpen, filteredOptions.length, measureAnchor]);
+
+  const modalLayout = React.useMemo(
+    () =>
+      computeModalDropdownLayout(anchorRect, keyboardHeight, topInset),
+    [anchorRect, keyboardHeight, topInset]
+  );
+
+  const closeListOnly = React.useCallback(() => {
     setIsOpen(false);
+    setAnchorRect({ x: 0, y: 0, width: 0, height: 0 });
+    Keyboard.dismiss();
     inputRef.current?.blur();
-  };
+  }, []);
+
+  const handleSelect = React.useCallback(
+    (option: AutocompleteOption<T>) => {
+      if (suppressFocusTimerRef.current) {
+        clearTimeout(suppressFocusTimerRef.current);
+      }
+      suppressFocusOpenRef.current = true;
+      closeListOnly();
+      setSearchQuery('');
+
+      requestAnimationFrame(() => {
+        onValueChange(option.value);
+      });
+
+      suppressFocusTimerRef.current = setTimeout(() => {
+        suppressFocusOpenRef.current = false;
+        suppressFocusTimerRef.current = null;
+      }, SUPPRESS_FOCUS_OPEN_MS);
+    },
+    [closeListOnly, onValueChange]
+  );
 
   const handleInputFocus = () => {
+    if (suppressFocusOpenRef.current) {
+      return;
+    }
     setIsOpen(true);
   };
 
   const handleInputBlur = () => {
-    // Delay closing to allow option selection
-    setTimeout(() => setIsOpen(false), 200);
+    // Intentionally empty: closing is handled by selection, backdrop, or chevron.
   };
 
   const handleInputChange = (text: string) => {
@@ -91,18 +218,82 @@ export function Autocomplete<T = string>({
     if (onSearchChange) {
       onSearchChange(text);
     }
-    if (!isOpen) {
+    if (!isOpen && !suppressFocusOpenRef.current) {
       setIsOpen(true);
     }
   };
 
-  const openUpward = isOpen && keyboardHeight > 0;
+  const closeDropdown = React.useCallback(() => {
+    closeListOnly();
+  }, [closeListOnly]);
+
+  const winW = Dimensions.get('window').width;
+
+  const effectiveLayout =
+    modalLayout ??
+    (isOpen && filteredOptions.length > 0
+      ? {
+          top: topInset + 72,
+          left: 24,
+          width: Math.max(200, winW - 48),
+          maxHeight: MAX_LIST_HEIGHT,
+        }
+      : null);
+
+  const showModal = isOpen && filteredOptions.length > 0 && effectiveLayout != null;
+
+  const renderOption = React.useCallback(
+    ({ item }: { item: AutocompleteOption<T> }) => {
+      const isSelected = item.value === value;
+      return (
+        <TouchableOpacity
+          activeOpacity={0.65}
+          onPress={() => handleSelect(item)}
+          style={[
+            styles.option,
+            isSelected && { backgroundColor: colors.muted },
+          ]}
+        >
+          <Typography
+            variant="body1"
+            pointerEvents="none"
+            style={[
+              styles.optionText,
+              {
+                color: isSelected ? colors.primaryForeground : colors.text,
+                fontWeight: isSelected ? '600' : '400',
+              },
+            ]}
+          >
+            {item.label}
+          </Typography>
+          {isSelected ? (
+            <Icon
+              name="check"
+              size={20}
+              color="primaryForeground"
+            />
+          ) : null}
+        </TouchableOpacity>
+      );
+    },
+    [colors.muted, colors.primaryForeground, colors.text, handleSelect, value]
+  );
+
+  const keyExtractor = React.useCallback(
+    (item: AutocompleteOption<T>, index: number) =>
+      `${String(item.value)}-${index}`,
+    []
+  );
 
   return (
     <View
       style={[
         styles.container,
-        isOpen && (Platform.OS === 'android' ? styles.containerOpenAndroid : styles.containerOpenIos),
+        isOpen &&
+          (Platform.OS === 'android'
+            ? styles.containerOpenAndroid
+            : styles.containerOpenIos),
       ]}
     >
       {label && (
@@ -115,6 +306,13 @@ export function Autocomplete<T = string>({
         </Typography>
       )}
       <View
+        ref={anchorRef}
+        collapsable={false}
+        onLayout={() => {
+          if (isOpen) {
+            requestAnimationFrame(measureAnchor);
+          }
+        }}
         style={[
           styles.inputContainer,
           variant === 'filled' && [
@@ -150,11 +348,13 @@ export function Autocomplete<T = string>({
         <Pressable
           onPress={() => {
             if (!disabled) {
-              setIsOpen(!isOpen);
-              if (!isOpen) {
+              const next = !isOpen;
+              setIsOpen(next);
+              if (next) {
+                requestAnimationFrame(() => measureAnchor());
                 inputRef.current?.focus();
               } else {
-                inputRef.current?.blur();
+                closeListOnly();
               }
             }
           }}
@@ -169,71 +369,48 @@ export function Autocomplete<T = string>({
         </Pressable>
       </View>
 
-      {isOpen && filteredOptions.length > 0 && (
-        <>
-          {/* Backdrop to close the list when clicking outside */}
+      <Modal
+        visible={showModal}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+        presentationStyle="overFullScreen"
+        onRequestClose={closeDropdown}
+      >
+        <View style={styles.modalRoot}>
           <Pressable
-            style={styles.backdrop}
-            onPress={() => {
-              setIsOpen(false);
-              inputRef.current?.blur();
-            }}
+            style={styles.modalBackdrop}
+            onPress={closeDropdown}
           />
-          <View
-            style={[
-              styles.dropdown,
-              openUpward ? styles.dropdownAbove : styles.dropdownBelow,
-              {
-                backgroundColor: colors.background,
-                shadowColor: colors.icon,
-              },
-            ]}
-          >
-            <ScrollView
-              style={styles.list}
-              nestedScrollEnabled
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={true}
+          {effectiveLayout ? (
+            <View
+              style={[
+                styles.modalDropdown,
+                {
+                  top: effectiveLayout.top,
+                  left: effectiveLayout.left,
+                  width: effectiveLayout.width,
+                  maxHeight: effectiveLayout.maxHeight,
+                  backgroundColor: colors.background,
+                  shadowColor: colors.icon,
+                },
+              ]}
+              collapsable={false}
             >
-              {filteredOptions.map((item, index) => {
-                const isSelected = item.value === value;
-                return (
-                  <Pressable
-                    key={`${item.value}-${index}`}
-                    onPress={() => handleSelect(item)}
-                    style={[
-                      styles.option,
-                      isSelected && { backgroundColor: colors.muted },
-                    ]}
-                  >
-                    <Typography
-                      variant="body1"
-                      style={[
-                        styles.optionText,
-                        {
-                          color: isSelected
-                            ? colors.primaryForeground
-                            : colors.text,
-                          fontWeight: isSelected ? '600' : '400',
-                        },
-                      ]}
-                    >
-                      {item.label}
-                    </Typography>
-                    {isSelected && (
-                      <Icon
-                        name="check"
-                        size={20}
-                        color="primaryForeground"
-                      />
-                    )}
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </>
-      )}
+              <FlatList
+                data={filteredOptions}
+                keyExtractor={keyExtractor}
+                renderItem={renderOption}
+                style={{ maxHeight: effectiveLayout.maxHeight }}
+                keyboardShouldPersistTaps="always"
+                nestedScrollEnabled
+                showsVerticalScrollIndicator
+                bounces={false}
+              />
+            </View>
+          ) : null}
+        </View>
+      </Modal>
 
       {error && (
         <Typography
@@ -253,7 +430,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 1,
   },
-  /** Lift above ScrollView siblings (e.g. advance button) on Android */
   containerOpenAndroid: {
     zIndex: 10000,
     elevation: 24,
@@ -295,45 +471,34 @@ const styles = StyleSheet.create({
     padding: 8,
     zIndex: 2,
   },
-  dropdown: {
+  modalRoot: {
+    flex: 1,
+  },
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.12)',
+    zIndex: 0,
+  },
+  modalDropdown: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    maxHeight: 200,
+    zIndex: 10,
     borderRadius: 8,
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
-    zIndex: 1001,
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 24,
+    overflow: 'hidden',
   },
-  dropdownBelow: {
-    top: '100%',
-    marginTop: 4,
-  },
-  /** When keyboard is open, open upward so list is not trapped between field and keyboard */
-  dropdownAbove: {
-    bottom: '100%',
-    marginBottom: 4,
-  },
-  backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1000,
-  },
-  list: { maxHeight: 200 },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
+    minHeight: 48,
   },
   optionText: {
     flex: 1,
