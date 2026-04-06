@@ -3,9 +3,8 @@ import { useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  Pressable,
   StyleSheet,
-  View,
+  View
 } from 'react-native';
 
 import { router } from 'expo-router';
@@ -15,7 +14,9 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LoanCard } from '@/components/operations/LoanCard';
-import { Icon } from '@/components/ui/Icon';
+import { BackButton } from '@/components/ui/BackButton';
+import { Button } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/IconButton';
 import { Select } from '@/components/ui/Select';
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
@@ -83,17 +84,7 @@ export default function LoanListScreen() {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Pressable
-            onPress={() => router.back()}
-            hitSlop={12}
-            style={styles.backButton}
-          >
-            <Icon
-              name="chevron-back"
-              size={24}
-              color="primaryForeground"
-            />
-          </Pressable>
+          <BackButton />
 
           <View style={{ flex: 1 }} />
 
@@ -149,20 +140,36 @@ export default function LoanListScreen() {
             </Typography>
           </View>
         ) : (
-          <FlatList
-            data={operations}
-            keyExtractor={(item) => String(item.id)}
-            renderItem={({ item }) => (
-              <LoanCard
-                operation={item}
-                onPress={handleLoanPress}
+          <>
+            <Button style={styles.lendLoanButton} variant='ghost' onPress={() => router.push('/operations/loan/form')}>
+              <IconButton
+                icon='receipt-2'
+                size='md'
+                shape='rounded'
+                variant='secondary'
+                iconColor='primaryForeground'
+                style={{ padding: 0 }}
               />
-            )}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            onRefresh={refetch}
-            refreshing={isRefetching}
-          />
+              <Typography variant='body1Medium' color='primaryForeground'>
+                {t('operations.createLoan')}
+              </Typography>
+            </Button>
+
+            <FlatList
+              data={operations}
+              keyExtractor={(item) => String(item.id)}
+              renderItem={({ item }) => (
+                <LoanCard
+                  operation={item}
+                  onPress={handleLoanPress}
+                />
+              )}
+              contentContainerStyle={styles.listContent}
+              showsVerticalScrollIndicator={false}
+              onRefresh={refetch}
+              refreshing={isRefetching}
+            />
+          </>
         )}
       </View>
     </SafeAreaView>
@@ -191,6 +198,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     marginBottom: 16,
+  },
+  lendLoanButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 0,
+    marginBottom: 4,
   },
   listContent: {
     paddingBottom: 32,
