@@ -39,6 +39,8 @@ export default {
   noLoans: 'No loans found',
   loadError: 'Failed to load loans',
   loanScreenTitle: 'Loan',
+  editLoan: 'Edit loan',
+  editLoanSuccess: 'Your changes were saved.',
   contractTitleFallback: 'Contract #{{id}}',
   inProgress: 'In progress',
   statusFinalized: 'Finalized',

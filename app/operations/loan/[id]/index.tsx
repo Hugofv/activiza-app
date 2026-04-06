@@ -157,20 +157,35 @@ export default function LoanDetailScreen() {
     >
       <View style={styles.header}>
         <BackButton onPress={() => router.back()} />
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={
+            operation.status === 'COMPLETED' ||
+            operation.status === 'CANCELLED'
+          }
+          onPress={() => router.push(`/operations/loan/${id}/edit`)}
+        >
+          <Typography
+            variant="body2Medium"
+            color="primaryForeground"
+          >
+            {t('common.edit')}
+          </Typography>
+        </Button>
+      </View>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <Typography
           variant="h4"
           style={styles.headerTitle}
         >
           {t('operations.loanScreenTitle')}
         </Typography>
-        <View style={{ width: 44 }} />
-      </View>
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
         <View
           style={[
             styles.card,
@@ -430,7 +445,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
     paddingBottom: 8,
     gap: 8,
   },

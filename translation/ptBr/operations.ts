@@ -39,6 +39,8 @@ export default {
   noLoans: 'Nenhum empréstimo encontrado',
   loadError: 'Erro ao carregar empréstimos',
   loanScreenTitle: 'Empréstimo',
+  editLoan: 'Editar empréstimo',
+  editLoanSuccess: 'As alterações foram salvas.',
   contractTitleFallback: 'Contrato #{{id}}',
   inProgress: 'Em andamento',
   statusFinalized: 'Finalizado',

@@ -11,6 +11,7 @@ export default function LoanIdLayout() {
       }}
     >
       <Stack.Screen name="index" />
+      <Stack.Screen name="edit" />
       <Stack.Screen name="history" />
     </Stack>
   );
