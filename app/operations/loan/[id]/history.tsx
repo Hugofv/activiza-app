@@ -90,7 +90,11 @@ export default function LoanOperationHistoryScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
-  const { data: operation } = useQuery({
+  const {
+    data: operation,
+    refetch: refetchOperation,
+    isRefetching: isRefetchingOperation,
+  } = useQuery({
     queryKey: ['operations', 'loan', id],
     queryFn: () => getOperationById(id!),
     enabled: !!id,
@@ -100,8 +104,8 @@ export default function LoanOperationHistoryScreen() {
     data: historyData,
     isLoading,
     isError,
-    refetch,
-    isRefetching,
+    refetch: refetchHistory,
+    isRefetching: isRefetchingHistory,
   } = useQuery({
     queryKey: ['operations', 'loan', id, 'history', PAGE, PAGE_SIZE],
     refetchOnMount: true,
@@ -114,6 +118,13 @@ export default function LoanOperationHistoryScreen() {
 
   const results = historyData?.results ?? [];
   const currency = operation?.currency ?? 'GBP';
+
+  const isListRefreshing = isRefetchingOperation || isRefetchingHistory;
+
+  const handleRefresh = useCallback(
+    () => Promise.all([refetchOperation(), refetchHistory()]),
+    [refetchOperation, refetchHistory]
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: OperationHistoryEntry }) => {
@@ -243,7 +254,9 @@ export default function LoanOperationHistoryScreen() {
           </Typography>
           <Button
             variant="outline"
-            onPress={() => refetch()}
+            onPress={() => {
+              void Promise.all([refetchOperation(), refetchHistory()]);
+            }}
             style={{ marginTop: 16 }}
           >
             {t('common.toast.tryAgain')}
@@ -287,9 +300,10 @@ export default function LoanOperationHistoryScreen() {
         }
         refreshControl={
           <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={refetch}
+            refreshing={isListRefreshing}
+            onRefresh={handleRefresh}
             tintColor={colors.primary}
+            colors={[colors.primary]}
           />
         }
         showsVerticalScrollIndicator={false}

@@ -48,6 +48,7 @@ export interface Operation {
   remainingToReceive?: number | string | null;
   /** Snake_case alias some backends send on GET operation(s). */
   remaining_to_receive?: number | string | null;
+  nextInstallmentDueAmount?: number | string | null;
   client?: {
     id: number;
     name?: string;

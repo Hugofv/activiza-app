@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   View,
@@ -56,6 +57,7 @@ export default function LoanDetailScreen() {
     isLoading,
     isError,
     refetch,
+    isRefetching,
   } = useQuery({
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -76,6 +78,12 @@ export default function LoanDetailScreen() {
     return operation.principalAmount * (operation.interestRate / 100);
   }, [operation]);
 
+  const pendingAmount = useMemo(() => {
+    if (!operation) return 0;
+    return operation.nextInstallmentDueAmount;
+  }, [operation]);
+
+  console.log('pendingAmount', operation);
   const minimumPayment = useMemo(() => {
     if (!operation) return 0;
     const p = profitAmount;
@@ -178,6 +186,14 @@ export default function LoanDetailScreen() {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => refetch()}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
       >
         <Typography
           variant="h4"
@@ -290,7 +306,7 @@ export default function LoanDetailScreen() {
               </View>
               <Typography variant="body1SemiBold">
                 {formatOperationCurrency(
-                  operation.principalAmount,
+                  pendingAmount,
                   operation.currency
                 )}
               </Typography>
