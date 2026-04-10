@@ -16,13 +16,16 @@ export enum OperationType {
   INSTALLMENTS = 'INSTALLMENTS',
 }
 
-export type OperationStatus =
-  | 'ACTIVE'
-  | 'COMPLETED'
-  | 'OVERDUE'
-  | 'CANCELLED';
+export type OperationStatus = 'ACTIVE' | 'COMPLETED' | 'OVERDUE' | 'CANCELLED';
 
 export type FrequencyType = 'DAILY' | 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
+
+export interface OperationInstallment {
+  id: number;
+  operationId: number;
+  dueDate: string;
+  profit: number;
+}
 
 export interface Operation {
   id: number;
@@ -40,6 +43,7 @@ export interface Operation {
   interestRate: number;
   entryAmount?: number;
   installments?: number;
+  installmentsList?: OperationInstallment[];
   depositAmount?: number;
   resourceId?: number;
   createdAt?: string;
@@ -96,7 +100,9 @@ export interface CreateOperationData {
   resourceId?: number;
 }
 
-export interface UpdateOperationData extends Partial<Omit<CreateOperationData, 'type' | 'clientId'>> {
+export interface UpdateOperationData extends Partial<
+  Omit<CreateOperationData, 'type' | 'clientId'>
+> {
   status?: OperationStatus;
 }
 
@@ -205,7 +211,10 @@ const CURRENCY_SYMBOL: Record<string, string> = {
 /**
  * Display amount with symbol suffix (aligned with loan list cards).
  */
-export function formatOperationCurrency(value: number, currency: string): string {
+export function formatOperationCurrency(
+  value: number,
+  currency: string
+): string {
   const symbol = CURRENCY_SYMBOL[currency?.toUpperCase()] ?? '£';
   const formatted = new Intl.NumberFormat('pt-BR', {
     minimumFractionDigits: 0,
@@ -216,7 +225,8 @@ export function formatOperationCurrency(value: number, currency: string): string
 
 function coerceOperationAmount(raw: unknown): number | null {
   if (raw == null || raw === '') return null;
-  const n = typeof raw === 'string' ? parseFloat(raw.replace(',', '.')) : Number(raw);
+  const n =
+    typeof raw === 'string' ? parseFloat(raw.replace(',', '.')) : Number(raw);
   return Number.isFinite(n) ? n : null;
 }
 
@@ -266,7 +276,8 @@ export async function getOperations(
 
     if (filters?.type) params.append('type', filters.type);
     if (filters?.status) params.append('status', filters.status);
-    if (filters?.clientId) params.append('clientId', filters.clientId.toString());
+    if (filters?.clientId)
+      params.append('clientId', filters.clientId.toString());
     if (filters?.search) params.append('search', filters.search);
     if (filters?.sortBy) params.append('sortBy', filters.sortBy);
     if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder);

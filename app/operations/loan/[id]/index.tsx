@@ -73,23 +73,24 @@ export default function LoanDetailScreen() {
     return getOperationRemainingToReceive(operation);
   }, [operation]);
 
-  const profitAmount = useMemo(() => {
+  const profitInstallmentAmount = useMemo(() => {
     if (!operation) return 0;
-    return operation.principalAmount * (operation.interestRate / 100);
+    const installment = operation.installmentsList?.[0];
+    if (!installment) return 0;
+    return installment.profit;
   }, [operation]);
 
-  const pendingAmount = useMemo(() => {
+  const nextInstallmentDueAmount = useMemo(() => {
     if (!operation) return 0;
-    return operation.nextInstallmentDueAmount;
+    return operation.nextInstallmentDueAmount || 0;
   }, [operation]);
 
-  console.log('pendingAmount', operation);
   const minimumPayment = useMemo(() => {
     if (!operation) return 0;
-    const p = profitAmount;
+    const p = profitInstallmentAmount;
     if (p > 0) return Math.min(p, remainingToReceive);
     return 0;
-  }, [operation, profitAmount, remainingToReceive]);
+  }, [operation, profitInstallmentAmount, remainingToReceive]);
 
   const frequencyLabel = useMemo(() => {
     if (!operation) return '';
@@ -169,8 +170,7 @@ export default function LoanDetailScreen() {
           variant="secondary"
           size="sm"
           disabled={
-            operation.status === 'COMPLETED' ||
-            operation.status === 'CANCELLED'
+            operation.status === 'COMPLETED' || operation.status === 'CANCELLED'
           }
           onPress={() => router.push(`/operations/loan/${id}/edit`)}
         >
@@ -244,7 +244,7 @@ export default function LoanDetailScreen() {
                   style={{ fontSize: 40 }}
                 >
                   {formatOperationCurrency(
-                    remainingToReceive,
+                    Number(nextInstallmentDueAmount),
                     operation.currency
                   )}
                 </Typography>
@@ -306,7 +306,7 @@ export default function LoanDetailScreen() {
               </View>
               <Typography variant="body1SemiBold">
                 {formatOperationCurrency(
-                  pendingAmount,
+                  remainingToReceive,
                   operation.currency
                 )}
               </Typography>
@@ -347,7 +347,10 @@ export default function LoanDetailScreen() {
                 variant="body1SemiBold"
                 color="text"
               >
-                {formatOperationCurrency(profitAmount, operation.currency)}
+                {formatOperationCurrency(
+                  profitInstallmentAmount,
+                  operation.currency
+                )}
               </Typography>
             </View>
           </View>
@@ -367,9 +370,7 @@ export default function LoanDetailScreen() {
         <View style={styles.actionGrid}>
           <Pressable
             style={[styles.actionTile, { borderColor: colors.border }]}
-            onPress={() =>
-              router.push(`/operations/loan/${id}/history` as any)
-            }
+            onPress={() => router.push(`/operations/loan/${id}/history` as any)}
           >
             <Icon
               name="history"

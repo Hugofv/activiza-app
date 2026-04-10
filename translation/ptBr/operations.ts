@@ -58,6 +58,10 @@ export default {
   historyPayment: 'Pagamento',
   historyEmpty: 'Nenhum evento no histórico ainda.',
   historyLoadError: 'Erro ao carregar histórico da operação.',
+  historyDueDate: 'Vencimento',
+  historySnapshotStatus: 'Situação',
+  historyPaymentMethod: 'Forma de pagamento',
+  historyPaymentReference: 'Referência',
   historyReason: {
     CREATED: 'Contrato criado',
     UPDATED: 'Contrato atualizado',

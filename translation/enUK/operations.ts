@@ -58,6 +58,10 @@ export default {
   historyPayment: 'Payment',
   historyEmpty: 'No history events yet.',
   historyLoadError: 'Failed to load operation history.',
+  historyDueDate: 'Due date',
+  historySnapshotStatus: 'Status',
+  historyPaymentMethod: 'Payment method',
+  historyPaymentReference: 'Reference',
   historyReason: {
     CREATED: 'Contract created',
     UPDATED: 'Contract updated',

@@ -11,6 +11,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { useQuery } from '@tanstack/react-query';
+
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,7 +23,9 @@ import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import {
+  type FrequencyType,
   type OperationHistoryEntry,
+  type OperationStatus,
   formatOperationCurrency,
   getOperationById,
   getOperationHistory,
@@ -31,6 +34,13 @@ import { formatDate } from '@/lib/utils/dateFormat';
 
 const PAGE = 1;
 const PAGE_SIZE = 50;
+
+const FREQUENCY_I18N_KEY: Record<FrequencyType, string> = {
+  DAILY: 'operations.dailyContract',
+  WEEKLY: 'operations.weeklyContract',
+  BIWEEKLY: 'operations.biweeklyContract',
+  MONTHLY: 'operations.monthlyContract',
+};
 
 const KNOWN_HISTORY_REASONS = new Set([
   'CREATED',
@@ -73,6 +83,14 @@ function entryDisplayDateIso(entry: OperationHistoryEntry): string {
   return entry.createdAt;
 }
 
+/** Event column: date-only for audit rows; date + time for payments when the ISO includes or implies a time. */
+function entryEventDatePattern(entry: OperationHistoryEntry): string {
+  if (entry.reason !== 'PAYMENT') return 'dd/MM/yyyy';
+  const iso = entryDisplayDateIso(entry);
+  if (!iso || Number.isNaN(new Date(iso).getTime())) return 'dd/MM/yyyy';
+  return /T\d{2}:\d{2}/.test(iso) ? 'dd/MM/yyyy HH:mm' : 'dd/MM/yyyy';
+}
+
 function entrySubtitle(
   entry: OperationHistoryEntry,
   currency: string
@@ -81,6 +99,168 @@ function entrySubtitle(
   const a = formatOperationCurrency(entry.previousAmount, currency);
   const b = formatOperationCurrency(entry.newAmount, currency);
   return `${a} → ${b}`;
+}
+
+function isPlainRecord(v: unknown): v is Record<string, unknown> {
+  return v != null && typeof v === 'object' && !Array.isArray(v);
+}
+
+function entryMetadataSnapshot(
+  entry: OperationHistoryEntry
+): Record<string, unknown> | null {
+  const meta = entry.metadata;
+  if (!isPlainRecord(meta)) return null;
+  const snapshot = meta.snapshot;
+  return isPlainRecord(snapshot) ? snapshot : null;
+}
+
+function snapshotStringField(
+  snapshot: Record<string, unknown>,
+  camel: string,
+  snake: string
+): string | null {
+  const raw = snapshot[camel] ?? snapshot[snake];
+  return typeof raw === 'string' && raw.trim() ? raw.trim() : null;
+}
+
+function snapshotIsoDate(
+  snapshot: Record<string, unknown>,
+  camel: string,
+  snake: string
+): string | null {
+  const raw = snapshotStringField(snapshot, camel, snake);
+  if (!raw) return null;
+  const ms = new Date(raw).getTime();
+  return Number.isNaN(ms) ? null : raw;
+}
+
+function snapshotNumber(
+  snapshot: Record<string, unknown>,
+  camel: string,
+  snake: string
+): number | null {
+  const raw = snapshot[camel] ?? snapshot[snake];
+  if (typeof raw === 'number' && !Number.isNaN(raw)) return raw;
+  if (typeof raw === 'string' && raw.trim()) {
+    const n = Number(raw.replace(',', '.'));
+    return Number.isNaN(n) ? null : n;
+  }
+  return null;
+}
+
+function snapshotFrequency(
+  snapshot: Record<string, unknown>
+): FrequencyType | null {
+  const raw = snapshotStringField(snapshot, 'frequency', 'frequency_type');
+  if (!raw) return null;
+  const u = raw.toUpperCase() as FrequencyType;
+  return u in FREQUENCY_I18N_KEY ? u : null;
+}
+
+function snapshotStatusLabel(status: string, t: TFunction): string {
+  const u = status.toUpperCase() as OperationStatus | string;
+  if (u === 'COMPLETED') return t('operations.statusFinalized');
+  if (u === 'CANCELLED') return t('operations.statusCancelled');
+  if (u === 'OVERDUE') return t('operations.statusOverdue');
+  if (u === 'ACTIVE') return t('operations.inProgress');
+  return status;
+}
+
+function formatSnapshotDetailLines(
+  entry: OperationHistoryEntry,
+  t: TFunction,
+  currency: string
+): string[] {
+  if (entry.reason === 'PAYMENT') return [];
+  const snap = entryMetadataSnapshot(entry);
+  if (!snap) return [];
+
+  const lines: string[] = [];
+
+  const statusRaw = snapshotStringField(snap, 'status', 'status');
+  if (statusRaw) {
+    lines.push(
+      `${t('operations.historySnapshotStatus')}: ${snapshotStatusLabel(statusRaw, t)}`
+    );
+  }
+
+  const startIso = snapshotIsoDate(snap, 'startDate', 'start_date');
+  const freq = snapshotFrequency(snap);
+  const startLabel = startIso
+    ? formatDate(startIso, 'dd/MM/yyyy')
+    : null;
+  const freqLabel = freq ? t(FREQUENCY_I18N_KEY[freq]) : null;
+  if (startLabel && freqLabel) {
+    lines.push(
+      `${t('operations.loanDate')}: ${startLabel} · ${t('operations.frequency')}: ${freqLabel}`
+    );
+  } else if (startLabel) {
+    lines.push(`${t('operations.loanDate')}: ${startLabel}`);
+  } else if (freqLabel) {
+    lines.push(`${t('operations.frequency')}: ${freqLabel}`);
+  }
+
+  const principal = snapshotNumber(
+    snap,
+    'principalAmount',
+    'principal_amount'
+  );
+  const rate = snapshotNumber(snap, 'interestRate', 'interest_rate');
+  const snapCur =
+    snapshotStringField(snap, 'currency', 'currency') ?? currency;
+  if (principal != null || rate != null) {
+    const parts: string[] = [];
+    if (principal != null) {
+      parts.push(
+        `${t('operations.amount')}: ${formatOperationCurrency(principal, snapCur)}`
+      );
+    }
+    if (rate != null) {
+      parts.push(`${t('operations.interest')}: ${rate}%`);
+    }
+    lines.push(parts.join(' · '));
+  }
+
+  const prevDueIso = snapshotIsoDate(
+    snap,
+    'previousDueDate',
+    'previous_due_date'
+  );
+  const newDueIso = snapshotIsoDate(snap, 'newDueDate', 'new_due_date');
+  if (prevDueIso != null || newDueIso != null) {
+    const prevLabel = prevDueIso
+      ? formatDate(prevDueIso, 'dd/MM/yyyy')
+      : '—';
+    const newLabel = newDueIso
+      ? formatDate(newDueIso, 'dd/MM/yyyy')
+      : '—';
+    lines.push(
+      `${t('operations.historyDueDate')}: ${prevLabel} → ${newLabel}`
+    );
+  } else {
+    const dueIso = snapshotIsoDate(snap, 'dueDate', 'due_date');
+    if (dueIso) {
+      lines.push(
+        `${t('operations.historyDueDate')}: ${formatDate(dueIso, 'dd/MM/yyyy')}`
+      );
+    }
+  }
+
+  return lines;
+}
+
+function paymentDetailLine(item: OperationHistoryEntry, t: TFunction): string | null {
+  if (item.reason !== 'PAYMENT' || !item.payment) return null;
+  const method = item.payment.method?.trim();
+  const reference = item.payment.reference?.trim();
+  const parts: string[] = [];
+  if (method) {
+    parts.push(`${t('operations.historyPaymentMethod')}: ${method}`);
+  }
+  if (reference) {
+    parts.push(`${t('operations.historyPaymentReference')}: ${reference}`);
+  }
+  return parts.length ? parts.join(' · ') : null;
 }
 
 export default function LoanOperationHistoryScreen() {
@@ -111,8 +291,7 @@ export default function LoanOperationHistoryScreen() {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
-    queryFn: () =>
-      getOperationHistory(id!, { page: PAGE, limit: PAGE_SIZE }),
+    queryFn: () => getOperationHistory(id!, { page: PAGE, limit: PAGE_SIZE }),
     enabled: !!id,
   });
 
@@ -132,17 +311,18 @@ export default function LoanOperationHistoryScreen() {
       const amount = entryDisplayAmount(item);
       const subtitle = entrySubtitle(item, currency);
       const dateIso = entryDisplayDateIso(item);
+      const datePattern = entryEventDatePattern(item);
       const dateLabel =
         dateIso && !Number.isNaN(new Date(dateIso).getTime())
-          ? formatDate(dateIso, 'dd/MM/yyyy')
+          ? formatDate(dateIso, datePattern)
           : '—';
 
       const iconName = item.reason === 'PAYMENT' ? 'receipt-2' : 'history';
+      const snapshotLines = formatSnapshotDetailLines(item, t, currency);
+      const paymentExtra = paymentDetailLine(item, t);
 
       return (
-        <View
-          style={[styles.row, { borderBottomColor: colors.border }]}
-        >
+        <View style={[styles.row, { borderBottomColor: colors.border }]}>
           <Icon
             name={iconName}
             size={24}
@@ -174,6 +354,24 @@ export default function LoanOperationHistoryScreen() {
                 numberOfLines={1}
               >
                 {item.actor}
+              </Typography>
+            ) : null}
+            {snapshotLines.map((line, idx) => (
+              <Typography
+                key={`snap-${idx}`}
+                variant="caption"
+                color="placeholder"
+              >
+                {line}
+              </Typography>
+            ))}
+            {paymentExtra != null ? (
+              <Typography
+                variant="caption"
+                color="placeholder"
+                numberOfLines={2}
+              >
+                {paymentExtra}
               </Typography>
             ) : null}
           </View>
