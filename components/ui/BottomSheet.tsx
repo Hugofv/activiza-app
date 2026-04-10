@@ -2,7 +2,9 @@ import * as React from 'react';
 
 import {
   Dimensions,
+  Keyboard,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -18,6 +20,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Typography } from '@/components/ui/Typography';
 import { Colors } from '@/constants/theme';
@@ -49,9 +52,32 @@ export function BottomSheet({
 }: BottomSheetProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const insets = useSafeAreaInsets();
   const translateY = useSharedValue(SCREEN_HEIGHT);
   const context = useSharedValue({ y: 0 });
   const [contentHeight, setContentHeight] = React.useState(0);
+  const [keyboardHeight, setKeyboardHeight] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!visible) setKeyboardHeight(0);
+  }, [visible]);
+
+  React.useEffect(() => {
+    const showEvent =
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent =
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const safeMaxHeightRatio = Math.min(Math.max(maxHeightRatio, 0.3), 1);
   const maxSheetHeight = SCREEN_HEIGHT * safeMaxHeightRatio;
@@ -140,6 +166,13 @@ export function BottomSheet({
     return { opacity };
   });
 
+  /** Sheet is offset with `bottom: keyboardHeight`, so avoid stacking that height again here. */
+  const scrollContentPaddingBottom =
+    4 +
+    (keyboardHeight > 0
+      ? Math.max(insets.bottom, 8)
+      : Math.max(insets.bottom, 0));
+
   return (
     <Modal
       visible={visible}
@@ -161,38 +194,50 @@ export function BottomSheet({
               styles.container,
               containerAnimatedStyle,
               animatedStyle,
-              { minHeight, maxHeight: maxSheetHeight, height: dynamicSheetHeight },
+              {
+                minHeight,
+                maxHeight: maxSheetHeight,
+                height: dynamicSheetHeight,
+                bottom: keyboardHeight,
+              },
             ]}
           >
-            {/* Handle */}
-            <View style={[styles.handle, { backgroundColor: colors.icon }]} />
+              {/* Handle */}
+              <View style={[styles.handle, { backgroundColor: colors.icon }]} />
 
-            {/* Title */}
-            {title && (
-              <View style={styles.titleContainer}>
-                <Typography
-                  variant="body2SemiBold"
-                  style={styles.title}
-                  color="text"
-                >
-                  {title}
-                </Typography>
-                <View
-                  style={[styles.titleLine, { backgroundColor: colors.icon }]}
-                />
-              </View>
-            )}
+              {/* Title */}
+              {title && (
+                <View style={styles.titleContainer}>
+                  <Typography
+                    variant="body2SemiBold"
+                    style={styles.title}
+                    color="text"
+                  >
+                    {title}
+                  </Typography>
+                  <View
+                    style={[styles.titleLine, { backgroundColor: colors.icon }]}
+                  />
+                </View>
+              )}
 
-            {/* Content */}
-            <ScrollView
-              style={styles.content}
-              contentContainerStyle={styles.contentContainer}
-              scrollEnabled={shouldScroll}
-              showsVerticalScrollIndicator={false}
-              onContentSizeChange={(_, height) => setContentHeight(height)}
-            >
-              {children}
-            </ScrollView>
+              {/* Content */}
+              <ScrollView
+                style={styles.content}
+                contentContainerStyle={[
+                  styles.contentContainer,
+                  { paddingBottom: scrollContentPaddingBottom },
+                ]}
+                scrollEnabled={shouldScroll || keyboardHeight > 0}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode={
+                  Platform.OS === 'ios' ? 'interactive' : 'on-drag'
+                }
+                onContentSizeChange={(_, height) => setContentHeight(height)}
+              >
+                {children}
+              </ScrollView>
           </Animated.View>
         </GestureDetector>
       </Animated.View>
@@ -249,5 +294,5 @@ const styles = StyleSheet.create({
     opacity: 0.1,
   },
   content: { paddingHorizontal: 24 },
-  contentContainer: { paddingBottom: 4 },
+  contentContainer: {},
 });

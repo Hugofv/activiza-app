@@ -158,7 +158,7 @@ export function RegisterPaymentBottomSheet({
       visible={visible}
       onClose={onClose}
       minHeight={440}
-      maxHeightRatio={0.85}
+      maxHeightRatio={0.92}
     >
       <View style={styles.sheetInner}>
         <Typography
