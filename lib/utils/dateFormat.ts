@@ -8,6 +8,8 @@ import {
 } from 'date-fns';
 import { enGB, ptBR } from 'date-fns/locale';
 
+import i18n from '@/translation';
+
 // -----------------------------------------------------------------------
 // Locale resolution (aligned with the app's i18n supported languages)
 // Lazy-imports i18n to avoid circular / timing issues during app startup.
@@ -32,6 +34,16 @@ function getI18n() {
 function getLocale(override?: string): Locale {
   const key = override ?? getI18n()?.language ?? 'pt-BR';
   return LOCALE_MAP[key] ?? ptBR;
+}
+
+/**
+ * date-fns pattern from i18n (`common.dateFormat.short` / `common.dateFormat.dateTime`).
+ * Prefer this over hardcoding `dd/MM/yyyy` when formatting for the UI.
+ */
+export function getDateFormatPattern(
+  kind: 'short' | 'dateTime' = 'short'
+): string {
+  return String(i18n.t(`common.dateFormat.${kind}`));
 }
 
 // -----------------------------------------------------------------------

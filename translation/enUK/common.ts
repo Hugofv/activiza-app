@@ -1,4 +1,9 @@
 export default {
+  /** date-fns token strings — use with `formatDate` / `getDateFormatPattern` */
+  dateFormat: {
+    short: 'dd/MM/yyyy',
+    dateTime: 'dd/MM/yyyy HH:mm',
+  },
   phone: 'Phone',
   document: 'Document',
   name: 'Name',

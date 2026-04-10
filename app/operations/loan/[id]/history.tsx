@@ -30,7 +30,7 @@ import {
   getOperationById,
   getOperationHistory,
 } from '@/lib/services/operationService';
-import { formatDate } from '@/lib/utils/dateFormat';
+import { formatDate, getDateFormatPattern } from '@/lib/utils/dateFormat';
 
 const PAGE = 1;
 const PAGE_SIZE = 50;
@@ -85,10 +85,13 @@ function entryDisplayDateIso(entry: OperationHistoryEntry): string {
 
 /** Event column: date-only for audit rows; date + time for payments when the ISO includes or implies a time. */
 function entryEventDatePattern(entry: OperationHistoryEntry): string {
-  if (entry.reason !== 'PAYMENT') return 'dd/MM/yyyy';
+  const short = getDateFormatPattern('short');
+  if (entry.reason !== 'PAYMENT') return short;
   const iso = entryDisplayDateIso(entry);
-  if (!iso || Number.isNaN(new Date(iso).getTime())) return 'dd/MM/yyyy';
-  return /T\d{2}:\d{2}/.test(iso) ? 'dd/MM/yyyy HH:mm' : 'dd/MM/yyyy';
+  if (!iso || Number.isNaN(new Date(iso).getTime())) return short;
+  return /T\d{2}:\d{2}/.test(iso)
+    ? getDateFormatPattern('dateTime')
+    : short;
 }
 
 function entrySubtitle(
@@ -184,10 +187,11 @@ function formatSnapshotDetailLines(
     );
   }
 
+  const datePatternShort = getDateFormatPattern('short');
   const startIso = snapshotIsoDate(snap, 'startDate', 'start_date');
   const freq = snapshotFrequency(snap);
   const startLabel = startIso
-    ? formatDate(startIso, 'dd/MM/yyyy')
+    ? formatDate(startIso, datePatternShort)
     : null;
   const freqLabel = freq ? t(FREQUENCY_I18N_KEY[freq]) : null;
   if (startLabel && freqLabel) {
@@ -229,10 +233,10 @@ function formatSnapshotDetailLines(
   const newDueIso = snapshotIsoDate(snap, 'newDueDate', 'new_due_date');
   if (prevDueIso != null || newDueIso != null) {
     const prevLabel = prevDueIso
-      ? formatDate(prevDueIso, 'dd/MM/yyyy')
+      ? formatDate(prevDueIso, datePatternShort)
       : '—';
     const newLabel = newDueIso
-      ? formatDate(newDueIso, 'dd/MM/yyyy')
+      ? formatDate(newDueIso, datePatternShort)
       : '—';
     lines.push(
       `${t('operations.historyDueDate')}: ${prevLabel} → ${newLabel}`
@@ -241,7 +245,7 @@ function formatSnapshotDetailLines(
     const dueIso = snapshotIsoDate(snap, 'dueDate', 'due_date');
     if (dueIso) {
       lines.push(
-        `${t('operations.historyDueDate')}: ${formatDate(dueIso, 'dd/MM/yyyy')}`
+        `${t('operations.historyDueDate')}: ${formatDate(dueIso, datePatternShort)}`
       );
     }
   }
